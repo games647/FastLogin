@@ -1,0 +1,198 @@
+Options:
+  ConfigurationVersion_DO_NOT_CHANGE_THIS: 6
+
+   # 0 -> unlimited/as needed.
+  NettyThreads: 0
+
+   # DON'T USE THAT IF YOU CAN USE SOCKETS, Enable when you can't use sockets but you want use that on bungee server, it isn't good as sockets, but it should not explode. NOTE: You NEED MySQL for that, and this is slower and may by VERY buggy on first join.
+  UseChannels: false
+
+   # Time in ms between trying connect LISTENER to HANLDER socket, on linux using smaller times can cause some weird problems.
+  ReTryConnectSocketTime: 250
+
+   # where AutoIn should store exceptions, enabled login, whitelists, cache and other player settings.
+  SaveData:
+    Type: MySQL
+    MySQL:
+      Host: localhost
+      Port: 3306
+      User: minecraft
+      Pass:
+      Database: minecraft
+      Prefix: AutoIn_
+    SQLite:
+      File: AutoIn_PlayerOptions.db
+
+# Both
+
+  Both:
+
+    Dependencies:
+
+       # If you have one of that plugin, you can force AutoIn to don't use them even if they can be used. (change to true)
+      ForceDisable:
+        ProtocolLib: false
+        Skript: false
+        AuthMe: false
+        LogIt: false
+        XAuth: false
+        LoginSecurity: false
+
+    Listeners:
+
+       # you can try disable that and manualy configure priority below if auto-login will stop work after update of auth pluhin. PS: tell me about that problem!
+      GetFromModule: true
+      PlayerLoginEvent: LOWEST
+      PlayerJoinEvent: LOWEST
+      PlayerQuitEvent: MONITOR
+
+    Players:
+
+       # no more /login commands for premium users! Enable only on servers where you have auth plugin!
+      AutoLogin: true
+
+       # if true autoin will try fix skins, you can disable that if you want use other plugin. (some plugins may still not work)
+      FixSkins: true
+
+       # if true, then all players are exception by default, they can use /ai IAmNowPremium to remove exception flag (NOTE: they will lose all data after login as premium if you have fixedUUIDs set to false)
+      NegateExceptions: false
+
+       # if true, then even premium players needs to register. PS: You can make registration optional, see wiki: https://github.com/GotoFinal/AutoIn/wiki/Registration
+      Registration: true
+
+       # A.K.A. SwitchMode, If you disable that, only old cracked players will be able to join. New cracked players will be kicked from server. Good if you want switch from offline-mode to online-mode without losing players!
+      AllowNewCrackedPlayers: true
+
+       # if true, then everyone have UUID generated from nickname
+      FixedUUID: false
+
+       # WhiteList that works only on cracked players, black-list works even if this is disabled.
+      CrackedWhiteListEnabled: false
+
+      ForceLogin:
+
+         # Allow use RegEx in nicknames list, like 'Test\\d{1,3}'
+        UseRegEx: false
+
+         # Nicknames from this list don't need use login or register command, use to supprot mods like buildcraft and others
+        Nicknames:
+          - SomeNicknameThatDoNotNeedUseLoginOrRegisterCommandEvenIfHeDoNotHavePremium
+
+      Sessions:
+
+         # If enabled, plugin will remember premium players with their IP number, when servers will be down, premium players can be still auto-logged if IP will be valid.
+        Enabled: true
+
+         # If true, then players with valid session can join even if mojang server are down and without using password. PS: You can enable this and ServerProtect, then registered players OR players with valid session can join.
+        AsServerProtect: true
+
+         # time in easy format, 1w = 1 week, 1d = 1 day, 1d5h12s -> 1 day, 5 hours, 12 seconds
+        Expires: 1d
+
+         # If true sessions aren't saved on reload.
+        ExpiresOnRestart: true
+
+      Protections:
+
+         # If enabled, when new cracked player join to game he will get special protection "flag", that work like exception-player. so even if someone buy premium account with this same nickname, he will be still tract as cracked player.
+         # If player will buy premium, he must disable protection using "IamNowPremium" command, or admin must disable it manually, using API or /setProtection command.
+        CrackedPlayersNicknames:
+          Enabled: true
+
+           # If disabled, player must use "ProtectMe" command, or protection must be enabled manually, using API or /setProtection command
+          AutoProtect: true
+
+
+
+    ServerProtect:
+
+       # If enabled and mojang server don't work, only registered players can join (So you must set "Registration" to true). If disabled, all players will be kicked.
+      Enabled: false
+
+
+     # If enabled plugin will remember if username was premium. (It's saved to database/file) NOTE: Enable that if you have bigger server, like 100/200+ players online.
+    Cache: true
+
+# Server
+
+
+   # ignored by proxy plugin
+  Server:
+
+
+     # It will try check if cache is updated before player join.
+    UpdateCacheOnPreJoin: false
+
+     # It will try check if cache is updated after player join.
+    UpdateCacheOnJoin: true
+
+
+# Proxy
+
+
+   # ignored by server
+  Proxy:
+
+     # Players needs to be logged in to use commands
+    NeedLoginToUseCommands: true
+
+     # Player can use this commands
+    NotBlocked:
+      - /login
+      - /register
+      - /l
+
+     # players from selected group can be send to other servers. This override Proxy/BungeeCord setting!
+    ForcedServers:
+      PREMIUM:
+        Enabled: false
+
+         # works like "default_server" from bungee
+        Server: PremiumServer
+
+         # works like "force_default_server" from bungee
+        Force: false
+
+         # works like "forced_hosts" from bungee -> this override "Force" option
+        ForcedHosts:
+          eg: nul.goto. ...\\.. .final..IIlIlIIlIl@71c66aab
+
+         # like "fallback_server" from bungee
+        Fallback: FallbackServer
+      CRACKED:
+        Enabled: true
+
+         # works like "default_server" from bungee
+        Server: CrackedServer
+
+         # works like "force_default_server" from bungee
+        Force: true
+
+         # like "fallback_server" from bungee
+        Fallback: FallbackServer
+      EXCEPTION:
+        Enabled: false
+
+         # works like "default_server" from bungee
+        Server: PremiumServer
+
+         # works like "force_default_server" from bungee
+        Force: true
+
+         # like "fallback_server" from bungee
+        Fallback: FallbackServer
+
+         # This status will use this same settings as parent status, but you can override that settings by adding them here.
+        Parent: CRACKED
+      ERROR:
+        Enabled: false
+
+         # works like "default_server" from bungee
+        Server: ErrorServer
+
+         # works like "force_default_server" from bungee
+        Force: false
+
+         # like "fallback_server" from bungee
+        Fallback: FallbackServer
+ 
