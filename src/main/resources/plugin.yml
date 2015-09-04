@@ -1,0 +1,14 @@
+# project informations for Bukkit in order to register our plugin with all it components
+# ${project.name} are variables from Maven (pom.xml) which will be replaced after the build
+name: ${project.name}
+version: ${project.version}
+main: ${project.groupId}.${project.artifactId}.${project.name}
+
+# meta informations for plugin managers
+authors: [Xeroun, games647, 'https://github.com/games647/FastLogin/graphs/contributors']
+description: |
+    ${project.description}
+website: ${project.url}
+dev-url: ${project.url}
+
+depend: [ProtocolLib]
