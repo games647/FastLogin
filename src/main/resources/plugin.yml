@@ -5,7 +5,7 @@ version: ${project.version}
 main: ${project.groupId}.${project.artifactId}.${project.name}
 
 # meta informations for plugin managers
-authors: [Xeroun, games647, 'https://github.com/games647/FastLogin/graphs/contributors']
+authors: [games647, 'https://github.com/games647/FastLogin/graphs/contributors']
 description: |
     ${project.description}
 website: ${project.url}

@@ -1,6 +1,7 @@
 package com.github.games647.fastlogin.listener;
 
 import com.github.games647.fastlogin.FastLogin;
+import com.github.games647.fastlogin.PlayerData;
 
 import de.luricos.bukkit.xAuth.xAuth;
 import de.luricos.bukkit.xAuth.xAuthPlayer;
@@ -29,7 +30,9 @@ public class PlayerListener implements Listener {
     public void onJoin(PlayerJoinEvent joinEvent) {
         final Player player = joinEvent.getPlayer();
         String address = player.getAddress().toString();
-        if (plugin.getSession().asMap().containsKey(address)) {
+
+        PlayerData session = plugin.getSession().asMap().get(address);
+        if (session != null && session.getUsername().equals(player.getName())) {
             Bukkit.getScheduler().runTaskLater(plugin, () -> {
                 doLogin(player);
             }, 1 * 20L);
