@@ -1,7 +1,11 @@
-# mcMMOExtras
+# FastLogin
 
-A visual boss bar Bukkit plugin for mcMMO that keeps people entertained and encourages them to want to level up.
+Checks if a minecraft player has a valid paid account. If so, they can skip offline authentification.
 
-See 
-* http://dev.bukkit.org/bukkit-plugins/mcmmoextras/ 
-* http://www.curse.com/bukkit-plugins/minecraft/mcmmoextras
+Requirements:
+* [ProtocolLib](http://www.spigotmc.org/resources/protocollib.1997/)
+* Bukkit 1.8.8
+* Java 8 or above
+* An auth plugin. Supported Plugins:
+    * [AuthMe](http://dev.bukkit.org/bukkit-plugins/authme-reloaded/)
+    * [xAuth](http://dev.bukkit.org/bukkit-plugins/xauth/)
