@@ -5,7 +5,6 @@ import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
-import com.comphenix.protocol.injector.server.SocketInjector;
 import com.comphenix.protocol.injector.server.TemporaryPlayerFactory;
 import com.comphenix.protocol.reflect.FuzzyReflection;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
@@ -125,6 +124,8 @@ public class EncryptionPacketListener extends PacketAdapter {
         if (hasJoinedServer(username, serverId)) {
             session.setVerified(true);
 
+            plugin.getLogger().log(Level.FINE, "Player {0} has a verified premium account", username);
+
             receiveFakeStartPacket(username, player);
         } else {
             //user tried to fake a authentification
@@ -146,15 +147,15 @@ public class EncryptionPacketListener extends PacketAdapter {
 
     private Object getNetworkManager(Player player)
             throws SecurityException, IllegalAccessException, NoSuchFieldException {
-        SocketInjector injector = TemporaryPlayerFactory.getInjectorFromPlayer(player);
-        Field declaredField = injector.getClass().getDeclaredField("injector");
-        declaredField.setAccessible(true);
+        Object injector = TemporaryPlayerFactory.getInjectorFromPlayer(player);
+        Field injectorField = injector.getClass().getDeclaredField("injector");
+        injectorField.setAccessible(true);
 
-        Object rawInjector = declaredField.get(injector);
+        Object rawInjector = injectorField.get(injector);
 
-        declaredField = rawInjector.getClass().getDeclaredField("networkManager");
-        declaredField.setAccessible(true);
-        return declaredField.get(rawInjector);
+        injectorField = rawInjector.getClass().getDeclaredField("networkManager");
+        injectorField.setAccessible(true);
+        return injectorField.get(rawInjector);
     }
 
     private boolean hasJoinedServer(String username, String serverId) {
@@ -177,11 +178,12 @@ public class EncryptionPacketListener extends PacketAdapter {
             //catch not only ioexceptions also parse and NPE on unexpected json format
             plugin.getLogger().log(Level.WARNING, "Failed to verify if session is valid", ex);
         }
+        //this connection doesn't need to be closed. So can make use of keep alive in java
 
         return false;
     }
 
-    private void receiveFakeStartPacket(String username, Player player) {
+    private void receiveFakeStartPacket(String username, Player from) {
         //fake a new login packet
         //see StartPacketListener for packet information
         PacketContainer startPacket = protocolManager.createPacket(PacketType.Login.Client.START, true);
@@ -189,11 +191,11 @@ public class EncryptionPacketListener extends PacketAdapter {
         WrappedGameProfile fakeProfile = WrappedGameProfile.fromOfflinePlayer(Bukkit.getOfflinePlayer(username));
         startPacket.getGameProfiles().write(0, fakeProfile);
         try {
-            protocolManager.recieveClientPacket(player, startPacket, false);
+            protocolManager.recieveClientPacket(from, startPacket, false);
         } catch (InvocationTargetException | IllegalAccessException ex) {
             plugin.getLogger().log(Level.WARNING, "Failed to fake a new start packet", ex);
             //cancel the event in order to prevent the server receiving an invalid packet
-            player.kickPlayer("Error occurred");
+            from.kickPlayer("Error occurred");
         }
     }
 }

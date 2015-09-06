@@ -1,6 +1,7 @@
 package com.github.games647.fastlogin;
 
-import java.io.UnsupportedEncodingException;
+import com.google.common.base.Charsets;
+
 import java.security.GeneralSecurityException;
 import java.security.InvalidKeyException;
 import java.security.Key;
@@ -23,11 +24,9 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 /**
- * Source:
- * https://github.com/bergerkiller/CraftSource/blob/master/net.minecraft.server/MinecraftEncryption.java
+ * Source: https://github.com/bergerkiller/CraftSource/blob/master/net.minecraft.server/MinecraftEncryption.java
  *
- * Remapped by:
- * https://github.com/Techcable/MinecraftMappings/tree/master/1.8
+ * Remapped by: https://github.com/Techcable/MinecraftMappings/tree/master/1.8
  */
 public class Encryption {
 
@@ -44,24 +43,15 @@ public class Encryption {
     }
 
     public static byte[] getServerIdHash(String serverId, PublicKey publickey, SecretKey secretkey) {
-        try {
-            return digestOperation("SHA-1"
-                    , new byte[][]{serverId.getBytes("ISO_8859_1"), secretkey.getEncoded(), publickey.getEncoded()});
-        } catch (UnsupportedEncodingException unsupportedencodingexception) {
-            unsupportedencodingexception.printStackTrace();
-            return null;
-        }
+        return digestOperation("SHA-1"
+                , new byte[][]{serverId.getBytes(Charsets.ISO_8859_1), secretkey.getEncoded(), publickey.getEncoded()});
     }
 
     private static byte[] digestOperation(String algo, byte[]... content) {
         try {
             MessageDigest messagedigest = MessageDigest.getInstance(algo);
-            int dataLength = content.length;
-
-            for (int i = 0; i < dataLength; ++i) {
-                byte[] abyte1 = content[i];
-
-                messagedigest.update(abyte1);
+            for (byte[] data : content) {
+                messagedigest.update(data);
             }
 
             return messagedigest.digest();

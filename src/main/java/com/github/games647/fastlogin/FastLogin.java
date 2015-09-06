@@ -8,12 +8,14 @@ import com.github.games647.fastlogin.hooks.AuthPlugin;
 import com.github.games647.fastlogin.listener.EncryptionPacketListener;
 import com.github.games647.fastlogin.listener.StartPacketListener;
 import com.google.common.cache.CacheLoader;
+import com.google.common.collect.Sets;
 import com.google.common.reflect.ClassPath;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.security.KeyPair;
+import java.util.Set;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
@@ -27,6 +29,10 @@ public class FastLogin extends JavaPlugin {
 
     //provide a immutable key pair to be thread safe
     private final KeyPair keyPair = Encryption.generateKeyPair();
+
+    //we need a thread-safe set because we access it async in the packet listener
+    private final Set<String> enabledPremium = Sets.newConcurrentHashSet();
+
     //this map is thread-safe for async access (Packet Listener)
     //SafeCacheBuilder is used in order to be version independent
     private final ConcurrentMap<String, PlayerSession> session = SafeCacheBuilder.<String, PlayerSession>newBuilder()
@@ -62,17 +68,21 @@ public class FastLogin extends JavaPlugin {
         ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
         protocolManager.addPacketListener(new EncryptionPacketListener(this, protocolManager));
         protocolManager.addPacketListener(new StartPacketListener(this, protocolManager));
+
+        //register commands
+        getCommand("premium").setExecutor(new PremiumCommand(this));
     }
 
     @Override
     public void onDisable() {
         //clean up
         session.clear();
+        enabledPremium.clear();
     }
 
     /**
-     * Gets a thread-safe map about players which are connecting
-     * to the server are being checked to be premium (paid account)
+     * Gets a thread-safe map about players which are connecting to the server are being checked to be premium (paid
+     * account)
      *
      * @return a thread-safe session map
      */
@@ -90,8 +100,16 @@ public class FastLogin extends JavaPlugin {
     }
 
     /**
-     * Prepares a Mojang API connection. The connection is not
-     * started in this method
+     * Gets a set of user who activated premium logins
+     *
+     * @return user who activated premium logins
+     */
+    public Set<String> getEnabledPremium() {
+        return enabledPremium;
+    }
+
+    /**
+     * Prepares a Mojang API connection. The connection is not started in this method
      *
      * @param url the url connecting to
      * @return the prepared connection

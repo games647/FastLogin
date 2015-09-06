@@ -27,7 +27,8 @@ public class PlayerListener implements Listener {
         final Player player = joinEvent.getPlayer();
         String address = player.getAddress().toString();
 
-        PlayerSession session = plugin.getSessions().get(address);
+        //removing the session because we now use it
+        PlayerSession session = plugin.getSessions().remove(address);
         //check if it's the same player as we checked before
         if (session != null && session.getUsername().equals(player.getName())
                 && session.isVerified()) {
