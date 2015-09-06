@@ -12,3 +12,8 @@ website: ${project.url}
 dev-url: ${project.url}
 
 depend: [ProtocolLib]
+softdepend:
+    - xAuth
+    - AuthMe
+    - CrazyLogin
+    - LoginSecurity

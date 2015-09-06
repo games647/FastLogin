@@ -1,16 +1,10 @@
 package com.github.games647.fastlogin.listener;
 
 import com.github.games647.fastlogin.FastLogin;
-import com.github.games647.fastlogin.PlayerData;
+import com.github.games647.fastlogin.PlayerSession;
+import com.github.games647.fastlogin.hooks.AuthPlugin;
 
-import de.luricos.bukkit.xAuth.xAuth;
-import de.luricos.bukkit.xAuth.xAuthPlayer;
-import de.luricos.bukkit.xAuth.xAuthPlayer.Status;
-
-import fr.xephi.authme.api.NewAPI;
-import fr.xephi.authme.cache.limbo.LimboCache;
-
-import java.sql.Timestamp;
+import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -21,9 +15,11 @@ import org.bukkit.event.player.PlayerJoinEvent;
 public class PlayerListener implements Listener {
 
     private final FastLogin plugin;
+    private final AuthPlugin authPlugin;
 
-    public PlayerListener(FastLogin plugin) {
+    public PlayerListener(FastLogin plugin, AuthPlugin authPlugin) {
         this.plugin = plugin;
+        this.authPlugin = authPlugin;
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -31,32 +27,17 @@ public class PlayerListener implements Listener {
         final Player player = joinEvent.getPlayer();
         String address = player.getAddress().toString();
 
-        PlayerData session = plugin.getSession().asMap().get(address);
-        if (session != null && session.getUsername().equals(player.getName())) {
+        PlayerSession session = plugin.getSessions().get(address);
+        //check if it's the same player as we checked before
+        if (session != null && session.getUsername().equals(player.getName())
+                && session.isVerified()) {
             Bukkit.getScheduler().runTaskLater(plugin, () -> {
-                doLogin(player);
+                if (player.isOnline()) {
+                    plugin.getLogger().log(Level.FINER, "Logging player {0} in", player.getName());
+                    authPlugin.forceLogin(player);
+                }
+                //Wait before auth plugin initializes the player
             }, 1 * 20L);
-        }
-    }
-
-    private void doLogin(Player player) {
-        if (Bukkit.getPluginManager().isPluginEnabled("AuthMe")) {
-            //add cache entry - otherwise loggin wouldn't work
-            LimboCache.getInstance().addLimboPlayer(player);
-
-            //skips registration and login
-            NewAPI.getInstance().forceLogin(player);
-        } else if (Bukkit.getPluginManager().isPluginEnabled("xAuth")) {
-            xAuth xAuthPlugin = xAuth.getPlugin();
-
-            xAuthPlayer xAuthPlayer = xAuthPlugin.getPlayerManager().getPlayer(player);
-            xAuthPlayer.setPremium(true);
-            xAuthPlugin.getAuthClass(xAuthPlayer).online(xAuthPlayer.getName());
-            xAuthPlayer.setLoginTime(new Timestamp(System.currentTimeMillis()));
-
-            xAuthPlayer.setStatus(Status.AUTHENTICATED);
-
-            xAuthPlugin.getPlayerManager().unprotect(xAuthPlayer);
         }
     }
 }

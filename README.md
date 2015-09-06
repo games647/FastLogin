@@ -9,3 +9,5 @@ Requirements:
 * An auth plugin. Supported Plugins:
     * [AuthMe](http://dev.bukkit.org/bukkit-plugins/authme-reloaded/)
     * [xAuth](http://dev.bukkit.org/bukkit-plugins/xauth/)
+    * [CrazyLogin](http://dev.bukkit.org/bukkit-plugins/crazylogin/)
+    * [LoginSecurity](http://dev.bukkit.org/bukkit-plugins/loginsecurity/)
