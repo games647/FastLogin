@@ -8,11 +8,11 @@
     <packaging>jar</packaging>
 
     <name>FastLogin</name>
-    <version>0.1</version>
+    <version>0.2</version>
     <inceptionYear>2015</inceptionYear>
     <url>http://dev.bukkit.org/bukkit-plugins/fastlogin</url>
     <description>
-        Automatically logins premium player on a offline mode server
+        Automatically logins premium (paid accounts) player on a offline mode server
     </description>
 
     <properties>
@@ -43,7 +43,6 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.2</version>
                 <configuration>
-                    <!--So many people still use Java 6 ;( http://mcstats.org/global/#Java+Version-->
                     <source>1.8</source>
                     <target>1.8</target>
                     <showWarnings>true</showWarnings>
@@ -110,7 +109,7 @@
         <!--Server API-->
         <dependency>
             <groupId>org.spigotmc</groupId>
-            <artifactId>spigot</artifactId>
+            <artifactId>spigot-api</artifactId>
             <version>1.8.8-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
@@ -119,7 +118,7 @@
         <dependency>
             <groupId>com.comphenix.protocol</groupId>
             <artifactId>ProtocolLib</artifactId>
-            <version>3.6.3-SNAPSHOT</version>
+            <version>3.6.5-SNAPSHOT</version>
             <optional>true</optional>
         </dependency>
 
@@ -134,6 +133,7 @@
             <groupId>de.luricos.bukkit</groupId>
             <artifactId>xAuth</artifactId>
             <version>2.6</version>
+            <!--These artifacts produce conflicts on downloading-->
             <exclusions>
                 <exclusion>
                     <groupId>net.gravitydevelopment.updater</groupId>
@@ -144,6 +144,30 @@
                     <artifactId>EssentialsGroupManager</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>de.st_ddt.crazy</groupId>
+            <artifactId>CrazyCore</artifactId>
+            <version>10.7.7</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/CrazyCore v10.7.7.jar</systemPath>
+        </dependency>
+
+        <dependency>
+            <groupId>de.st_ddt.crazy</groupId>
+            <artifactId>CrazyLogin</artifactId>
+            <version>7.23</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/CrazyLogin v7.23.2.jar</systemPath>
+        </dependency>
+
+        <dependency>
+            <groupId>me.lenis0012.ls</groupId>
+            <artifactId>LoginSecurity</artifactId>
+            <version>2.0.10</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/LoginSecurity v2.0.10.jar</systemPath>
         </dependency>
     </dependencies>
 </project>
