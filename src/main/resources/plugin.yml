@@ -17,3 +17,16 @@ softdepend:
     - AuthMe
     - CrazyLogin
     - LoginSecurity
+
+commands:
+    premium:
+        description: 'Marks the invoker or the player specified as premium'
+        aliases: [prem, fastlogin, loginfast]
+        usage: /<command> [player]
+
+permissions:
+    ${project.artifactId}.command.premium:
+        description: 'Mark themselves as premium using a command'
+        default: true
+    ${project.artifactId}.command.premium.others:
+        description: 'Mark other people as premium'

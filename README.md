@@ -1,6 +1,6 @@
 # FastLogin
 
-Checks if a minecraft player has a valid paid account. If so, they can skip offline authentification.
+Checks if a minecraft player has a valid premium (paid account). If so, they can skip offline authentification.
 
 Requirements:
 * [ProtocolLib](http://www.spigotmc.org/resources/protocollib.1997/)

@@ -82,7 +82,8 @@ public class StartPacketListener extends PacketAdapter {
     }
 
     private boolean isPremium(String playerName) {
-        if (playernameMatcher.matcher(playerName).matches()) {
+        //check if it's a valid playername and the user activated fast logins
+        if (playernameMatcher.matcher(playerName).matches() && plugin.getEnabledPremium().contains(playerName)) {
             //only make a API call if the name is valid existing mojang account
             try {
                 HttpURLConnection connection = plugin.getConnection(UUID_LINK + playerName);
@@ -93,12 +94,14 @@ public class StartPacketListener extends PacketAdapter {
             } catch (IOException ex) {
                 plugin.getLogger().log(Level.SEVERE, "Failed to check if player has a paid account", ex);
             }
+            //this connection doesn't need to be closed. So can make use of keep alive in java
         }
 
         return false;
     }
 
     private void sentEncryptionRequest(String sessionKey, String username, Player player, PacketEvent packetEvent) {
+        plugin.getLogger().log(Level.FINER, "Player {0} uses a premium username", username);
         try {
             /**
              * Packet Information: http://wiki.vg/Protocol#Encryption_Request
