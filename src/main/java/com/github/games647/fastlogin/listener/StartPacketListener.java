@@ -29,6 +29,7 @@ public class StartPacketListener extends PacketAdapter {
 
     //only premium (paid account) users have a uuid from there
     private static final String UUID_LINK = "https://api.mojang.com/users/profiles/minecraft/";
+    //this includes a-zA-Z1-9_
     private static final String VALID_PLAYERNAME = "^\\w{2,16}$";
 
     private final ProtocolManager protocolManager;
