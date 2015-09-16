@@ -23,6 +23,7 @@ commands:
         description: 'Marks the invoker or the player specified as premium'
         aliases: [prem, fastlogin, loginfast]
         usage: /<command> [player]
+        permission: ${project.artifactId}.command.premium
 
 permissions:
     ${project.artifactId}.command.premium:

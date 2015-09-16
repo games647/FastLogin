@@ -7,7 +7,7 @@ import org.bukkit.entity.Player;
 
 /**
  * Github: https://github.com/Xephi/AuthMeReloaded/
- * Project page: dev.bukkit.org/bukkit-plugins/authme-reloaded/
+ * Project page: http://dev.bukkit.org/bukkit-plugins/authme-reloaded/
  */
 public class AuthMeHook implements AuthPlugin {
 

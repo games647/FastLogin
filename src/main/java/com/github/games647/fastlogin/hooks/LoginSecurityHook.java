@@ -8,7 +8,8 @@ import org.bukkit.entity.Player;
  * Github: http://dev.bukkit.org/bukkit-plugins/loginsecurity/
  * Project page: https://github.com/lenis0012/LoginSecurity-2
  *
- * on join: https://github.com/lenis0012/LoginSecurity-2/blob/master/src/main/java/com/lenis0012/bukkit/ls/LoginSecurity.java#L282
+ * on join:
+ * https://github.com/lenis0012/LoginSecurity-2/blob/master/src/main/java/com/lenis0012/bukkit/ls/LoginSecurity.java#L282
  */
 public class LoginSecurityHook implements AuthPlugin {
 
