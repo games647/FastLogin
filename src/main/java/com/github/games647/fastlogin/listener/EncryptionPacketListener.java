@@ -7,6 +7,7 @@ import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.injector.server.TemporaryPlayerFactory;
 import com.comphenix.protocol.reflect.FuzzyReflection;
+import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
 import com.github.games647.fastlogin.Encryption;
 import com.github.games647.fastlogin.FastLogin;
@@ -137,12 +138,27 @@ public class EncryptionPacketListener extends PacketAdapter {
         packetEvent.setCancelled(true);
     }
 
-    private void disconnect(PacketEvent packetEvent, String kickMessage, Level logLevel, String logMessage
+    private void disconnect(PacketEvent packetEvent, String kickReason, Level logLevel, String logMessage
             , Object... arguments) {
         plugin.getLogger().log(logLevel, logMessage, arguments);
-        packetEvent.getPlayer().kickPlayer(kickMessage);
+        kickPlayer(packetEvent.getPlayer(), kickReason);
         //cancel the event in order to prevent the server receiving an invalid packet
         packetEvent.setCancelled(true);
+    }
+
+    private void kickPlayer(Player player, String reason) {
+        PacketContainer kickPacket = protocolManager.createPacket(PacketType.Login.Server.DISCONNECT);
+        kickPacket.getChatComponents().write(0, WrappedChatComponent.fromText(reason));
+
+        try {
+            //send kick packet at login state
+            //the normal event.getPlayer.kickPlayer(String) method does only work at play state
+            protocolManager.sendServerPacket(player, kickPacket);
+            //tell the server that we want to close the connection
+            player.kickPlayer("Disconnect");
+        } catch (InvocationTargetException ex) {
+            plugin.getLogger().log(Level.SEVERE, "Error sending kickpacket", ex);
+        }
     }
 
     private Object getNetworkManager(Player player)
@@ -178,8 +194,8 @@ public class EncryptionPacketListener extends PacketAdapter {
             //catch not only ioexceptions also parse and NPE on unexpected json format
             plugin.getLogger().log(Level.WARNING, "Failed to verify if session is valid", ex);
         }
-        //this connection doesn't need to be closed. So can make use of keep alive in java
 
+        //this connection doesn't need to be closed. So can make use of keep alive in java
         return false;
     }
 
@@ -191,11 +207,12 @@ public class EncryptionPacketListener extends PacketAdapter {
         WrappedGameProfile fakeProfile = WrappedGameProfile.fromOfflinePlayer(Bukkit.getOfflinePlayer(username));
         startPacket.getGameProfiles().write(0, fakeProfile);
         try {
+            //we don't want to handle our own packets so ignore filters
             protocolManager.recieveClientPacket(from, startPacket, false);
         } catch (InvocationTargetException | IllegalAccessException ex) {
             plugin.getLogger().log(Level.WARNING, "Failed to fake a new start packet", ex);
             //cancel the event in order to prevent the server receiving an invalid packet
-            from.kickPlayer("Error occurred");
+            kickPlayer(from, "Error occured");
         }
     }
 }

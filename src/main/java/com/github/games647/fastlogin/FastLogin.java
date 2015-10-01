@@ -149,7 +149,7 @@ public class FastLogin extends JavaPlugin {
         }
 
         if (authPluginHook == null) {
-            //run this check for exceptions and not found plugins
+            //run this check for exceptions (errors) and not found plugins
             getLogger().warning("No support offline Auth plugin found. ");
             getLogger().warning("Disabling this plugin...");
 
