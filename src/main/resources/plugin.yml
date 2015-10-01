@@ -19,9 +19,9 @@ softdepend:
     - LoginSecurity
 
 commands:
-    premium:
+    ${project.artifactId}.:
         description: 'Marks the invoker or the player specified as premium'
-        aliases: [prem, fastlogin, loginfast]
+        aliases: [prem, premium, loginfast]
         usage: /<command> [player]
         permission: ${project.artifactId}.command.premium
 

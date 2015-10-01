@@ -75,7 +75,7 @@ public class StartPacketListener extends PacketAdapter {
         plugin.getLogger().log(Level.FINER, "Player {0} with {1} connecting to the server"
                 , new Object[]{sessionKey, username});
         //do premium login process
-        if (isPremium(username)) {
+        if (plugin.getEnabledPremium().contains(username) && isPremium(username)) {
             //minecraft server implementation
             //https://github.com/bergerkiller/CraftSource/blob/master/net.minecraft.server/LoginListener.java#L161
             sentEncryptionRequest(sessionKey, username, player, packetEvent);
@@ -84,7 +84,7 @@ public class StartPacketListener extends PacketAdapter {
 
     private boolean isPremium(String playerName) {
         //check if it's a valid playername and the user activated fast logins
-        if (playernameMatcher.matcher(playerName).matches() && plugin.getEnabledPremium().contains(playerName)) {
+        if (playernameMatcher.matcher(playerName).matches()) {
             //only make a API call if the name is valid existing mojang account
             try {
                 HttpURLConnection connection = plugin.getConnection(UUID_LINK + playerName);
@@ -119,7 +119,7 @@ public class StartPacketListener extends PacketAdapter {
             random.nextBytes(verifyToken);
             newPacket.getByteArrays().write(0, verifyToken);
 
-            protocolManager.sendServerPacket(player, newPacket, false);
+            protocolManager.sendServerPacket(player, newPacket);
 
             //cancel only if the player has a paid account otherwise login as normal offline player
             packetEvent.setCancelled(true);

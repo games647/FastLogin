@@ -32,11 +32,13 @@ public class PlayerListener implements Listener {
         //check if it's the same player as we checked before
         if (session != null && session.getUsername().equals(player.getName())
                 && session.isVerified()) {
+//java 8
 //            Bukkit.getScheduler().runTaskLater(plugin, () -> {
 //                if (player.isOnline()) {
 //                    plugin.getLogger().log(Level.FINER, "Logging player {0} in", player.getName());
 //                    authPlugin.forceLogin(player);
 //                }
+            //java 7+
             Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
 
                 @Override
@@ -47,7 +49,7 @@ public class PlayerListener implements Listener {
                     }
                 }
                 //Wait before auth plugin initializes the player
-            }, 1 * 20L);
+            }, 2 * 20L);
         }
     }
 }
