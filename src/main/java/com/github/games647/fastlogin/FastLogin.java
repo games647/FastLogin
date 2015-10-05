@@ -22,12 +22,17 @@ import java.util.logging.Level;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
+/**
+ * This plugin checks if a player has a paid account and if so
+ * tries to skip offline mode authentication.
+ */
 public class FastLogin extends JavaPlugin {
 
-    private static final int TIMEOUT = 15000;
+    //http connection, read timeout and user agent for a connection to mojang api servers
+    private static final int TIMEOUT = 10 * 1000;
     private static final String USER_AGENT = "Premium-Checker";
 
-    //provide a immutable key pair to be thread safe
+    //provide a immutable key pair to be thread safe | used for encrypting and decrypting traffic
     private final KeyPair keyPair = Encryption.generateKeyPair();
 
     //we need a thread-safe set because we access it async in the packet listener
@@ -36,9 +41,9 @@ public class FastLogin extends JavaPlugin {
     //this map is thread-safe for async access (Packet Listener)
     //SafeCacheBuilder is used in order to be version independent
     private final ConcurrentMap<String, PlayerSession> session = SafeCacheBuilder.<String, PlayerSession>newBuilder()
-            //mapped by ip:port
-            .expireAfterWrite(2, TimeUnit.MINUTES)
             //2 minutes should be enough as a timeout for bad internet connection (Server, Client and Mojang)
+            .expireAfterWrite(2, TimeUnit.MINUTES)
+            //mapped by ip:port -> PlayerSession
             .build(new CacheLoader<String, PlayerSession>() {
 
                 @Override
@@ -52,6 +57,7 @@ public class FastLogin extends JavaPlugin {
     public void onLoad() {
         //online mode is only changeable after a restart so check it here
         if (getServer().getOnlineMode()) {
+            //we need to require offline to prevent a session request for a offline player
             getLogger().severe("Server have to be in offline mode");
 
             setEnabled(false);
@@ -69,8 +75,8 @@ public class FastLogin extends JavaPlugin {
         protocolManager.addPacketListener(new EncryptionPacketListener(this, protocolManager));
         protocolManager.addPacketListener(new StartPacketListener(this, protocolManager));
 
-        //register commands
-        getCommand("premium").setExecutor(new PremiumCommand(this));
+        //register commands using a unique name
+        getCommand(getName()).setExecutor(new PremiumCommand(this));
     }
 
     @Override
@@ -81,8 +87,8 @@ public class FastLogin extends JavaPlugin {
     }
 
     /**
-     * Gets a thread-safe map about players which are connecting to the server are being checked to be premium (paid
-     * account)
+     * Gets a thread-safe map about players which are connecting to the server are being
+     * checked to be premium (paid account)
      *
      * @return a thread-safe session map
      */
@@ -91,7 +97,8 @@ public class FastLogin extends JavaPlugin {
     }
 
     /**
-     * Gets the server KeyPair
+     * Gets the server KeyPair. This is used to encrypt or decrypt traffic between
+     * the client and server
      *
      * @return the server KeyPair
      */
@@ -157,7 +164,7 @@ public class FastLogin extends JavaPlugin {
             return false;
         }
 
-        //We found a supporting plugin - we can now register a forwarding listener
+        //We found a supporting plugin - we can now register a forwarding listener to skip authentication from them
         getServer().getPluginManager().registerEvents(new PlayerListener(this, authPluginHook), this);
         return true;
     }

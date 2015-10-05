@@ -12,6 +12,11 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
+/**
+ * This listener tells authentication plugins if the player
+ * has a premium account and we checked it successfully. So the
+ * plugin can skip authentication.
+ */
 public class PlayerListener implements Listener {
 
     private final FastLogin plugin;
@@ -30,15 +35,7 @@ public class PlayerListener implements Listener {
         //removing the session because we now use it
         PlayerSession session = plugin.getSessions().remove(address);
         //check if it's the same player as we checked before
-        if (session != null && session.getUsername().equals(player.getName())
-                && session.isVerified()) {
-//java 8
-//            Bukkit.getScheduler().runTaskLater(plugin, () -> {
-//                if (player.isOnline()) {
-//                    plugin.getLogger().log(Level.FINER, "Logging player {0} in", player.getName());
-//                    authPlugin.forceLogin(player);
-//                }
-            //java 7+
+        if (session != null && player.getName().equals(session.getUsername()) && session.isVerified()) {
             Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
 
                 @Override

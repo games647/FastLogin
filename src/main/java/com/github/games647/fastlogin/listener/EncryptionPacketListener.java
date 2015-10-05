@@ -22,16 +22,24 @@ import java.math.BigInteger;
 import java.net.HttpURLConnection;
 import java.security.PrivateKey;
 import java.util.Arrays;
+import java.util.UUID;
 import java.util.logging.Level;
 
 import javax.crypto.SecretKey;
 
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
 /**
+ * Handles incoming encryption responses from connecting clients.
+ * It prevents them from reaching the server because that cannot handle
+ * it in offline mode.
+ *
+ * Moreover this manages a started premium check from
+ * this plugin. So check if all data is correct and we can prove him as a
+ * owner of a paid minecraft account.
+ *
  * Receiving packet information:
  * http://wiki.vg/Protocol#Encryption_Response
  *
@@ -40,6 +48,7 @@ import org.json.simple.JSONValue;
  */
 public class EncryptionPacketListener extends PacketAdapter {
 
+    //mojang api check to prove a player is logged in minecraft and made a join server request
     private static final String HAS_JOINED_URL = "https://sessionserver.mojang.com/session/minecraft/hasJoined?";
 
     private final ProtocolManager protocolManager;
@@ -73,18 +82,18 @@ public class EncryptionPacketListener extends PacketAdapter {
         PacketContainer packet = packetEvent.getPacket();
         Player player = packetEvent.getPlayer();
 
-        //the player name is unknown to ProtocolLib - now uses ip:port as key
+        //the player name is unknown to ProtocolLib (so getName() doesn't work) - now uses ip:port as key
         String uniqueSessionKey = player.getAddress().toString();
         PlayerSession session = plugin.getSessions().get(uniqueSessionKey);
         if (session == null) {
             disconnect(packetEvent, "Invalid request", Level.FINE
-                    , "Player {0} tried to send encryption response"
-                            + "on an invalid connection state"
+                    , "Player {0} tried to send encryption response on an invalid connection state"
                     , player.getAddress());
             return;
         }
 
         byte[] sharedSecret = packet.getByteArrays().read(0);
+        //encrypted verify token
         byte[] clientVerify = packet.getByteArrays().read(1);
 
         PrivateKey privateKey = plugin.getKeyPair().getPrivate();
@@ -123,13 +132,12 @@ public class EncryptionPacketListener extends PacketAdapter {
 
         String username = session.getUsername();
         if (hasJoinedServer(username, serverId)) {
-            session.setVerified(true);
-
             plugin.getLogger().log(Level.FINE, "Player {0} has a verified premium account", username);
 
+            session.setVerified(true);
             receiveFakeStartPacket(username, player);
         } else {
-            //user tried to fake a authentification
+            //user tried to fake a authentication
             disconnect(packetEvent, "Invalid session", Level.FINE
                     , "Player {0} ({1}) tried to log in with an invalid session ServerId: {2}"
                     , session.getUsername(), player.getAddress(), serverId);
@@ -161,6 +169,7 @@ public class EncryptionPacketListener extends PacketAdapter {
         }
     }
 
+    //try to get the networkManager from ProtocolLib
     private Object getNetworkManager(Player player)
             throws SecurityException, IllegalAccessException, NoSuchFieldException {
         Object injector = TemporaryPlayerFactory.getInjectorFromPlayer(player);
@@ -184,9 +193,14 @@ public class EncryptionPacketListener extends PacketAdapter {
             String line = reader.readLine();
             if (!line.equals("null")) {
                 //validate parsing
-                JSONObject object = (JSONObject) JSONValue.parseWithException(line);
-                String uuid = (String) object.get("id");
-                String name = (String) object.get("name");
+                //http://wiki.vg/Protocol_Encryption#Server
+                JSONObject userData = (JSONObject) JSONValue.parseWithException(line);
+                String uuid = (String) userData.get("id");
+                String name = (String) userData.get("name");
+
+                JSONObject properties = (JSONObject) userData.get("properties");
+                //base64 encoded skin data
+                String encodedSkin = (String) properties.get("value");
 
                 return true;
             }
@@ -199,12 +213,12 @@ public class EncryptionPacketListener extends PacketAdapter {
         return false;
     }
 
+    //fake a new login packet in order to let the server handle all the other stuff
     private void receiveFakeStartPacket(String username, Player from) {
-        //fake a new login packet
         //see StartPacketListener for packet information
         PacketContainer startPacket = protocolManager.createPacket(PacketType.Login.Client.START, true);
 
-        WrappedGameProfile fakeProfile = WrappedGameProfile.fromOfflinePlayer(Bukkit.getOfflinePlayer(username));
+        WrappedGameProfile fakeProfile = new WrappedGameProfile(UUID.randomUUID(), username);
         startPacket.getGameProfiles().write(0, fakeProfile);
         try {
             //we don't want to handle our own packets so ignore filters
