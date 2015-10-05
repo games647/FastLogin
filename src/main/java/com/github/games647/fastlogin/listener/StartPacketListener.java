@@ -20,6 +20,11 @@ import java.util.regex.Pattern;
 import org.bukkit.entity.Player;
 
 /**
+ * Handles incoming start packets from connecting clients. It
+ * checks if we can start checking if the player is premium and
+ * start a request to the client that it should start online mode
+ * login.
+ *
  * Receiving packet information:
  * http://wiki.vg/Protocol#Login_Start
  *
@@ -27,7 +32,7 @@ import org.bukkit.entity.Player;
  */
 public class StartPacketListener extends PacketAdapter {
 
-    //only premium (paid account) users have a uuid from there
+    //only premium (paid account) users have a uuid from here
     private static final String UUID_LINK = "https://api.mojang.com/users/profiles/minecraft/";
     //this includes a-zA-Z1-9_
     private static final String VALID_PLAYERNAME = "^\\w{2,16}$";
@@ -42,7 +47,7 @@ public class StartPacketListener extends PacketAdapter {
     private final Pattern playernameMatcher = Pattern.compile(VALID_PLAYERNAME);
 
     public StartPacketListener(FastLogin plugin, ProtocolManager protocolManger) {
-        //run async in order to not block the server, because we make api calls to Mojang
+        //run async in order to not block the server, because we are making api calls to Mojang
         super(params(plugin, PacketType.Login.Client.START).optionAsync());
 
         this.plugin = plugin;
@@ -65,16 +70,16 @@ public class StartPacketListener extends PacketAdapter {
         PacketContainer packet = packetEvent.getPacket();
         Player player = packetEvent.getPlayer();
 
-        //this includes ip and port. Should be unique for 2 Minutes
+        //this includes ip:port. Should be unique for an incoming login request with a timeout of 2 minutes
         String sessionKey = player.getAddress().toString();
 
         //remove old data every time on a new login in order to keep the session only for one person
         plugin.getSessions().remove(sessionKey);
 
+        //player.getName() won't work at this state
         String username = packet.getGameProfiles().read(0).getName();
         plugin.getLogger().log(Level.FINER, "Player {0} with {1} connecting to the server"
                 , new Object[]{sessionKey, username});
-        //do premium login process
         if (plugin.getEnabledPremium().contains(username) && isPremium(username)) {
             //minecraft server implementation
             //https://github.com/bergerkiller/CraftSource/blob/master/net.minecraft.server/LoginListener.java#L161
@@ -83,7 +88,7 @@ public class StartPacketListener extends PacketAdapter {
     }
 
     private boolean isPremium(String playerName) {
-        //check if it's a valid playername and the user activated fast logins
+        //check if it's a valid playername
         if (playernameMatcher.matcher(playerName).matches()) {
             //only make a API call if the name is valid existing mojang account
             try {
@@ -115,6 +120,7 @@ public class StartPacketListener extends PacketAdapter {
                     .createPacket(PacketType.Login.Server.ENCRYPTION_BEGIN, true);
 
             newPacket.getSpecificModifier(PublicKey.class).write(0, plugin.getKeyPair().getPublic());
+            //generate a random token which should be the same when we receive it from the client
             byte[] verifyToken = new byte[4];
             random.nextBytes(verifyToken);
             newPacket.getByteArrays().write(0, verifyToken);

@@ -6,6 +6,11 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+/**
+ * Let users activate fast login by command. This only be accessible if
+ * the user has access to it's account. So we can make sure that not another
+ * person with a paid account and the same username can steal his account.
+ */
 public class PremiumCommand implements CommandExecutor {
 
     private final FastLogin plugin;
