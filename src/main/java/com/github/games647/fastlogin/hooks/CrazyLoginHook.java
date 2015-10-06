@@ -21,6 +21,7 @@ public class CrazyLoginHook implements AuthPlugin {
         if (playerData == null) {
             //create a fake account - this will be saved to the database with the password=FAILEDLOADING
             //user cannot login with that password unless the admin uses plain text
+            //this automatically marks the player as logged in
             playerData = new LoginPlayerData(player);
             crazyDatabase.save(playerData);
         } else {

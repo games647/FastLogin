@@ -18,6 +18,8 @@ import org.bukkit.event.player.PlayerJoinEvent;
  * plugin can skip authentication.
  */
 public class PlayerListener implements Listener {
+    
+    private static final long DELAY_LOGIN = 1 * 20L;
 
     private final FastLogin plugin;
     private final AuthPlugin authPlugin;
@@ -46,7 +48,7 @@ public class PlayerListener implements Listener {
                     }
                 }
                 //Wait before auth plugin initializes the player
-            }, 2 * 20L);
+            }, DELAY_LOGIN);
         }
     }
 }

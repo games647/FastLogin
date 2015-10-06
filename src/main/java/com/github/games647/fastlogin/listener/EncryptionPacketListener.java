@@ -28,6 +28,7 @@ import java.util.logging.Level;
 import javax.crypto.SecretKey;
 
 import org.bukkit.entity.Player;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
@@ -198,9 +199,10 @@ public class EncryptionPacketListener extends PacketAdapter {
                 String uuid = (String) userData.get("id");
                 String name = (String) userData.get("name");
 
-                JSONObject properties = (JSONObject) userData.get("properties");
+                JSONArray properties = (JSONArray) userData.get("properties");
+                JSONObject skinData = (JSONObject) properties.get(0);
                 //base64 encoded skin data
-                String encodedSkin = (String) properties.get("value");
+                String encodedSkin = (String) skinData.get("value");
 
                 return true;
             }
@@ -218,6 +220,7 @@ public class EncryptionPacketListener extends PacketAdapter {
         //see StartPacketListener for packet information
         PacketContainer startPacket = protocolManager.createPacket(PacketType.Login.Client.START, true);
 
+        //uuid is ignored
         WrappedGameProfile fakeProfile = new WrappedGameProfile(UUID.randomUUID(), username);
         startPacket.getGameProfiles().write(0, fakeProfile);
         try {

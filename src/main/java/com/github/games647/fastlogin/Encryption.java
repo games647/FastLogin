@@ -24,7 +24,8 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 /**
- * Encryption and decryption minecraft util for connection between servers and paid minecraft account clients
+ * Encryption and decryption minecraft util for connection between servers
+ * and paid minecraft account clients.
  *
  * Source: https://github.com/bergerkiller/CraftSource/blob/master/net.minecraft.server/MinecraftEncryption.java
  *

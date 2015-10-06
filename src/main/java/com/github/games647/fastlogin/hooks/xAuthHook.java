@@ -19,18 +19,20 @@ public class xAuthHook implements AuthPlugin {
         xAuth xAuthPlugin = xAuth.getPlugin();
 
         xAuthPlayer xAuthPlayer = xAuthPlugin.getPlayerManager().getPlayer(player);
-        //we checked that the player is premium (paid account)
-        xAuthPlayer.setPremium(true);
-        //mark the player online
-        xAuthPlugin.getAuthClass(xAuthPlayer).online(xAuthPlayer.getName());
+        if (xAuthPlayer != null) {
+            //we checked that the player is premium (paid account)
+            xAuthPlayer.setPremium(true);
+            //mark the player online
+            xAuthPlugin.getAuthClass(xAuthPlayer).online(xAuthPlayer.getName());
 
-        //update last login time
-        xAuthPlayer.setLoginTime(new Timestamp(System.currentTimeMillis()));
+            //update last login time
+            xAuthPlayer.setLoginTime(new Timestamp(System.currentTimeMillis()));
 
-        //mark the player as logged in
-        xAuthPlayer.setStatus(Status.AUTHENTICATED);
+            //mark the player as logged in
+            xAuthPlayer.setStatus(Status.AUTHENTICATED);
 
-        //restore inventory
-        xAuthPlugin.getPlayerManager().unprotect(xAuthPlayer);
+            //restore inventory
+            xAuthPlugin.getPlayerManager().unprotect(xAuthPlayer);
+        }
     }
 }
