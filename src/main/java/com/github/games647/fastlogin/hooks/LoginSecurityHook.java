@@ -24,7 +24,7 @@ public class LoginSecurityHook implements AuthPlugin {
         securityPlugin.authList.remove(name);
         //cancel timeout timer
         securityPlugin.thread.timeout.remove(name);
-        //remove effects
+        //remove effects and restore location
         securityPlugin.rehabPlayer(player, name);
     }
 }

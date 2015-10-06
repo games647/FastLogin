@@ -36,12 +36,13 @@ public class StartPacketListener extends PacketAdapter {
     private static final String UUID_LINK = "https://api.mojang.com/users/profiles/minecraft/";
     //this includes a-zA-Z1-9_
     private static final String VALID_PLAYERNAME = "^\\w{2,16}$";
+    private static final int VERIFY_TOKEN_LENGTH = 4;
 
     private final ProtocolManager protocolManager;
     //hides the inherit Plugin plugin field, but we need a more detailed type than just Plugin
     private final FastLogin plugin;
 
-    //just create a new once on plugin enable
+    //just create a new once on plugin enable. This used for verify token generation
     private final Random random = new Random();
     //compile the pattern on plugin enable
     private final Pattern playernameMatcher = Pattern.compile(VALID_PLAYERNAME);
@@ -121,15 +122,15 @@ public class StartPacketListener extends PacketAdapter {
 
             newPacket.getSpecificModifier(PublicKey.class).write(0, plugin.getKeyPair().getPublic());
             //generate a random token which should be the same when we receive it from the client
-            byte[] verifyToken = new byte[4];
+            byte[] verifyToken = new byte[VERIFY_TOKEN_LENGTH];
             random.nextBytes(verifyToken);
             newPacket.getByteArrays().write(0, verifyToken);
 
             protocolManager.sendServerPacket(player, newPacket);
 
             //cancel only if the player has a paid account otherwise login as normal offline player
-            packetEvent.setCancelled(true);
             plugin.getSessions().put(sessionKey, new PlayerSession(verifyToken, username));
+            packetEvent.setCancelled(true);
         } catch (InvocationTargetException ex) {
             plugin.getLogger().log(Level.SEVERE, "Cannot send encryption packet. Falling back to normal login", ex);
         }

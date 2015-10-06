@@ -76,7 +76,7 @@ public class FastLogin extends JavaPlugin {
         protocolManager.addPacketListener(new StartPacketListener(this, protocolManager));
 
         //register commands using a unique name
-        getCommand(getName()).setExecutor(new PremiumCommand(this));
+        getCommand("premium").setExecutor(new PremiumCommand(this));
     }
 
     @Override
@@ -145,6 +145,7 @@ public class FastLogin extends JavaPlugin {
                 Class<?> clazz = clazzInfo.load();
                 //uses only member classes which uses AuthPlugin interface (skip interfaces)
                 if (AuthPlugin.class.isAssignableFrom(clazz)
+                        //check only for enabled plugins. A single plugin could be disabled by plugin managers
                         && getServer().getPluginManager().isPluginEnabled(pluginName)) {
                     authPluginHook = (AuthPlugin) clazz.newInstance();
                     getLogger().log(Level.INFO, "Hooking into auth plugin: {0}", pluginName);
