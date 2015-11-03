@@ -33,7 +33,7 @@ public class FastLogin extends JavaPlugin {
     private static final String USER_AGENT = "Premium-Checker";
 
     //provide a immutable key pair to be thread safe | used for encrypting and decrypting traffic
-    private final KeyPair keyPair = Encryption.generateKeyPair();
+    private final KeyPair keyPair = EncryptionUtil.generateKeyPair();
 
     //we need a thread-safe set because we access it async in the packet listener
     private final Set<String> enabledPremium = Sets.newConcurrentHashSet();
@@ -102,7 +102,7 @@ public class FastLogin extends JavaPlugin {
      *
      * @return the server KeyPair
      */
-    public KeyPair getKeyPair() {
+    public KeyPair getServerKey() {
         return keyPair;
     }
 

@@ -9,7 +9,7 @@ import com.comphenix.protocol.injector.server.TemporaryPlayerFactory;
 import com.comphenix.protocol.reflect.FuzzyReflection;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
-import com.github.games647.fastlogin.Encryption;
+import com.github.games647.fastlogin.EncryptionUtil;
 import com.github.games647.fastlogin.FastLogin;
 import com.github.games647.fastlogin.PlayerSession;
 
@@ -80,7 +80,6 @@ public class EncryptionPacketListener extends PacketAdapter {
      */
     @Override
     public void onPacketReceiving(PacketEvent packetEvent) {
-        PacketContainer packet = packetEvent.getPacket();
         Player player = packetEvent.getPlayer();
 
         //the player name is unknown to ProtocolLib (so getName() doesn't work) - now uses ip:port as key
@@ -88,48 +87,23 @@ public class EncryptionPacketListener extends PacketAdapter {
         PlayerSession session = plugin.getSessions().get(uniqueSessionKey);
         if (session == null) {
             disconnect(packetEvent, "Invalid request", Level.FINE
-                    , "Player {0} tried to send encryption response on an invalid connection state"
+                    , "Player {0} tried to send encryption response at invalid state"
                     , player.getAddress());
             return;
         }
 
-        byte[] sharedSecret = packet.getByteArrays().read(0);
-        //encrypted verify token
-        byte[] clientVerify = packet.getByteArrays().read(1);
+        PrivateKey privateKey = plugin.getServerKey().getPrivate();
 
-        PrivateKey privateKey = plugin.getKeyPair().getPrivate();
-        byte[] serverVerify = session.getVerifyToken();
-        //https://github.com/bergerkiller/CraftSource/blob/master/net.minecraft.server/LoginListener.java#L182
-        if (!Arrays.equals(serverVerify, Encryption.decryptData(privateKey, clientVerify))) {
-            //check if the verify token are equal to the server sent one
-            disconnect(packetEvent, "Invalid token", Level.FINE
-                    , "Player {0} ({1}) tried to login with an invalid verify token. "
-                            + "Server: {2} Client: {3}"
-                    , session.getUsername(), player.getAddress(), serverVerify, clientVerify);
-            return;
-        }
-
-        SecretKey loginKey = Encryption.decryptSharedKey(privateKey, sharedSecret);
-        try {
-            //get the NMS connection handle of this player
-            Object networkManager = getNetworkManager(player);
-
-            //try to detect the method by parameters
-            Method encryptConnectionMethod = FuzzyReflection.fromObject(networkManager)
-                    .getMethodByParameters("a", SecretKey.class);
-
-            //encrypt/decrypt following packets
-            //the client expects this behaviour
-            encryptConnectionMethod.invoke(networkManager, loginKey);
-        } catch (ReflectiveOperationException ex) {
-            disconnect(packetEvent, "Error occurred", Level.SEVERE, "Couldn't enable encryption", ex);
+        byte[] sharedSecret = packetEvent.getPacket().getByteArrays().read(0);
+        SecretKey loginKey = EncryptionUtil.decryptSharedKey(privateKey, sharedSecret);
+        if (!checkVerifyToken(session, privateKey, packetEvent) || !encryptConnection(player, loginKey, packetEvent)) {
             return;
         }
 
         //https://github.com/bergerkiller/CraftSource/blob/master/net.minecraft.server/LoginListener.java#L193
         //generate the server id based on client and server data
-        String serverId = (new BigInteger(Encryption.getServerIdHash("", plugin.getKeyPair().getPublic(), loginKey)))
-                .toString(16);
+        byte[] serverIdHash = EncryptionUtil.getServerIdHash("", plugin.getServerKey().getPublic(), loginKey);
+        String serverId = (new BigInteger(serverIdHash)).toString(16);
 
         String username = session.getUsername();
         if (hasJoinedServer(username, serverId)) {
@@ -144,7 +118,61 @@ public class EncryptionPacketListener extends PacketAdapter {
                     , session.getUsername(), player.getAddress(), serverId);
         }
 
+        //this is a fake packet; it shouldn't be send to the server
         packetEvent.setCancelled(true);
+    }
+
+    private boolean checkVerifyToken(PlayerSession session, PrivateKey privateKey, PacketEvent packetEvent) {
+        byte[] requestVerify = session.getVerifyToken();
+        //encrypted verify token
+        byte[] responseVerify = packetEvent.getPacket().getByteArrays().read(1);
+
+        //https://github.com/bergerkiller/CraftSource/blob/master/net.minecraft.server/LoginListener.java#L182
+        if (!Arrays.equals(requestVerify, EncryptionUtil.decryptData(privateKey, responseVerify))) {
+            //check if the verify token are equal to the server sent one
+            disconnect(packetEvent, "Invalid token", Level.FINE
+                    , "Player {0} ({1}) tried to login with an invalid verify token. "
+                            + "Server: {2} Client: {3}"
+                    , session.getUsername(), packetEvent.getPlayer().getAddress(), requestVerify, responseVerify);
+            return false;
+        }
+
+        return true;
+    }
+
+    //try to get the networkManager from ProtocolLib
+    private Object getNetworkManager(Player player)
+            throws IllegalAccessException, NoSuchFieldException {
+        Object injector = TemporaryPlayerFactory.getInjectorFromPlayer(player);
+        Field injectorField = injector.getClass().getDeclaredField("injector");
+        injectorField.setAccessible(true);
+
+        Object rawInjector = injectorField.get(injector);
+
+        injectorField = rawInjector.getClass().getDeclaredField("networkManager");
+        injectorField.setAccessible(true);
+        return injectorField.get(rawInjector);
+    }
+
+    private boolean encryptConnection(Player player, SecretKey loginKey, PacketEvent packetEvent)
+            throws IllegalArgumentException {
+        try {
+            //get the NMS connection handle of this player
+            Object networkManager = getNetworkManager(player);
+
+            //try to detect the method by parameters
+            Method encryptConnectionMethod = FuzzyReflection.fromObject(networkManager)
+                    .getMethodByParameters("a", SecretKey.class);
+
+            //encrypt/decrypt following packets
+            //the client expects this behaviour
+            encryptConnectionMethod.invoke(networkManager, loginKey);
+        } catch (ReflectiveOperationException ex) {
+            disconnect(packetEvent, "Error occurred", Level.SEVERE, "Couldn't enable encryption", ex);
+            return false;
+        }
+
+        return true;
     }
 
     private void disconnect(PacketEvent packetEvent, String kickReason, Level logLevel, String logMessage
@@ -170,20 +198,6 @@ public class EncryptionPacketListener extends PacketAdapter {
         }
     }
 
-    //try to get the networkManager from ProtocolLib
-    private Object getNetworkManager(Player player)
-            throws SecurityException, IllegalAccessException, NoSuchFieldException {
-        Object injector = TemporaryPlayerFactory.getInjectorFromPlayer(player);
-        Field injectorField = injector.getClass().getDeclaredField("injector");
-        injectorField.setAccessible(true);
-
-        Object rawInjector = injectorField.get(injector);
-
-        injectorField = rawInjector.getClass().getDeclaredField("networkManager");
-        injectorField.setAccessible(true);
-        return injectorField.get(rawInjector);
-    }
-
     private boolean hasJoinedServer(String username, String serverId) {
         try {
             String url = HAS_JOINED_URL + "username=" + username + "&serverId=" + serverId;
@@ -192,7 +206,7 @@ public class EncryptionPacketListener extends PacketAdapter {
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
             String line = reader.readLine();
-            if (!line.equals("null")) {
+            if (!"null".equals(line)) {
                 //validate parsing
                 //http://wiki.vg/Protocol_Encryption#Server
                 JSONObject userData = (JSONObject) JSONValue.parseWithException(line);
@@ -220,7 +234,7 @@ public class EncryptionPacketListener extends PacketAdapter {
         //see StartPacketListener for packet information
         PacketContainer startPacket = protocolManager.createPacket(PacketType.Login.Client.START, true);
 
-        //uuid is ignored
+        //uuid is ignored by the packet definition
         WrappedGameProfile fakeProfile = new WrappedGameProfile(UUID.randomUUID(), username);
         startPacket.getGameProfiles().write(0, fakeProfile);
         try {

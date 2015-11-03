@@ -68,7 +68,6 @@ public class StartPacketListener extends PacketAdapter {
      */
     @Override
     public void onPacketReceiving(PacketEvent packetEvent) {
-        PacketContainer packet = packetEvent.getPacket();
         Player player = packetEvent.getPlayer();
 
         //this includes ip:port. Should be unique for an incoming login request with a timeout of 2 minutes
@@ -78,17 +77,18 @@ public class StartPacketListener extends PacketAdapter {
         plugin.getSessions().remove(sessionKey);
 
         //player.getName() won't work at this state
+        PacketContainer packet = packetEvent.getPacket();
         String username = packet.getGameProfiles().read(0).getName();
         plugin.getLogger().log(Level.FINER, "Player {0} with {1} connecting to the server"
                 , new Object[]{sessionKey, username});
-        if (plugin.getEnabledPremium().contains(username) && isPremium(username)) {
+        if (plugin.getEnabledPremium().contains(username) && isPremiumName(username)) {
             //minecraft server implementation
             //https://github.com/bergerkiller/CraftSource/blob/master/net.minecraft.server/LoginListener.java#L161
             sentEncryptionRequest(sessionKey, username, player, packetEvent);
         }
     }
 
-    private boolean isPremium(String playerName) {
+    private boolean isPremiumName(String playerName) {
         //check if it's a valid playername
         if (playernameMatcher.matcher(playerName).matches()) {
             //only make a API call if the name is valid existing mojang account
@@ -120,12 +120,13 @@ public class StartPacketListener extends PacketAdapter {
             PacketContainer newPacket = protocolManager
                     .createPacket(PacketType.Login.Server.ENCRYPTION_BEGIN, true);
 
-            newPacket.getSpecificModifier(PublicKey.class).write(0, plugin.getKeyPair().getPublic());
+            newPacket.getSpecificModifier(PublicKey.class).write(0, plugin.getServerKey().getPublic());
             //generate a random token which should be the same when we receive it from the client
             byte[] verifyToken = new byte[VERIFY_TOKEN_LENGTH];
             random.nextBytes(verifyToken);
             newPacket.getByteArrays().write(0, verifyToken);
 
+            //serverId is a empty string
             protocolManager.sendServerPacket(player, newPacket);
 
             //cancel only if the player has a paid account otherwise login as normal offline player

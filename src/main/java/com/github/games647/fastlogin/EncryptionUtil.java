@@ -31,23 +31,23 @@ import javax.crypto.spec.SecretKeySpec;
  *
  * Remapped by: https://github.com/Techcable/MinecraftMappings/tree/master/1.8
  */
-public class Encryption {
+public class EncryptionUtil {
 
     public static KeyPair generateKeyPair() {
         try {
-            KeyPairGenerator keypairgenerator = KeyPairGenerator.getInstance("RSA");
+            KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
 
-            keypairgenerator.initialize(1024);
-            return keypairgenerator.generateKeyPair();
+            keyPairGenerator.initialize(1024);
+            return keyPairGenerator.generateKeyPair();
         } catch (NoSuchAlgorithmException nosuchalgorithmexception) {
             //Should be existing in every vm
-            return null;
+            throw new ExceptionInInitializerError(nosuchalgorithmexception);
         }
     }
 
-    public static byte[] getServerIdHash(String serverId, PublicKey publickey, SecretKey secretkey) {
+    public static byte[] getServerIdHash(String serverId, PublicKey publicKey, SecretKey secretKey) {
         return digestOperation("SHA-1"
-                , new byte[][]{serverId.getBytes(Charsets.ISO_8859_1), secretkey.getEncoded(), publickey.getEncoded()});
+                , new byte[][]{serverId.getBytes(Charsets.ISO_8859_1), secretKey.getEncoded(), publicKey.getEncoded()});
     }
 
     private static byte[] digestOperation(String algo, byte[]... content) {
@@ -66,24 +66,24 @@ public class Encryption {
 
     public static PublicKey decodePublicKey(byte[] encodedKey) {
         try {
-            X509EncodedKeySpec x509encodedkeyspec = new X509EncodedKeySpec(encodedKey);
             KeyFactory keyfactory = KeyFactory.getInstance("RSA");
 
+            X509EncodedKeySpec x509encodedkeyspec = new X509EncodedKeySpec(encodedKey);
             return keyfactory.generatePublic(x509encodedkeyspec);
         } catch (NoSuchAlgorithmException | InvalidKeySpecException nosuchalgorithmexception) {
-            ;
+            //ignore
         }
 
         System.err.println("Public key reconstitute failed!");
         return null;
     }
 
-    public static SecretKey decryptSharedKey(PrivateKey privatekey, byte[] encryptedSharedKey) {
-        return new SecretKeySpec(decryptData(privatekey, encryptedSharedKey), "AES");
+    public static SecretKey decryptSharedKey(PrivateKey privateKey, byte[] encryptedSharedKey) {
+        return new SecretKeySpec(decryptData(privateKey, encryptedSharedKey), "AES");
     }
 
-    public static byte[] decryptData(Key key, byte[] abyte) {
-        return cipherOperation(Cipher.DECRYPT_MODE, key, abyte);
+    public static byte[] decryptData(Key key, byte[] data) {
+        return cipherOperation(Cipher.DECRYPT_MODE, key, data);
     }
 
     private static byte[] cipherOperation(int operationMode, Key key, byte[] data) {
@@ -122,7 +122,7 @@ public class Encryption {
         }
     }
 
-    private Encryption() {
+    private EncryptionUtil() {
         //utility
     }
 }
