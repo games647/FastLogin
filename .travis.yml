@@ -1,0 +1,15 @@
+# Use https://travis-ci.org/ for automatic tests
+
+# speed up testing http://blog.travis-ci.com/2014-12-17-faster-builds-with-container-based-infrastructure/
+sudo: false
+
+# This is a java project
+language: java
+
+script: mvn compile test
+
+# We run on 7+
+jdk:
+  - openjdk7
+  - oraclejdk7
+  - oraclejdk8

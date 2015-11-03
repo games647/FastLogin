@@ -117,8 +117,7 @@ public class StartPacketListener extends PacketAdapter {
              * key=public server key
              * verifyToken=random 4 byte array
              */
-            PacketContainer newPacket = protocolManager
-                    .createPacket(PacketType.Login.Server.ENCRYPTION_BEGIN, true);
+            PacketContainer newPacket = protocolManager.createPacket(PacketType.Login.Server.ENCRYPTION_BEGIN, true);
 
             newPacket.getSpecificModifier(PublicKey.class).write(0, plugin.getServerKey().getPublic());
             //generate a random token which should be the same when we receive it from the client

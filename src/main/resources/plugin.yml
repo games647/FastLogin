@@ -11,7 +11,9 @@ description: |
 website: ${project.url}
 dev-url: ${project.url}
 
+# Without Protocollib the plugin does not work at all
 depend: [ProtocolLib]
+# Auth plugins
 softdepend:
     - xAuth
     - AuthMe
@@ -20,14 +22,14 @@ softdepend:
 
 commands:
     ${project.artifactId}.:
-        description: 'Marks the invoker or the player specified as premium'
+        description: 'Label the invoker or the player specified as premium'
         aliases: [prem, premium, loginfast]
         usage: /<command> [player]
         permission: ${project.artifactId}.command.premium
 
 permissions:
     ${project.artifactId}.command.premium:
-        description: 'Mark themselves as premium using a command'
+        description: 'Label themselves as premium using a command'
         default: true
     ${project.artifactId}.command.premium.others:
-        description: 'Mark other people as premium'
+        description: 'Label other people as premium'
