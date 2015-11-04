@@ -100,9 +100,13 @@ public class EncryptionPacketListener extends PacketAdapter {
             return;
         }
 
+        //this makes sure the request from the client is for us
+        //this might be relevant http://www.sk89q.com/2011/09/minecraft-name-spoofing-exploit/
+        String generatedId = session.getServerId();
+
         //https://github.com/bergerkiller/CraftSource/blob/master/net.minecraft.server/LoginListener.java#L193
         //generate the server id based on client and server data
-        byte[] serverIdHash = EncryptionUtil.getServerIdHash("", plugin.getServerKey().getPublic(), loginKey);
+        byte[] serverIdHash = EncryptionUtil.getServerIdHash(generatedId, plugin.getServerKey().getPublic(), loginKey);
         String serverId = (new BigInteger(serverIdHash)).toString(16);
 
         String username = session.getUsername();
@@ -206,7 +210,7 @@ public class EncryptionPacketListener extends PacketAdapter {
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
             String line = reader.readLine();
-            if (!"null".equals(line)) {
+            if (line != null && !line.equals("null")) {
                 //validate parsing
                 //http://wiki.vg/Protocol_Encryption#Server
                 JSONObject userData = (JSONObject) JSONValue.parseWithException(line);
@@ -222,7 +226,7 @@ public class EncryptionPacketListener extends PacketAdapter {
             }
         } catch (Exception ex) {
             //catch not only ioexceptions also parse and NPE on unexpected json format
-            plugin.getLogger().log(Level.WARNING, "Failed to verify if session is valid", ex);
+            plugin.getLogger().log(Level.WARNING, "Failed to verify session", ex);
         }
 
         //this connection doesn't need to be closed. So can make use of keep alive in java

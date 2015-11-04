@@ -8,7 +8,7 @@
     <packaging>jar</packaging>
 
     <name>FastLogin</name>
-    <version>0.2.3</version>
+    <version>0.2.4</version>
     <inceptionYear>2015</inceptionYear>
     <url>https://github.com/games647/FastLogin</url>
     <description>

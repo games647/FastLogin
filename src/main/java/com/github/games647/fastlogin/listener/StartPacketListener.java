@@ -119,6 +119,10 @@ public class StartPacketListener extends PacketAdapter {
              */
             PacketContainer newPacket = protocolManager.createPacket(PacketType.Login.Server.ENCRYPTION_BEGIN, true);
 
+            //randomized server id to make sure the request is for our server
+            //this could be relevant http://www.sk89q.com/2011/09/minecraft-name-spoofing-exploit/
+            String serverId = Long.toString(random.nextLong(), 16);
+            newPacket.getStrings().write(0, serverId);
             newPacket.getSpecificModifier(PublicKey.class).write(0, plugin.getServerKey().getPublic());
             //generate a random token which should be the same when we receive it from the client
             byte[] verifyToken = new byte[VERIFY_TOKEN_LENGTH];
@@ -129,7 +133,7 @@ public class StartPacketListener extends PacketAdapter {
             protocolManager.sendServerPacket(player, newPacket);
 
             //cancel only if the player has a paid account otherwise login as normal offline player
-            plugin.getSessions().put(sessionKey, new PlayerSession(verifyToken, username));
+            plugin.getSessions().put(sessionKey, new PlayerSession(username, serverId, verifyToken));
             packetEvent.setCancelled(true);
         } catch (InvocationTargetException ex) {
             plugin.getLogger().log(Level.SEVERE, "Cannot send encryption packet. Falling back to normal login", ex);

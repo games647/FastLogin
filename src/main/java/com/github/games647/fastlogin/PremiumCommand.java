@@ -34,17 +34,6 @@ public class PremiumCommand implements CommandExecutor {
             return true;
         }
 
-        if (sender.hasPermission(plugin.getName() + ".command." + command.getName() + ".others")) {
-            String playerName = args[0];
-            //todo check if valid username
-            plugin.getEnabledPremium().add(playerName);
-            sender.sendMessage(ChatColor.DARK_GREEN + "Added "
-                    + ChatColor.DARK_BLUE + ChatColor.BOLD + playerName
-                    + ChatColor.RESET + ChatColor.DARK_GREEN + " to the list of premium players");
-        } else {
-            sender.sendMessage(ChatColor.DARK_RED + "Not enough permissions");
-        }
-
         return true;
     }
 }

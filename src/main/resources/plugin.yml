@@ -31,5 +31,3 @@ permissions:
     ${project.artifactId}.command.premium:
         description: 'Label themselves as premium using a command'
         default: true
-    ${project.artifactId}.command.premium.others:
-        description: 'Label other people as premium'

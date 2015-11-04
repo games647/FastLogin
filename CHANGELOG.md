@@ -1,3 +1,9 @@
+######0.2.4
+
+* Fixed NPE on invalid sessions
+* Improved security by generating a randomized serverId
+* Removed /premium [player] because it's safer for premium players who join without registration
+
 ######0.2.3
 
 * Remove useless AuthMe forcelogin code

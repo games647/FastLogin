@@ -1,5 +1,7 @@
 # FastLogin
 
+[![Build Status](https://travis-ci.org/games647/FastLogin.svg?branch=master)](https://travis-ci.org/games647/FastLogin)
+
 Checks if a minecraft player has a paid account (premium). If so, they can skip offline authentication (auth plugins).
 So they don't need to enter passwords. This is also called auto login.
 
@@ -8,16 +10,15 @@ So they don't need to enter passwords. This is also called auto login.
 * Automatically login paid accounts (premium)
 * Support various of auth plugins
 * Experimental Cauldron support
+* No client modifications needed
 
 ***
 
 ###Commands:
 * /premium Label the invoker as paid account
-* /premium [playername] Label specified player as a paid account
 
 ###Permissions:
 * fastlogin.command.premium
-* fastlogin.command.premium.others
 
 ###Requirements:
 * Plugin: [ProtocolLib](http://www.spigotmc.org/resources/protocollib.1997/)
@@ -32,7 +33,7 @@ So they don't need to enter passwords. This is also called auto login.
 
 ###Downloads
 
-https://github.com/games647/FastLogin/releases
+https://www.spigotmc.org/resources/fastlogin.14153/history
 
 ***
 
@@ -97,11 +98,14 @@ Yes, indeed. Therefore the command for toggling the fast login method exists.
 
 ####Why do players have to invoke a command?
 1. It's a secure way to make sure a person with a paid account cannot steal the account
-of a cracked player that has the same username.
+of a cracked player that has the same username. The player have to proof first that it's his own account.
 2. We only receive the username from the player on login. We could check if that username is associated
 to a paid account but if we request a online mode login from a cracked player (who uses a username from
 a paid account), the player will disconnect with the reason bad login. There is no way to change that message
 on the server side (without client modifications), because it's a connection between the Client and the Sessionserver.
+3. If a premium player would skip registration too, a player of a cracked account could later still register the
+account and would claim and steal the account from the premium player. Because commands cannot be invoked unless the
+player has a account or is logged in, protects this method also premium players
 
 ###What happens if a paid account joins with a used username?
 The player on the server have to activate the feature of this plugin by command. If a person buys the username
