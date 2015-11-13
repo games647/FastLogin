@@ -10,7 +10,10 @@ So they don't need to enter passwords. This is also called auto login.
 * Automatically login paid accounts (premium)
 * Support various of auth plugins
 * Experimental Cauldron support
+* BungeeCord support
 * No client modifications needed
+* Good performance by async non blocking operations
+* Free
 
 ***
 
@@ -114,16 +117,22 @@ and Mojang account. Then the command can be executed. So someone different canno
 by buying the username.
 
 ####Does the plugin have BungeeCord support?
-Not yet, but I'm planning this.
+Yes it has. Just activate ipForward in your BungeeCord config and place the plugin in the plugins folder of
+Bukkit/Spigot and BungeeCord. This plugin will automatically detect if BungeeCord is running and so handle checks
+there.
 
 ####Could premium players have a premium UUID and Skin?
 Something like that is possible, but is not yet implemented.
 
 ####Is this plugin compatible with Cauldron?
-It's not yet tested, but all needed methods also exists in Cauldron so it could work together
+It's not tested yet, but all needed methods also exists in Cauldron so it could work together.
 
 ***
 
 ###Useful Links:
 * [Login Protocol](http://wiki.vg/Protocol#Login)
 * [Protocol Encryption](http://wiki.vg/Protocol_Encryption)
+
+###Donate
+
+[![Donate Button](https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=8ZBULMAPN7MZC)

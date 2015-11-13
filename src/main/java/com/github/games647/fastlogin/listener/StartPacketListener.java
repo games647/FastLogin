@@ -68,7 +68,7 @@ public class StartPacketListener extends PacketAdapter {
      */
     @Override
     public void onPacketReceiving(PacketEvent packetEvent) {
-        Player player = packetEvent.getPlayer();
+        final Player player = packetEvent.getPlayer();
 
         //this includes ip:port. Should be unique for an incoming login request with a timeout of 2 minutes
         String sessionKey = player.getAddress().toString();
@@ -81,7 +81,8 @@ public class StartPacketListener extends PacketAdapter {
         String username = packet.getGameProfiles().read(0).getName();
         plugin.getLogger().log(Level.FINER, "Player {0} with {1} connecting to the server"
                 , new Object[]{sessionKey, username});
-        if (plugin.getEnabledPremium().contains(username) && isPremiumName(username)) {
+        if (!plugin.getBungeeCordUsers().containsKey(player)
+                && plugin.getEnabledPremium().contains(username) && isPremiumName(username)) {
             //minecraft server implementation
             //https://github.com/bergerkiller/CraftSource/blob/master/net.minecraft.server/LoginListener.java#L161
             sentEncryptionRequest(sessionKey, username, player, packetEvent);
@@ -117,7 +118,7 @@ public class StartPacketListener extends PacketAdapter {
              * key=public server key
              * verifyToken=random 4 byte array
              */
-            PacketContainer newPacket = protocolManager.createPacket(PacketType.Login.Server.ENCRYPTION_BEGIN, true);
+            PacketContainer newPacket = protocolManager.createPacket(PacketType.Login.Server.ENCRYPTION_BEGIN);
 
             //randomized server id to make sure the request is for our server
             //this could be relevant http://www.sk89q.com/2011/09/minecraft-name-spoofing-exploit/

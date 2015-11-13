@@ -4,11 +4,11 @@
 
     <groupId>com.github.games647</groupId>
     <!--This have to be in lowercase because it's used by plugin.yml-->
-    <artifactId>fastlogin</artifactId>
+    <artifactId>fastloginbungee</artifactId>
     <packaging>jar</packaging>
 
     <name>FastLogin</name>
-    <version>0.3</version>
+    <version>0.1</version>
     <inceptionYear>2015</inceptionYear>
     <url>https://github.com/games647/FastLogin</url>
     <description>
@@ -80,101 +80,20 @@
     </build>
 
     <repositories>
-        <!--Bukkit-Server-API -->
+        <!-- BungeeCord -->
         <repository>
-            <id>spigot-repo</id>
-            <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
-        </repository>
-
-        <!--ProtocolLib-->
-        <repository>
-            <id>dmulloy2-repo</id>
-            <url>http://repo.dmulloy2.net/content/groups/public/</url>
-        </repository>
-
-        <!--Authme Reloaded-->
-        <repository>
-            <id>xephi-repo</id>
-            <url>http://ci.xephi.fr/plugin/repository/everything/</url>
-        </repository>
-
-        <!--xAuth-->
-        <repository>
-            <id>luricos.de-repo</id>
-            <url>http://repo.luricos.de/bukkit-plugins/</url>
+            <id>bungeecord-repo</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
         </repository>
     </repositories>
 
     <dependencies>
-        <!--Server API-->
         <dependency>
-            <groupId>org.spigotmc</groupId>
-            <artifactId>spigot-api</artifactId>
-            <version>1.8.8-R0.1-SNAPSHOT</version>
+            <groupId>net.md-5</groupId>
+            <artifactId>bungeecord-api</artifactId>
+            <version>1.8-SNAPSHOT</version>
+            <type>jar</type>
             <scope>provided</scope>
-        </dependency>
-
-        <!--Library for listening and sending Minecraft packets-->
-        <dependency>
-            <groupId>com.comphenix.protocol</groupId>
-            <artifactId>ProtocolLib</artifactId>
-            <version>3.6.5-SNAPSHOT</version>
-            <optional>true</optional>
-        </dependency>
-
-        <!--Login Plugins-->
-        <dependency>
-            <groupId>fr.xephi</groupId>
-            <artifactId>authme</artifactId>
-            <version>5.1-SNAPSHOT</version>
-            <optional>true</optional>
-        </dependency>
-
-        <dependency>
-            <groupId>de.luricos.bukkit</groupId>
-            <artifactId>xAuth</artifactId>
-            <version>2.6</version>
-            <optional>true</optional>
-            <!--These artifacts produce conflicts on downloading-->
-            <exclusions>
-                <exclusion>
-                    <groupId>net.gravitydevelopment.updater</groupId>
-                    <artifactId>updater</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>net.ess3</groupId>
-                    <artifactId>EssentialsGroupManager</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-        <!--No maven repository :(-->
-        <dependency>
-            <groupId>de.st_ddt.crazy</groupId>
-            <artifactId>CrazyCore</artifactId>
-            <version>10.7.7</version>
-            <optional>true</optional>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/lib/CrazyCore v10.7.7.jar</systemPath>
-        </dependency>
-
-        <dependency>
-            <groupId>de.st_ddt.crazy</groupId>
-            <artifactId>CrazyLogin</artifactId>
-            <version>7.23</version>
-            <optional>true</optional>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/lib/CrazyLogin v7.23.2.jar</systemPath>
-        </dependency>
-
-        <!--Maven repo down :(-->
-        <dependency>
-            <groupId>me.lenis0012.ls</groupId>
-            <artifactId>LoginSecurity</artifactId>
-            <version>2.0.10</version>
-            <optional>true</optional>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/lib/LoginSecurity v2.0.10.jar</systemPath>
         </dependency>
     </dependencies>
 </project>

@@ -147,11 +147,11 @@ public class EncryptionPacketListener extends PacketAdapter {
     //try to get the networkManager from ProtocolLib
     private Object getNetworkManager(Player player)
             throws IllegalAccessException, NoSuchFieldException {
-        Object injector = TemporaryPlayerFactory.getInjectorFromPlayer(player);
-        Field injectorField = injector.getClass().getDeclaredField("injector");
+        Object socketInjector = TemporaryPlayerFactory.getInjectorFromPlayer(player);
+        Field injectorField = socketInjector.getClass().getDeclaredField("injector");
         injectorField.setAccessible(true);
 
-        Object rawInjector = injectorField.get(injector);
+        Object rawInjector = injectorField.get(socketInjector);
 
         injectorField = rawInjector.getClass().getDeclaredField("networkManager");
         injectorField.setAccessible(true);
@@ -236,7 +236,7 @@ public class EncryptionPacketListener extends PacketAdapter {
     //fake a new login packet in order to let the server handle all the other stuff
     private void receiveFakeStartPacket(String username, Player from) {
         //see StartPacketListener for packet information
-        PacketContainer startPacket = protocolManager.createPacket(PacketType.Login.Client.START, true);
+        PacketContainer startPacket = protocolManager.createPacket(PacketType.Login.Client.START);
 
         //uuid is ignored by the packet definition
         WrappedGameProfile fakeProfile = new WrappedGameProfile(UUID.randomUUID(), username);

@@ -1,5 +1,7 @@
 package com.github.games647.fastlogin;
 
+import org.apache.commons.lang.ArrayUtils;
+
 /**
  * Represents a client connecting to the server.
  *
@@ -15,7 +17,7 @@ public class PlayerSession {
     public PlayerSession(String username, String serverId, byte[] verifyToken) {
         this.username = username;
         this.serverId = serverId;
-        this.verifyToken = verifyToken;
+        this.verifyToken = ArrayUtils.clone(verifyToken);
     }
 
     /**
@@ -37,7 +39,7 @@ public class PlayerSession {
      * @return the verify token from the server
      */
     public byte[] getVerifyToken() {
-        return verifyToken;
+        return ArrayUtils.clone(verifyToken);
     }
 
     /**

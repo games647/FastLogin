@@ -1,3 +1,9 @@
+#####0.3
+
+* Added BungeeCord support
+* Decrease timeout checks in order to fail faster on connection problems
+* Code style improvements
+
 ######0.2.4
 
 * Fixed NPE on invalid sessions
