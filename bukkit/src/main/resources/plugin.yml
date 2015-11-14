@@ -1,6 +1,6 @@
 # project informations for Bukkit in order to register our plugin with all it components
-# ${project.name} are variables from Maven (pom.xml) which will be replaced after the build
-name: ${project.name}
+# ${-} are variables from Maven (pom.xml) which will be replaced after the build
+name: ${project.parent.name}
 version: ${project.version}
 main: ${project.groupId}.${project.artifactId}.${project.name}
 
@@ -21,13 +21,13 @@ softdepend:
     - LoginSecurity
 
 commands:
-    ${project.artifactId}.:
+    ${project.parent.name}:
         description: 'Label the invoker or the player specified as premium'
         aliases: [prem, premium, loginfast]
         usage: /<command> [player]
         permission: ${project.artifactId}.command.premium
 
 permissions:
-    ${project.artifactId}.command.premium:
+    ${project.parent.name}.command.premium:
         description: 'Label themselves as premium using a command'
         default: true

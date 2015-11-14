@@ -1,4 +1,4 @@
-package com.github.games647.fastlogin;
+package com.github.games647.fastlogin.bukkit;
 
 import com.google.common.base.Charsets;
 

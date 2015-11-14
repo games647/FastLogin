@@ -1,4 +1,4 @@
-package com.github.games647.fastlogin.hooks;
+package com.github.games647.fastlogin.bukkit.hooks;
 
 import de.luricos.bukkit.xAuth.xAuth;
 import de.luricos.bukkit.xAuth.xAuthPlayer;

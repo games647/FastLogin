@@ -1,4 +1,4 @@
-package com.github.games647.fastlogin.hooks;
+package com.github.games647.fastlogin.bukkit.hooks;
 
 import de.st_ddt.crazylogin.CrazyLogin;
 import de.st_ddt.crazylogin.data.LoginPlayerData;

@@ -1,5 +1,7 @@
-package com.github.games647.fastlogin;
+package com.github.games647.fastlogin.bukkit;
 
+import com.google.common.io.ByteArrayDataOutput;
+import com.google.common.io.ByteStreams;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -13,9 +15,9 @@ import org.bukkit.entity.Player;
  */
 public class PremiumCommand implements CommandExecutor {
 
-    private final FastLogin plugin;
+    private final FastLoginBukkit plugin;
 
-    public PremiumCommand(FastLogin plugin) {
+    public PremiumCommand(FastLoginBukkit plugin) {
         this.plugin = plugin;
     }
 
@@ -31,9 +33,17 @@ public class PremiumCommand implements CommandExecutor {
             String playerName = sender.getName();
             plugin.getEnabledPremium().add(playerName);
             sender.sendMessage(ChatColor.DARK_GREEN + "Added to the list of premium players");
+            notifiyBungeeCord((Player) sender);
             return true;
         }
 
         return true;
+    }
+
+    private void notifiyBungeeCord(Player target) {
+        ByteArrayDataOutput dataOutput = ByteStreams.newDataOutput();
+        dataOutput.writeUTF("ACTIVE");
+
+        target.sendPluginMessage(plugin, plugin.getName(), dataOutput.toByteArray());
     }
 }

@@ -1,12 +1,12 @@
-package com.github.games647.fastlogin.listener;
+package com.github.games647.fastlogin.bukkit.listener;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
-import com.github.games647.fastlogin.FastLogin;
-import com.github.games647.fastlogin.PlayerSession;
+import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
+import com.github.games647.fastlogin.bukkit.PlayerSession;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -40,14 +40,14 @@ public class StartPacketListener extends PacketAdapter {
 
     private final ProtocolManager protocolManager;
     //hides the inherit Plugin plugin field, but we need a more detailed type than just Plugin
-    private final FastLogin plugin;
+    private final FastLoginBukkit plugin;
 
     //just create a new once on plugin enable. This used for verify token generation
     private final Random random = new Random();
     //compile the pattern on plugin enable
     private final Pattern playernameMatcher = Pattern.compile(VALID_PLAYERNAME);
 
-    public StartPacketListener(FastLogin plugin, ProtocolManager protocolManger) {
+    public StartPacketListener(FastLoginBukkit plugin, ProtocolManager protocolManger) {
         //run async in order to not block the server, because we are making api calls to Mojang
         super(params(plugin, PacketType.Login.Client.START).optionAsync());
 

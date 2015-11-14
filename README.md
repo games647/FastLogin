@@ -3,7 +3,7 @@
 [![Build Status](https://travis-ci.org/games647/FastLogin.svg?branch=master)](https://travis-ci.org/games647/FastLogin)
 
 Checks if a minecraft player has a paid account (premium). If so, they can skip offline authentication (auth plugins).
-So they don't need to enter passwords. This is also called auto login.
+So they don't need to enter passwords. This is also called auto login (auto-login).
 
 ###Features:
 * Detect paid accounts from others
@@ -12,8 +12,9 @@ So they don't need to enter passwords. This is also called auto login.
 * Experimental Cauldron support
 * BungeeCord support
 * No client modifications needed
-* Good performance by async non blocking operations
+* Good performance by using async non blocking operations
 * Free
+* Open source
 
 ***
 
@@ -118,8 +119,10 @@ by buying the username.
 
 ####Does the plugin have BungeeCord support?
 Yes it has. Just activate ipForward in your BungeeCord config and place the plugin in the plugins folder of
-Bukkit/Spigot and BungeeCord. This plugin will automatically detect if BungeeCord is running and so handle checks
-there.
+Bukkit/Spigot and BungeeCord. Then you have fill your BungeeCord Id (from the Stats-Option in the BungeeCord config)
+into the whitelist file of your Bukkit/Spigot server. For security reasons, don't post this Id on Forums.
+
+This plugin will automatically detect if BungeeCord is running and handle premium checks on BungeeCord.
 
 ####Could premium players have a premium UUID and Skin?
 Something like that is possible, but is not yet implemented.

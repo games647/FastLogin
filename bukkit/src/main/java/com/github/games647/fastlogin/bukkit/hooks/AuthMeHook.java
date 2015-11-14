@@ -1,4 +1,4 @@
-package com.github.games647.fastlogin.hooks;
+package com.github.games647.fastlogin.bukkit.hooks;
 
 import fr.xephi.authme.api.NewAPI;
 

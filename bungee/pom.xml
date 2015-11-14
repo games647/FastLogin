@@ -2,82 +2,19 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.github.games647</groupId>
+    <parent>
+        <groupId>com.github.games647</groupId>
+        <artifactId>fastlogin-parent</artifactId>
+        <version>0.3</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
     <!--This have to be in lowercase because it's used by plugin.yml-->
-    <artifactId>fastloginbungee</artifactId>
+    <artifactId>fastlogin.bungee</artifactId>
     <packaging>jar</packaging>
 
-    <name>FastLogin</name>
-    <version>0.1</version>
-    <inceptionYear>2015</inceptionYear>
-    <url>https://github.com/games647/FastLogin</url>
-    <description>
-        Automatically logins premium (paid accounts) player on a offline mode server
-    </description>
-
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <!--Possibility to deploy directly to the plugins folder-->
-        <outputDir>${basedir}/target</outputDir>
-    </properties>
-
-    <issueManagement>
-        <system>GitHub</system>
-        <url>https://github.com/games647/FastLogin/issues</url>
-    </issueManagement>
-
-    <scm>
-        <url>https://github.com/games647/FastLogin</url>
-        <connection>scm:git:git://github.com/games647/FastLogin.git</connection>
-        <developerConnection>scm:git:ssh://git@github.com:games647/FastLogin.git</developerConnection>
-    </scm>
-
-    <build>
-        <defaultGoal>install</defaultGoal>
-        <!--Just use the project name to replace an old version of the plugin if the user does only copy-paste-->
-        <finalName>${project.name}</finalName>
-
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.2</version>
-                <configuration>
-                    <source>1.7</source>
-                    <target>1.7</target>
-                    <showWarnings>true</showWarnings>
-                    <showDeprecation>true</showDeprecation>
-                    <!--false means actual true http://jira.codehaus.org/browse/MCOMPILER-209-->
-                    <useIncrementalCompilation>false</useIncrementalCompilation>
-                </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>2.6</version>
-                <configuration>
-                    <outputDirectory>${outputDir}</outputDirectory>
-                </configuration>
-            </plugin>
-        </plugins>
-
-        <resources>
-            <resource>
-                <directory>src/main/resources</directory>
-                <!--Replace variables-->
-                <filtering>true</filtering>
-            </resource>
-
-            <!--Add the license to jar in order to see it in the final jar-->
-            <resource>
-                <directory>${basedir}</directory>
-                <includes>
-                    <include>LICENSE</include>
-                </includes>
-            </resource>
-        </resources>
-    </build>
+    <!--Represents the main plugin-->
+    <name>FastLoginBungee</name>
 
     <repositories>
         <!-- BungeeCord -->

@@ -4,22 +4,26 @@
 
     <groupId>com.github.games647</groupId>
     <!--This have to be in lowercase because it's used by plugin.yml-->
-    <artifactId>fastlogin</artifactId>
-    <packaging>jar</packaging>
+    <artifactId>fastlogin-parent</artifactId>
+    <packaging>pom</packaging>
 
     <name>FastLogin</name>
     <version>0.3</version>
     <inceptionYear>2015</inceptionYear>
-    <url>https://github.com/games647/FastLogin</url>
+    <url>https://www.spigotmc.org/resources/fastlogin.14153/</url>
     <description>
         Automatically logins premium (paid accounts) player on a offline mode server
     </description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <!--Possibility to deploy directly to the plugins folder-->
-        <outputDir>${basedir}/target</outputDir>
     </properties>
+
+    <modules>
+        <module>bukkit</module>
+        <module>bungee</module>
+        <module>universal</module>
+    </modules>
 
     <issueManagement>
         <system>GitHub</system>
@@ -41,7 +45,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.2</version>
+                <version>3.3</version>
                 <configuration>
                     <source>1.7</source>
                     <target>1.7</target>
@@ -49,15 +53,6 @@
                     <showDeprecation>true</showDeprecation>
                     <!--false means actual true http://jira.codehaus.org/browse/MCOMPILER-209-->
                     <useIncrementalCompilation>false</useIncrementalCompilation>
-                </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>2.6</version>
-                <configuration>
-                    <outputDirectory>${outputDir}</outputDirectory>
                 </configuration>
             </plugin>
         </plugins>
@@ -71,110 +66,12 @@
 
             <!--Add the license to jar in order to see it in the final jar-->
             <resource>
-                <directory>${basedir}</directory>
+                <!--Parent folder-->
+                <directory>${basedir}/..</directory>
                 <includes>
                     <include>LICENSE</include>
                 </includes>
             </resource>
         </resources>
     </build>
-
-    <repositories>
-        <!--Bukkit-Server-API -->
-        <repository>
-            <id>spigot-repo</id>
-            <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
-        </repository>
-
-        <!--ProtocolLib-->
-        <repository>
-            <id>dmulloy2-repo</id>
-            <url>http://repo.dmulloy2.net/content/groups/public/</url>
-        </repository>
-
-        <!--Authme Reloaded-->
-        <repository>
-            <id>xephi-repo</id>
-            <url>http://ci.xephi.fr/plugin/repository/everything/</url>
-        </repository>
-
-        <!--xAuth-->
-        <repository>
-            <id>luricos.de-repo</id>
-            <url>http://repo.luricos.de/bukkit-plugins/</url>
-        </repository>
-    </repositories>
-
-    <dependencies>
-        <!--Server API-->
-        <dependency>
-            <groupId>org.spigotmc</groupId>
-            <artifactId>spigot-api</artifactId>
-            <version>1.8.8-R0.1-SNAPSHOT</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <!--Library for listening and sending Minecraft packets-->
-        <dependency>
-            <groupId>com.comphenix.protocol</groupId>
-            <artifactId>ProtocolLib</artifactId>
-            <version>3.6.5-SNAPSHOT</version>
-            <optional>true</optional>
-        </dependency>
-
-        <!--Login Plugins-->
-        <dependency>
-            <groupId>fr.xephi</groupId>
-            <artifactId>authme</artifactId>
-            <version>5.1-SNAPSHOT</version>
-            <optional>true</optional>
-        </dependency>
-
-        <dependency>
-            <groupId>de.luricos.bukkit</groupId>
-            <artifactId>xAuth</artifactId>
-            <version>2.6</version>
-            <optional>true</optional>
-            <!--These artifacts produce conflicts on downloading-->
-            <exclusions>
-                <exclusion>
-                    <groupId>net.gravitydevelopment.updater</groupId>
-                    <artifactId>updater</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>net.ess3</groupId>
-                    <artifactId>EssentialsGroupManager</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-        <!--No maven repository :(-->
-        <dependency>
-            <groupId>de.st_ddt.crazy</groupId>
-            <artifactId>CrazyCore</artifactId>
-            <version>10.7.7</version>
-            <optional>true</optional>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/lib/CrazyCore v10.7.7.jar</systemPath>
-        </dependency>
-
-        <dependency>
-            <groupId>de.st_ddt.crazy</groupId>
-            <artifactId>CrazyLogin</artifactId>
-            <version>7.23</version>
-            <optional>true</optional>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/lib/CrazyLogin v7.23.2.jar</systemPath>
-        </dependency>
-
-        <!--Maven repo down :(-->
-        <dependency>
-            <groupId>me.lenis0012.ls</groupId>
-            <artifactId>LoginSecurity</artifactId>
-            <version>2.0.10</version>
-            <optional>true</optional>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/lib/LoginSecurity v2.0.10.jar</systemPath>
-        </dependency>
-    </dependencies>
 </project>

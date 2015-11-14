@@ -1,14 +1,14 @@
-package com.github.games647.fastlogin;
+package com.github.games647.fastlogin.bukkit;
 
+import com.github.games647.fastlogin.bukkit.listener.BukkitJoinListener;
+import com.github.games647.fastlogin.bukkit.listener.StartPacketListener;
+import com.github.games647.fastlogin.bukkit.listener.BungeeCordListener;
+import com.github.games647.fastlogin.bukkit.listener.EncryptionPacketListener;
+import com.github.games647.fastlogin.bukkit.listener.HandshakePacketListener;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.utility.SafeCacheBuilder;
-import com.github.games647.fastlogin.hooks.AuthPlugin;
-import com.github.games647.fastlogin.listener.BukkitJoinListener;
-import com.github.games647.fastlogin.listener.BungeeCordListener;
-import com.github.games647.fastlogin.listener.EncryptionPacketListener;
-import com.github.games647.fastlogin.listener.HandshakePacketListener;
-import com.github.games647.fastlogin.listener.StartPacketListener;
+import com.github.games647.fastlogin.bukkit.hooks.AuthPlugin;
 import com.google.common.cache.CacheLoader;
 import com.google.common.collect.MapMaker;
 import com.google.common.collect.Sets;
@@ -29,7 +29,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 /**
  * This plugin checks if a player has a paid account and if so tries to skip offline mode authentication.
  */
-public class FastLogin extends JavaPlugin {
+public class FastLoginBukkit extends JavaPlugin {
 
     //http connection, read timeout and user agent for a connection to mojang api servers
     private static final int TIMEOUT = 1 * 1000;
@@ -86,7 +86,8 @@ public class FastLogin extends JavaPlugin {
         getCommand("premium").setExecutor(new PremiumCommand(this));
 
         //check for incoming messages from the bungeecord version of this plugin
-        getServer().getMessenger().registerIncomingPluginChannel(this, this.getName(), new BungeeCordListener(this));
+        getServer().getMessenger().registerIncomingPluginChannel(this, getName(), new BungeeCordListener(this));
+        getServer().getMessenger().registerOutgoingPluginChannel(this, getName());
     }
 
     @Override
@@ -95,6 +96,11 @@ public class FastLogin extends JavaPlugin {
         session.clear();
         enabledPremium.clear();
         bungeeCordUsers.clear();
+
+        //remove old blacklists
+        for (Player player : getServer().getOnlinePlayers()) {
+            player.removeMetadata(getName(), this);
+        }
     }
 
     /**

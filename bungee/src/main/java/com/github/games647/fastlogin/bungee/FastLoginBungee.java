@@ -1,4 +1,4 @@
-package com.github.games647.fastloginbungee;
+package com.github.games647.fastlogin.bungee;
 
 import com.google.common.collect.Sets;
 
@@ -10,7 +10,7 @@ import net.md_5.bungee.api.plugin.Plugin;
  * BungeeCord version of FastLogin. This plugin keeps track
  * on online mode connections.
  */
-public class FastLogin extends Plugin {
+public class FastLoginBungee extends Plugin {
 
     private final Set<String> enabledPremium = Sets.newConcurrentHashSet();
 
@@ -19,8 +19,8 @@ public class FastLogin extends Plugin {
         //events
         getProxy().getPluginManager().registerListener(this, new PlayerConnectionListener(this));
 
-        //commands
-        getProxy().getPluginManager().registerCommand(this, new PremiumCommand(this));
+        //this is required to listen to messages from the server
+        getProxy().registerChannel(getDescription().getName());
     }
 
     /**

@@ -1,3 +1,7 @@
+######0.3.1
+
+* Improved BungeeCord security
+
 #####0.3
 
 * Added BungeeCord support

@@ -1,5 +1,6 @@
-package com.github.games647.fastloginbungee;
+package com.github.games647.fastlogin.bungee;
 
+import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 
@@ -21,9 +22,9 @@ import net.md_5.bungee.event.EventHandler;
  */
 public class PlayerConnectionListener implements Listener {
 
-    private final FastLogin plugin;
+    private final FastLoginBungee plugin;
 
-    public PlayerConnectionListener(FastLogin plugin) {
+    public PlayerConnectionListener(FastLoginBungee plugin) {
         this.plugin = plugin;
     }
 
@@ -50,15 +51,15 @@ public class PlayerConnectionListener implements Listener {
 
             ByteArrayDataOutput dataOutput = ByteStreams.newDataOutput();
             //subchannel name
-            dataOutput.writeUTF("Checked");
+            dataOutput.writeUTF("CHECKED");
+
+            //Data is sent through a random player. We have to tell the Bukkit version of this plugin the target
+            dataOutput.writeUTF(player.getName());
 
             //proxy identifier to check if it's a acceptable proxy
             UUID proxyId = UUID.fromString(plugin.getProxy().getConfig().getUuid());
             dataOutput.writeLong(proxyId.getMostSignificantBits());
             dataOutput.writeLong(proxyId.getLeastSignificantBits());
-
-            //Data is sent through a random player. We have to tell the Bukkit version of this plugin the target
-            dataOutput.writeUTF(player.getName());
 
             server.sendData(plugin.getDescription().getName(), dataOutput.toByteArray());
         }
@@ -74,5 +75,16 @@ public class PlayerConnectionListener implements Listener {
         //the client shouldn't be able to read the messages in order to know something about server internal states
         //moreover the client shouldn't be able fake a running premium check by sending the result message
         pluginMessageEvent.setCancelled(true);
+
+        //check if the message is sent from the server
+        if (Server.class.isAssignableFrom(pluginMessageEvent.getSender().getClass())) {
+            byte[] data = pluginMessageEvent.getData();
+            ByteArrayDataInput dataInput = ByteStreams.newDataInput(data);
+            String subchannel = dataInput.readUTF();
+            if ("ACTIVE".equals(subchannel)) {
+                ProxiedPlayer forPlayer = (ProxiedPlayer) pluginMessageEvent.getReceiver();
+                plugin.getEnabledPremium().add(forPlayer.getName());
+            }
+        }
     }
 }

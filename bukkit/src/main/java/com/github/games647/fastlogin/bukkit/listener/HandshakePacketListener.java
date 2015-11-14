@@ -1,10 +1,10 @@
-package com.github.games647.fastlogin.listener;
+package com.github.games647.fastlogin.bukkit.listener;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
-import com.github.games647.fastlogin.FastLogin;
+import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 
 import java.util.logging.Level;
 
@@ -27,9 +27,9 @@ import java.util.logging.Level;
 public class HandshakePacketListener extends PacketAdapter {
 
     //hides the inherit Plugin plugin field, but we need a more detailed type than just Plugin
-    private final FastLogin plugin;
+    private final FastLoginBukkit plugin;
 
-    public HandshakePacketListener(FastLogin plugin) {
+    public HandshakePacketListener(FastLoginBukkit plugin) {
         //run async in order to not block the server, because we are making api calls to Mojang
         super(params(plugin, PacketType.Handshake.Client.SET_PROTOCOL).optionAsync());
 

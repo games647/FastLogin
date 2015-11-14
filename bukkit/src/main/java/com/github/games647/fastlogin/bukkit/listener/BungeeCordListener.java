@@ -1,7 +1,7 @@
-package com.github.games647.fastlogin.listener;
+package com.github.games647.fastlogin.bukkit.listener;
 
-import com.github.games647.fastlogin.FastLogin;
-import com.github.games647.fastlogin.PlayerSession;
+import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
+import com.github.games647.fastlogin.bukkit.PlayerSession;
 import com.google.common.base.Charsets;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteStreams;
@@ -13,23 +13,24 @@ import java.util.UUID;
 import java.util.logging.Level;
 
 import org.bukkit.entity.Player;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 
 /**
  * Responsible for receiving messages from a BungeeCord instance.
  *
- * This class also receives the plugin message from the bungeecord version of this plugin in order to
- * get notified if the connection is in online mode.
+ * This class also receives the plugin message from the bungeecord version of this plugin in order to get notified if
+ * the connection is in online mode.
  */
 public class BungeeCordListener implements PluginMessageListener {
 
     private static final String FILE_NAME = "proxy-whitelist.txt";
 
-    private final FastLogin plugin;
+    private final FastLoginBukkit plugin;
     //null if whitelist is empty so bungeecord support is disabled
     private final UUID proxyId;
 
-    public BungeeCordListener(FastLogin plugin) {
+    public BungeeCordListener(FastLoginBukkit plugin) {
         this.plugin = plugin;
         this.proxyId = loadBungeeCordId();
     }
@@ -44,23 +45,30 @@ public class BungeeCordListener implements PluginMessageListener {
         String subchannel = dataInput.readUTF();
         plugin.getLogger().log(Level.FINEST, "Received plugin message for subchannel {0} from {1}"
                 , new Object[]{subchannel, player});
-        if ("Checked".equalsIgnoreCase(subchannel)) {
-            //bungeecord UUID
-            long mostSignificantBits = dataInput.readLong();
-            long leastSignificantBits = dataInput.readLong();
-            UUID sourceId = new UUID(mostSignificantBits, leastSignificantBits);
-            //fails too if no proxy id is specified in the whitelist file
-            if (sourceId.equals(proxyId)) {
-                //make sure the proxy is allowed to transfer data to us
-                String playerName = dataInput.readUTF();
-                //check if the player is still online or disconnected
-                Player checkedPlayer = plugin.getServer().getPlayerExact(playerName);
-                if (checkedPlayer != null && checkedPlayer.isOnline()) {
+        if ("CHECKED".equalsIgnoreCase(subchannel)) {
+            //make sure the proxy is allowed to transfer data to us
+            String playerName = dataInput.readUTF();
+
+            //check if the player is still online or disconnected
+            Player checkedPlayer = plugin.getServer().getPlayerExact(playerName);
+            if (checkedPlayer != null && checkedPlayer.isOnline()
+                    //fail if target player is blacklisted because already authed or wrong bungeecord id
+                    && !checkedPlayer.hasMetadata(plugin.getName())) {
+                //bungeecord UUID
+                long mostSignificantBits = dataInput.readLong();
+                long leastSignificantBits = dataInput.readLong();
+                UUID sourceId = new UUID(mostSignificantBits, leastSignificantBits);
+
+                //fail if BungeeCord support is disabled (id = null)
+                if (sourceId.equals(proxyId)) {
                     PlayerSession playerSession = new PlayerSession(playerName, null, null);
                     playerSession.setVerified(true);
                     //put it only if the user doesn't has a session open
                     //so that the player have to send the bungeecord packet and cannot skip the verification then
                     plugin.getSessions().putIfAbsent(checkedPlayer.getAddress().toString(), playerSession);
+                } else {
+                    //blacklist target for the current login
+                    checkedPlayer.setMetadata(plugin.getName(), new FixedMetadataValue(plugin, true));
                 }
             }
         }

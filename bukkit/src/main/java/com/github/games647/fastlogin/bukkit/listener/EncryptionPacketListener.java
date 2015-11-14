@@ -1,4 +1,4 @@
-package com.github.games647.fastlogin.listener;
+package com.github.games647.fastlogin.bukkit.listener;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolManager;
@@ -9,9 +9,9 @@ import com.comphenix.protocol.injector.server.TemporaryPlayerFactory;
 import com.comphenix.protocol.reflect.FuzzyReflection;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
-import com.github.games647.fastlogin.EncryptionUtil;
-import com.github.games647.fastlogin.FastLogin;
-import com.github.games647.fastlogin.PlayerSession;
+import com.github.games647.fastlogin.bukkit.EncryptionUtil;
+import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
+import com.github.games647.fastlogin.bukkit.PlayerSession;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -54,9 +54,9 @@ public class EncryptionPacketListener extends PacketAdapter {
 
     private final ProtocolManager protocolManager;
     //hides the inherit Plugin plugin field, but we need this type
-    private final FastLogin plugin;
+    private final FastLoginBukkit plugin;
 
-    public EncryptionPacketListener(FastLogin plugin, ProtocolManager protocolManger) {
+    public EncryptionPacketListener(FastLoginBukkit plugin, ProtocolManager protocolManger) {
         //run async in order to not block the server, because we make api calls to Mojang
         super(params(plugin, PacketType.Login.Client.ENCRYPTION_BEGIN).optionAsync());
 
