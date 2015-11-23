@@ -1,14 +1,15 @@
 package com.github.games647.fastlogin.bukkit;
 
+import com.comphenix.protocol.AsynchronousManager;
 import com.github.games647.fastlogin.bukkit.listener.BukkitJoinListener;
 import com.github.games647.fastlogin.bukkit.listener.StartPacketListener;
 import com.github.games647.fastlogin.bukkit.listener.BungeeCordListener;
 import com.github.games647.fastlogin.bukkit.listener.EncryptionPacketListener;
-import com.github.games647.fastlogin.bukkit.listener.HandshakePacketListener;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.utility.SafeCacheBuilder;
 import com.github.games647.fastlogin.bukkit.hooks.AuthPlugin;
+import com.github.games647.fastlogin.bukkit.listener.HandshakePacketListener;
 import com.google.common.cache.CacheLoader;
 import com.google.common.collect.MapMaker;
 import com.google.common.collect.Sets;
@@ -60,27 +61,22 @@ public class FastLoginBukkit extends JavaPlugin {
             });
 
     @Override
-    public void onLoad() {
-        //online mode is only changeable after a restart so check it here
-        if (getServer().getOnlineMode()) {
-            //we need to require offline to prevent a session request for a offline player
-            getLogger().severe("Server have to be in offline mode");
-
-            setEnabled(false);
-        }
-    }
-
-    @Override
     public void onEnable() {
-        if (!isEnabled() || !registerHooks()) {
+        if (getServer().getOnlineMode() || !registerHooks()) {
+            //we need to require offline to prevent a session request for a offline player
+            getLogger().severe("Server have to be in offline mode and have an auth plugin installed");
+            setEnabled(false);
             return;
         }
 
         //register packet listeners on success
         ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
         protocolManager.addPacketListener(new HandshakePacketListener(this));
-        protocolManager.addPacketListener(new StartPacketListener(this, protocolManager));
-        protocolManager.addPacketListener(new EncryptionPacketListener(this, protocolManager));
+
+        //we are performing HTTP request on these so run it async (seperate from the Netty IO threads)
+        AsynchronousManager asynchronousManager = protocolManager.getAsynchronousManager();
+        asynchronousManager.registerAsyncHandler(new StartPacketListener(this, protocolManager)).start();
+        asynchronousManager.registerAsyncHandler(new EncryptionPacketListener(this, protocolManager)).start();
 
         //register commands using a unique name
         getCommand("premium").setExecutor(new PremiumCommand(this));

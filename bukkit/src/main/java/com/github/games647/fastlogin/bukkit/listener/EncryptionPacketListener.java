@@ -28,7 +28,6 @@ import java.util.logging.Level;
 import javax.crypto.SecretKey;
 
 import org.bukkit.entity.Player;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
@@ -205,7 +204,6 @@ public class EncryptionPacketListener extends PacketAdapter {
     private boolean hasJoinedServer(String username, String serverId) {
         try {
             String url = HAS_JOINED_URL + "username=" + username + "&serverId=" + serverId;
-
             HttpURLConnection conn = plugin.getConnection(url);
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
@@ -215,13 +213,6 @@ public class EncryptionPacketListener extends PacketAdapter {
                 //http://wiki.vg/Protocol_Encryption#Server
                 JSONObject userData = (JSONObject) JSONValue.parseWithException(line);
                 String uuid = (String) userData.get("id");
-                String name = (String) userData.get("name");
-
-                JSONArray properties = (JSONArray) userData.get("properties");
-                JSONObject skinData = (JSONObject) properties.get(0);
-                //base64 encoded skin data
-                String encodedSkin = (String) skinData.get("value");
-
                 return true;
             }
         } catch (Exception ex) {

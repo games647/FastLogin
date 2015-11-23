@@ -11,17 +11,12 @@ import java.util.logging.Level;
 /**
  * Listens to incoming handshake packets.
  *
- * As BungeeCord sends additional information on the Handshake,
- * we can detect it and check so if the player is coming from a
- * BungeeCord instance. IpForward has to be activated in the
- * BungeeCord config to send these extra information.
+ * As BungeeCord sends additional information on the Handshake, we can detect it and check so if the player is coming
+ * from a BungeeCord instance. IpForward has to be activated in the BungeeCord config to send these extra information.
  *
- * Packet information:
- * http://wiki.vg/Protocol#Handshake
+ * Packet information: http://wiki.vg/Protocol#Handshake
  *
- * Int=Protocol version
- * String=connecting server address (and additional information from BungeeCord)
- * int=server port
+ * Int=Protocol version String=connecting server address (and additional information from BungeeCord) int=server port
  * int=next state
  */
 public class HandshakePacketListener extends PacketAdapter {

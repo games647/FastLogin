@@ -1,3 +1,9 @@
+######0.3.2
+
+* Run packet readers in a different thread (separated from the Netty I/O Thread)
+-> Improves performance
+* Fixed Plugin disable if the server is in online mode but have to be in offline mode
+
 ######0.3.1
 
 * Improved BungeeCord security

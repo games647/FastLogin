@@ -12,7 +12,6 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.HttpURLConnection;
 import java.security.PublicKey;
-
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
