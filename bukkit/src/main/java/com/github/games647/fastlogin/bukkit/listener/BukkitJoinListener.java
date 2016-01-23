@@ -1,5 +1,7 @@
 package com.github.games647.fastlogin.bukkit.listener;
 
+import com.comphenix.protocol.wrappers.WrappedGameProfile;
+import com.comphenix.protocol.wrappers.WrappedSignedProperty;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 import com.github.games647.fastlogin.bukkit.PlayerSession;
 import com.github.games647.fastlogin.bukkit.hooks.AuthPlugin;
@@ -15,8 +17,8 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.metadata.FixedMetadataValue;
 
 /**
- * This listener tells authentication plugins if the player has a premium account and we checked it successfully.
- * So the plugin can skip authentication.
+ * This listener tells authentication plugins if the player has a premium account and we checked it successfully. So the
+ * plugin can skip authentication.
  */
 public class BukkitJoinListener implements Listener {
 
@@ -33,6 +35,15 @@ public class BukkitJoinListener implements Listener {
     @EventHandler(ignoreCancelled = true)
     public void onPlayerJoin(PlayerJoinEvent joinEvent) {
         final Player player = joinEvent.getPlayer();
+
+        PlayerSession session = plugin.getSessions().get(player.getAddress().toString());
+        if (session != null) {
+            WrappedGameProfile gameProfile = WrappedGameProfile.fromPlayer(player);
+            WrappedSignedProperty skin = session.getSkin();
+            if (skin != null) {
+                gameProfile.getProperties().put("textures", skin);
+            }
+        }
 
         Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
 

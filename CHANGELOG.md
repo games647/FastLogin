@@ -1,3 +1,7 @@
+######0.4
+
+* Added forward premium skin
+
 ######0.3.2
 
 * Run packet readers in a different thread (separated from the Netty I/O Thread)

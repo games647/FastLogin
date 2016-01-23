@@ -1,6 +1,7 @@
 # FastLogin
 
 [![Build Status](https://travis-ci.org/games647/FastLogin.svg?branch=master)](https://travis-ci.org/games647/FastLogin)
+[![Donate Button](https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=8ZBULMAPN7MZC)
 
 Checks if a minecraft player has a paid account (premium). If so, they can skip offline authentication (auth plugins).
 So they don't need to enter passwords. This is also called auto login (auto-login).
@@ -135,7 +136,3 @@ It's not tested yet, but all needed methods also exists in Cauldron so it could 
 ###Useful Links:
 * [Login Protocol](http://wiki.vg/Protocol#Login)
 * [Protocol Encryption](http://wiki.vg/Protocol_Encryption)
-
-###Donate
-
-[![Donate Button](https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=8ZBULMAPN7MZC)

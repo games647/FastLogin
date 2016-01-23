@@ -9,6 +9,7 @@ import com.comphenix.protocol.injector.server.TemporaryPlayerFactory;
 import com.comphenix.protocol.reflect.FuzzyReflection;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
+import com.comphenix.protocol.wrappers.WrappedSignedProperty;
 import com.github.games647.fastlogin.bukkit.EncryptionUtil;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 import com.github.games647.fastlogin.bukkit.PlayerSession;
@@ -28,6 +29,7 @@ import java.util.logging.Level;
 import javax.crypto.SecretKey;
 
 import org.bukkit.entity.Player;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
@@ -109,7 +111,7 @@ public class EncryptionPacketListener extends PacketAdapter {
         String serverId = (new BigInteger(serverIdHash)).toString(16);
 
         String username = session.getUsername();
-        if (hasJoinedServer(username, serverId)) {
+        if (hasJoinedServer(session, serverId)) {
             plugin.getLogger().log(Level.FINE, "Player {0} has a verified premium account", username);
 
             session.setVerified(true);
@@ -201,9 +203,9 @@ public class EncryptionPacketListener extends PacketAdapter {
         }
     }
 
-    private boolean hasJoinedServer(String username, String serverId) {
+    private boolean hasJoinedServer(PlayerSession session, String serverId) {
         try {
-            String url = HAS_JOINED_URL + "username=" + username + "&serverId=" + serverId;
+            String url = HAS_JOINED_URL + "username=" + session.getUsername() + "&serverId=" + serverId;
             HttpURLConnection conn = plugin.getConnection(url);
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
@@ -213,6 +215,17 @@ public class EncryptionPacketListener extends PacketAdapter {
                 //http://wiki.vg/Protocol_Encryption#Server
                 JSONObject userData = (JSONObject) JSONValue.parseWithException(line);
                 String uuid = (String) userData.get("id");
+
+                JSONArray properties = (JSONArray) userData.get("properties");
+                JSONObject skinProperty = (JSONObject) properties.get(0);
+
+                String propertyName = (String) skinProperty.get("name");
+                if (propertyName.equals("textures")) {
+                    String skinValue = (String) skinProperty.get("value");
+                    String signature = (String) skinProperty.get("signature");
+                    session.setSkin(WrappedSignedProperty.fromValues(propertyName, skinValue, signature));
+                }
+
                 return true;
             }
         } catch (Exception ex) {
