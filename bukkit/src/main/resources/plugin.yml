@@ -13,8 +13,10 @@ dev-url: ${project.url}
 
 # Without Protocollib the plugin does not work at all
 depend: [ProtocolLib]
-# Auth plugins
+
 softdepend:
+    - ProtocolSupport
+    # Auth plugins
     - xAuth
     - AuthMe
     - CrazyLogin

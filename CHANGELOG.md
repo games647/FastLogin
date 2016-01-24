@@ -1,6 +1,7 @@
 ######0.4
 
 * Added forward premium skin
+* Added plugin support for protocolsupport
 
 ######0.3.2
 

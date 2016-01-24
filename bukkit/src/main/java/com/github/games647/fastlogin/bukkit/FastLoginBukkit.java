@@ -1,15 +1,16 @@
 package com.github.games647.fastlogin.bukkit;
 
 import com.comphenix.protocol.AsynchronousManager;
-import com.github.games647.fastlogin.bukkit.listener.BukkitJoinListener;
-import com.github.games647.fastlogin.bukkit.listener.StartPacketListener;
-import com.github.games647.fastlogin.bukkit.listener.BungeeCordListener;
-import com.github.games647.fastlogin.bukkit.listener.EncryptionPacketListener;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.utility.SafeCacheBuilder;
 import com.github.games647.fastlogin.bukkit.hooks.AuthPlugin;
+import com.github.games647.fastlogin.bukkit.listener.BukkitJoinListener;
+import com.github.games647.fastlogin.bukkit.listener.BungeeCordListener;
+import com.github.games647.fastlogin.bukkit.listener.EncryptionPacketListener;
 import com.github.games647.fastlogin.bukkit.listener.HandshakePacketListener;
+import com.github.games647.fastlogin.bukkit.listener.ProtcolSupportListener;
+import com.github.games647.fastlogin.bukkit.listener.StartPacketListener;
 import com.google.common.cache.CacheLoader;
 import com.google.common.collect.MapMaker;
 import com.google.common.collect.Sets;
@@ -60,6 +61,8 @@ public class FastLoginBukkit extends JavaPlugin {
                 }
             });
 
+    private AuthPlugin authPlugin;
+
     @Override
     public void onEnable() {
         if (getServer().getOnlineMode() || !registerHooks()) {
@@ -69,14 +72,20 @@ public class FastLoginBukkit extends JavaPlugin {
             return;
         }
 
-        //register packet listeners on success
-        ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
-        protocolManager.addPacketListener(new HandshakePacketListener(this));
+        //register listeners on success
+        if (getServer().getPluginManager().isPluginEnabled("ProtocolSupport")) {
+            getServer().getPluginManager().registerEvents(new ProtcolSupportListener(this), this);
+        } else {
+            ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
+            protocolManager.addPacketListener(new HandshakePacketListener(this));
 
-        //we are performing HTTP request on these so run it async (seperate from the Netty IO threads)
-        AsynchronousManager asynchronousManager = protocolManager.getAsynchronousManager();
-        asynchronousManager.registerAsyncHandler(new StartPacketListener(this, protocolManager)).start();
-        asynchronousManager.registerAsyncHandler(new EncryptionPacketListener(this, protocolManager)).start();
+            //we are performing HTTP request on these so run it async (seperate from the Netty IO threads)
+            AsynchronousManager asynchronousManager = protocolManager.getAsynchronousManager();
+            asynchronousManager.registerAsyncHandler(new StartPacketListener(this, protocolManager)).start();
+            asynchronousManager.registerAsyncHandler(new EncryptionPacketListener(this, protocolManager)).start();
+
+            getServer().getPluginManager().registerEvents(new BukkitJoinListener(this), this);
+        }
 
         //register commands using a unique name
         getCommand("premium").setExecutor(new PremiumCommand(this));
@@ -100,8 +109,8 @@ public class FastLoginBukkit extends JavaPlugin {
     }
 
     /**
-     * Gets a thread-safe map about players which are connecting to the server
-     * are being checked to be premium (paid account)
+     * Gets a thread-safe map about players which are connecting to the server are being checked to be premium (paid
+     * account)
      *
      * @return a thread-safe session map
      */
@@ -110,9 +119,8 @@ public class FastLoginBukkit extends JavaPlugin {
     }
 
     /**
-     * Gets a concurrent map with weak keys for all bungeecord users
-     * which could be detected. It's mapped by a fake instance of player
-     * created by Protocollib and a non-null raw object.
+     * Gets a concurrent map with weak keys for all bungeecord users which could be detected. It's mapped by a fake
+     * instance of player created by Protocollib and a non-null raw object.
      *
      * Represents a similar set collection
      *
@@ -138,6 +146,15 @@ public class FastLoginBukkit extends JavaPlugin {
      */
     public Set<String> getEnabledPremium() {
         return enabledPremium;
+    }
+
+    /**
+     * Gets the auth plugin hook in order to interact with the plugins
+     *
+     * @return interface to any supported auth plugin
+     */
+    public AuthPlugin getAuthPlugin() {
+        return authPlugin;
     }
 
     /**
@@ -190,8 +207,7 @@ public class FastLoginBukkit extends JavaPlugin {
             return false;
         }
 
-        //We found a supporting plugin - we can now register a forwarding listener to skip authentication from them
-        getServer().getPluginManager().registerEvents(new BukkitJoinListener(this, authPluginHook), this);
+        authPlugin = authPluginHook;
         return true;
     }
 }

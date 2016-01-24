@@ -4,7 +4,6 @@ import com.comphenix.protocol.wrappers.WrappedGameProfile;
 import com.comphenix.protocol.wrappers.WrappedSignedProperty;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 import com.github.games647.fastlogin.bukkit.PlayerSession;
-import com.github.games647.fastlogin.bukkit.hooks.AuthPlugin;
 
 import java.util.logging.Level;
 
@@ -25,11 +24,9 @@ public class BukkitJoinListener implements Listener {
     private static final long DELAY_LOGIN = 1 * 20L / 2;
 
     protected final FastLoginBukkit plugin;
-    protected final AuthPlugin authPlugin;
 
-    public BukkitJoinListener(FastLoginBukkit plugin, AuthPlugin authPlugin) {
+    public BukkitJoinListener(FastLoginBukkit plugin) {
         this.plugin = plugin;
-        this.authPlugin = authPlugin;
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -59,7 +56,7 @@ public class BukkitJoinListener implements Listener {
                     //check if it's the same player as we checked before
                     if (session != null && player.getName().equals(session.getUsername()) && session.isVerified()) {
                         plugin.getLogger().log(Level.FINE, "Logging player {0} in", player.getName());
-                        authPlugin.forceLogin(player);
+                        plugin.getAuthPlugin().forceLogin(player);
                     }
                 }
             }

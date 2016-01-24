@@ -58,6 +58,14 @@
             <optional>true</optional>
         </dependency>
 
+        <dependency>
+            <groupId>protcolsupport</groupId>
+            <artifactId>ProtocolSupport</artifactId>
+            <version>Build-337</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/ProtocolSupport b337.jar</systemPath>
+        </dependency>
+
         <!--Login Plugins-->
         <dependency>
             <groupId>fr.xephi</groupId>

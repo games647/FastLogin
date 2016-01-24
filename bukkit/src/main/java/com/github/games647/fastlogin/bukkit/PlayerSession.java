@@ -1,6 +1,7 @@
 package com.github.games647.fastlogin.bukkit;
 
 import com.comphenix.protocol.wrappers.WrappedSignedProperty;
+
 import org.apache.commons.lang.ArrayUtils;
 
 /**
