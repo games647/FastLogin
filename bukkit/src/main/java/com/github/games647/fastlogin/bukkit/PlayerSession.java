@@ -17,6 +17,7 @@ public class PlayerSession {
 
     private WrappedSignedProperty skinProperty;
     private boolean verified;
+    private boolean registered;
 
     public PlayerSession(String username, String serverId, byte[] verifyToken) {
         this.username = username;
@@ -71,6 +72,24 @@ public class PlayerSession {
      */
     public synchronized void setSkin(WrappedSignedProperty skinProperty) {
         this.skinProperty = skinProperty;
+    }
+
+    /**
+     * Sets whether the account of this player already exists
+     *
+     * @param registered whether the account exists
+     */
+    public synchronized void setRegistered(boolean registered) {
+        this.registered = registered;
+    }
+
+    /**
+     * Gets whether the account of this player already exists.
+     *
+     * @return whether the account exists
+     */
+    public synchronized boolean needsRegistration() {
+        return !registered;
     }
 
     /**

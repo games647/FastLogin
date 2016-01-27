@@ -16,6 +16,7 @@ public class AuthMeHook implements AuthPlugin {
         NewAPI.getInstance().forceLogin(player);
     }
 
+    @Override
     public boolean isRegistered(String playerName) {
         return NewAPI.getInstance().isRegistered(playerName);
     }

@@ -17,13 +17,12 @@ import com.google.common.collect.Sets;
 import com.google.common.reflect.ClassPath;
 
 import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.security.KeyPair;
 import java.util.Set;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
+import org.apache.commons.lang.RandomStringUtils;
 
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -32,10 +31,6 @@ import org.bukkit.plugin.java.JavaPlugin;
  * This plugin checks if a player has a paid account and if so tries to skip offline mode authentication.
  */
 public class FastLoginBukkit extends JavaPlugin {
-
-    //http connection, read timeout and user agent for a connection to mojang api servers
-    private static final int TIMEOUT = 1 * 1000;
-    private static final String USER_AGENT = "Premium-Checker";
 
     //provide a immutable key pair to be thread safe | used for encrypting and decrypting traffic
     private final KeyPair keyPair = EncryptionUtil.generateKeyPair();
@@ -62,9 +57,11 @@ public class FastLoginBukkit extends JavaPlugin {
             });
 
     private AuthPlugin authPlugin;
+    private final MojangApiConnector mojangApiConnector = new MojangApiConnector(this);
 
     @Override
     public void onEnable() {
+        saveDefaultConfig();
         if (getServer().getOnlineMode() || !registerHooks()) {
             //we need to require offline to prevent a session request for a offline player
             getLogger().severe("Server have to be in offline mode and have an auth plugin installed");
@@ -106,6 +103,10 @@ public class FastLoginBukkit extends JavaPlugin {
         for (Player player : getServer().getOnlinePlayers()) {
             player.removeMetadata(getName(), this);
         }
+    }
+
+    public String generateStringPassword() {
+        return RandomStringUtils.random(8, true, true);
     }
 
     /**
@@ -158,22 +159,13 @@ public class FastLoginBukkit extends JavaPlugin {
     }
 
     /**
-     * Prepares a Mojang API connection. The connection is not started in this method
+     * Gets the a connection in order to access important
+     * features from the Mojang API.
      *
-     * @param url the url connecting to
-     * @return the prepared connection
-     *
-     * @throws IOException on invalid url format or on {@link java.net.URL#openConnection() }
+     * @return the connector instance
      */
-    public HttpURLConnection getConnection(String url) throws IOException {
-        HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
-        connection.setConnectTimeout(TIMEOUT);
-        connection.setReadTimeout(TIMEOUT);
-        //the new Mojang API just uses json as response
-        connection.setRequestProperty("Content-Type", "application/json");
-        connection.setRequestProperty("User-Agent", USER_AGENT);
-
-        return connection;
+    public MojangApiConnector getApiConnector() {
+        return mojangApiConnector;
     }
 
     private boolean registerHooks() {

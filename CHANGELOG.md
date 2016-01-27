@@ -1,8 +1,12 @@
 ######0.5
 
+* Added autologin - See config
+* Added config
 * Added isRegistered API method
 * Added forceRegister API method
 * Fixed CrazyLogin player data restore -> Fixes memory leaks with this plugin
+
+* Fixed premium name check to protocolsupport
 
 ######0.4
 

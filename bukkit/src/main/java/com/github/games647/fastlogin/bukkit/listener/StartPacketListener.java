@@ -8,13 +8,10 @@ import com.comphenix.protocol.events.PacketEvent;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 import com.github.games647.fastlogin.bukkit.PlayerSession;
 
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.net.HttpURLConnection;
 import java.security.PublicKey;
 import java.util.Random;
 import java.util.logging.Level;
-import java.util.regex.Pattern;
 
 import org.bukkit.entity.Player;
 
@@ -31,10 +28,6 @@ import org.bukkit.entity.Player;
  */
 public class StartPacketListener extends PacketAdapter {
 
-    //only premium (paid account) users have a uuid from here
-    private static final String UUID_LINK = "https://api.mojang.com/users/profiles/minecraft/";
-    //this includes a-zA-Z1-9_
-    private static final String VALID_PLAYERNAME = "^\\w{2,16}$";
     private static final int VERIFY_TOKEN_LENGTH = 4;
 
     private final ProtocolManager protocolManager;
@@ -43,8 +36,6 @@ public class StartPacketListener extends PacketAdapter {
 
     //just create a new once on plugin enable. This used for verify token generation
     private final Random random = new Random();
-    //compile the pattern on plugin enable
-    private final Pattern playernameMatcher = Pattern.compile(VALID_PLAYERNAME);
 
     public StartPacketListener(FastLoginBukkit plugin, ProtocolManager protocolManger) {
         //run async in order to not block the server, because we are making api calls to Mojang
@@ -80,35 +71,43 @@ public class StartPacketListener extends PacketAdapter {
         String username = packet.getGameProfiles().read(0).getName();
         plugin.getLogger().log(Level.FINER, "Player {0} with {1} connecting to the server"
                 , new Object[]{sessionKey, username});
-        if (!plugin.getBungeeCordUsers().containsKey(player)
-                && plugin.getEnabledPremium().contains(username) && isPremiumName(username)) {
+        if (!plugin.getBungeeCordUsers().containsKey(player)) {
+            if (plugin.getEnabledPremium().contains(username)) {
+                enablePremiumLogin(username, sessionKey, player, packetEvent, true);
+            } else if (plugin.getConfig().getBoolean("autologin") && !plugin.getAuthPlugin().isRegistered(username)) {
+                enablePremiumLogin(username, sessionKey, player, packetEvent, false);
+                plugin.getEnabledPremium().add(username);
+            }
+        }
+    }
+
+    private void enablePremiumLogin(String username, String sessionKey, Player player, PacketEvent packetEvent
+            , boolean registered) {
+        if (plugin.getApiConnector().isPremiumName(username)) {
+            plugin.getLogger().log(Level.FINER, "Player {0} uses a premium username", username);
             //minecraft server implementation
             //https://github.com/bergerkiller/CraftSource/blob/master/net.minecraft.server/LoginListener.java#L161
-            sentEncryptionRequest(sessionKey, username, player, packetEvent);
-        }
-    }
 
-    private boolean isPremiumName(String playerName) {
-        //check if it's a valid playername
-        if (playernameMatcher.matcher(playerName).matches()) {
-            //only make a API call if the name is valid existing mojang account
-            try {
-                HttpURLConnection connection = plugin.getConnection(UUID_LINK + playerName);
-                int responseCode = connection.getResponseCode();
+            //randomized server id to make sure the request is for our server
+            //this could be relevant http://www.sk89q.com/2011/09/minecraft-name-spoofing-exploit/
+            String serverId = Long.toString(random.nextLong(), 16);
 
-                return responseCode == HttpURLConnection.HTTP_OK;
-                //204 - no content for not found
-            } catch (IOException ex) {
-                plugin.getLogger().log(Level.SEVERE, "Failed to check if player has a paid account", ex);
+            //generate a random token which should be the same when we receive it from the client
+            byte[] verifyToken = new byte[VERIFY_TOKEN_LENGTH];
+            random.nextBytes(verifyToken);
+
+            boolean success = sentEncryptionRequest(player, serverId, verifyToken);
+            if (success) {
+                PlayerSession playerSession = new PlayerSession(username, serverId, verifyToken);
+                playerSession.setRegistered(registered);
+                plugin.getSessions().put(sessionKey, playerSession);
+                //cancel only if the player has a paid account otherwise login as normal offline player
+                packetEvent.setCancelled(true);
             }
-            //this connection doesn't need to be closed. So can make use of keep alive in java
         }
-
-        return false;
     }
 
-    private void sentEncryptionRequest(String sessionKey, String username, Player player, PacketEvent packetEvent) {
-        plugin.getLogger().log(Level.FINER, "Player {0} uses a premium username", username);
+    private boolean sentEncryptionRequest(Player player, String serverId, byte[] verifyToken) {
         try {
             /**
              * Packet Information: http://wiki.vg/Protocol#Encryption_Request
@@ -119,24 +118,18 @@ public class StartPacketListener extends PacketAdapter {
              */
             PacketContainer newPacket = protocolManager.createPacket(PacketType.Login.Server.ENCRYPTION_BEGIN);
 
-            //randomized server id to make sure the request is for our server
-            //this could be relevant http://www.sk89q.com/2011/09/minecraft-name-spoofing-exploit/
-            String serverId = Long.toString(random.nextLong(), 16);
             newPacket.getStrings().write(0, serverId);
             newPacket.getSpecificModifier(PublicKey.class).write(0, plugin.getServerKey().getPublic());
-            //generate a random token which should be the same when we receive it from the client
-            byte[] verifyToken = new byte[VERIFY_TOKEN_LENGTH];
-            random.nextBytes(verifyToken);
+
             newPacket.getByteArrays().write(0, verifyToken);
 
             //serverId is a empty string
             protocolManager.sendServerPacket(player, newPacket);
-
-            //cancel only if the player has a paid account otherwise login as normal offline player
-            plugin.getSessions().put(sessionKey, new PlayerSession(username, serverId, verifyToken));
-            packetEvent.setCancelled(true);
+            return true;
         } catch (InvocationTargetException ex) {
             plugin.getLogger().log(Level.SEVERE, "Cannot send encryption packet. Falling back to normal login", ex);
         }
+
+        return false;
     }
 }

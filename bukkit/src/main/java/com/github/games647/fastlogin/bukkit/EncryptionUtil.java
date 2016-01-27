@@ -37,7 +37,7 @@ public class EncryptionUtil {
         try {
             KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
 
-            keyPairGenerator.initialize(1024);
+            keyPairGenerator.initialize(1_024);
             return keyPairGenerator.generateKeyPair();
         } catch (NoSuchAlgorithmException nosuchalgorithmexception) {
             //Should be existing in every vm

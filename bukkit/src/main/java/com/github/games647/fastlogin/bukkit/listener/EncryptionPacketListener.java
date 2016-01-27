@@ -9,18 +9,14 @@ import com.comphenix.protocol.injector.server.TemporaryPlayerFactory;
 import com.comphenix.protocol.reflect.FuzzyReflection;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
-import com.comphenix.protocol.wrappers.WrappedSignedProperty;
 import com.github.games647.fastlogin.bukkit.EncryptionUtil;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 import com.github.games647.fastlogin.bukkit.PlayerSession;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigInteger;
-import java.net.HttpURLConnection;
 import java.security.PrivateKey;
 import java.util.Arrays;
 import java.util.UUID;
@@ -29,9 +25,6 @@ import java.util.logging.Level;
 import javax.crypto.SecretKey;
 
 import org.bukkit.entity.Player;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.JSONValue;
 
 /**
  * Handles incoming encryption responses from connecting clients.
@@ -49,9 +42,6 @@ import org.json.simple.JSONValue;
  * verify token=encrypted byte array
  */
 public class EncryptionPacketListener extends PacketAdapter {
-
-    //mojang api check to prove a player is logged in minecraft and made a join server request
-    private static final String HAS_JOINED_URL = "https://sessionserver.mojang.com/session/minecraft/hasJoined?";
 
     private final ProtocolManager protocolManager;
     //hides the inherit Plugin plugin field, but we need this type
@@ -111,7 +101,7 @@ public class EncryptionPacketListener extends PacketAdapter {
         String serverId = (new BigInteger(serverIdHash)).toString(16);
 
         String username = session.getUsername();
-        if (hasJoinedServer(session, serverId)) {
+        if (plugin.getApiConnector().hasJoinedServer(session, serverId)) {
             plugin.getLogger().log(Level.FINE, "Player {0} has a verified premium account", username);
 
             session.setVerified(true);
@@ -201,40 +191,6 @@ public class EncryptionPacketListener extends PacketAdapter {
         } catch (InvocationTargetException ex) {
             plugin.getLogger().log(Level.SEVERE, "Error sending kickpacket", ex);
         }
-    }
-
-    private boolean hasJoinedServer(PlayerSession session, String serverId) {
-        try {
-            String url = HAS_JOINED_URL + "username=" + session.getUsername() + "&serverId=" + serverId;
-            HttpURLConnection conn = plugin.getConnection(url);
-
-            BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-            String line = reader.readLine();
-            if (line != null && !line.equals("null")) {
-                //validate parsing
-                //http://wiki.vg/Protocol_Encryption#Server
-                JSONObject userData = (JSONObject) JSONValue.parseWithException(line);
-                String uuid = (String) userData.get("id");
-
-                JSONArray properties = (JSONArray) userData.get("properties");
-                JSONObject skinProperty = (JSONObject) properties.get(0);
-
-                String propertyName = (String) skinProperty.get("name");
-                if (propertyName.equals("textures")) {
-                    String skinValue = (String) skinProperty.get("value");
-                    String signature = (String) skinProperty.get("signature");
-                    session.setSkin(WrappedSignedProperty.fromValues(propertyName, skinValue, signature));
-                }
-
-                return true;
-            }
-        } catch (Exception ex) {
-            //catch not only ioexceptions also parse and NPE on unexpected json format
-            plugin.getLogger().log(Level.WARNING, "Failed to verify session", ex);
-        }
-
-        //this connection doesn't need to be closed. So can make use of keep alive in java
-        return false;
     }
 
     //fake a new login packet in order to let the server handle all the other stuff

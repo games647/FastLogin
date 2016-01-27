@@ -8,6 +8,7 @@ import com.github.games647.fastlogin.bukkit.PlayerSession;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -55,8 +56,19 @@ public class BukkitJoinListener implements Listener {
                     player.setMetadata(plugin.getName(), new FixedMetadataValue(plugin, true));
                     //check if it's the same player as we checked before
                     if (session != null && player.getName().equals(session.getUsername()) && session.isVerified()) {
-                        plugin.getLogger().log(Level.FINE, "Logging player {0} in", player.getName());
-                        plugin.getAuthPlugin().forceLogin(player);
+                        if (session.needsRegistration()) {
+                            plugin.getLogger().log(Level.FINE, "Register player {0}", player.getName());
+
+                            String generatedPassword = plugin.generateStringPassword();
+                            plugin.getAuthPlugin().forceRegister(player, generatedPassword);
+                            player.sendMessage(ChatColor.DARK_GREEN + "Auto registered with password: "
+                                    + generatedPassword);
+                            player.sendMessage(ChatColor.DARK_GREEN + "You may want change it?");
+                        } else {
+                            plugin.getLogger().log(Level.FINE, "Logging player {0} in", player.getName());
+                            plugin.getAuthPlugin().forceLogin(player);
+                            player.sendMessage(ChatColor.DARK_GREEN + "Auto logged in");
+                        }
                     }
                 }
             }

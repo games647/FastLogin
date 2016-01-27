@@ -1,0 +1,19 @@
+# FastLogin config
+# You can access the newest config here:
+# https://github.com/games647/FastLogin/blob/master/bukkit/src/main/resources/config.yml
+
+# Request a premium login without forcing the player to type a command
+#
+# If you activate autologin, this plugin will check/do these points on login:
+# 1. An existing cracked account shouldn't exist
+# -> paid accounts cannot steal the existing account of cracked players
+# - (Already registered players could still use the /premium command to activate premium checks)
+# 2. Automatically registers an account with a strong random generated password
+# -> cracked player cannot register an account for the premium player and so cannot the steal the account
+#
+# Furthermore the premium player check have to be made based on the player name
+# This means if a cracked player connects to the server and we request a paid account login from this player
+# the player just disconnect and sees the message: 'bad login'
+# There is no way to change this message
+# For more information: https://github.com/games647/FastLogin#why-do-players-have-to-invoke-a-command
+autologin: false
