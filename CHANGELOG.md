@@ -1,3 +1,9 @@
+######0.5
+
+* Added isRegistered API method
+* Added forceRegister API method
+* Fixed CrazyLogin player data restore -> Fixes memory leaks with this plugin
+
 ######0.4
 
 * Added forward premium skin
