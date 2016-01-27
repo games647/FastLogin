@@ -15,6 +15,23 @@ public class CrazyLoginHook implements AuthPlugin {
     @Override
     public void forceLogin(Player player) {
         CrazyLogin crazyLoginPlugin = CrazyLogin.getPlugin();
+
+        LoginPlayerData playerData = crazyLoginPlugin.getPlayerData(player.getName());
+        if (playerData != null) {
+            //mark the account as logged in
+            playerData.setLoggedIn(true);
+        }
+    }
+
+    @Override
+    public boolean isRegistered(String playerName) {
+        CrazyLogin crazyLoginPlugin = CrazyLogin.getPlugin();
+        return crazyLoginPlugin.getPlayerData(playerName) != null;
+    }
+
+    @Override
+    public void forceRegister(Player player, String password) {
+        CrazyLogin crazyLoginPlugin = CrazyLogin.getPlugin();
         CrazyLoginDataDatabase crazyDatabase = crazyLoginPlugin.getCrazyDatabase();
 
         LoginPlayerData playerData = crazyLoginPlugin.getPlayerData(player.getName());
@@ -24,9 +41,6 @@ public class CrazyLoginHook implements AuthPlugin {
             //this automatically marks the player as logged in
             playerData = new LoginPlayerData(player);
             crazyDatabase.save(playerData);
-        } else {
-            //mark the account as logged in
-            playerData.setLoggedIn(true);
         }
     }
 }

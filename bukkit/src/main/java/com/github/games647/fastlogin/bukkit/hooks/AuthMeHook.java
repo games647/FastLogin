@@ -15,4 +15,13 @@ public class AuthMeHook implements AuthPlugin {
         //skips registration and login
         NewAPI.getInstance().forceLogin(player);
     }
+
+    public boolean isRegistered(String playerName) {
+        return NewAPI.getInstance().isRegistered(playerName);
+    }
+
+    @Override
+    public void forceRegister(Player player, String password) {
+        NewAPI.getInstance().forceRegister(player, password);
+    }
 }
