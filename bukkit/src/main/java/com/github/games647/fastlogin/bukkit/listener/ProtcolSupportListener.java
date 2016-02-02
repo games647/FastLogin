@@ -35,6 +35,9 @@ public class ProtcolSupportListener implements Listener {
         }
 
         String playerName = loginStartEvent.getName();
+
+        //remove old data every time on a new login in order to keep the session only for one person
+        plugin.getSessions().remove(playerName);
         if (plugin.getEnabledPremium().contains(playerName)) {
             //the player have to be registered in order to invoke the command
             startPremiumSession(playerName, loginStartEvent, true);

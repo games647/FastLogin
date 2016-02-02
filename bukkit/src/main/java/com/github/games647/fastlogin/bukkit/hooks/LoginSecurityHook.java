@@ -8,6 +8,7 @@ import java.net.InetAddress;
 
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 /**
@@ -48,13 +49,23 @@ public class LoginSecurityHook implements AuthPlugin {
     }
 
     @Override
-    public void forceRegister(Player player, String password) {
-        LoginSecurity securityPlugin = LoginSecurity.instance;
-        DataManager dataManager = securityPlugin.data;
+    public void forceRegister(Player player, final String password) {
+        final LoginSecurity securityPlugin = LoginSecurity.instance;
+        final DataManager dataManager = securityPlugin.data;
 
         UUID playerUUID = player.getUniqueId();
-        String uuidString = playerUUID.toString().replace("-", "");
-        InetAddress ipAddress = player.getAddress().getAddress();
-        dataManager.register(uuidString, password, securityPlugin.hasher.getTypeId(), ipAddress.toString());
+        final String uuidString = playerUUID.toString().replace("-", "");
+        final InetAddress ipAddress = player.getAddress().getAddress();
+
+        //this executes a sql query without interacting with other parts so we can run it async.
+        Bukkit.getScheduler().runTaskAsynchronously(securityPlugin, new Runnable() {
+            @Override
+            public void run() {
+                dataManager.register(uuidString, password, securityPlugin.hasher.getTypeId(), ipAddress.toString());
+            }
+        });
+
+        //notify the plugin that this player can be logged in
+        forceLogin(player);
     }
 }

@@ -10,6 +10,7 @@ import de.st_ddt.crazylogin.metadata.Authenticated;
 
 import java.util.logging.Level;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 /**
@@ -59,18 +60,34 @@ public class CrazyLoginHook implements AuthPlugin {
     }
 
     @Override
-    public void forceRegister(Player player, String password) {
-        CrazyLogin crazyLoginPlugin = CrazyLogin.getPlugin();
-        CrazyLoginDataDatabase crazyDatabase = crazyLoginPlugin.getCrazyDatabase();
+    public void forceRegister(final Player player, String password) {
+        final CrazyLogin crazyLoginPlugin = CrazyLogin.getPlugin();
+        final CrazyLoginDataDatabase crazyDatabase = crazyLoginPlugin.getCrazyDatabase();
 
-        LoginPlayerData playerData = crazyLoginPlugin.getPlayerData(player.getName());
-        if (playerData == null) {
-            //create a fake account - this will be saved to the database with the password=FAILEDLOADING
-            //user cannot login with that password unless the admin uses plain text
-            //this automatically marks the player as logged in
-            playerData = new LoginPlayerData(player);
-            crazyDatabase.save(playerData);
-        }
+        //this executes a sql query and accesses only thread safe collections so we can run it async
+        Bukkit.getScheduler().runTaskAsynchronously(crazyLoginPlugin, new Runnable() {
+            @Override
+            public void run() {
+                LoginPlayerData playerData = crazyLoginPlugin.getPlayerData(player.getName());
+                if (playerData == null) {
+                    //create a fake account - this will be saved to the database with the password=FAILEDLOADING
+                    //user cannot login with that password unless the admin uses plain text
+                    //this automatically marks the player as logged in
+                    playerData = new LoginPlayerData(player);
+                    crazyDatabase.save(playerData);
+
+                    //this method is not thread-safe and requires the existence of the account
+                    //so reschedule it to the main thread
+                    Bukkit.getScheduler().runTask(crazyLoginPlugin, new Runnable() {
+                        @Override
+                        public void run() {
+                            //login the player after registration
+                            forceLogin(player);
+                        }
+                    });
+                }
+            }
+        });
     }
 
     private PlayerListener getListener() {

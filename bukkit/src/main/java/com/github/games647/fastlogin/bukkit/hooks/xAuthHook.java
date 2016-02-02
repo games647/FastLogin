@@ -20,6 +20,7 @@ public class xAuthHook implements AuthPlugin {
             xAuthPlugin.getPlayerManager().doLogin(xAuthPlayer);
 
             //we checked that the player is premium (paid account)
+            //unprotect the inventory, op status...
             xAuthPlayer.setPremium(true);
         }
     }
@@ -38,13 +39,12 @@ public class xAuthHook implements AuthPlugin {
 
         xAuthPlayer xAuthPlayer = xAuthPlugin.getPlayerManager().getPlayer(player);
         if (xAuthPlayer != null) {
+            //this should run async because the plugin executes a sql query, but the method
+            //accesses non thread-safe collections :(
             xAuthPlugin.getAuthClass(xAuthPlayer).adminRegister(player.getName(), password, null);
 
-            //we checked that the player is premium (paid account)
-            xAuthPlayer.setPremium(true);
-
-            //unprotect the inventory, op status...
-            xAuthPlugin.getPlayerManager().doLogin(xAuthPlayer);
+            //login in the player after registration
+            forceLogin(player);
         }
     }
 }
