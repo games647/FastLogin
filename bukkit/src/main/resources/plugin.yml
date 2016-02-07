@@ -21,6 +21,7 @@ softdepend:
     - AuthMe
     - CrazyLogin
     - LoginSecurity
+    - RoyalAuth
 
 commands:
     ${project.parent.name}:

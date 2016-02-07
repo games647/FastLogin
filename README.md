@@ -23,7 +23,7 @@ So they don't need to enter passwords. This is also called auto login (auto-logi
 * /premium Label the invoker as paid account
 
 ###Permissions:
-* fastlogin.command.premium
+* fastlogin.bukkit.command.premium
 
 ###Requirements:
 * Plugin: [ProtocolLib](http://www.spigotmc.org/resources/protocollib.1997/)
@@ -35,6 +35,7 @@ So they don't need to enter passwords. This is also called auto login (auto-logi
     * [xAuth](http://dev.bukkit.org/bukkit-plugins/xauth/)
     * [CrazyLogin](http://dev.bukkit.org/bukkit-plugins/crazylogin/)
     * [LoginSecurity](http://dev.bukkit.org/bukkit-plugins/loginsecurity/)
+    * [RoyalAuth](http://dev.bukkit.org/bukkit-plugins/royalauth/)
 
 ###Downloads
 

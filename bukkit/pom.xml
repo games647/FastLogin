@@ -39,6 +39,12 @@
             <id>luricos.de-repo</id>
             <url>http://repo.luricos.de/bukkit-plugins/</url>
         </repository>
+
+        <!--Github automatic maven builds-->
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -72,6 +78,18 @@
             <artifactId>authme</artifactId>
             <version>5.2-SNAPSHOT</version>
             <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.lenis0012</groupId>
+            <artifactId>LoginSecurity-2</artifactId>
+            <version>-9c09e73b7f-1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.RoyalDev</groupId>
+            <artifactId>RoyalAuth</artifactId>
+            <version>-e21354a9b7-1</version>
         </dependency>
 
         <dependency>
@@ -109,16 +127,6 @@
             <optional>true</optional>
             <scope>system</scope>
             <systemPath>${project.basedir}/lib/CrazyLogin v7.23.2.jar</systemPath>
-        </dependency>
-
-        <!--Maven repo down :(-->
-        <dependency>
-            <groupId>me.lenis0012.ls</groupId>
-            <artifactId>LoginSecurity</artifactId>
-            <version>2.0.10</version>
-            <optional>true</optional>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/lib/LoginSecurity v2.0.10.jar</systemPath>
         </dependency>
     </dependencies>
 </project>
