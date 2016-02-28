@@ -1,5 +1,6 @@
-package com.github.games647.fastlogin.bukkit;
+package com.github.games647.fastlogin.bukkit.commands;
 
+import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 
@@ -43,7 +44,7 @@ public class PremiumCommand implements CommandExecutor {
 
     private void notifiyBungeeCord(Player target) {
         ByteArrayDataOutput dataOutput = ByteStreams.newDataOutput();
-        dataOutput.writeUTF("ACTIVE");
+        dataOutput.writeUTF("ON");
 
         target.sendPluginMessage(plugin, plugin.getName(), dataOutput.toByteArray());
     }

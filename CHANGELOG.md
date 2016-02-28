@@ -1,12 +1,15 @@
 ######0.5
 
+* Added unpremium command
+* Added /premium [player] command with optional player parameter
 * Added autologin - See config
 * Added config
 * Added isRegistered API method
 * Added forceRegister API method
-* Fixed CrazyLogin player data restore -> Fixes memory leaks with this plugin
 
+* Fixed CrazyLogin player data restore -> Fixes memory leaks with this plugin
 * Fixed premium name check to protocolsupport
+* Improved permissions managment
 
 ######0.4
 

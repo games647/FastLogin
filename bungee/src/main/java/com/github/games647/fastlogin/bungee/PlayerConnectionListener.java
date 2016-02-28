@@ -81,9 +81,12 @@ public class PlayerConnectionListener implements Listener {
             byte[] data = pluginMessageEvent.getData();
             ByteArrayDataInput dataInput = ByteStreams.newDataInput(data);
             String subchannel = dataInput.readUTF();
-            if ("ACTIVE".equals(subchannel)) {
+            if ("ON".equals(subchannel)) {
                 ProxiedPlayer forPlayer = (ProxiedPlayer) pluginMessageEvent.getReceiver();
                 plugin.getEnabledPremium().add(forPlayer.getName());
+            } else if ("OFF".equals(subchannel)) {
+                ProxiedPlayer forPlayer = (ProxiedPlayer) pluginMessageEvent.getReceiver();
+                plugin.getEnabledPremium().remove(forPlayer.getName());
             }
         }
     }

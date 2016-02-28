@@ -4,6 +4,8 @@ import com.comphenix.protocol.AsynchronousManager;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.utility.SafeCacheBuilder;
+import com.github.games647.fastlogin.bukkit.commands.CrackedCommand;
+import com.github.games647.fastlogin.bukkit.commands.PremiumCommand;
 import com.github.games647.fastlogin.bukkit.hooks.AuthPlugin;
 import com.github.games647.fastlogin.bukkit.listener.BukkitJoinListener;
 import com.github.games647.fastlogin.bukkit.listener.BungeeCordListener;
@@ -22,8 +24,8 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
-import org.apache.commons.lang.RandomStringUtils;
 
+import org.apache.commons.lang.RandomStringUtils;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -86,6 +88,7 @@ public class FastLoginBukkit extends JavaPlugin {
 
         //register commands using a unique name
         getCommand("premium").setExecutor(new PremiumCommand(this));
+        getCommand("cracked").setExecutor(new CrackedCommand(this));
 
         //check for incoming messages from the bungeecord version of this plugin
         getServer().getMessenger().registerIncomingPluginChannel(this, getName(), new BungeeCordListener(this));
