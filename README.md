@@ -36,6 +36,7 @@ So they don't need to enter passwords. This is also called auto login (auto-logi
     * [CrazyLogin](http://dev.bukkit.org/bukkit-plugins/crazylogin/)
     * [LoginSecurity](http://dev.bukkit.org/bukkit-plugins/loginsecurity/)
     * [RoyalAuth](http://dev.bukkit.org/bukkit-plugins/royalauth/)
+    * [UltraAuth](http://dev.bukkit.org/bukkit-plugins/ultraauth-aa/)
 
 ###Downloads
 
