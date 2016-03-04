@@ -78,18 +78,36 @@
             <artifactId>authme</artifactId>
             <version>5.2-SNAPSHOT</version>
             <optional>true</optional>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
             <groupId>com.github.lenis0012</groupId>
             <artifactId>LoginSecurity-2</artifactId>
             <version>-9c09e73b7f-1</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
             <groupId>com.github.RoyalDev</groupId>
             <artifactId>RoyalAuth</artifactId>
             <version>-e21354a9b7-1</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -100,12 +118,8 @@
             <!--These artifacts produce conflicts on downloading-->
             <exclusions>
                 <exclusion>
-                    <groupId>net.gravitydevelopment.updater</groupId>
-                    <artifactId>updater</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>net.ess3</groupId>
-                    <artifactId>EssentialsGroupManager</artifactId>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
