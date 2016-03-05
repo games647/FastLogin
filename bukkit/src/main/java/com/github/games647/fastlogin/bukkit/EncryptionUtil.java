@@ -2,25 +2,20 @@ package com.github.games647.fastlogin.bukkit;
 
 import com.google.common.base.Charsets;
 
-import java.security.GeneralSecurityException;
 import java.security.InvalidKeyException;
 import java.security.Key;
-import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.security.spec.InvalidKeySpecException;
-import java.security.spec.X509EncodedKeySpec;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
-import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 /**
@@ -64,19 +59,19 @@ public class EncryptionUtil {
         }
     }
 
-    public static PublicKey decodePublicKey(byte[] encodedKey) {
-        try {
-            KeyFactory keyfactory = KeyFactory.getInstance("RSA");
-
-            X509EncodedKeySpec x509encodedkeyspec = new X509EncodedKeySpec(encodedKey);
-            return keyfactory.generatePublic(x509encodedkeyspec);
-        } catch (NoSuchAlgorithmException | InvalidKeySpecException nosuchalgorithmexception) {
-            //ignore
-        }
-
-        System.err.println("Public key reconstitute failed!");
-        return null;
-    }
+//    public static PublicKey decodePublicKey(byte[] encodedKey) {
+//        try {
+//            KeyFactory keyfactory = KeyFactory.getInstance("RSA");
+//
+//            X509EncodedKeySpec x509encodedkeyspec = new X509EncodedKeySpec(encodedKey);
+//            return keyfactory.generatePublic(x509encodedkeyspec);
+//        } catch (NoSuchAlgorithmException | InvalidKeySpecException nosuchalgorithmexception) {
+//            //ignore
+//        }
+//
+//        System.err.println("Public key reconstitute failed!");
+//        return null;
+//    }
 
     public static SecretKey decryptSharedKey(PrivateKey privateKey, byte[] encryptedSharedKey) {
         return new SecretKeySpec(decryptData(privateKey, encryptedSharedKey), "AES");
@@ -110,17 +105,17 @@ public class EncryptionUtil {
         System.err.println("Cipher creation failed!");
         return null;
     }
-
-    public static Cipher createBufferedBlockCipher(int operationMode, Key key) {
-        try {
-            Cipher cipher = Cipher.getInstance("AES/CFB8/NoPadding");
-
-            cipher.init(operationMode, key, new IvParameterSpec(key.getEncoded()));
-            return cipher;
-        } catch (GeneralSecurityException generalsecurityexception) {
-            throw new RuntimeException(generalsecurityexception);
-        }
-    }
+//
+//    public static Cipher createBufferedBlockCipher(int operationMode, Key key) {
+//        try {
+//            Cipher cipher = Cipher.getInstance("AES/CFB8/NoPadding");
+//
+//            cipher.init(operationMode, key, new IvParameterSpec(key.getEncoded()));
+//            return cipher;
+//        } catch (GeneralSecurityException generalsecurityexception) {
+//            throw new RuntimeException(generalsecurityexception);
+//        }
+//    }
 
     private EncryptionUtil() {
         //utility

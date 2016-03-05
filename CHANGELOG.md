@@ -1,7 +1,12 @@
+######0.6
+
+* Added /premium [player] command with optional player parameter
+* Fixed 1.9 bugs
+* Added UltraAuth support
+
 ######0.5
 
 * Added unpremium command
-* Added /premium [player] command with optional player parameter
 * Added autologin - See config
 * Added config
 * Added isRegistered API method

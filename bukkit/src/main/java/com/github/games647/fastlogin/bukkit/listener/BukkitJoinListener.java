@@ -56,6 +56,8 @@ public class BukkitJoinListener implements Listener {
                         if (session.needsRegistration()) {
                             plugin.getLogger().log(Level.FINE, "Register player {0}", player.getName());
 
+                            plugin.getEnabledPremium().add(session.getUsername());
+
                             String generatedPassword = plugin.generateStringPassword();
                             plugin.getAuthPlugin().forceRegister(player, generatedPassword);
                             player.sendMessage(ChatColor.DARK_GREEN + "Auto registered with password: "
