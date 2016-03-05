@@ -47,7 +47,7 @@ public class FastLoginBukkit extends JavaPlugin {
     //SafeCacheBuilder is used in order to be version independent
     private final ConcurrentMap<String, PlayerSession> session = SafeCacheBuilder.<String, PlayerSession>newBuilder()
             //2 minutes should be enough as a timeout for bad internet connection (Server, Client and Mojang)
-            .expireAfterWrite(30, TimeUnit.SECONDS)
+            .expireAfterWrite(1, TimeUnit.MINUTES)
             //mapped by ip:port -> PlayerSession
             .build(new CacheLoader<String, PlayerSession>() {
 
