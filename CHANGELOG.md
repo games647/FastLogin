@@ -9,7 +9,7 @@
 
 * Fixed CrazyLogin player data restore -> Fixes memory leaks with this plugin
 * Fixed premium name check to protocolsupport
-* Improved permissions managment
+* Improved permissions management
 
 ######0.4
 

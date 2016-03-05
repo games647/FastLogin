@@ -6,6 +6,7 @@
 # netbeans
 /nbproject
 nb-configuration.xml
+/bukkit/nbproject/
 
 # maven
 /target

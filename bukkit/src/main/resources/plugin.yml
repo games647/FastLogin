@@ -38,20 +38,20 @@ commands:
         permission: ${project.artifactId}.command.unpremium
 
 permissions:
-    ${project.parent.name}.command.premium:
+    ${project.artifactId}.command.premium:
         description: 'Label themselves as premium'
         default: true
 
-    ${project.parent.name}.command.premium.other:
+    ${project.artifactId}.command.premium.other:
         description: 'Label others as premium'
         children:
-            ${project.parent.name}.command.premium
+            ${project.artifactId}.command.premium: true
 
-    ${project.parent.name}.command.unpremium:
+    ${project.artifactId}.command.unpremium:
         description: 'Label themselves as cracked'
         default: true
 
-    ${project.parent.name}.command..unpremium.other:
+    ${project.artifactId}.command..unpremium.other:
         description: 'Label others as cracked'
         children:
-            ${project.parent.name}.command.unpremium
+            ${project.artifactId}.command.unpremium: true
