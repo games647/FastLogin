@@ -12,11 +12,10 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 /**
- * Github: https://github.com/lenis0012/LoginSecurity-2
- * Project page:
+ * Github: https://github.com/lenis0012/LoginSecurity-2 Project page:
  *
- * Bukkit: http://dev.bukkit.org/bukkit-plugins/loginsecurity/
- * Spigot: https://www.spigotmc.org/resources/loginsecurity.19362/
+ * Bukkit: http://dev.bukkit.org/bukkit-plugins/loginsecurity/ Spigot:
+ * https://www.spigotmc.org/resources/loginsecurity.19362/
  *
  * on join:
  * https://github.com/lenis0012/LoginSecurity-2/blob/master/src/main/java/com/lenis0012/bukkit/ls/LoginSecurity.java#L282
@@ -45,14 +44,14 @@ public class LoginSecurityHook implements BukkitAuthPlugin {
         DataManager dataManager = securityPlugin.data;
 
         //https://github.com/lenis0012/LoginSecurity-2/blob/master/src/main/java/com/lenis0012/bukkit/ls/LoginSecurity.java#L283
-        UUID offlineUuid = UUID.nameUUIDFromBytes(playerName.getBytes(Charsets.UTF_8));
+        UUID offlineUuid = UUID.nameUUIDFromBytes(("OfflinePlayer:" + playerName).getBytes(Charsets.UTF_8));
         return dataManager.isRegistered(offlineUuid.toString().replace("-", ""));
         //check for loginsecurity sessions in order to prevent a sql query?
         //sesUse && thread.getSession().containsKey(uuid) && checkLastIp(player)) {
     }
 
     @Override
-    public void forceRegister(Player player, final String password) {
+    public void forceRegister(final Player player, final String password) {
         final LoginSecurity securityPlugin = LoginSecurity.instance;
         final DataManager dataManager = securityPlugin.data;
 
@@ -65,10 +64,15 @@ public class LoginSecurityHook implements BukkitAuthPlugin {
             @Override
             public void run() {
                 dataManager.register(uuidString, password, securityPlugin.hasher.getTypeId(), ipAddress.toString());
+                //run forcelogin only if it was successfull
+                Bukkit.getScheduler().runTask(securityPlugin, new Runnable() {
+                    @Override
+                    public void run() {
+                        //notify the plugin that this player can be logged in
+                        forceLogin(player);
+                    }
+                });
             }
         });
-
-        //notify the plugin that this player can be logged in
-        forceLogin(player);
     }
 }

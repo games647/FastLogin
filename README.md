@@ -33,17 +33,20 @@ So they don't need to enter passwords. This is also called auto login (auto-logi
 * Tested Bukkit/[Spigot](https://www.spigotmc.org) 1.9 (could also work with other versions)
 * Java 7+
 * Run Spigot and/or BungeeCord in offline mode (see server.properties or config.yml)
-* An auth plugin. Supported Plugins:
-    * Bukkit:
-    * [AuthMe](http://dev.bukkit.org/bukkit-plugins/authme-reloaded/)
-    * [xAuth](http://dev.bukkit.org/bukkit-plugins/xauth/)
-    * [CrazyLogin](http://dev.bukkit.org/bukkit-plugins/crazylogin/)
-    * [LoginSecurity](http://dev.bukkit.org/bukkit-plugins/loginsecurity/)
-    * [RoyalAuth](http://dev.bukkit.org/bukkit-plugins/royalauth/)
-    * [UltraAuth](http://dev.bukkit.org/bukkit-plugins/ultraauth-aa/)
+* An auth plugin. Supported Plugins
 
-    * BungeeCord:
-    * [BungeeAuth](https://www.spigotmc.org/resources/bungeeauth.493/)
+#### Bukkit
+
+* [AuthMe](http://dev.bukkit.org/bukkit-plugins/authme-reloaded/)
+* [xAuth](http://dev.bukkit.org/bukkit-plugins/xauth/)
+* [CrazyLogin](http://dev.bukkit.org/bukkit-plugins/crazylogin/)
+* [LoginSecurity](http://dev.bukkit.org/bukkit-plugins/loginsecurity/)
+* [RoyalAuth](http://dev.bukkit.org/bukkit-plugins/royalauth/)
+* [UltraAuth](http://dev.bukkit.org/bukkit-plugins/ultraauth-aa/)
+
+#### BungeeCord
+
+* [BungeeAuth](https://www.spigotmc.org/resources/bungeeauth.493/)
 
 ###Downloads
 
