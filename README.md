@@ -10,8 +10,11 @@ So they don't need to enter passwords. This is also called auto login (auto-logi
 * Detect paid accounts from others
 * Automatically login paid accounts (premium)
 * Support various of auth plugins
-* Experimental Cauldron support
+* Cauldron support
+* Forge/Sponge message support
 * BungeeCord support
+* Auto register new premium players
+* Plugin: ProtocolSupport is supported and can be used as an alternative to ProtocolLib
 * No client modifications needed
 * Good performance by using async non blocking operations
 * Free
@@ -27,9 +30,9 @@ So they don't need to enter passwords. This is also called auto login (auto-logi
 
 ###Requirements:
 * Plugin: [ProtocolLib](http://www.spigotmc.org/resources/protocollib.1997/)
-* Tested Bukkit/[Spigot](https://www.spigotmc.org) 1.8.8 (could also work with other versions)
-* Java 7 or above
-* Run in offline mode (see server.properties)
+* Tested Bukkit/[Spigot](https://www.spigotmc.org) 1.9 (could also work with other versions)
+* Java 7+
+* Run Spigot and/or BungeeCord in offline mode (see server.properties or config.yml)
 * An auth plugin. Supported Plugins:
     * [AuthMe](http://dev.bukkit.org/bukkit-plugins/authme-reloaded/)
     * [xAuth](http://dev.bukkit.org/bukkit-plugins/xauth/)

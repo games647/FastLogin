@@ -61,10 +61,13 @@ public class BungeeCordListener implements PluginMessageListener {
 
                 //fail if BungeeCord support is disabled (id = null)
                 if (sourceId.equals(proxyId)) {
-                    PlayerSession playerSession = new PlayerSession(playerName, null, null);
+                    PlayerSession playerSession = new PlayerSession(playerName);
                     playerSession.setVerified(true);
+                    playerSession.setRegistered(true);
+
                     //put it only if the user doesn't has a session open
                     //so that the player have to send the bungeecord packet and cannot skip the verification then
+
                     plugin.getSessions().putIfAbsent(checkedPlayer.getAddress().toString(), playerSession);
                 } else {
                     //blacklist target for the current login

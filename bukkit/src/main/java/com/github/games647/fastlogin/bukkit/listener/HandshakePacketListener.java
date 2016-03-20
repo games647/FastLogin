@@ -1,6 +1,7 @@
 package com.github.games647.fastlogin.bukkit.listener;
 
 import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.PacketType.Protocol;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
@@ -34,10 +35,10 @@ public class HandshakePacketListener extends PacketAdapter {
     @Override
     public void onPacketReceiving(PacketEvent packetEvent) {
         PacketContainer packet = packetEvent.getPacket();
-        PacketType.Protocol nextProtocol = packet.getProtocols().read(0);
+        Protocol nextProtocol = packet.getProtocols().read(0);
 
         //we don't want to listen for server ping.
-        if (nextProtocol == PacketType.Protocol.LOGIN) {
+        if (nextProtocol == Protocol.LOGIN) {
             //here are the information written separated by a space
             String hostname = packet.getStrings().read(0);
             //https://hub.spigotmc.org/stash/projects/SPIGOT/repos/spigot/browse/CraftBukkit-Patches/0055-BungeeCord-Support.patch

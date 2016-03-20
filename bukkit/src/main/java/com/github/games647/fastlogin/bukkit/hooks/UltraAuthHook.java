@@ -40,6 +40,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.InventoryView.Property;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.MainHand;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.map.MapView;
 import org.bukkit.metadata.MetadataValue;
@@ -55,7 +56,10 @@ import org.bukkit.util.Vector;
 import ultraauth.api.UltraAuthAPI;
 
 /**
- * Project page: http://dev.bukkit.org/bukkit-plugins/ultraauth-aa/
+ * Project page:
+ *
+ * Bukkit: http://dev.bukkit.org/bukkit-plugins/ultraauth-aa/
+ * Spigot: https://www.spigotmc.org/resources/ultraauth.17044/
  */
 public class UltraAuthHook implements AuthPlugin {
 
@@ -1402,5 +1406,19 @@ public class UltraAuthHook implements AuthPlugin {
             throw new UnsupportedOperationException("Not supported yet.");
         }
 
+        @Override
+        public MainHand getMainHand() {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public boolean isGliding() {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public void setGliding(boolean arg0) {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
     }
 }

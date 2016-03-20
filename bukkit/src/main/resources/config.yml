@@ -4,7 +4,7 @@
 
 # Request a premium login without forcing the player to type a command
 #
-# If you activate autologin, this plugin will check/do these points on login:
+# If you activate autoRegister, this plugin will check/do these points on login:
 # 1. An existing cracked account shouldn't exist
 # -> paid accounts cannot steal the existing account of cracked players
 # - (Already registered players could still use the /premium command to activate premium checks)
@@ -16,4 +16,4 @@
 # the player just disconnect and sees the message: 'bad login'
 # There is no way to change this message
 # For more information: https://github.com/games647/FastLogin#why-do-players-have-to-invoke-a-command
-autologin: false
+autoRegister: false

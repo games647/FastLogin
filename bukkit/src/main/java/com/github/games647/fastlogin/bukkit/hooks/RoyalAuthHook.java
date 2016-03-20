@@ -4,6 +4,13 @@ import org.bukkit.entity.Player;
 import org.royaldev.royalauth.AuthPlayer;
 import org.royaldev.royalauth.Config;
 
+/**
+ * Github: https://github.com/RoyalDev/RoyalAuth
+ *
+ * Project page:
+ *
+ * Bukkit: http://dev.bukkit.org/bukkit-plugins/royalauth/
+ */
 public class RoyalAuthHook implements AuthPlugin {
 
     @Override

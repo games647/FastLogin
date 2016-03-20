@@ -28,10 +28,24 @@ public class CrackedCommand implements CommandExecutor {
             }
 
             String playerName = sender.getName();
-            plugin.getEnabledPremium().remove(playerName);
-            sender.sendMessage(ChatColor.DARK_GREEN + "Removed to the list of premium players");
-            notifiyBungeeCord((Player) sender);
+            boolean existed = plugin.getEnabledPremium().remove(playerName);
+            if (existed) {
+                sender.sendMessage(ChatColor.DARK_GREEN + "Removed from the list of premium players");
+                notifiyBungeeCord((Player) sender);
+            } else {
+                sender.sendMessage(ChatColor.DARK_RED + "You are not in the premium list");
+            }
+
             return true;
+        } else {
+            String playerName = args[0];
+            boolean existed = plugin.getEnabledPremium().remove(playerName);
+            if (existed) {
+                sender.sendMessage(ChatColor.DARK_GREEN + "Removed from the list of premium players");
+//                notifiyBungeeCord((Player) sender);
+            } else {
+                sender.sendMessage(ChatColor.DARK_RED + "User is not in the premium list");
+            }
         }
 
         return true;

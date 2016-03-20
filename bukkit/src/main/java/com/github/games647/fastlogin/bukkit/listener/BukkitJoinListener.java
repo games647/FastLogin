@@ -35,7 +35,7 @@ public class BukkitJoinListener implements Listener {
         final Player player = joinEvent.getPlayer();
 
         //removing the session because we now use it
-        final PlayerSession session = plugin.getSessions().remove(player.getAddress().toString());
+        final PlayerSession session = plugin.getSessions().get(player.getAddress().toString());
         if (session != null) {
             WrappedGameProfile gameProfile = WrappedGameProfile.fromPlayer(player);
             WrappedSignedProperty skin = session.getSkin();
@@ -49,6 +49,10 @@ public class BukkitJoinListener implements Listener {
             @Override
             public void run() {
                 if (player.isOnline()) {
+                    //remove the bungeecord identifier
+                    String id = '/' + player.getAddress().getHostString() + ':' + player.getAddress().getPort();
+                    PlayerSession session = plugin.getSessions().get(id);
+
                     //blacklist this target player for BungeeCord Id brute force attacks
                     player.setMetadata(plugin.getName(), new FixedMetadataValue(plugin, true));
                     //check if it's the same player as we checked before

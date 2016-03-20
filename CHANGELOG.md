@@ -1,6 +1,12 @@
-######0.6
+######0.7
 
 * Added /premium [player] command with optional player parameter
+* Fixed BungeeCord support
+* Changed config option autologin to autoregister to clarify the usage
+* Updated to the newest changes of Spigot
+
+######0.6
+
 * Fixed 1.9 bugs
 * Added UltraAuth support
 

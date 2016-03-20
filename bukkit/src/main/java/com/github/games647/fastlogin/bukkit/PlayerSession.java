@@ -25,12 +25,18 @@ public class PlayerSession {
         this.verifyToken = ArrayUtils.clone(verifyToken);
     }
 
+    public PlayerSession(String username) {
+        this(username, "", ArrayUtils.EMPTY_BYTE_ARRAY);
+    }
+
     /**
      * Gets the random generated server id. This makes sure the request
      * sent from the client is just for this server.
      *
      * See this for details
      * http://www.sk89q.com/2011/09/minecraft-name-spoofing-exploit/
+     *
+     * Empty if it's a BungeeCord connection
      *
      * @return random generated server id
      */
@@ -40,6 +46,8 @@ public class PlayerSession {
 
     /**
      * Gets the verify token the server sent to the client.
+     *
+     * Empty if it's a BungeeCord connection
      *
      * @return the verify token from the server
      */

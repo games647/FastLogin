@@ -82,9 +82,9 @@ public class FastLoginBukkit extends JavaPlugin {
             AsynchronousManager asynchronousManager = protocolManager.getAsynchronousManager();
             asynchronousManager.registerAsyncHandler(new StartPacketListener(this, protocolManager)).start();
             asynchronousManager.registerAsyncHandler(new EncryptionPacketListener(this, protocolManager)).start();
-
-            getServer().getPluginManager().registerEvents(new BukkitJoinListener(this), this);
         }
+
+        getServer().getPluginManager().registerEvents(new BukkitJoinListener(this), this);
 
         //register commands using a unique name
         getCommand("premium").setExecutor(new PremiumCommand(this));

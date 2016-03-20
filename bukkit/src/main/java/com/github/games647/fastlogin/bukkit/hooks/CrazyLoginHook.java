@@ -15,7 +15,10 @@ import org.bukkit.entity.Player;
 
 /**
  * Github: https://github.com/ST-DDT/CrazyLogin
- * Project page: http://dev.bukkit.org/server-mods/crazylogin/
+ *
+ * Project page:
+ *
+ * Bukkit: http://dev.bukkit.org/server-mods/crazylogin/
  */
 public class CrazyLoginHook implements AuthPlugin {
 
@@ -32,7 +35,7 @@ public class CrazyLoginHook implements AuthPlugin {
 
             String ip = player.getAddress().getAddress().getHostAddress();
 //this should be done after login to restore the inventory, unhide players, prevent potential memory leaks...
-//extracted from: https://github.com/ST-DDT/CrazyLogin/blob/master/src/main/java/de/st_ddt/crazylogin/CrazyLogin.java#L1948
+//from: https://github.com/ST-DDT/CrazyLogin/blob/master/src/main/java/de/st_ddt/crazylogin/CrazyLogin.java#L1948
             playerData.resetLoginFails();
             player.setFireTicks(0);
 

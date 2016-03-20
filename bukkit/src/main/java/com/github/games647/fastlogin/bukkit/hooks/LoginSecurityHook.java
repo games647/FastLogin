@@ -12,8 +12,11 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 /**
- * Github: http://dev.bukkit.org/bukkit-plugins/loginsecurity/
- * Project page: https://github.com/lenis0012/LoginSecurity-2
+ * Github: https://github.com/lenis0012/LoginSecurity-2
+ * Project page:
+ *
+ * Bukkit: http://dev.bukkit.org/bukkit-plugins/loginsecurity/
+ * Spigot: https://www.spigotmc.org/resources/loginsecurity.19362/
  *
  * on join:
  * https://github.com/lenis0012/LoginSecurity-2/blob/master/src/main/java/com/lenis0012/bukkit/ls/LoginSecurity.java#L282
@@ -44,7 +47,7 @@ public class LoginSecurityHook implements AuthPlugin {
         //https://github.com/lenis0012/LoginSecurity-2/blob/master/src/main/java/com/lenis0012/bukkit/ls/LoginSecurity.java#L283
         UUID offlineUuid = UUID.nameUUIDFromBytes(playerName.getBytes(Charsets.UTF_8));
         return dataManager.isRegistered(offlineUuid.toString().replace("-", ""));
-        //check for sessions in order to prevent a sql query?
+        //check for loginsecurity sessions in order to prevent a sql query?
         //sesUse && thread.getSession().containsKey(uuid) && checkLastIp(player)) {
     }
 

@@ -37,6 +37,11 @@ public class PremiumCommand implements CommandExecutor {
             sender.sendMessage(ChatColor.DARK_GREEN + "Added to the list of premium players");
             notifiyBungeeCord((Player) sender);
             return true;
+        } else {
+            String playerName = args[0];
+            plugin.getEnabledPremium().add(playerName);
+            sender.sendMessage(ChatColor.DARK_GREEN + "Added player to the list of premium players");
+//            notifiyBungeeCord();
         }
 
         return true;
