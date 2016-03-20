@@ -1,5 +1,7 @@
 package com.github.games647.fastlogin.bungee;
 
+import com.github.games647.fastlogin.bungee.hooks.BungeeAuthHook;
+import com.github.games647.fastlogin.bungee.hooks.BungeeAuthPlugin;
 import com.google.common.collect.Sets;
 
 import java.util.Set;
@@ -13,6 +15,7 @@ import net.md_5.bungee.api.plugin.Plugin;
 public class FastLoginBungee extends Plugin {
 
     private final Set<String> enabledPremium = Sets.newConcurrentHashSet();
+    private BungeeAuthPlugin bungeeAuthPlugin;
 
     @Override
     public void onEnable() {
@@ -21,6 +24,8 @@ public class FastLoginBungee extends Plugin {
 
         //this is required to listen to messages from the server
         getProxy().registerChannel(getDescription().getName());
+
+        registerHook();
     }
 
     /**
@@ -30,5 +35,22 @@ public class FastLoginBungee extends Plugin {
      */
     public Set<String> getEnabledPremium() {
         return enabledPremium;
+    }
+
+    /**
+     * Get the auth plugin hook for BungeeCord
+     *
+     * @return the auth hook for BungeeCord. null if none found
+     */
+    public BungeeAuthPlugin getBungeeAuthPlugin() {
+        return bungeeAuthPlugin;
+    }
+
+    private void registerHook() {
+        Plugin plugin = getProxy().getPluginManager().getPlugin("BungeeAuth");
+        if (plugin != null) {
+            bungeeAuthPlugin = new BungeeAuthHook();
+            getLogger().info("Hooked into BungeeAuth");
+        }
     }
 }

@@ -1,5 +1,6 @@
 package com.github.games647.fastlogin.bungee;
 
+import com.github.games647.fastlogin.bungee.hooks.BungeeAuthPlugin;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
@@ -62,6 +63,11 @@ public class PlayerConnectionListener implements Listener {
             dataOutput.writeLong(proxyId.getLeastSignificantBits());
 
             server.sendData(plugin.getDescription().getName(), dataOutput.toByteArray());
+
+            BungeeAuthPlugin authPlugin = plugin.getBungeeAuthPlugin();
+            if (authPlugin != null) {
+                authPlugin.forceLogin(player);
+            }
         }
     }
 
