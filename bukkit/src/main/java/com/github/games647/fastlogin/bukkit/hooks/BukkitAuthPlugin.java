@@ -3,9 +3,9 @@ package com.github.games647.fastlogin.bukkit.hooks;
 import org.bukkit.entity.Player;
 
 /**
- * Represents a supporting authentication plugin
+ * Represents a supporting authentication plugin in Bukkit/Spigot/... servers
  */
-public interface AuthPlugin {
+public interface BukkitAuthPlugin {
 
     /**
      * Login the premium (paid account) player after

@@ -22,6 +22,12 @@
             <id>bungeecord-repo</id>
             <url>https://oss.sonatype.org/content/repositories/snapshots</url>
         </repository>
+
+        <!--Github automatic maven builds-->
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -31,6 +37,12 @@
             <version>1.9-SNAPSHOT</version>
             <type>jar</type>
             <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.MatteCarra</groupId>
+            <artifactId>BungeeAuth</artifactId>
+            <version>-1.2.1-gc367d92-8</version>
         </dependency>
     </dependencies>
 </project>

@@ -6,7 +6,6 @@ import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.utility.SafeCacheBuilder;
 import com.github.games647.fastlogin.bukkit.commands.CrackedCommand;
 import com.github.games647.fastlogin.bukkit.commands.PremiumCommand;
-import com.github.games647.fastlogin.bukkit.hooks.AuthPlugin;
 import com.github.games647.fastlogin.bukkit.listener.BukkitJoinListener;
 import com.github.games647.fastlogin.bukkit.listener.BungeeCordListener;
 import com.github.games647.fastlogin.bukkit.listener.EncryptionPacketListener;
@@ -28,6 +27,7 @@ import java.util.logging.Level;
 import org.apache.commons.lang.RandomStringUtils;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+import com.github.games647.fastlogin.bukkit.hooks.BukkitAuthPlugin;
 
 /**
  * This plugin checks if a player has a paid account and if so tries to skip offline mode authentication.
@@ -58,7 +58,7 @@ public class FastLoginBukkit extends JavaPlugin {
                 }
             });
 
-    private AuthPlugin authPlugin;
+    private BukkitAuthPlugin authPlugin;
     private final MojangApiConnector mojangApiConnector = new MojangApiConnector(this);
 
     @Override
@@ -157,7 +157,7 @@ public class FastLoginBukkit extends JavaPlugin {
      *
      * @return interface to any supported auth plugin
      */
-    public AuthPlugin getAuthPlugin() {
+    public BukkitAuthPlugin getAuthPlugin() {
         return authPlugin;
     }
 
@@ -172,7 +172,7 @@ public class FastLoginBukkit extends JavaPlugin {
     }
 
     private boolean registerHooks() {
-        AuthPlugin authPluginHook = null;
+        BukkitAuthPlugin authPluginHook = null;
         try {
             String hooksPackage = this.getClass().getPackage().getName() + ".hooks";
             //Look through all classes in the hooks package and look for supporting plugins on the server
@@ -181,10 +181,10 @@ public class FastLoginBukkit extends JavaPlugin {
                 String pluginName = clazzInfo.getSimpleName().replace("Hook", "");
                 Class<?> clazz = clazzInfo.load();
                 //uses only member classes which uses AuthPlugin interface (skip interfaces)
-                if (AuthPlugin.class.isAssignableFrom(clazz)
+                if (BukkitAuthPlugin.class.isAssignableFrom(clazz)
                         //check only for enabled plugins. A single plugin could be disabled by plugin managers
                         && getServer().getPluginManager().isPluginEnabled(pluginName)) {
-                    authPluginHook = (AuthPlugin) clazz.newInstance();
+                    authPluginHook = (BukkitAuthPlugin) clazz.newInstance();
                     getLogger().log(Level.INFO, "Hooking into auth plugin: {0}", pluginName);
                     break;
                 }

@@ -11,7 +11,7 @@ import org.royaldev.royalauth.Config;
  *
  * Bukkit: http://dev.bukkit.org/bukkit-plugins/royalauth/
  */
-public class RoyalAuthHook implements AuthPlugin {
+public class RoyalAuthHook implements BukkitAuthPlugin {
 
     @Override
     public void forceLogin(Player player) {

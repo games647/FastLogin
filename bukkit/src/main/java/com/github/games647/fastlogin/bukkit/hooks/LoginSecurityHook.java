@@ -21,7 +21,7 @@ import org.bukkit.entity.Player;
  * on join:
  * https://github.com/lenis0012/LoginSecurity-2/blob/master/src/main/java/com/lenis0012/bukkit/ls/LoginSecurity.java#L282
  */
-public class LoginSecurityHook implements AuthPlugin {
+public class LoginSecurityHook implements BukkitAuthPlugin {
 
     @Override
     public void forceLogin(Player player) {

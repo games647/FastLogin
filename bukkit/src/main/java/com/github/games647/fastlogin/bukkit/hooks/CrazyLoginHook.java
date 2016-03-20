@@ -20,7 +20,7 @@ import org.bukkit.entity.Player;
  *
  * Bukkit: http://dev.bukkit.org/server-mods/crazylogin/
  */
-public class CrazyLoginHook implements AuthPlugin {
+public class CrazyLoginHook implements BukkitAuthPlugin {
 
     private final PlayerListener playerListener = getListener();
 

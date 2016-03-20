@@ -11,7 +11,7 @@ import org.bukkit.entity.Player;
  * Bukkit: http://dev.bukkit.org/bukkit-plugins/authme-reloaded/
  * Spigot: https://www.spigotmc.org/resources/authme-reloaded.6269/
  */
-public class AuthMeHook implements AuthPlugin {
+public class AuthMeHook implements BukkitAuthPlugin {
 
     @Override
     public void forceLogin(Player player) {

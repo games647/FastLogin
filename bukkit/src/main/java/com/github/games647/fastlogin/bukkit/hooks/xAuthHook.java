@@ -12,7 +12,7 @@ import org.bukkit.entity.Player;
  *
  * Bukkit: http://dev.bukkit.org/bukkit-plugins/xauth/
  */
-public class xAuthHook implements AuthPlugin {
+public class xAuthHook implements BukkitAuthPlugin {
 
     @Override
     public void forceLogin(Player player) {
