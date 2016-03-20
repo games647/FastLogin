@@ -1,5 +1,6 @@
 package com.github.games647.fastlogin.bungee.hooks;
 
+import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Random;
@@ -27,10 +28,19 @@ public class BungeeAuthHook implements BungeeAuthPlugin {
     public void forceLogin(ProxiedPlayer player) {
 //https://github.com/MatteCarra/BungeeAuth/blob/master/src/me/vik1395/BungeeAuth/Login.java#L92-95
         Main.plonline.add(player.getName());
-        //renamed from ct to databaseConnection
-//        databaseConnection.setStatus(player.getName(), "online");
-        ListenerClass.movePlayer(player, false);
-        ListenerClass.prelogin.get(player.getName()).cancel();
+        try {
+            //renamed from ct to databaseConnection
+//            databaseConnection.setStatus(player.getName(), "online");
+
+            Class<?>[] parameterTypes = new Class<?>[] {String.class, String.class};
+            Object[] arguments = new Object[] {player.getName(), "online"};
+            callProtected("setStatus", parameterTypes, arguments);
+
+            ListenerClass.movePlayer(player, false);
+            ListenerClass.prelogin.get(player.getName()).cancel();
+        } catch (Exception ex) {
+            Main.plugin.getLogger().severe("[BungeeAuth] Error force loging in player");
+        }
     }
 
     @Override
@@ -58,13 +68,26 @@ public class BungeeAuthHook implements BungeeAuthPlugin {
         String hash = ph.newHash(Pw, pType);
 
         //creates a new SQL entry with the player's details.
-//        try {
+        try {
             //renamed t to databaseConnection
 //            databaseConnection.newPlayerEntry(player.getName(), hash, pType, "", lastip, regdate, lastip, lastseen);
-            ListenerClass.prelogin.get(player.getName()).cancel();
-//        } catch (SQLException e) {
-//            Main.plugin.getLogger().severe("[BungeeAuth] Error when creating a new player in the MySQL Database");
-//            e.printStackTrace();
-//        }
+
+            Class<?>[] parameterTypes = new Class<?>[] {String.class, String.class, String.class, String.class
+                    , String.class, String.class, String.class, String.class};
+            Object[] arguments = new Object[] {player.getName(), hash, pType, "", lastip, regdate, lastip, lastseen};
+            callProtected("newPlayerEntry", parameterTypes, arguments);
+            forceLogin(player);
+        } catch (Exception ex) {
+            Main.plugin.getLogger().severe("[BungeeAuth] Error when creating a new player in the MySQL Database");
+        }
+    }
+
+    //pail ;(
+    private void callProtected(String methodName, Class<?>[] parameterTypes, Object[] arguments) throws Exception {
+        Class<? extends Tables> tableClass = databaseConnection.getClass();
+
+        Method method = tableClass.getDeclaredMethod(methodName, parameterTypes);
+        method.setAccessible(true);
+        method.invoke(databaseConnection, arguments);
     }
 }
