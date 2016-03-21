@@ -9,6 +9,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.bukkit.Achievement;
+import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.EntityEffect;
 import org.bukkit.GameMode;
@@ -54,6 +55,7 @@ import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.util.Vector;
 
 import ultraauth.api.UltraAuthAPI;
+import ultraauth.main.Main;
 
 /**
  * Project page:
@@ -74,8 +76,14 @@ public class UltraAuthHook implements BukkitAuthPlugin {
     }
 
     @Override
-    public void forceRegister(Player player, String password) {
-        UltraAuthAPI.setPlayerPasswordOnline(player, password);
+    public void forceRegister(final Player player, final String password) {
+        Bukkit.getScheduler().runTaskAsynchronously(Main.main, new Runnable() {
+            @Override
+            public void run() {
+                UltraAuthAPI.setPlayerPasswordOnline(player, password);
+                forceLogin(player);
+            }
+        });
     }
 
     class FakePlayer implements Player {

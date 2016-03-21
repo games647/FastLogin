@@ -58,12 +58,13 @@ public class LoginSecurityHook implements BukkitAuthPlugin {
         UUID playerUUID = player.getUniqueId();
         final String uuidString = playerUUID.toString().replace("-", "");
         final InetAddress ipAddress = player.getAddress().getAddress();
+        final String passwordHash = securityPlugin.hasher.hash(password);
 
         //this executes a sql query without interacting with other parts so we can run it async.
         Bukkit.getScheduler().runTaskAsynchronously(securityPlugin, new Runnable() {
             @Override
             public void run() {
-                dataManager.register(uuidString, password, securityPlugin.hasher.getTypeId(), ipAddress.toString());
+                dataManager.register(uuidString, passwordHash, securityPlugin.hasher.getTypeId(), ipAddress.toString());
                 //run forcelogin only if it was successfull
                 Bukkit.getScheduler().runTask(securityPlugin, new Runnable() {
                     @Override

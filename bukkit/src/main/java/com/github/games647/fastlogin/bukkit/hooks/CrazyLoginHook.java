@@ -26,9 +26,9 @@ public class CrazyLoginHook implements BukkitAuthPlugin {
 
     @Override
     public void forceLogin(Player player) {
-        CrazyLogin crazyLoginPlugin = CrazyLogin.getPlugin();
+        final CrazyLogin crazyLoginPlugin = CrazyLogin.getPlugin();
 
-        LoginPlayerData playerData = crazyLoginPlugin.getPlayerData(player.getName());
+        final LoginPlayerData playerData = crazyLoginPlugin.getPlayerData(player.getName());
         if (playerData != null) {
             //mark the account as logged in
             playerData.setLoggedIn(true);
@@ -50,9 +50,15 @@ public class CrazyLoginHook implements BukkitAuthPlugin {
             //illegalCommandUsesPerIP.remove(IP);
             //tempBans.remove(IP);
             playerData.addIP(ip);
-            crazyLoginPlugin.getCrazyDatabase().saveWithoutPassword(playerData);
             player.setMetadata("Authenticated", new Authenticated(crazyLoginPlugin, player));
             crazyLoginPlugin.unregisterDynamicHooks();
+            Bukkit.getScheduler().runTaskAsynchronously(crazyLoginPlugin, new Runnable() {
+                @Override
+                public void run() {
+                    //SQL-Queries should run async
+                    crazyLoginPlugin.getCrazyDatabase().saveWithoutPassword(playerData);
+                }
+            });
         }
     }
 

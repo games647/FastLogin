@@ -6,6 +6,9 @@ import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 
 import java.util.UUID;
+import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.TextComponent;
 
 import net.md_5.bungee.api.connection.PendingConnection;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -67,6 +70,9 @@ public class PlayerConnectionListener implements Listener {
             BungeeAuthPlugin authPlugin = plugin.getBungeeAuthPlugin();
             if (authPlugin != null) {
                 authPlugin.forceLogin(player);
+                BaseComponent loginMessage = new TextComponent("Auto login");
+                loginMessage.setColor(ChatColor.DARK_GREEN);
+                player.sendMessage(loginMessage);
             }
         }
     }

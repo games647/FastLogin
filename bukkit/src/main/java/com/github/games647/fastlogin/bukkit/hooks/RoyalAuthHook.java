@@ -16,6 +16,9 @@ public class RoyalAuthHook implements BukkitAuthPlugin {
     @Override
     public void forceLogin(Player player) {
         AuthPlayer authPlayer = AuthPlayer.getAuthPlayer(player);
+
+//https://github.com/RoyalDev/RoyalAuth/blob/master/src/main/java/org/royaldev/royalauth/commands/CmdLogin.java#L62
+        //not thread-safe
         authPlayer.login();
     }
 
@@ -27,6 +30,7 @@ public class RoyalAuthHook implements BukkitAuthPlugin {
 
     @Override
     public void forceRegister(Player player, String password) {
+//https://github.com/RoyalDev/RoyalAuth/blob/master/src/main/java/org/royaldev/royalauth/commands/CmdRegister.java#L50
         AuthPlayer authPlayer = AuthPlayer.getAuthPlayer(player);
         authPlayer.setPassword(password, Config.passwordHashType);
 

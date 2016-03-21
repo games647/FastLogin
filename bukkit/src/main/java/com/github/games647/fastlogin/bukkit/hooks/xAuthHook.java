@@ -20,11 +20,12 @@ public class xAuthHook implements BukkitAuthPlugin {
 
         xAuthPlayer xAuthPlayer = xAuthPlugin.getPlayerManager().getPlayer(player);
         if (xAuthPlayer != null) {
-            xAuthPlugin.getPlayerManager().doLogin(xAuthPlayer);
-
             //we checked that the player is premium (paid account)
             //unprotect the inventory, op status...
             xAuthPlayer.setPremium(true);
+
+            //not thread-safe
+            xAuthPlugin.getPlayerManager().doLogin(xAuthPlayer);
         }
     }
 
