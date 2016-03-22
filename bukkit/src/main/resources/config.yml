@@ -17,3 +17,22 @@
 # There is no way to change this message
 # For more information: https://github.com/games647/FastLogin#why-do-players-have-to-invoke-a-command
 autoRegister: false
+
+# If this plugin detected that a player has a premium, it can also set the associated
+# uuid from that account.
+#
+# So if the players changes their usernames, they will still have
+# the same playerdata (inventory, permissions, ...)
+#
+# Warning: This also means that the UUID will be different if the player is connecting
+# through a offline mode connection. This **could** cause plugin compatibility issues.
+#
+# This is a example and doesn't apply for every plugin.
+# Example: If you want to ban players who aren't online at the moment, the ban plugin will look
+# after a offline uuid associated to the player, because the server is in offline mode. Then the premium
+# players could still join the server, because they have different UUID.
+#
+# Moreover you may want to convert the offline UUID to a premium UUID. This will ensure that the player
+# will have the same inventory, permissions, ... if they switched to premium authentification from offline/cracked
+# authentification.
+premiumUuid: false

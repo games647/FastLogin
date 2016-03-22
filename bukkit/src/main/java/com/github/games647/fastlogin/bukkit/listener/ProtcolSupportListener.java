@@ -59,7 +59,9 @@ public class ProtcolSupportListener implements Listener {
             PlayerSession playerSession = new PlayerSession(playerName, null, null);
             playerSession.setRegistered(registered);
             plugin.getSessions().put(address.toString(), playerSession);
-//            loginStartEvent.setUseOnlineModeUUID(true);
+            if (plugin.getConfig().getBoolean("premiumUuid")) {
+                loginStartEvent.setUseOnlineModeUUID(true);
+            }
         }
     }
 }

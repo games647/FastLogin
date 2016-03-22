@@ -105,6 +105,7 @@ public class EncryptionPacketListener extends PacketAdapter {
             plugin.getLogger().log(Level.FINE, "Player {0} has a verified premium account", username);
 
             session.setVerified(true);
+            setPremiumUUID(session, player);
             receiveFakeStartPacket(username, player);
         } else {
             //user tried to fake a authentication
@@ -115,6 +116,20 @@ public class EncryptionPacketListener extends PacketAdapter {
 
         //this is a fake packet; it shouldn't be send to the server
         packetEvent.setCancelled(true);
+    }
+
+    private void setPremiumUUID(PlayerSession session, Player player) {
+        UUID uuid = session.getUuid();
+        if (plugin.getConfig().getBoolean("premiumUuid") && uuid != null) {
+            try {
+                Object networkManager = getNetworkManager(player);
+                //https://github.com/bergerkiller/CraftSource/blob/master/net.minecraft.server/NetworkManager.java#L69
+                Field spoofField = FuzzyReflection.fromObject(networkManager).getFieldByType("spoofedUUID", UUID.class);
+                spoofField.set(networkManager, uuid);
+            } catch (ReflectiveOperationException reflectiveOperationException) {
+                plugin.getLogger().log(Level.SEVERE, "Error setting premium uuid", reflectiveOperationException);
+            }
+        }
     }
 
     private boolean checkVerifyToken(PlayerSession session, PrivateKey privateKey, PacketEvent packetEvent) {

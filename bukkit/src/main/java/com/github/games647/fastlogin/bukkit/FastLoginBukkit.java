@@ -154,7 +154,7 @@ public class FastLoginBukkit extends JavaPlugin {
 
     /**
      * Gets the auth plugin hook in order to interact with the plugins.
-     * This can be null if no supporting auth plugin was found
+     * This can be null if no supporting auth plugin was found.
      *
      * @return interface to any supported auth plugin
      */

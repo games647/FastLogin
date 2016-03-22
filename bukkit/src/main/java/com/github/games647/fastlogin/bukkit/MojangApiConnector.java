@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
 
@@ -68,6 +69,7 @@ public class MojangApiConnector {
                 //http://wiki.vg/Protocol_Encryption#Server
                 JSONObject userData = (JSONObject) JSONValue.parseWithException(line);
                 String uuid = (String) userData.get("id");
+                session.setUuid(parseId(uuid));
 
                 JSONArray properties = (JSONArray) userData.get("properties");
                 JSONObject skinProperty = (JSONObject) properties.get(0);
@@ -88,6 +90,14 @@ public class MojangApiConnector {
 
         //this connection doesn't need to be closed. So can make use of keep alive in java
         return false;
+    }
+
+    private UUID parseId(String withoutDashes) {
+        return UUID.fromString(withoutDashes.substring(0, 8)
+                + "-" + withoutDashes.substring(8, 12)
+                + "-" + withoutDashes.substring(12, 16)
+                + "-" + withoutDashes.substring(16, 20)
+                + "-" + withoutDashes.substring(20, 32));
     }
 
     private HttpURLConnection getConnection(String url) throws IOException {

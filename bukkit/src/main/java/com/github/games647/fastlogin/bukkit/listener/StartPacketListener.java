@@ -76,7 +76,7 @@ public class StartPacketListener extends PacketAdapter {
             BukkitAuthPlugin authPlugin = plugin.getAuthPlugin();
             if (plugin.getEnabledPremium().contains(username)) {
                 enablePremiumLogin(username, sessionKey, player, packetEvent, true);
-            } else if (plugin.getConfig().getBoolean("autologin")
+            } else if (plugin.getConfig().getBoolean("autoRegister")
                     && authPlugin != null && !plugin.getAuthPlugin().isRegistered(username)) {
                 enablePremiumLogin(username, sessionKey, player, packetEvent, false);
                 plugin.getEnabledPremium().add(username);

@@ -2,6 +2,8 @@ package com.github.games647.fastlogin.bukkit;
 
 import com.comphenix.protocol.wrappers.WrappedSignedProperty;
 
+import java.util.UUID;
+
 import org.apache.commons.lang.ArrayUtils;
 
 /**
@@ -15,6 +17,7 @@ public class PlayerSession {
     private final String serverId;
     private final byte[] verifyToken;
 
+    private UUID uuid;
     private WrappedSignedProperty skinProperty;
     private boolean verified;
     private boolean registered;
@@ -108,6 +111,25 @@ public class PlayerSession {
      */
     public synchronized void setVerified(boolean verified) {
         this.verified = verified;
+    }
+
+    /**
+     * Get the premium UUID of this player
+     *
+     * @return the premium UUID or null if not fetched
+     */
+    public synchronized UUID getUuid() {
+        return uuid;
+    }
+
+
+    /**
+     * Set the online UUID if it's fetched
+     *
+     * @param uuid premium UUID
+     */
+    public synchronized void setUuid(UUID uuid) {
+        this.uuid = uuid;
     }
 
     /**
