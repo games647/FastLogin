@@ -7,6 +7,7 @@ import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 import com.github.games647.fastlogin.bukkit.PlayerSession;
+import com.github.games647.fastlogin.bukkit.hooks.BukkitAuthPlugin;
 
 import java.lang.reflect.InvocationTargetException;
 import java.security.PublicKey;
@@ -72,9 +73,11 @@ public class StartPacketListener extends PacketAdapter {
         plugin.getLogger().log(Level.FINER, "Player {0} with {1} connecting to the server"
                 , new Object[]{sessionKey, username});
         if (!plugin.getBungeeCordUsers().containsKey(player)) {
+            BukkitAuthPlugin authPlugin = plugin.getAuthPlugin();
             if (plugin.getEnabledPremium().contains(username)) {
                 enablePremiumLogin(username, sessionKey, player, packetEvent, true);
-            } else if (plugin.getConfig().getBoolean("autologin") && !plugin.getAuthPlugin().isRegistered(username)) {
+            } else if (plugin.getConfig().getBoolean("autologin")
+                    && authPlugin != null && !plugin.getAuthPlugin().isRegistered(username)) {
                 enablePremiumLogin(username, sessionKey, player, packetEvent, false);
                 plugin.getEnabledPremium().add(username);
             }

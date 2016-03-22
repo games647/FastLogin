@@ -4,6 +4,7 @@ import com.comphenix.protocol.wrappers.WrappedGameProfile;
 import com.comphenix.protocol.wrappers.WrappedSignedProperty;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 import com.github.games647.fastlogin.bukkit.PlayerSession;
+import com.github.games647.fastlogin.bukkit.hooks.BukkitAuthPlugin;
 
 import java.util.logging.Level;
 
@@ -56,20 +57,23 @@ public class BukkitJoinListener implements Listener {
                     //blacklist this target player for BungeeCord Id brute force attacks
                     player.setMetadata(plugin.getName(), new FixedMetadataValue(plugin, true));
                     //check if it's the same player as we checked before
-                    if (session != null && player.getName().equals(session.getUsername()) && session.isVerified()) {
+
+                    BukkitAuthPlugin authPlugin = plugin.getAuthPlugin();
+                    if (session != null && player.getName().equals(session.getUsername()) && session.isVerified()
+                            && authPlugin != null) {
                         if (session.needsRegistration()) {
                             plugin.getLogger().log(Level.FINE, "Register player {0}", player.getName());
 
                             plugin.getEnabledPremium().add(session.getUsername());
 
                             String generatedPassword = plugin.generateStringPassword();
-                            plugin.getAuthPlugin().forceRegister(player, generatedPassword);
+                            authPlugin.forceRegister(player, generatedPassword);
                             player.sendMessage(ChatColor.DARK_GREEN + "Auto registered with password: "
                                     + generatedPassword);
                             player.sendMessage(ChatColor.DARK_GREEN + "You may want change it?");
                         } else {
                             plugin.getLogger().log(Level.FINE, "Logging player {0} in", player.getName());
-                            plugin.getAuthPlugin().forceLogin(player);
+                            authPlugin.forceLogin(player);
                             player.sendMessage(ChatColor.DARK_GREEN + "Auto logged in");
                         }
                     }
