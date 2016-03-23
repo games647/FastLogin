@@ -1,4 +1,7 @@
 # FastLogin config
+# Project site: https://www.spigotmc.org/resources/fastlogin.14153
+# Source code: https://github.com/games647/FastLogin
+#
 # You can access the newest config here:
 # https://github.com/games647/FastLogin/blob/master/bukkit/src/main/resources/config.yml
 
@@ -36,3 +39,16 @@ autoRegister: false
 # will have the same inventory, permissions, ... if they switched to premium authentification from offline/cracked
 # authentification.
 premiumUuid: false
+
+# If your players have a premium account and a skin associated to their account, this plugin
+# can download the data and set it to the online player.
+#
+# Keep in mind that this will only works if the player:
+# * is the owner of the premium account
+# * the serverconnection is established through a premium connection (paid account authentification)
+# * has a skin
+#
+# This means this plugin doesn't need to create a new connection to the Mojang servers, because
+# the skin data is included in the Auth-Verification-Response sent by Mojang. If you want to use for other
+# players like cracked player, you have to use other plugins.
+forwardSkin: true

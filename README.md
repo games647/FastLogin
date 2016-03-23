@@ -12,6 +12,7 @@ So they don't need to enter passwords. This is also called auto login (auto-logi
 * Support various of auth plugins
 * Cauldron support
 * Forge/Sponge message support
+* Premium UUID support
 * BungeeCord support
 * Auto register new premium players
 * Plugin: ProtocolSupport is supported and can be used as an alternative to ProtocolLib

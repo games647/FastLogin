@@ -44,10 +44,13 @@ public class ProtcolSupportListener implements Listener {
 
     @EventHandler(ignoreCancelled = true)
     public void onPropertiesResolve(PlayerPropertiesResolveEvent propertiesResolveEvent) {
-        InetSocketAddress address = propertiesResolveEvent.getAddress();
-        PlayerSession session = plugin.getSessions().get(address.toString());
-        if (session != null) {
-            session.setVerified(true);
+        //skin was resolved -> premium player
+        if (propertiesResolveEvent.hasProperty("textures")) {
+            InetSocketAddress address = propertiesResolveEvent.getAddress();
+            PlayerSession session = plugin.getSessions().get(address.toString());
+            if (session != null) {
+                session.setVerified(true);
+            }
         }
     }
 

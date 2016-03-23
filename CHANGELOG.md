@@ -1,5 +1,10 @@
 ######0.7
 
+* Added a forwardSkin config option
+* Added premium UUID support
+* Removes the need of an Bukkit auth plugin if you use a bungeecord one
+* Optimize performance and thread-safety
+* Added BungeeAuth support
 * Added /premium [player] command with optional player parameter
 * Fixed BungeeCord support
 * Changed config option autologin to autoregister to clarify the usage
