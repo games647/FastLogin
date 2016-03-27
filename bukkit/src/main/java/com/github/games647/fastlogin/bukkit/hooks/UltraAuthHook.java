@@ -1428,5 +1428,25 @@ public class UltraAuthHook implements BukkitAuthPlugin {
         public void setGliding(boolean arg0) {
             throw new UnsupportedOperationException("Not supported yet.");
         }
+
+        @Override
+        public void setAI(boolean arg0) {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public boolean hasAI() {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public void setInvulnerable(boolean arg0) {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public boolean isInvulnerable() {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
     }
 }

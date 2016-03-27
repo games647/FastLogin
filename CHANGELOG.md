@@ -1,5 +1,6 @@
 ######0.7
 
+* Added a check if the player is already on the premium list
 * Added a forwardSkin config option
 * Added premium UUID support
 * Removes the need of an Bukkit auth plugin if you use a bungeecord one

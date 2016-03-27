@@ -22,9 +22,7 @@
 autoRegister: false
 
 # If this plugin detected that a player has a premium, it can also set the associated
-# uuid from that account.
-#
-# So if the players changes their usernames, they will still have
+# uuid from that account. So if the players changes their usernames, they will still have
 # the same playerdata (inventory, permissions, ...)
 #
 # Warning: This also means that the UUID will be different if the player is connecting

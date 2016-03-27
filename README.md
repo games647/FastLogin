@@ -13,6 +13,7 @@ So they don't need to enter passwords. This is also called auto login (auto-logi
 * Cauldron support
 * Forge/Sponge message support
 * Premium UUID support
+* Forwards Skins
 * BungeeCord support
 * Auto register new premium players
 * Plugin: ProtocolSupport is supported and can be used as an alternative to ProtocolLib
@@ -37,7 +38,7 @@ So they don't need to enter passwords. This is also called auto login (auto-logi
 * Run Spigot and/or BungeeCord in offline mode (see server.properties or config.yml)
 * An auth plugin. Supported Plugins
 
-#### Bukkit
+####Bukkit
 
 * [AuthMe](http://dev.bukkit.org/bukkit-plugins/authme-reloaded/)
 * [xAuth](http://dev.bukkit.org/bukkit-plugins/xauth/)
@@ -46,7 +47,7 @@ So they don't need to enter passwords. This is also called auto login (auto-logi
 * [RoyalAuth](http://dev.bukkit.org/bukkit-plugins/royalauth/)
 * [UltraAuth](http://dev.bukkit.org/bukkit-plugins/ultraauth-aa/)
 
-#### BungeeCord
+####BungeeCord
 
 * [BungeeAuth](https://www.spigotmc.org/resources/bungeeauth.493/)
 
@@ -140,7 +141,7 @@ into the whitelist file of your Bukkit/Spigot server. For security reasons, don'
 This plugin will automatically detect if BungeeCord is running and handle premium checks on BungeeCord.
 
 ####Could premium players have a premium UUID and Skin?
-Something like that is possible, but is not yet implemented.
+Since 0.7 both features are implemented. You can check the config.yml in order to activate it.
 
 ####Is this plugin compatible with Cauldron?
 It's not tested yet, but all needed methods also exists in Cauldron so it could work together.
