@@ -1448,5 +1448,15 @@ public class UltraAuthHook implements BukkitAuthPlugin {
         public boolean isInvulnerable() {
             throw new UnsupportedOperationException("Not supported yet.");
         }
+
+        @Override
+        public void setCollidable(boolean arg0) {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public boolean isCollidable() {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
     }
 }
