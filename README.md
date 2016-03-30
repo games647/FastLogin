@@ -78,8 +78,9 @@ https://www.spigotmc.org/resources/fastlogin.14153/history
 4. Mojang -> Client: Session data checked. You can continue
 5. Client -> Server: I received a successful response from Mojang. Heres our shared secret key
 6. Server -> Mojang: Does the player "xyz" with this shared secret key has a valid account to join me?
-7. Client and Server: encrypt all following communication packet
-8. Server -> Client: Everything checked you can play now
+7. Mojang -> Server: Yes, the player has the following additionally properties (UUID, Skin)
+8. Client and Server: encrypt all following communication packet
+9. Server -> Client: Everything checked you can play now
 
 
 ######Offline Mode
