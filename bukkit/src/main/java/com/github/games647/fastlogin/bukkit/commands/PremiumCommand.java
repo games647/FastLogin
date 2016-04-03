@@ -33,8 +33,8 @@ public class PremiumCommand implements CommandExecutor {
             }
 
             String playerName = sender.getName();
-            boolean exist = plugin.getEnabledPremium().add(playerName);
-            if (exist) {
+            boolean didntexist = plugin.getEnabledPremium().add(playerName);
+            if (!didntexist) {
                 sender.sendMessage(ChatColor.DARK_RED + "You are already on the premium list");
             } else {
                 sender.sendMessage(ChatColor.DARK_GREEN + "Added to the list of premium players");
@@ -44,8 +44,12 @@ public class PremiumCommand implements CommandExecutor {
             return true;
         } else {
             String playerName = args[0];
-            plugin.getEnabledPremium().add(playerName);
-            sender.sendMessage(ChatColor.DARK_GREEN + "Added player to the list of premium players");
+            boolean didntexist = plugin.getEnabledPremium().add(playerName);
+            if (!didntexist) {
+                sender.sendMessage(ChatColor.DARK_RED + "You are already on the premium list");
+            } else {
+                sender.sendMessage(ChatColor.DARK_GREEN + "Added to the list of premium players");
+            }
 //            notifiyBungeeCord();
         }
 
