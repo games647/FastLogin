@@ -77,8 +77,8 @@ public class StartPacketListener extends PacketAdapter {
             if (plugin.getEnabledPremium().contains(username)) {
                 enablePremiumLogin(username, sessionKey, player, packetEvent, true);
             } else if (plugin.getConfig().getBoolean("autoRegister")
-                    && authPlugin != null && !plugin.getAuthPlugin().isRegistered(username)) {
-                enablePremiumLogin(username, sessionKey, player, packetEvent, false);
+                    && authPlugin != null) {
+                enablePremiumLogin(username, sessionKey, player, packetEvent, plugin.getAuthPlugin().isRegistered(username));
                 plugin.getEnabledPremium().add(username);
             }
         }
