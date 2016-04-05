@@ -5,7 +5,7 @@
     <parent>
         <groupId>com.github.games647</groupId>
         <artifactId>fastlogin-parent</artifactId>
-        <version>0.7</version>
+        <version>0.8</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -17,6 +17,12 @@
     <name>FastLoginBungee</name>
 
     <repositories>
+        <!--Waterfall-->
+<!--        <repository>
+            <id>ellune-releases</id>
+            <url>https://repo.ellune.net/content/repositories/snapshots/</url>
+        </repository>-->
+
         <!-- BungeeCord -->
         <repository>
             <id>bungeecord-repo</id>
@@ -38,6 +44,13 @@
             <type>jar</type>
             <scope>provided</scope>
         </dependency>
+<!--        <dependency>
+            <groupId>io.github.waterfallmc</groupId>
+            <artifactId>waterfall-api</artifactId>
+            <version>1.9-SNAPSHOT</version>
+            <type>jar</type>
+            <scope>provided</scope>
+        </dependency>-->
 
         <dependency>
             <groupId>com.github.MatteCarra</groupId>

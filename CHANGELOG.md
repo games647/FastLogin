@@ -1,15 +1,21 @@
+######0.8
+
+* Fix logical error on /premium (Thanks to @NorbiPeti)
+* Fixed issues with host lookup from hosts file (Thanks to @NorbiPeti)
+* Remove handshake listener because it creates errors on some systems
+
 ######0.7
 
+* Added BungeeAuth support
+* Added /premium [player] command with optional player parameter
 * Added a check if the player is already on the premium list
 * Added a forwardSkin config option
 * Added premium UUID support
+* Updated to the newest changes of Spigot
 * Removes the need of an Bukkit auth plugin if you use a bungeecord one
 * Optimize performance and thread-safety
-* Added BungeeAuth support
-* Added /premium [player] command with optional player parameter
 * Fixed BungeeCord support
 * Changed config option autologin to autoregister to clarify the usage
-* Updated to the newest changes of Spigot
 
 ######0.6
 

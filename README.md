@@ -7,6 +7,7 @@ Checks if a minecraft player has a paid account (premium). If so, they can skip 
 So they don't need to enter passwords. This is also called auto login (auto-login).
 
 ###Features:
+
 * Detect paid accounts from others
 * Automatically login paid accounts (premium)
 * Support various of auth plugins
@@ -35,10 +36,10 @@ So they don't need to enter passwords. This is also called auto login (auto-logi
 * Plugin: [ProtocolLib](http://www.spigotmc.org/resources/protocollib.1997/)
 * Tested Bukkit/[Spigot](https://www.spigotmc.org) 1.9 (could also work with other versions)
 * Java 7+
-* Run Spigot and/or BungeeCord in offline mode (see server.properties or config.yml)
+* Run Spigot and/or BungeeCord/Waterfall in offline mode (see server.properties or config.yml)
 * An auth plugin. Supported Plugins
 
-####Bukkit
+####Bukkit/Spigot/PaperSPigot
 
 * [AuthMe](http://dev.bukkit.org/bukkit-plugins/authme-reloaded/)
 * [xAuth](http://dev.bukkit.org/bukkit-plugins/xauth/)
@@ -47,7 +48,7 @@ So they don't need to enter passwords. This is also called auto login (auto-logi
 * [RoyalAuth](http://dev.bukkit.org/bukkit-plugins/royalauth/)
 * [UltraAuth](http://dev.bukkit.org/bukkit-plugins/ultraauth-aa/)
 
-####BungeeCord
+####BungeeCord/Waterfall
 
 * [BungeeAuth](https://www.spigotmc.org/resources/bungeeauth.493/)
 

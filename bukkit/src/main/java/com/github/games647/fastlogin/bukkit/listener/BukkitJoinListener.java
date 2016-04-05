@@ -51,7 +51,8 @@ public class BukkitJoinListener implements Listener {
             public void run() {
                 if (player.isOnline()) {
                     //remove the bungeecord identifier
-                    String id = '/' + player.getAddress().getAddress().getHostAddress()  + ':' + player.getAddress().getPort();
+                    String id = '/' + player.getAddress().getAddress().getHostAddress() + ':'
+                            + player.getAddress().getPort();
                     PlayerSession session = plugin.getSessions().get(id);
 
                     //blacklist this target player for BungeeCord Id brute force attacks

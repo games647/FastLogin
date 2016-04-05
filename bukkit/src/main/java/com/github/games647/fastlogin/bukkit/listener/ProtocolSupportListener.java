@@ -12,11 +12,11 @@ import org.bukkit.event.Listener;
 import protocolsupport.api.events.PlayerLoginStartEvent;
 import protocolsupport.api.events.PlayerPropertiesResolveEvent;
 
-public class ProtcolSupportListener implements Listener {
+public class ProtocolSupportListener implements Listener {
 
     protected final FastLoginBukkit plugin;
 
-    public ProtcolSupportListener(FastLoginBukkit plugin) {
+    public ProtocolSupportListener(FastLoginBukkit plugin) {
         this.plugin = plugin;
     }
 

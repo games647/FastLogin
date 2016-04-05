@@ -6,14 +6,13 @@ import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.utility.SafeCacheBuilder;
 import com.github.games647.fastlogin.bukkit.commands.CrackedCommand;
 import com.github.games647.fastlogin.bukkit.commands.PremiumCommand;
+import com.github.games647.fastlogin.bukkit.hooks.BukkitAuthPlugin;
 import com.github.games647.fastlogin.bukkit.listener.BukkitJoinListener;
 import com.github.games647.fastlogin.bukkit.listener.BungeeCordListener;
 import com.github.games647.fastlogin.bukkit.listener.EncryptionPacketListener;
-import com.github.games647.fastlogin.bukkit.listener.HandshakePacketListener;
-import com.github.games647.fastlogin.bukkit.listener.ProtcolSupportListener;
+import com.github.games647.fastlogin.bukkit.listener.ProtocolSupportListener;
 import com.github.games647.fastlogin.bukkit.listener.StartPacketListener;
 import com.google.common.cache.CacheLoader;
-import com.google.common.collect.MapMaker;
 import com.google.common.collect.Sets;
 import com.google.common.reflect.ClassPath;
 
@@ -25,9 +24,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
 import org.apache.commons.lang.RandomStringUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
-import com.github.games647.fastlogin.bukkit.hooks.BukkitAuthPlugin;
 
 /**
  * This plugin checks if a player has a paid account and if so tries to skip offline mode authentication.
@@ -40,8 +39,7 @@ public class FastLoginBukkit extends JavaPlugin {
     //we need a thread-safe set because we access it async in the packet listener
     private final Set<String> enabledPremium = Sets.newConcurrentHashSet();
 
-    //player=fake player created by Protocollib | this mapmaker creates a concurrent map with weak keys
-    private final ConcurrentMap<Player, Object> bungeeCordUsers = new MapMaker().weakKeys().makeMap();
+    private final boolean bungeeCord = Bukkit.spigot().getConfig().getBoolean("bungeecord");
 
     //this map is thread-safe for async access (Packet Listener)
     //SafeCacheBuilder is used in order to be version independent
@@ -64,19 +62,20 @@ public class FastLoginBukkit extends JavaPlugin {
     @Override
     public void onEnable() {
         saveDefaultConfig();
-        if (getServer().getOnlineMode() || !registerHooks()) {
+        if (getServer().getOnlineMode()) {
             //we need to require offline to prevent a session request for a offline player
-            getLogger().severe("Server have to be in offline mode and have an auth plugin installed");
+            getLogger().severe("Server have to be in offline mode");
             setEnabled(false);
             return;
         }
 
+        registerHooks();
+
         //register listeners on success
         if (getServer().getPluginManager().isPluginEnabled("ProtocolSupport")) {
-            getServer().getPluginManager().registerEvents(new ProtcolSupportListener(this), this);
+            getServer().getPluginManager().registerEvents(new ProtocolSupportListener(this), this);
         } else {
             ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
-            protocolManager.addPacketListener(new HandshakePacketListener(this));
 
             //we are performing HTTP request on these so run it async (seperate from the Netty IO threads)
             AsynchronousManager asynchronousManager = protocolManager.getAsynchronousManager();
@@ -100,7 +99,6 @@ public class FastLoginBukkit extends JavaPlugin {
         //clean up
         session.clear();
         enabledPremium.clear();
-        bungeeCordUsers.clear();
 
         //remove old blacklists
         for (Player player : getServer().getOnlinePlayers()) {
@@ -120,18 +118,6 @@ public class FastLoginBukkit extends JavaPlugin {
      */
     public ConcurrentMap<String, PlayerSession> getSessions() {
         return session;
-    }
-
-    /**
-     * Gets a concurrent map with weak keys for all bungeecord users which could be detected. It's mapped by a fake
-     * instance of player created by Protocollib and a non-null raw object.
-     *
-     * Represents a similar set collection
-     *
-     * @return
-     */
-    public ConcurrentMap<Player, Object> getBungeeCordUsers() {
-        return bungeeCordUsers;
     }
 
     /**
@@ -197,13 +183,14 @@ public class FastLoginBukkit extends JavaPlugin {
         if (authPluginHook == null) {
             //run this check for exceptions (errors) and not found plugins
             getLogger().warning("No support offline Auth plugin found. ");
-            getLogger().warning("Disabling this plugin...");
-
-            setEnabled(false);
             return false;
         }
 
         authPlugin = authPluginHook;
         return true;
+    }
+
+    public boolean isBungee() {
+        return bungeeCord;
     }
 }

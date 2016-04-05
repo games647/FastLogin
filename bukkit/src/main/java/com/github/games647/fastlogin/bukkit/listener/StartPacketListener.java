@@ -72,7 +72,7 @@ public class StartPacketListener extends PacketAdapter {
         String username = packet.getGameProfiles().read(0).getName();
         plugin.getLogger().log(Level.FINER, "Player {0} with {1} connecting to the server"
                 , new Object[]{sessionKey, username});
-        if (!plugin.getBungeeCordUsers().containsKey(player)) {
+        if (!plugin.isBungee()) {
             BukkitAuthPlugin authPlugin = plugin.getAuthPlugin();
             if (plugin.getEnabledPremium().contains(username)) {
                 enablePremiumLogin(username, sessionKey, player, packetEvent, true);
