@@ -16,7 +16,7 @@
 #
 # Furthermore the premium player check have to be made based on the player name
 # This means if a cracked player connects to the server and we request a paid account login from this player
-# the player just disconnect and sees the message: 'bad login'
+# the player just disconnect and sees the message: 'bad login' or 'invalid session'
 # There is no way to change this message
 # For more information: https://github.com/games647/FastLogin#why-do-players-have-to-invoke-a-command
 autoRegister: false
@@ -50,3 +50,15 @@ premiumUuid: false
 # the skin data is included in the Auth-Verification-Response sent by Mojang. If you want to use for other
 # players like cracked player, you have to use other plugins.
 forwardSkin: true
+
+# Database configuration
+# Recommened is the use of MariaDB (a better version of MySQL)
+driver: mysql
+host: localhost
+port: 3306
+database: FastLogin
+username: myUser
+password: myPassword
+# If you use an existing database which will be used by other programs too
+# you define here a prefix, to prevent conflicts.
+tablePrefix: ''

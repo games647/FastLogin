@@ -29,6 +29,7 @@
                     <artifactSet>
                         <includes>
                             <include>${project.groupId}:*</include>
+                            <include>com.zaxxer:HikariCP</include>
                         </includes>
                     </artifactSet>
                 </configuration>

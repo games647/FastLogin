@@ -123,8 +123,9 @@ Yes, indeed. Therefore the command for toggling the fast login method exists.
 of a cracked player that has the same username. The player have to proof first that it's his own account.
 2. We only receive the username from the player on login. We could check if that username is associated
 to a paid account but if we request a online mode login from a cracked player (who uses a username from
-a paid account), the player will disconnect with the reason bad login. There is no way to change that message
-on the server side (without client modifications), because it's a connection between the Client and the Sessionserver.
+a paid account), the player will disconnect with the reason "bad login" or "Invalid session". There is no way to change
+that message on the server side (without client modifications), because it's a connection between the Client and the
+Sessionserver.
 3. If a premium player would skip registration too, a player of a cracked account could later still register the
 account and would claim and steal the account from the premium player. Because commands cannot be invoked unless the
 player has a account or is logged in, protects this method also premium players
