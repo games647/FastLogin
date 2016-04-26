@@ -39,7 +39,7 @@ public class FastLoginBukkit extends JavaPlugin {
     //we need a thread-safe set because we access it async in the packet listener
     private final Set<String> enabledPremium = Sets.newConcurrentHashSet();
 
-    private final boolean bungeeCord = Bukkit.spigot().getConfig().getBoolean("bungeecord");
+    private boolean bungeeCord;
 
     //this map is thread-safe for async access (Packet Listener)
     //SafeCacheBuilder is used in order to be version independent
@@ -62,6 +62,8 @@ public class FastLoginBukkit extends JavaPlugin {
     @Override
     public void onEnable() {
         saveDefaultConfig();
+
+        bungeeCord = Bukkit.spigot().getConfig().getBoolean("settings.bungeecord");
         if (getServer().getOnlineMode()) {
             //we need to require offline to prevent a session request for a offline player
             getLogger().severe("Server have to be in offline mode");
@@ -89,9 +91,11 @@ public class FastLoginBukkit extends JavaPlugin {
         getCommand("premium").setExecutor(new PremiumCommand(this));
         getCommand("cracked").setExecutor(new CrackedCommand(this));
 
-        //check for incoming messages from the bungeecord version of this plugin
-        getServer().getMessenger().registerIncomingPluginChannel(this, getName(), new BungeeCordListener(this));
-        getServer().getMessenger().registerOutgoingPluginChannel(this, getName());
+        if (bungeeCord) {
+            //check for incoming messages from the bungeecord version of this plugin
+            getServer().getMessenger().registerIncomingPluginChannel(this, getName(), new BungeeCordListener(this));
+            getServer().getMessenger().registerOutgoingPluginChannel(this, getName());
+        }
     }
 
     @Override
