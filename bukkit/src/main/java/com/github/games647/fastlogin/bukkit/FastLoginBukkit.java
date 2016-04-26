@@ -18,7 +18,9 @@ import com.google.common.reflect.ClassPath;
 
 import java.io.IOException;
 import java.security.KeyPair;
+import java.sql.SQLException;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
@@ -33,6 +35,14 @@ import org.bukkit.plugin.java.JavaPlugin;
  */
 public class FastLoginBukkit extends JavaPlugin {
 
+    public static UUID parseId(String withoutDashes) {
+        return UUID.fromString(withoutDashes.substring(0, 8)
+                + "-" + withoutDashes.substring(8, 12)
+                + "-" + withoutDashes.substring(12, 16)
+                + "-" + withoutDashes.substring(16, 20)
+                + "-" + withoutDashes.substring(20, 32));
+    }
+
     //provide a immutable key pair to be thread safe | used for encrypting and decrypting traffic
     private final KeyPair keyPair = EncryptionUtil.generateKeyPair();
 
@@ -40,6 +50,7 @@ public class FastLoginBukkit extends JavaPlugin {
     private final Set<String> enabledPremium = Sets.newConcurrentHashSet();
 
     private boolean bungeeCord;
+    private Storage storage;
 
     //this map is thread-safe for async access (Packet Listener)
     //SafeCacheBuilder is used in order to be version independent
@@ -63,7 +74,6 @@ public class FastLoginBukkit extends JavaPlugin {
     public void onEnable() {
         saveDefaultConfig();
 
-        bungeeCord = Bukkit.spigot().getConfig().getBoolean("settings.bungeecord");
         if (getServer().getOnlineMode()) {
             //we need to require offline to prevent a session request for a offline player
             getLogger().severe("Server have to be in offline mode");
@@ -71,18 +81,50 @@ public class FastLoginBukkit extends JavaPlugin {
             return;
         }
 
-        registerHooks();
+        bungeeCord = Bukkit.spigot().getConfig().getBoolean("settings.bungeecord");
+        boolean hookFound = registerHooks();
+        if (bungeeCord) {
+            getLogger().info("BungeeCord setting detected. No auth plugin is required");
+        } else if (!hookFound) {
+            getLogger().info("No auth plugin were found and bungeecord is deactivated. "
+                    + "Either one or both of the checks have to pass in order to use this plugin");
+            setEnabled(false);
+            return;
+        }
 
-        //register listeners on success
-        if (getServer().getPluginManager().isPluginEnabled("ProtocolSupport")) {
-            getServer().getPluginManager().registerEvents(new ProtocolSupportListener(this), this);
+        if (bungeeCord) {
+            //check for incoming messages from the bungeecord version of this plugin
+            getServer().getMessenger().registerIncomingPluginChannel(this, getName(), new BungeeCordListener(this));
+            getServer().getMessenger().registerOutgoingPluginChannel(this, getName());
+            //register listeners on success
         } else {
-            ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
+            String driver = getConfig().getString("driver");
+            String host =  getConfig().getString("host", "");
+            int port = getConfig().getInt("port", 3306);
+            String database = getConfig().getString("database");
 
-            //we are performing HTTP request on these so run it async (seperate from the Netty IO threads)
-            AsynchronousManager asynchronousManager = protocolManager.getAsynchronousManager();
-            asynchronousManager.registerAsyncHandler(new StartPacketListener(this, protocolManager)).start();
-            asynchronousManager.registerAsyncHandler(new EncryptionPacketListener(this, protocolManager)).start();
+            String username = getConfig().getString("username", "");
+            String password = getConfig().getString("password", "");
+
+            this.storage = new Storage(this, driver, host, port, database, username, password);
+            try {
+                storage.createTables();
+            } catch (SQLException sqlEx) {
+                getLogger().log(Level.SEVERE, "Failed to create database tables. Disabling plugin...", sqlEx);
+                setEnabled(false);
+                return;
+            }
+
+            if (getServer().getPluginManager().isPluginEnabled("ProtocolSupport")) {
+                getServer().getPluginManager().registerEvents(new ProtocolSupportListener(this), this);
+            } else {
+                ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
+
+                //we are performing HTTP request on these so run it async (seperate from the Netty IO threads)
+                AsynchronousManager asynchronousManager = protocolManager.getAsynchronousManager();
+                asynchronousManager.registerAsyncHandler(new StartPacketListener(this, protocolManager)).start();
+                asynchronousManager.registerAsyncHandler(new EncryptionPacketListener(this, protocolManager)).start();
+            }
         }
 
         getServer().getPluginManager().registerEvents(new BukkitJoinListener(this), this);
@@ -90,23 +132,20 @@ public class FastLoginBukkit extends JavaPlugin {
         //register commands using a unique name
         getCommand("premium").setExecutor(new PremiumCommand(this));
         getCommand("cracked").setExecutor(new CrackedCommand(this));
-
-        if (bungeeCord) {
-            //check for incoming messages from the bungeecord version of this plugin
-            getServer().getMessenger().registerIncomingPluginChannel(this, getName(), new BungeeCordListener(this));
-            getServer().getMessenger().registerOutgoingPluginChannel(this, getName());
-        }
     }
 
     @Override
     public void onDisable() {
         //clean up
         session.clear();
-        enabledPremium.clear();
 
         //remove old blacklists
         for (Player player : getServer().getOnlinePlayers()) {
             player.removeMetadata(getName(), this);
+        }
+
+        if (storage != null) {
+            storage.close();
         }
     }
 
@@ -143,8 +182,8 @@ public class FastLoginBukkit extends JavaPlugin {
     }
 
     /**
-     * Gets the auth plugin hook in order to interact with the plugins.
-     * This can be null if no supporting auth plugin was found.
+     * Gets the auth plugin hook in order to interact with the plugins. This can be null if no supporting auth plugin
+     * was found.
      *
      * @return interface to any supported auth plugin
      */
@@ -153,8 +192,7 @@ public class FastLoginBukkit extends JavaPlugin {
     }
 
     /**
-     * Gets the a connection in order to access important
-     * features from the Mojang API.
+     * Gets the a connection in order to access important features from the Mojang API.
      *
      * @return the connector instance
      */

@@ -30,6 +30,7 @@
                         <includes>
                             <include>${project.groupId}:*</include>
                             <include>com.zaxxer:HikariCP</include>
+                            <include>org.slf4j:*</include>
                         </includes>
                     </artifactSet>
                 </configuration>

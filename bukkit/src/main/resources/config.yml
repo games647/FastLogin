@@ -53,12 +53,16 @@ forwardSkin: true
 
 # Database configuration
 # Recommened is the use of MariaDB (a better version of MySQL)
-driver: mysql
-host: localhost
-port: 3306
-database: FastLogin
-username: myUser
-password: myPassword
-# If you use an existing database which will be used by other programs too
-# you define here a prefix, to prevent conflicts.
-tablePrefix: ''
+
+# Single file SQLite database
+driver: org.sqlite.JDBC
+# File location
+database: '{pluginDir}/FastLogin.db'
+
+# MySQL and SQLite
+#driver: com.mysql.jdbc.Driver
+#host: localhost
+#port: 3306
+#database: FastLogin
+#username: myUser
+#password: myPassword
