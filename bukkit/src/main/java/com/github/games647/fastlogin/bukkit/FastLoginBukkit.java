@@ -227,4 +227,8 @@ public class FastLoginBukkit extends JavaPlugin {
         authPlugin = authPluginHook;
         return true;
     }
+
+    public boolean isBungeeCord() {
+        return bungeeCord;
+    }
 }

@@ -70,6 +70,7 @@ public class BukkitJoinListener implements Listener {
                             final Storage storage = plugin.getStorage();
                             if (storage != null) {
                                 final PlayerProfile playerProfile = storage.getProfile(session.getUsername(), false);
+                                playerProfile.setUuid(session.getUuid());
                                 playerProfile.setPremium(true);
                                 Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
                                     @Override
@@ -88,6 +89,18 @@ public class BukkitJoinListener implements Listener {
                             plugin.getLogger().log(Level.FINE, "Logging player {0} in", player.getName());
                             authPlugin.forceLogin(player);
                             player.sendMessage(ChatColor.DARK_GREEN + "Auto logged in");
+
+                            final Storage storage = plugin.getStorage();
+                            if (storage != null) {
+                                final PlayerProfile playerProfile = storage.getProfile(session.getUsername(), false);
+                                playerProfile.setUuid(session.getUuid());
+                                Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        storage.save(playerProfile);
+                                    }
+                                });
+                            }
                         }
                     }
                 }

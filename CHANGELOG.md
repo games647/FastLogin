@@ -1,5 +1,7 @@
 ######0.8
 
+        * Fixed BungeeCord support for the Bukkit module
+* Added database storage to save the premium state
 * Fix logical error on /premium (Thanks to @NorbiPeti)
 * Fixed issues with host lookup from hosts file (Thanks to @NorbiPeti)
 * Remove handshake listener because it creates errors on some systems

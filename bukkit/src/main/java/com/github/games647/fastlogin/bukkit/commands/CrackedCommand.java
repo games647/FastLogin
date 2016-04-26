@@ -4,8 +4,8 @@ import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 import com.github.games647.fastlogin.bukkit.PlayerProfile;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
-import org.bukkit.Bukkit;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -14,7 +14,7 @@ import org.bukkit.entity.Player;
 
 public class CrackedCommand implements CommandExecutor {
 
-    private final FastLoginBukkit plugin;
+    protected final FastLoginBukkit plugin;
 
     public CrackedCommand(FastLoginBukkit plugin) {
         this.plugin = plugin;
@@ -34,11 +34,11 @@ public class CrackedCommand implements CommandExecutor {
                 return true;
             }
 
-            Player player = (Player) sender;
+            final Player player = (Player) sender;
 //            UUID uuid = player.getUniqueId();
 
             //todo: load async if it's not in the cache anymore
-            final PlayerProfile profile = plugin.getStorage().getProfile(player.getName(), false);
+            final PlayerProfile profile = plugin.getStorage().getProfile(player.getName(), true);
             if (profile.isPremium()) {
                 sender.sendMessage(ChatColor.DARK_GREEN + "Removed from the list of premium players");
                 profile.setPremium(false);
@@ -73,9 +73,11 @@ public class CrackedCommand implements CommandExecutor {
     }
 
     private void notifiyBungeeCord(Player target) {
-        ByteArrayDataOutput dataOutput = ByteStreams.newDataOutput();
-        dataOutput.writeUTF("OFF");
+        if (plugin.isBungeeCord()) {
+            ByteArrayDataOutput dataOutput = ByteStreams.newDataOutput();
+            dataOutput.writeUTF("OFF");
 
-        target.sendPluginMessage(plugin, plugin.getName(), dataOutput.toByteArray());
+            target.sendPluginMessage(plugin, plugin.getName(), dataOutput.toByteArray());
+        }
     }
 }

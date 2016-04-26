@@ -10,7 +10,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.sql.Timestamp;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
@@ -99,7 +98,15 @@ public class Storage {
                 ResultSet resultSet = loadStatement.executeQuery();
                 if (resultSet.next()) {
                     long userId = resultSet.getInt(1);
-                    UUID uuid = FastLoginBukkit.parseId(resultSet.getString(2));
+
+                    String unparsedUUID = resultSet.getString(2);
+                    UUID uuid;
+                    if (unparsedUUID == null) {
+                        uuid = null;
+                    } else {
+                        uuid = FastLoginBukkit.parseId(unparsedUUID);
+                    }
+
 //                    String name = resultSet.getString(3);
                     boolean premium = resultSet.getBoolean(4);
                     String lastIp = resultSet.getString(5);
@@ -122,38 +129,7 @@ public class Storage {
         return null;
     }
 //    public PlayerProfile getProfile(UUID uuid, boolean fetch) {
-//        if (profileCache.containsKey(name)) {
-//            return profileCache.get(name);
-//        } else if (fetch) {
-//            Connection con = null;
-//            try {
-//                con = dataSource.getConnection();
-//                PreparedStatement loadStatement = con.prepareStatement("SELECT * FROM " + PREMIUM_TABLE
-//                        + " WHERE `Name`=? LIMIT 1");
-//                loadStatement.setString(1, name);
-//
-//                ResultSet resultSet = loadStatement.executeQuery();
-//                if (resultSet.next()) {
-//                    long userId = resultSet.getInt(1);
-//                    UUID uuid = FastLoginBukkit.parseId(resultSet.getString(2));
-////                    String name = resultSet.getString(3);
-//                    boolean premium = resultSet.getBoolean(4);
-//                    String lastIp = resultSet.getString(5);
-//                    long lastLogin = resultSet.getTimestamp(6).getTime();
-//                    PlayerProfile playerProfile = new PlayerProfile(userId, uuid, name, premium, lastIp, lastLogin);
-//                    profileCache.put(name, playerProfile);
-//                    return playerProfile;
-//                }
-//
-//                //todo: result on failure
-//            } catch (SQLException sqlEx) {
-//                plugin.getLogger().log(Level.SEVERE, "Failed to query profile", sqlEx);
-//            } finally {
-//                closeQuietly(con);
-//            }
-//        }
-//
-//        return null;
+//todo
 //    }
 
     public boolean save(PlayerProfile playerProfile) {
@@ -161,11 +137,18 @@ public class Storage {
         try {
             con = dataSource.getConnection();
 
+            UUID uuid = playerProfile.getUuid();
+
             if (playerProfile.getUserId() == -1) {
                 PreparedStatement saveStatement = con.prepareStatement("INSERT INTO " + PREMIUM_TABLE
                         + " (UUID, Name, Premium, LastIp) VALUES (?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
 
-                saveStatement.setString(1, playerProfile.getUuid().toString().replace("-", ""));
+                if (uuid == null) {
+                    saveStatement.setString(1, null);
+                } else {
+                    saveStatement.setString(1, uuid.toString().replace("-", ""));
+                }
+
                 saveStatement.setString(2, playerProfile.getPlayerName());
                 saveStatement.setBoolean(3, playerProfile.isPremium());
                 saveStatement.setString(4, playerProfile.getLastIp());
@@ -177,15 +160,20 @@ public class Storage {
                 }
             } else {
                 PreparedStatement saveStatement = con.prepareStatement("UPDATE " + PREMIUM_TABLE
-                        + " SET UUID=?, Name=?, Premium=?, LastIp=?, LastLogin=? WHERE UserID=?");
+                        + " SET UUID=?, Name=?, Premium=?, LastIp=?, LastLogin=CURRENT_TIMESTAMP WHERE UserID=?");
 
-                saveStatement.setString(1, playerProfile.getUuid().toString().replace("-", ""));
+                if (uuid == null) {
+                    saveStatement.setString(1, null);
+                } else {
+                    saveStatement.setString(1, uuid.toString().replace("-", ""));
+                }
+
                 saveStatement.setString(2, playerProfile.getPlayerName());
                 saveStatement.setBoolean(3, playerProfile.isPremium());
                 saveStatement.setString(4, playerProfile.getLastIp());
-                saveStatement.setTimestamp(5, new Timestamp(playerProfile.getLastLogin()));
+//                saveStatement.setTimestamp(5, new Timestamp(playerProfile.getLastLogin()));
 
-                saveStatement.setLong(6, playerProfile.getUserId());
+                saveStatement.setLong(5, playerProfile.getUserId());
                 saveStatement.execute();
             }
 

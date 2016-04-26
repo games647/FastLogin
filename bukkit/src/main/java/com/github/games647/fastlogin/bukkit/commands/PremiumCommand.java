@@ -5,6 +5,7 @@ import com.github.games647.fastlogin.bukkit.PlayerProfile;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -18,7 +19,7 @@ import org.bukkit.entity.Player;
  */
 public class PremiumCommand implements CommandExecutor {
 
-    private final FastLoginBukkit plugin;
+    protected final FastLoginBukkit plugin;
 
     public PremiumCommand(FastLoginBukkit plugin) {
         this.plugin = plugin;
@@ -41,13 +42,19 @@ public class PremiumCommand implements CommandExecutor {
             Player player = (Player) sender;
 //            UUID uuid = player.getUniqueId();
 
-            //todo: load async if it's not in the cache anymore
-            PlayerProfile profile = plugin.getStorage().getProfile(player.getName(), false);
+//            //todo: load async if it's not in the cache anymore
+            final PlayerProfile profile = plugin.getStorage().getProfile(player.getName(), true);
             if (profile.isPremium()) {
                 sender.sendMessage(ChatColor.DARK_RED + "You are already on the premium list");
             } else {
                 //todo: resolve uuid
                 profile.setPremium(true);
+                Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+                    @Override
+                    public void run() {
+                        plugin.getStorage().save(profile);
+                    }
+                });
                 sender.sendMessage(ChatColor.DARK_GREEN + "Added to the list of premium players");
             }
 
@@ -70,9 +77,11 @@ public class PremiumCommand implements CommandExecutor {
     }
 
     private void notifiyBungeeCord(Player target) {
-        ByteArrayDataOutput dataOutput = ByteStreams.newDataOutput();
-        dataOutput.writeUTF("ON");
+        if (plugin.isBungeeCord()) {
+            ByteArrayDataOutput dataOutput = ByteStreams.newDataOutput();
+            dataOutput.writeUTF("ON");
 
-        target.sendPluginMessage(plugin, plugin.getName(), dataOutput.toByteArray());
+            target.sendPluginMessage(plugin, plugin.getName(), dataOutput.toByteArray());
+        }
     }
 }

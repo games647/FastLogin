@@ -36,6 +36,8 @@ autoRegister: false
 # Moreover you may want to convert the offline UUID to a premium UUID. This will ensure that the player
 # will have the same inventory, permissions, ... if they switched to premium authentification from offline/cracked
 # authentification.
+#
+# This feature requires Cauldron, Spigot or a fork of Spigot (PaperSpigot, TacoSpigot)
 premiumUuid: false
 
 # If your players have a premium account and a skin associated to their account, this plugin
@@ -49,6 +51,9 @@ premiumUuid: false
 # This means this plugin doesn't need to create a new connection to the Mojang servers, because
 # the skin data is included in the Auth-Verification-Response sent by Mojang. If you want to use for other
 # players like cracked player, you have to use other plugins.
+#
+# If you want to use skins for your cracked player, you need an additional plugin like
+# ChangeSkin, SKinRestoer, ...
 forwardSkin: true
 
 # Database configuration
@@ -63,6 +68,6 @@ database: '{pluginDir}/FastLogin.db'
 #driver: com.mysql.jdbc.Driver
 #host: localhost
 #port: 3306
-#database: FastLogin
+#database: fastlogin
 #username: myUser
 #password: myPassword
