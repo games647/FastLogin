@@ -65,7 +65,7 @@ public class Storage {
             Statement statement = con.createStatement();
             String createDataStmt = "CREATE TABLE IF NOT EXISTS " + PREMIUM_TABLE + " ("
                     + "`UserID` INTEGER PRIMARY KEY AUTO_INCREMENT, "
-                    + "`UUID` CHAR(36) NOT NULL, "
+                    + "`UUID` CHAR(36), "
                     + "`Name` VARCHAR(16) NOT NULL, "
                     + "`Premium` BOOLEAN NOT NULL, "
                     + "`LastIp` VARCHAR(255) NOT NULL, "
@@ -107,6 +107,10 @@ public class Storage {
                     PlayerProfile playerProfile = new PlayerProfile(userId, uuid, name, premium, lastIp, lastLogin);
                     profileCache.put(name, playerProfile);
                     return playerProfile;
+                } else {
+                    PlayerProfile crackedProfile = new PlayerProfile(null, name, false, "");
+                    profileCache.put(name, crackedProfile);
+                    return crackedProfile;
                 }
             } catch (SQLException sqlEx) {
                 plugin.getLogger().log(Level.SEVERE, "Failed to query profile", sqlEx);
@@ -117,6 +121,40 @@ public class Storage {
 
         return null;
     }
+//    public PlayerProfile getProfile(UUID uuid, boolean fetch) {
+//        if (profileCache.containsKey(name)) {
+//            return profileCache.get(name);
+//        } else if (fetch) {
+//            Connection con = null;
+//            try {
+//                con = dataSource.getConnection();
+//                PreparedStatement loadStatement = con.prepareStatement("SELECT * FROM " + PREMIUM_TABLE
+//                        + " WHERE `Name`=? LIMIT 1");
+//                loadStatement.setString(1, name);
+//
+//                ResultSet resultSet = loadStatement.executeQuery();
+//                if (resultSet.next()) {
+//                    long userId = resultSet.getInt(1);
+//                    UUID uuid = FastLoginBukkit.parseId(resultSet.getString(2));
+////                    String name = resultSet.getString(3);
+//                    boolean premium = resultSet.getBoolean(4);
+//                    String lastIp = resultSet.getString(5);
+//                    long lastLogin = resultSet.getTimestamp(6).getTime();
+//                    PlayerProfile playerProfile = new PlayerProfile(userId, uuid, name, premium, lastIp, lastLogin);
+//                    profileCache.put(name, playerProfile);
+//                    return playerProfile;
+//                }
+//
+//                //todo: result on failure
+//            } catch (SQLException sqlEx) {
+//                plugin.getLogger().log(Level.SEVERE, "Failed to query profile", sqlEx);
+//            } finally {
+//                closeQuietly(con);
+//            }
+//        }
+//
+//        return null;
+//    }
 
     public boolean save(PlayerProfile playerProfile) {
         Connection con = null;

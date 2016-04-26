@@ -1,6 +1,7 @@
 package com.github.games647.fastlogin.bukkit.commands;
 
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
+import com.github.games647.fastlogin.bukkit.PlayerProfile;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 
@@ -25,6 +26,11 @@ public class PremiumCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        if (plugin.getStorage() == null) {
+            sender.sendMessage(ChatColor.DARK_RED + "This command is disabled on the backend server");
+            return true;
+        }
+
         if (args.length == 0) {
             if (!(sender instanceof Player)) {
                 //console or command block
@@ -32,24 +38,31 @@ public class PremiumCommand implements CommandExecutor {
                 return true;
             }
 
-            String playerName = sender.getName();
-            boolean didntexist = plugin.getEnabledPremium().add(playerName);
-            if (!didntexist) {
+            Player player = (Player) sender;
+//            UUID uuid = player.getUniqueId();
+
+            //todo: load async if it's not in the cache anymore
+            PlayerProfile profile = plugin.getStorage().getProfile(player.getName(), false);
+            if (profile.isPremium()) {
                 sender.sendMessage(ChatColor.DARK_RED + "You are already on the premium list");
             } else {
+                //todo: resolve uuid
+                profile.setPremium(true);
                 sender.sendMessage(ChatColor.DARK_GREEN + "Added to the list of premium players");
             }
 
             notifiyBungeeCord((Player) sender);
             return true;
         } else {
-            String playerName = args[0];
-            boolean didntexist = plugin.getEnabledPremium().add(playerName);
-            if (!didntexist) {
-                sender.sendMessage(ChatColor.DARK_RED + "You are already on the premium list");
-            } else {
-                sender.sendMessage(ChatColor.DARK_GREEN + "Added to the list of premium players");
-            }
+            sender.sendMessage(ChatColor.DARK_RED + "NOT IMPLEMENTED YET");
+            //todo: async load
+//            String playerName = args[0];
+//            boolean didntexist = plugin.getEnabledPremium().add(playerName);
+//            if (!didntexist) {
+//                sender.sendMessage(ChatColor.DARK_RED + "You are already on the premium list");
+//            } else {
+//                sender.sendMessage(ChatColor.DARK_GREEN + "Added to the list of premium players");
+//            }
 //            notifiyBungeeCord();
         }
 

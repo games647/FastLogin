@@ -4,11 +4,11 @@ import java.util.UUID;
 
 public class PlayerProfile {
 
-    private final UUID uuid;
     private final String playerName;
 
     private long userId;
 
+    private UUID uuid;
     private boolean premium;
     private String lastIp;
     private long lastLogin;
@@ -32,6 +32,10 @@ public class PlayerProfile {
         this.lastIp = lastIp;
     }
 
+    public String getPlayerName() {
+        return playerName;
+    }
+
     public synchronized long getUserId() {
         return userId;
     }
@@ -40,27 +44,27 @@ public class PlayerProfile {
         this.userId = generatedId;
     }
 
-    public UUID getUuid() {
+    public synchronized UUID getUuid() {
         return uuid;
     }
 
-    public String getPlayerName() {
-        return playerName;
+    public synchronized void setUuid(UUID uuid) {
+        this.uuid = uuid;
     }
 
-    public boolean isPremium() {
+    public synchronized boolean isPremium() {
         return premium;
     }
 
-    public void setPremium(boolean premium) {
+    public synchronized void setPremium(boolean premium) {
         this.premium = premium;
     }
 
-    public String getLastIp() {
+    public synchronized String getLastIp() {
         return lastIp;
     }
 
-    public void setLastIp(String lastIp) {
+    public synchronized void setLastIp(String lastIp) {
         this.lastIp = lastIp;
     }
 
@@ -68,7 +72,7 @@ public class PlayerProfile {
         return lastLogin;
     }
 
-    public void setLastLogin(long lastLogin) {
+    public synchronized void setLastLogin(long lastLogin) {
         this.lastLogin = lastLogin;
     }
 }

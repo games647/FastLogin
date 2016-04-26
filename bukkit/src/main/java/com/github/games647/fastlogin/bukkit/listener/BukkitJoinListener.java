@@ -3,7 +3,9 @@ package com.github.games647.fastlogin.bukkit.listener;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
 import com.comphenix.protocol.wrappers.WrappedSignedProperty;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
+import com.github.games647.fastlogin.bukkit.PlayerProfile;
 import com.github.games647.fastlogin.bukkit.PlayerSession;
+import com.github.games647.fastlogin.bukkit.Storage;
 import com.github.games647.fastlogin.bukkit.hooks.BukkitAuthPlugin;
 
 import java.util.logging.Level;
@@ -65,7 +67,17 @@ public class BukkitJoinListener implements Listener {
                         if (session.needsRegistration()) {
                             plugin.getLogger().log(Level.FINE, "Register player {0}", player.getName());
 
-                            plugin.getEnabledPremium().add(session.getUsername());
+                            final Storage storage = plugin.getStorage();
+                            if (storage != null) {
+                                final PlayerProfile playerProfile = storage.getProfile(session.getUsername(), false);
+                                playerProfile.setPremium(true);
+                                Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        storage.save(playerProfile);
+                                    }
+                                });
+                            }
 
                             String generatedPassword = plugin.generateStringPassword();
                             authPlugin.forceRegister(player, generatedPassword);

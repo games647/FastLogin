@@ -13,13 +13,11 @@ import com.github.games647.fastlogin.bukkit.listener.EncryptionPacketListener;
 import com.github.games647.fastlogin.bukkit.listener.ProtocolSupportListener;
 import com.github.games647.fastlogin.bukkit.listener.StartPacketListener;
 import com.google.common.cache.CacheLoader;
-import com.google.common.collect.Sets;
 import com.google.common.reflect.ClassPath;
 
 import java.io.IOException;
 import java.security.KeyPair;
 import java.sql.SQLException;
-import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
@@ -46,8 +44,7 @@ public class FastLoginBukkit extends JavaPlugin {
     //provide a immutable key pair to be thread safe | used for encrypting and decrypting traffic
     private final KeyPair keyPair = EncryptionUtil.generateKeyPair();
 
-    //we need a thread-safe set because we access it async in the packet listener
-    private final Set<String> enabledPremium = Sets.newConcurrentHashSet();
+    private static final int WORKER_THREADS = 5;
 
     private boolean bungeeCord;
     private Storage storage;
@@ -122,8 +119,12 @@ public class FastLoginBukkit extends JavaPlugin {
 
                 //we are performing HTTP request on these so run it async (seperate from the Netty IO threads)
                 AsynchronousManager asynchronousManager = protocolManager.getAsynchronousManager();
-                asynchronousManager.registerAsyncHandler(new StartPacketListener(this, protocolManager)).start();
-                asynchronousManager.registerAsyncHandler(new EncryptionPacketListener(this, protocolManager)).start();
+
+                StartPacketListener startPacketListener = new StartPacketListener(this, protocolManager);
+                EncryptionPacketListener encryptionPacketListener = new EncryptionPacketListener(this, protocolManager);
+
+                asynchronousManager.registerAsyncHandler(startPacketListener).start(WORKER_THREADS);
+                asynchronousManager.registerAsyncHandler(encryptionPacketListener).start(WORKER_THREADS);
             }
         }
 
@@ -172,13 +173,8 @@ public class FastLoginBukkit extends JavaPlugin {
         return keyPair;
     }
 
-    /**
-     * Gets a set of user who activated premium logins
-     *
-     * @return user who activated premium logins
-     */
-    public Set<String> getEnabledPremium() {
-        return enabledPremium;
+    public Storage getStorage() {
+        return storage;
     }
 
     /**
@@ -230,9 +226,5 @@ public class FastLoginBukkit extends JavaPlugin {
 
         authPlugin = authPluginHook;
         return true;
-    }
-
-    public boolean isBungee() {
-        return bungeeCord;
     }
 }

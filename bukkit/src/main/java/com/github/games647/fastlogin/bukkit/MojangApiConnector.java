@@ -38,23 +38,34 @@ public class MojangApiConnector {
         this.plugin = plugin;
     }
 
-    public boolean isPremiumName(String playerName) {
+    /**
+     *
+     * @param playerName
+     * @return null on non-premium
+     */
+    public UUID getPremiumUUID(String playerName) {
         //check if it's a valid playername
         if (playernameMatcher.matcher(playerName).matches()) {
             //only make a API call if the name is valid existing mojang account
             try {
                 HttpURLConnection connection = getConnection(UUID_LINK + playerName);
-                int responseCode = connection.getResponseCode();
-
-                return responseCode == HttpURLConnection.HTTP_OK;
+                if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                    String line = reader.readLine();
+                    if (line != null && !line.equals("null")) {
+                        JSONObject userData = (JSONObject) JSONValue.parseWithException(line);
+                        String uuid = (String) userData.get("id");
+                        return parseId(uuid);
+                    }
+                }
                 //204 - no content for not found
-            } catch (IOException ex) {
+            } catch (Exception ex) {
                 plugin.getLogger().log(Level.SEVERE, "Failed to check if player has a paid account", ex);
             }
             //this connection doesn't need to be closed. So can make use of keep alive in java
         }
 
-        return false;
+        return null;
     }
 
     public boolean hasJoinedServer(PlayerSession session, String serverId) {

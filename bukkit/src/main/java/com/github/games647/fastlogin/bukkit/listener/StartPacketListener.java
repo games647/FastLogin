@@ -6,12 +6,14 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
+import com.github.games647.fastlogin.bukkit.PlayerProfile;
 import com.github.games647.fastlogin.bukkit.PlayerSession;
 import com.github.games647.fastlogin.bukkit.hooks.BukkitAuthPlugin;
 
 import java.lang.reflect.InvocationTargetException;
 import java.security.PublicKey;
 import java.util.Random;
+import java.util.UUID;
 import java.util.logging.Level;
 
 import org.bukkit.entity.Player;
@@ -72,41 +74,44 @@ public class StartPacketListener extends PacketAdapter {
         String username = packet.getGameProfiles().read(0).getName();
         plugin.getLogger().log(Level.FINER, "Player {0} with {1} connecting to the server"
                 , new Object[]{sessionKey, username});
-        if (!plugin.isBungee()) {
-            BukkitAuthPlugin authPlugin = plugin.getAuthPlugin();
-            if (plugin.getEnabledPremium().contains(username)) {
+
+        PlayerProfile playerProfile = plugin.getStorage().getProfile(username, true);
+        if (playerProfile != null) {
+            //user not exists in the db
+            if (playerProfile.getUserId() == -1) {
+                BukkitAuthPlugin authPlugin = plugin.getAuthPlugin();
+                if (plugin.getConfig().getBoolean("autoRegister") && !authPlugin.isRegistered(username)) {
+                    UUID premiumUUID = plugin.getApiConnector().getPremiumUUID(username);
+                    if (premiumUUID != null) {
+                        plugin.getLogger().log(Level.FINER, "Player {0} uses a premium username", username);
+                        enablePremiumLogin(username, sessionKey, player, packetEvent, false);
+                    }
+                }
+            } else if (playerProfile.isPremium()) {
                 enablePremiumLogin(username, sessionKey, player, packetEvent, true);
-            } else if (plugin.getConfig().getBoolean("autoRegister")
-                    && authPlugin != null && !plugin.getAuthPlugin().isRegistered(username)) {
-                enablePremiumLogin(username, sessionKey, player, packetEvent, false);
-                plugin.getEnabledPremium().add(username);
             }
         }
     }
 
+    //minecraft server implementation
+    //https://github.com/bergerkiller/CraftSource/blob/master/net.minecraft.server/LoginListener.java#L161
     private void enablePremiumLogin(String username, String sessionKey, Player player, PacketEvent packetEvent
             , boolean registered) {
-        if (plugin.getApiConnector().isPremiumName(username)) {
-            plugin.getLogger().log(Level.FINER, "Player {0} uses a premium username", username);
-            //minecraft server implementation
-            //https://github.com/bergerkiller/CraftSource/blob/master/net.minecraft.server/LoginListener.java#L161
+        //randomized server id to make sure the request is for our server
+        //this could be relevant http://www.sk89q.com/2011/09/minecraft-name-spoofing-exploit/
+        String serverId = Long.toString(random.nextLong(), 16);
 
-            //randomized server id to make sure the request is for our server
-            //this could be relevant http://www.sk89q.com/2011/09/minecraft-name-spoofing-exploit/
-            String serverId = Long.toString(random.nextLong(), 16);
+        //generate a random token which should be the same when we receive it from the client
+        byte[] verifyToken = new byte[VERIFY_TOKEN_LENGTH];
+        random.nextBytes(verifyToken);
 
-            //generate a random token which should be the same when we receive it from the client
-            byte[] verifyToken = new byte[VERIFY_TOKEN_LENGTH];
-            random.nextBytes(verifyToken);
-
-            boolean success = sentEncryptionRequest(player, serverId, verifyToken);
-            if (success) {
-                PlayerSession playerSession = new PlayerSession(username, serverId, verifyToken);
-                playerSession.setRegistered(registered);
-                plugin.getSessions().put(sessionKey, playerSession);
-                //cancel only if the player has a paid account otherwise login as normal offline player
-                packetEvent.setCancelled(true);
-            }
+        boolean success = sentEncryptionRequest(player, serverId, verifyToken);
+        if (success) {
+            PlayerSession playerSession = new PlayerSession(username, serverId, verifyToken);
+            playerSession.setRegistered(registered);
+            plugin.getSessions().put(sessionKey, playerSession);
+            //cancel only if the player has a paid account otherwise login as normal offline player
+            packetEvent.setCancelled(true);
         }
     }
 
