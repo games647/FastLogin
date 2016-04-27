@@ -23,10 +23,10 @@
             <url>https://repo.ellune.net/content/repositories/snapshots/</url>
         </repository>-->
 
-        <!-- BungeeCord -->
+        <!--BungeeCord with also the part outside the API-->
         <repository>
-            <id>bungeecord-repo</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+            <id>RYRED-REPO</id>
+            <url>http://mvn.ryred.co/repository/snapshots/</url>
         </repository>
 
         <!--Github automatic maven builds-->
@@ -39,9 +39,8 @@
     <dependencies>
         <dependency>
             <groupId>net.md-5</groupId>
-            <artifactId>bungeecord-api</artifactId>
+            <artifactId>bungeecord-proxy</artifactId>
             <version>1.9-SNAPSHOT</version>
-            <type>jar</type>
             <scope>provided</scope>
         </dependency>
 <!--        <dependency>

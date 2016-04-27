@@ -1,6 +1,7 @@
 package com.github.games647.fastlogin.bungee;
 
 import com.github.games647.fastlogin.bungee.hooks.BungeeAuthPlugin;
+import com.google.common.base.Charsets;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
@@ -11,10 +12,14 @@ import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.PendingConnection;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.connection.Server;
+import net.md_5.bungee.api.event.LoginEvent;
 import net.md_5.bungee.api.event.PluginMessageEvent;
 import net.md_5.bungee.api.event.PreLoginEvent;
 import net.md_5.bungee.api.event.ServerConnectedEvent;
 import net.md_5.bungee.api.plugin.Listener;
+import net.md_5.bungee.connection.InitialHandler;
+import net.md_5.bungee.connection.LoginResult;
+import net.md_5.bungee.connection.LoginResult.Property;
 import net.md_5.bungee.event.EventHandler;
 
 /**
@@ -54,6 +59,28 @@ public class PlayerConnectionListener implements Listener {
 //                }
             } else if (playerProfile.isPremium()) {
                 connection.setOnlineMode(true);
+            }
+        }
+    }
+
+    @EventHandler
+    public void onLogin(LoginEvent loginEvent) {
+        PendingConnection connection = loginEvent.getConnection();
+        String username = connection.getName();
+        if (connection.isOnlineMode()) {
+            //bungeecord will do this automatically so override it on disabled option
+            if (!plugin.getConfiguration().getBoolean("premiumUuid")) {
+                UUID offlineUUID = UUID.nameUUIDFromBytes(("OfflinePlayer:" + username).getBytes(Charsets.UTF_8));
+                connection.setUniqueId(offlineUUID);
+            }
+
+            if (!plugin.getConfiguration().getBoolean("forwardSkin")) {
+                InitialHandler initialHandler = (InitialHandler) connection;
+                //this is null on offline mode
+                LoginResult loginProfile = initialHandler.getLoginProfile();
+                if (loginProfile != null) {
+                    loginProfile.setProperties(new Property[]{});
+                }
             }
         }
     }
