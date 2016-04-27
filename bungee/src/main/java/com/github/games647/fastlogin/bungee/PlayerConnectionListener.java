@@ -2,13 +2,19 @@ package com.github.games647.fastlogin.bungee;
 
 import com.github.games647.fastlogin.bungee.hooks.BungeeAuthPlugin;
 import com.google.common.base.Charsets;
+import com.google.common.cache.CacheBuilder;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 
 import java.util.UUID;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
 
+import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.PendingConnection;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.connection.Server;
@@ -30,6 +36,10 @@ import net.md_5.bungee.event.EventHandler;
 public class PlayerConnectionListener implements Listener {
 
     protected final FastLoginBungee plugin;
+    private final ConcurrentMap<PendingConnection, Object> pendingAutoRegister = CacheBuilder
+            .newBuilder()
+            .expireAfterWrite(1, TimeUnit.MINUTES)
+            .<PendingConnection, Object>build().asMap();
 
     public PlayerConnectionListener(FastLoginBungee plugin) {
         this.plugin = plugin;
@@ -49,14 +59,15 @@ public class PlayerConnectionListener implements Listener {
         if (playerProfile != null) {
             //user not exists in the db
             if (!playerProfile.isPremium() && playerProfile.getUserId() == -1) {
-//                BungeeAuthPlugin authPlugin = plugin.getBungeeAuthPlugin();
-//                if (plugin.getConfiguration().getBoolean("autoRegister") && !authPlugin.isRegistered(username)) {
-//                    UUID premiumUUID = plugin.getApiConnector().getPremiumUUID(username);
-//                    if (premiumUUID != null) {
-//                        plugin.getLogger().log(Level.FINER, "Player {0} uses a premium username", username);
-//                        connection.setOnlineMode(true);
-//                    }
-//                }
+                BungeeAuthPlugin authPlugin = plugin.getBungeeAuthPlugin();
+                if (plugin.getConfiguration().getBoolean("autoRegister") && !authPlugin.isRegistered(username)) {
+                    UUID premiumUUID = plugin.getMojangApiConnector().getPremiumUUID(username);
+                    if (premiumUUID != null) {
+                        plugin.getLogger().log(Level.FINER, "Player {0} uses a premium username", username);
+                        connection.setOnlineMode(true);
+                        pendingAutoRegister.put(connection, new Object());
+                    }
+                }
             } else if (playerProfile.isPremium()) {
                 connection.setOnlineMode(true);
             }
@@ -108,7 +119,13 @@ public class PlayerConnectionListener implements Listener {
 
             BungeeAuthPlugin authPlugin = plugin.getBungeeAuthPlugin();
             if (authPlugin != null) {
-                authPlugin.forceLogin(player);
+                Object existed = pendingAutoRegister.remove(player.getPendingConnection());
+                if (existed == null) {
+                    authPlugin.forceLogin(player);
+                } else {
+                    String password = plugin.generateStringPassword();
+                    authPlugin.forceRegister(player, password);
+                }
             }
         }
     }
@@ -136,6 +153,16 @@ public class PlayerConnectionListener implements Listener {
                     @Override
                     public void run() {
                         PlayerProfile playerProfile = plugin.getStorage().getProfile(forPlayer.getName(), true);
+                        if (playerProfile.isPremium()) {
+                            if (forPlayer.isConnected()) {
+                                TextComponent textComponent = new TextComponent("You are already on the premium list");
+                                textComponent.setColor(ChatColor.DARK_RED);
+                                forPlayer.sendMessage(textComponent);
+                            }
+
+                            return;
+                        }
+
                         playerProfile.setPremium(true);
                         //todo: set uuid
                         plugin.getStorage().save(playerProfile);
@@ -147,6 +174,16 @@ public class PlayerConnectionListener implements Listener {
                     @Override
                     public void run() {
                         PlayerProfile playerProfile = plugin.getStorage().getProfile(forPlayer.getName(), true);
+                        if (!playerProfile.isPremium()) {
+                            if (forPlayer.isConnected()) {
+                                TextComponent textComponent = new TextComponent("You are not in the premium list");
+                                textComponent.setColor(ChatColor.DARK_RED);
+                                forPlayer.sendMessage(textComponent);
+                            }
+
+                            return;
+                        }
+
                         playerProfile.setPremium(false);
                         playerProfile.setUuid(null);
                         //todo: set uuid

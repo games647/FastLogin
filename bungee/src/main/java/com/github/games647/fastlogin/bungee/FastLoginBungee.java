@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.util.Random;
 import java.util.UUID;
 import java.util.logging.Level;
 
@@ -28,9 +29,15 @@ public class FastLoginBungee extends Plugin {
                 + "-" + withoutDashes.substring(20, 32));
     }
 
+    private static final char[] CHARACTERS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+            .toCharArray();
+
     private BungeeAuthPlugin bungeeAuthPlugin;
+    private final MojangApiConnector mojangApiConnector = new MojangApiConnector(this);
     private Storage storage;
     private Configuration configuration;
+
+    private final Random random = new Random();
 
     @Override
     public void onEnable() {
@@ -75,6 +82,15 @@ public class FastLoginBungee extends Plugin {
         registerHook();
     }
 
+    public String generateStringPassword() {
+        StringBuilder generatedPassword = new StringBuilder(8);
+        for (int i = 1; i <= 8; i++) {
+            generatedPassword.append(CHARACTERS[random.nextInt(CHARACTERS.length - 1)]);
+        }
+
+        return generatedPassword.toString();
+    }
+
     @Override
     public void onDisable() {
         if (storage != null) {
@@ -88,6 +104,10 @@ public class FastLoginBungee extends Plugin {
 
     public Storage getStorage() {
         return storage;
+    }
+
+    public MojangApiConnector getMojangApiConnector() {
+        return mojangApiConnector;
     }
 
     /**

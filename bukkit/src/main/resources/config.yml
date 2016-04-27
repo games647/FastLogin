@@ -53,7 +53,7 @@ premiumUuid: false
 # players like cracked player, you have to use other plugins.
 #
 # If you want to use skins for your cracked player, you need an additional plugin like
-# ChangeSkin, SKinRestoer, ...
+# ChangeSkin, SkinRestoer, ...
 forwardSkin: true
 
 # Database configuration

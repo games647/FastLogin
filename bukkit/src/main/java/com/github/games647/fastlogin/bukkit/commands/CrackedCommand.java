@@ -22,11 +22,6 @@ public class CrackedCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (plugin.getStorage() == null) {
-            sender.sendMessage(ChatColor.DARK_RED + "This command is disabled on the backend server");
-            return true;
-        }
-
         if (args.length == 0) {
             if (!(sender instanceof Player)) {
                 //console or command block
@@ -37,22 +32,25 @@ public class CrackedCommand implements CommandExecutor {
             final Player player = (Player) sender;
 //            UUID uuid = player.getUniqueId();
 
-            //todo: load async if it's not in the cache anymore
-            final PlayerProfile profile = plugin.getStorage().getProfile(player.getName(), true);
-            if (profile.isPremium()) {
-                sender.sendMessage(ChatColor.DARK_GREEN + "Removed from the list of premium players");
-                profile.setPremium(false);
-                profile.setUuid(null);
-                Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
-                    @Override
-                    public void run() {
-                        plugin.getStorage().save(profile);
-                    }
-                });
-
+            if (plugin.isBungeeCord()) {
                 notifiyBungeeCord((Player) sender);
+                sender.sendMessage(ChatColor.YELLOW + "Sending request...");
             } else {
-                sender.sendMessage(ChatColor.DARK_RED + "You are not in the premium list");
+                //todo: load async if it's not in the cache anymore
+                final PlayerProfile profile = plugin.getStorage().getProfile(player.getName(), true);
+                if (profile.isPremium()) {
+                    sender.sendMessage(ChatColor.DARK_GREEN + "Removed from the list of premium players");
+                    profile.setPremium(false);
+                    profile.setUuid(null);
+                    Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+                        @Override
+                        public void run() {
+                            plugin.getStorage().save(profile);
+                        }
+                    });
+                } else {
+                    sender.sendMessage(ChatColor.DARK_RED + "You are not in the premium list");
+                }
             }
 
             return true;

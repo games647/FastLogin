@@ -4,7 +4,6 @@ import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Random;
-import java.util.concurrent.TimeUnit;
 
 import me.vik1395.BungeeAuth.ListenerClass;
 import me.vik1395.BungeeAuth.Main;
@@ -43,13 +42,8 @@ public class BungeeAuthHook implements BungeeAuthPlugin {
                     callProtected("setStatus", parameterTypes, arguments);
                     ListenerClass.movePlayer(player, false);
 
-                    ProxyServer.getInstance().getScheduler().schedule(Main.plugin, new Runnable() {
-                        @Override
-                        public void run() {
-                            //not thread-safe
-                            ListenerClass.prelogin.get(player.getName()).cancel();
-                        }
-                    }, 0, TimeUnit.SECONDS);
+                    //proparly not thread-safe
+                    ListenerClass.prelogin.get(player.getName()).cancel();
                 } catch (Exception ex) {
                     Main.plugin.getLogger().severe("[BungeeAuth] Error force loging in player");
                 }
@@ -95,14 +89,8 @@ public class BungeeAuthHook implements BungeeAuthPlugin {
             public void run() {
                 try {
                     callProtected("newPlayerEntry", parameterTypes, arguments);
-
-                    ProxyServer.getInstance().getScheduler().schedule(Main.plugin, new Runnable() {
-                        @Override
-                        public void run() {
-                            //proparly not thread-safe
-                            forceLogin(player);
-                        }
-                    }, 0, TimeUnit.SECONDS);
+                    //proparly not thread-safe
+                    forceLogin(player);
                 } catch (Exception ex) {
                     Main.plugin.getLogger().severe("[BungeeAuth] Error when creating a new player in the Database");
                 }
