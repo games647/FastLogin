@@ -36,8 +36,10 @@ public class ProtocolSupportListener implements Listener {
 
         PlayerProfile playerProfile = plugin.getStorage().getProfile(username, true);
         if (playerProfile != null) {
-            //user not exists in the db
-            if (!playerProfile.isPremium() && playerProfile.getUserId() == -1) {
+            if (playerProfile.isPremium()) {
+                startPremiumSession(username, loginStartEvent, true);
+            } else if (playerProfile.getUserId() == -1) {
+                //user not exists in the db
                 BukkitAuthPlugin authPlugin = plugin.getAuthPlugin();
                 if (plugin.getConfig().getBoolean("autoRegister") && !authPlugin.isRegistered(username)) {
                     UUID premiumUUID = plugin.getApiConnector().getPremiumUUID(username);
@@ -46,8 +48,6 @@ public class ProtocolSupportListener implements Listener {
                         startPremiumSession(username, loginStartEvent, false);
                     }
                 }
-            } else if (playerProfile.isPremium()) {
-                startPremiumSession(username, loginStartEvent, true);
             }
         }
     }

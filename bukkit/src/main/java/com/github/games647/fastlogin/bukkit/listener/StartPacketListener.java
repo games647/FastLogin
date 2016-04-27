@@ -77,8 +77,10 @@ public class StartPacketListener extends PacketAdapter {
 
         PlayerProfile playerProfile = plugin.getStorage().getProfile(username, true);
         if (playerProfile != null) {
-            //user not exists in the db
-            if (!playerProfile.isPremium() && playerProfile.getUserId() == -1) {
+            if (playerProfile.isPremium()) {
+                enablePremiumLogin(username, sessionKey, player, packetEvent, true);
+            } else if (playerProfile.getUserId() == -1) {
+                //user not exists in the db
                 BukkitAuthPlugin authPlugin = plugin.getAuthPlugin();
                 if (plugin.getConfig().getBoolean("autoRegister") && !authPlugin.isRegistered(username)) {
                     UUID premiumUUID = plugin.getApiConnector().getPremiumUUID(username);
@@ -87,8 +89,6 @@ public class StartPacketListener extends PacketAdapter {
                         enablePremiumLogin(username, sessionKey, player, packetEvent, false);
                     }
                 }
-            } else if (playerProfile.isPremium()) {
-                enablePremiumLogin(username, sessionKey, player, packetEvent, true);
             }
         }
     }

@@ -41,6 +41,10 @@ public class FastLoginBungee extends Plugin {
 
     @Override
     public void onEnable() {
+        if (!getDataFolder().exists()) {
+            getDataFolder().mkdir();
+        }
+
         File configFile = new File(getDataFolder(), "config.yml");
         if (!configFile.exists()) {
             try (InputStream in = getResourceAsStream("config.yml")) {
@@ -53,13 +57,13 @@ public class FastLoginBungee extends Plugin {
         try {
             configuration = ConfigurationProvider.getProvider(YamlConfiguration.class).load(configFile);
 
-            String driver = configuration.getString("storage.driver");
-            String host = configuration.getString("storage.host", "");
-            int port = configuration.getInt("storage.port", 3306);
-            String database = configuration.getString("storage.database");
+            String driver = configuration.getString("driver");
+            String host = configuration.getString("host", "");
+            int port = configuration.getInt("port", 3306);
+            String database = configuration.getString("database");
 
-            String username = configuration.getString("storage.username", "");
-            String password = configuration.getString("storage.password", "");
+            String username = configuration.getString("username", "");
+            String password = configuration.getString("password", "");
             storage = new Storage(this, driver, host, port, database, username, password);
             try {
                 storage.createTables();

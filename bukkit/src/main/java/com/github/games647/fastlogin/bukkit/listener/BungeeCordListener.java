@@ -2,6 +2,7 @@ package com.github.games647.fastlogin.bukkit.listener;
 
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 import com.github.games647.fastlogin.bukkit.PlayerSession;
+import com.github.games647.fastlogin.bukkit.hooks.BukkitAuthPlugin;
 import com.google.common.base.Charsets;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteStreams;
@@ -12,6 +13,7 @@ import java.io.IOException;
 import java.util.UUID;
 import java.util.logging.Level;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.messaging.PluginMessageListener;
@@ -45,33 +47,41 @@ public class BungeeCordListener implements PluginMessageListener {
         String subchannel = dataInput.readUTF();
         plugin.getLogger().log(Level.FINEST, "Received plugin message for subchannel {0} from {1}"
                 , new Object[]{subchannel, player});
-        if ("CHECKED".equalsIgnoreCase(subchannel)) {
-            //make sure the proxy is allowed to transfer data to us
-            String playerName = dataInput.readUTF();
 
-            //check if the player is still online or disconnected
-            Player checkedPlayer = plugin.getServer().getPlayerExact(playerName);
-            if (checkedPlayer != null && checkedPlayer.isOnline()
-                    //fail if target player is blacklisted because already authed or wrong bungeecord id
-                    && !checkedPlayer.hasMetadata(plugin.getName())) {
-                //bungeecord UUID
-                long mostSignificantBits = dataInput.readLong();
-                long leastSignificantBits = dataInput.readLong();
-                UUID sourceId = new UUID(mostSignificantBits, leastSignificantBits);
+        final String playerName = dataInput.readUTF();
 
-                //fail if BungeeCord support is disabled (id = null)
-                if (sourceId.equals(proxyId)) {
-                    PlayerSession playerSession = new PlayerSession(playerName);
+        //check if the player is still online or disconnected
+        final Player checkedPlayer = plugin.getServer().getPlayerExact(playerName);
+        //fail if target player is blacklisted because already authed or wrong bungeecord id
+        if (checkedPlayer != null && !checkedPlayer.hasMetadata(plugin.getName())) {
+            //bungeecord UUID
+            long mostSignificantBits = dataInput.readLong();
+            long leastSignificantBits = dataInput.readLong();
+            UUID sourceId = new UUID(mostSignificantBits, leastSignificantBits);
+            //fail if BungeeCord support is disabled (id = null)
+            if (sourceId.equals(proxyId)) {
+                final PlayerSession playerSession = new PlayerSession(playerName);
+                if ("AUTO_LOGIN".equalsIgnoreCase(subchannel)) {
                     playerSession.setVerified(true);
                     playerSession.setRegistered(true);
+                    plugin.getSessions().put(checkedPlayer.getAddress().toString(), playerSession);
+                } else if ("AUTO_REGISTER".equalsIgnoreCase(subchannel)) {
+                    playerSession.setVerified(true);
 
-                    //put it only if the user doesn't has a session open
-                    //so that the player have to send the bungeecord packet and cannot skip the verification then
-                    plugin.getSessions().putIfAbsent(checkedPlayer.getAddress().toString(), playerSession);
-                } else {
-                    //blacklist target for the current login
-                    checkedPlayer.setMetadata(plugin.getName(), new FixedMetadataValue(plugin, true));
+                    Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+                        @Override
+                        public void run() {
+                            BukkitAuthPlugin authPlugin = plugin.getAuthPlugin();
+                            //we need to check if the player is registered on Bukkit too
+                            if (authPlugin != null && !authPlugin.isRegistered(playerName)) {
+                                plugin.getSessions().put(checkedPlayer.getAddress().toString(), playerSession);
+                            }
+                        }
+                    });
                 }
+            } else {
+                //blacklist target for the current login
+                checkedPlayer.setMetadata(plugin.getName(), new FixedMetadataValue(plugin, true));
             }
         }
     }
