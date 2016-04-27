@@ -32,6 +32,8 @@ import org.bukkit.plugin.java.JavaPlugin;
  * This plugin checks if a player has a paid account and if so tries to skip offline mode authentication.
  */
 public class FastLoginBukkit extends JavaPlugin {
+    
+    private static final int WORKER_THREADS = 5;
 
     public static UUID parseId(String withoutDashes) {
         return UUID.fromString(withoutDashes.substring(0, 8)
@@ -44,7 +46,6 @@ public class FastLoginBukkit extends JavaPlugin {
     //provide a immutable key pair to be thread safe | used for encrypting and decrypting traffic
     private final KeyPair keyPair = EncryptionUtil.generateKeyPair();
 
-    private static final int WORKER_THREADS = 5;
 
     private boolean bungeeCord;
     private Storage storage;

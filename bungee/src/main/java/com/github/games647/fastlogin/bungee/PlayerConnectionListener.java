@@ -6,10 +6,8 @@ import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 
 import java.util.UUID;
-import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.TextComponent;
 
+import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.PendingConnection;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.connection.Server;
@@ -26,7 +24,7 @@ import net.md_5.bungee.event.EventHandler;
  */
 public class PlayerConnectionListener implements Listener {
 
-    private final FastLoginBungee plugin;
+    protected final FastLoginBungee plugin;
 
     public PlayerConnectionListener(FastLoginBungee plugin) {
         this.plugin = plugin;
@@ -41,8 +39,22 @@ public class PlayerConnectionListener implements Listener {
         PendingConnection connection = preLoginEvent.getConnection();
         String username = connection.getName();
         //just enable it for activated users
-        if (plugin.getEnabledPremium().contains(username)) {
-            connection.setOnlineMode(true);
+
+        PlayerProfile playerProfile = plugin.getStorage().getProfile(username, true);
+        if (playerProfile != null) {
+            //user not exists in the db
+            if (!playerProfile.isPremium() && playerProfile.getUserId() == -1) {
+//                BungeeAuthPlugin authPlugin = plugin.getBungeeAuthPlugin();
+//                if (plugin.getConfiguration().getBoolean("autoRegister") && !authPlugin.isRegistered(username)) {
+//                    UUID premiumUUID = plugin.getApiConnector().getPremiumUUID(username);
+//                    if (premiumUUID != null) {
+//                        plugin.getLogger().log(Level.FINER, "Player {0} uses a premium username", username);
+//                        connection.setOnlineMode(true);
+//                    }
+//                }
+            } else if (playerProfile.isPremium()) {
+                connection.setOnlineMode(true);
+            }
         }
     }
 
@@ -70,9 +82,6 @@ public class PlayerConnectionListener implements Listener {
             BungeeAuthPlugin authPlugin = plugin.getBungeeAuthPlugin();
             if (authPlugin != null) {
                 authPlugin.forceLogin(player);
-                BaseComponent loginMessage = new TextComponent("Auto login");
-                loginMessage.setColor(ChatColor.DARK_GREEN);
-                player.sendMessage(loginMessage);
             }
         }
     }
@@ -94,11 +103,29 @@ public class PlayerConnectionListener implements Listener {
             ByteArrayDataInput dataInput = ByteStreams.newDataInput(data);
             String subchannel = dataInput.readUTF();
             if ("ON".equals(subchannel)) {
-                ProxiedPlayer forPlayer = (ProxiedPlayer) pluginMessageEvent.getReceiver();
-                plugin.getEnabledPremium().add(forPlayer.getName());
+                final ProxiedPlayer forPlayer = (ProxiedPlayer) pluginMessageEvent.getReceiver();
+
+                ProxyServer.getInstance().getScheduler().runAsync(plugin, new Runnable() {
+                    @Override
+                    public void run() {
+                        PlayerProfile playerProfile = plugin.getStorage().getProfile(forPlayer.getName(), true);
+                        playerProfile.setPremium(true);
+                        //todo: set uuid
+                        plugin.getStorage().save(playerProfile);
+                    }
+                });
             } else if ("OFF".equals(subchannel)) {
-                ProxiedPlayer forPlayer = (ProxiedPlayer) pluginMessageEvent.getReceiver();
-                plugin.getEnabledPremium().remove(forPlayer.getName());
+                final ProxiedPlayer forPlayer = (ProxiedPlayer) pluginMessageEvent.getReceiver();
+                ProxyServer.getInstance().getScheduler().runAsync(plugin, new Runnable() {
+                    @Override
+                    public void run() {
+                        PlayerProfile playerProfile = plugin.getStorage().getProfile(forPlayer.getName(), true);
+                        playerProfile.setPremium(false);
+                        playerProfile.setUuid(null);
+                        //todo: set uuid
+                        plugin.getStorage().save(playerProfile);
+                    }
+                });
             }
         }
     }
