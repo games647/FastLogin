@@ -4,7 +4,7 @@
 
     <parent>
         <groupId>com.github.games647</groupId>
-        <artifactId>fastlogin-parent</artifactId>
+        <artifactId>fastlogin</artifactId>
         <version>0.8</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
