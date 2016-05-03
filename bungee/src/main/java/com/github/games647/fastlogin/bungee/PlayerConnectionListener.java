@@ -33,35 +33,43 @@ public class PlayerConnectionListener implements Listener {
     }
 
     @EventHandler
-    public void onPreLogin(PreLoginEvent preLoginEvent) {
+    public void onPreLogin(final PreLoginEvent preLoginEvent) {
         if (preLoginEvent.isCancelled()) {
             return;
         }
 
-        PendingConnection connection = preLoginEvent.getConnection();
-        String username = connection.getName();
-        //just enable it for activated users
-
-        PlayerProfile playerProfile = plugin.getStorage().getProfile(username, true);
-        if (playerProfile != null) {
-            if (playerProfile.isPremium()) {
-                if (playerProfile.getUserId() != -1) {
-                    connection.setOnlineMode(true);
-                }
-            } else if (playerProfile.getUserId() == -1) {
-                //user not exists in the db
-                BungeeAuthPlugin authPlugin = plugin.getBungeeAuthPlugin();
-                if (plugin.getConfiguration().getBoolean("autoRegister")
-                        && (authPlugin == null || !authPlugin.isRegistered(username))) {
-                    UUID premiumUUID = plugin.getMojangApiConnector().getPremiumUUID(username);
-                    if (premiumUUID != null) {
-                        plugin.getLogger().log(Level.FINER, "Player {0} uses a premium username", username);
-                        connection.setOnlineMode(true);
-                        plugin.getPendingAutoRegister().put(connection, new Object());
+        preLoginEvent.registerIntent(plugin);
+        ProxyServer.getInstance().getScheduler().runAsync(plugin, new Runnable() {
+            @Override
+            public void run() {
+                PendingConnection connection = preLoginEvent.getConnection();
+                String username = connection.getName();
+                try {
+                    PlayerProfile playerProfile = plugin.getStorage().getProfile(username, true);
+                    if (playerProfile != null) {
+                        if (playerProfile.isPremium()) {
+                            if (playerProfile.getUserId() != -1) {
+                                connection.setOnlineMode(true);
+                            }
+                        } else if (playerProfile.getUserId() == -1) {
+                            //user not exists in the db
+                            BungeeAuthPlugin authPlugin = plugin.getBungeeAuthPlugin();
+                            if (plugin.getConfiguration().getBoolean("autoRegister")
+                                    && (authPlugin == null || !authPlugin.isRegistered(username))) {
+                                UUID premiumUUID = plugin.getMojangApiConnector().getPremiumUUID(username);
+                                if (premiumUUID != null) {
+                                    plugin.getLogger().log(Level.FINER, "Player {0} uses a premium username", username);
+                                    connection.setOnlineMode(true);
+                                    plugin.getPendingAutoRegister().put(connection, new Object());
+                                }
+                            }
+                        }
                     }
+                } finally {
+                    preLoginEvent.completeIntent(plugin);
                 }
             }
-        }
+        });
     }
 
     @EventHandler

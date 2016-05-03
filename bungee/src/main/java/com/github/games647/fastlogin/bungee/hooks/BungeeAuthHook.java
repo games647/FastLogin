@@ -9,7 +9,6 @@ import me.vik1395.BungeeAuth.ListenerClass;
 import me.vik1395.BungeeAuth.Main;
 import me.vik1395.BungeeAuth.Password.PasswordHandler;
 import me.vik1395.BungeeAuth.Tables;
-import net.md_5.bungee.api.ProxyServer;
 
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
@@ -35,20 +34,15 @@ public class BungeeAuthHook implements BungeeAuthPlugin {
         final Class<?>[] parameterTypes = new Class<?>[]{String.class, String.class};
         final Object[] arguments = new Object[]{player.getName(), "online"};
 
-        ProxyServer.getInstance().getScheduler().runAsync(Main.plugin, new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    callProtected("setStatus", parameterTypes, arguments);
-                    ListenerClass.movePlayer(player, false);
+        try {
+            callProtected("setStatus", parameterTypes, arguments);
+            ListenerClass.movePlayer(player, false);
 
-                    //proparly not thread-safe
-                    ListenerClass.prelogin.get(player.getName()).cancel();
-                } catch (Exception ex) {
-                    Main.plugin.getLogger().severe("[BungeeAuth] Error force loging in player");
-                }
-            }
-        });
+            //proparly not thread-safe
+            ListenerClass.prelogin.get(player.getName()).cancel();
+        } catch (Exception ex) {
+            Main.plugin.getLogger().severe("[BungeeAuth] Error force loging in player");
+        }
     }
 
     @Override
@@ -84,18 +78,13 @@ public class BungeeAuthHook implements BungeeAuthPlugin {
                 , String.class, String.class, String.class, String.class};
         final Object[] arguments = new Object[] {player.getName(), hash, pType, "", lastip, regdate, lastip, lastseen};
 
-        ProxyServer.getInstance().getScheduler().runAsync(Main.plugin, new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    callProtected("newPlayerEntry", parameterTypes, arguments);
-                    //proparly not thread-safe
-                    forceLogin(player);
-                } catch (Exception ex) {
-                    Main.plugin.getLogger().severe("[BungeeAuth] Error when creating a new player in the Database");
-                }
-            }
-        });
+        try {
+            callProtected("newPlayerEntry", parameterTypes, arguments);
+            //proparly not thread-safe
+            forceLogin(player);
+        } catch (Exception ex) {
+            Main.plugin.getLogger().severe("[BungeeAuth] Error when creating a new player in the Database");
+        }
     }
 
     //pail ;(
