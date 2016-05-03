@@ -1,6 +1,13 @@
+######1.0
+
+* Massive refactor to handle errors on force actions safely
+* force Methods now runs async too
+* force methods now returns a boolean to reflect if the method was successful
+* isRegistered method should now throw an exception if the plugin was unable to query the requested data
+
 ######0.8
 
-        * Fixed BungeeCord support for the Bukkit module
+* Fixed BungeeCord support for the Bukkit module
 * Added database storage to save the premium state
 * Fix logical error on /premium (Thanks to @NorbiPeti)
 * Fixed issues with host lookup from hosts file (Thanks to @NorbiPeti)

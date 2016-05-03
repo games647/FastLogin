@@ -14,18 +14,22 @@ import org.bukkit.entity.Player;
 public class AuthMeHook implements BukkitAuthPlugin {
 
     @Override
-    public void forceLogin(Player player) {
+    public boolean forceLogin(Player player) {
         //skips registration and login
         NewAPI.getInstance().forceLogin(player);
+        //commented because the operation above is performed async -> race conditions
+//        return NewAPI.getInstance().isAuthenticated(player);
+        return true;
     }
 
     @Override
-    public boolean isRegistered(String playerName) {
+    public boolean isRegistered(String playerName) throws Exception {
         return NewAPI.getInstance().isRegistered(playerName);
     }
 
     @Override
-    public void forceRegister(Player player, String password) {
+    public boolean forceRegister(Player player, String password) {
         NewAPI.getInstance().forceRegister(player, password);
+        return true;
     }
 }

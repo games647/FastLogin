@@ -7,6 +7,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.logging.Level;
 
 import org.bukkit.Achievement;
 import org.bukkit.Bukkit;
@@ -65,25 +68,36 @@ import ultraauth.main.Main;
  */
 public class UltraAuthHook implements BukkitAuthPlugin {
 
+    private final Plugin ultraAuthPlugin = Main.main;
+
     @Override
-    public void forceLogin(Player player) {
-        UltraAuthAPI.authenticatedPlayer(player);
+    public boolean forceLogin(final Player player) {
+        try {
+            //not thread-safe
+            Bukkit.getScheduler().callSyncMethod(ultraAuthPlugin, new Callable<Object>() {
+                @Override
+                public Object call() throws Exception {
+                    UltraAuthAPI.authenticatedPlayer(player);
+                    return null;
+                }
+            }).get();
+        } catch (InterruptedException | ExecutionException ex) {
+            ultraAuthPlugin.getLogger().log(Level.SEVERE, "Failed to forceLogin", ex);
+            return false;
+        }
+
+        return true;
     }
 
     @Override
-    public boolean isRegistered(String playerName) {
+    public boolean isRegistered(String playerName) throws Exception {
         return UltraAuthAPI.isRegisterd(new FakePlayer(playerName));
     }
 
     @Override
-    public void forceRegister(final Player player, final String password) {
-        Bukkit.getScheduler().runTaskAsynchronously(Main.main, new Runnable() {
-            @Override
-            public void run() {
-                UltraAuthAPI.setPlayerPasswordOnline(player, password);
-                forceLogin(player);
-            }
-        });
+    public boolean forceRegister(final Player player, final String password) {
+        UltraAuthAPI.setPlayerPasswordOnline(player, password);
+        return forceLogin(player);
     }
 
     class FakePlayer implements Player {

@@ -25,7 +25,7 @@ public class BungeeAuthHook implements BungeeAuthPlugin {
     private final Tables databaseConnection = new Tables();
 
     @Override
-    public void forceLogin(final ProxiedPlayer player) {
+    public boolean forceLogin(final ProxiedPlayer player) {
 //https://github.com/MatteCarra/BungeeAuth/blob/master/src/me/vik1395/BungeeAuth/Login.java#L92-95
         Main.plonline.add(player.getName());
 
@@ -42,18 +42,21 @@ public class BungeeAuthHook implements BungeeAuthPlugin {
             ListenerClass.prelogin.get(player.getName()).cancel();
         } catch (Exception ex) {
             Main.plugin.getLogger().severe("[BungeeAuth] Error force loging in player");
+            return false;
         }
+
+        return true;
     }
 
     @Override
-    public boolean isRegistered(String playerName) {
+    public boolean isRegistered(String playerName) throws Exception {
         //https://github.com/MatteCarra/BungeeAuth/blob/master/src/me/vik1395/BungeeAuth/Register.java#L46
         //renamed t to databaseConnection
         return databaseConnection.checkPlayerEntry(playerName);
     }
 
     @Override
-    public void forceRegister(final ProxiedPlayer player, String password) {
+    public boolean forceRegister(final ProxiedPlayer player, String password) {
         //https://github.com/MatteCarra/BungeeAuth/blob/master/src/me/vik1395/BungeeAuth/Register.java#L102
         PasswordHandler ph = new PasswordHandler();
         Random rand = new Random();
@@ -84,7 +87,10 @@ public class BungeeAuthHook implements BungeeAuthPlugin {
             forceLogin(player);
         } catch (Exception ex) {
             Main.plugin.getLogger().severe("[BungeeAuth] Error when creating a new player in the Database");
+            return false;
         }
+
+        return true;
     }
 
     //pail ;(

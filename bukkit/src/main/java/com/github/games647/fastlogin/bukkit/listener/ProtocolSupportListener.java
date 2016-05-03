@@ -43,12 +43,16 @@ public class ProtocolSupportListener implements Listener {
             } else if (playerProfile.getUserId() == -1) {
                 //user not exists in the db
                 BukkitAuthPlugin authPlugin = plugin.getAuthPlugin();
-                if (plugin.getConfig().getBoolean("autoRegister") && !authPlugin.isRegistered(username)) {
-                    UUID premiumUUID = plugin.getApiConnector().getPremiumUUID(username);
-                    if (premiumUUID != null) {
-                        plugin.getLogger().log(Level.FINER, "Player {0} uses a premium username", username);
-                        startPremiumSession(username, loginStartEvent, false);
+                try {
+                    if (plugin.getConfig().getBoolean("autoRegister") && !authPlugin.isRegistered(username)) {
+                        UUID premiumUUID = plugin.getApiConnector().getPremiumUUID(username);
+                        if (premiumUUID != null) {
+                            plugin.getLogger().log(Level.FINER, "Player {0} uses a premium username", username);
+                            startPremiumSession(username, loginStartEvent, false);
+                        }
                     }
+                } catch (Exception ex) {
+                    plugin.getLogger().log(Level.SEVERE, "Failed to query isRegistered", ex);
                 }
             }
         }

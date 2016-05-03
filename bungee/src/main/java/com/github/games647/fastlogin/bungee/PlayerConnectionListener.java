@@ -65,6 +65,8 @@ public class PlayerConnectionListener implements Listener {
                             }
                         }
                     }
+                } catch (Exception ex) {
+                    plugin.getLogger().log(Level.SEVERE, "Failed to check premium state", ex);
                 } finally {
                     preLoginEvent.completeIntent(plugin);
                 }

@@ -7,8 +7,12 @@ import com.lenis0012.bukkit.ls.data.DataManager;
 import java.net.InetAddress;
 
 import java.util.UUID;
-
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.logging.Level;
 import org.bukkit.Bukkit;
+
 import org.bukkit.entity.Player;
 
 /**
@@ -22,25 +26,41 @@ import org.bukkit.entity.Player;
  */
 public class LoginSecurityHook implements BukkitAuthPlugin {
 
+    protected final LoginSecurity securityPlugin = LoginSecurity.instance;
+
     @Override
-    public void forceLogin(Player player) {
+    public boolean forceLogin(final Player player) {
         //Login command of this plugin: (How the plugin logs the player in)
         //https://github.com/lenis0012/LoginSecurity-2/blob/master/src/main/java/com/lenis0012/bukkit/ls/commands/LoginCommand.java#L39
-        LoginSecurity securityPlugin = LoginSecurity.instance;
-        String name = player.getName().toLowerCase();
 
-        //mark the user as logged in
-        securityPlugin.authList.remove(name);
-        //cancel timeout timer
-        securityPlugin.thread.timeout.remove(name);
-        //remove effects and restore location
-        securityPlugin.rehabPlayer(player, name);
+        //not thread-safe operation
+        Future<Boolean> future = Bukkit.getScheduler().callSyncMethod(securityPlugin, new Callable<Boolean>() {
+            @Override
+            public Boolean call() throws Exception {
+                String name = player.getName().toLowerCase();
+
+                //mark the user as logged in
+                securityPlugin.authList.remove(name);
+                //cancel timeout timer
+                securityPlugin.thread.timeout.remove(name);
+                //remove effects and restore location
+                securityPlugin.rehabPlayer(player, name);
+
+                return true;
+            }
+        });
+
+        try {
+            return future.get();
+        } catch (InterruptedException | ExecutionException ex) {
+            securityPlugin.getLogger().log(Level.SEVERE, "Failed to forceLogin", ex);
+            return false;
+        }
     }
 
     @Override
-    public boolean isRegistered(String playerName) {
+    public boolean isRegistered(String playerName) throws Exception {
         //https://github.com/lenis0012/LoginSecurity-2/blob/master/src/main/java/com/lenis0012/bukkit/ls/LoginSecurity.java#L296
-        LoginSecurity securityPlugin = LoginSecurity.instance;
         DataManager dataManager = securityPlugin.data;
 
         //https://github.com/lenis0012/LoginSecurity-2/blob/master/src/main/java/com/lenis0012/bukkit/ls/LoginSecurity.java#L283
@@ -51,8 +71,7 @@ public class LoginSecurityHook implements BukkitAuthPlugin {
     }
 
     @Override
-    public void forceRegister(final Player player, final String password) {
-        final LoginSecurity securityPlugin = LoginSecurity.instance;
+    public boolean forceRegister(final Player player, final String password) {
         final DataManager dataManager = securityPlugin.data;
 
         UUID playerUUID = player.getUniqueId();
@@ -61,19 +80,7 @@ public class LoginSecurityHook implements BukkitAuthPlugin {
         final String passwordHash = securityPlugin.hasher.hash(password);
 
         //this executes a sql query without interacting with other parts so we can run it async.
-        Bukkit.getScheduler().runTaskAsynchronously(securityPlugin, new Runnable() {
-            @Override
-            public void run() {
-                dataManager.register(uuidString, passwordHash, securityPlugin.hasher.getTypeId(), ipAddress.toString());
-                //run forcelogin only if it was successfull
-                Bukkit.getScheduler().runTask(securityPlugin, new Runnable() {
-                    @Override
-                    public void run() {
-                        //notify the plugin that this player can be logged in
-                        forceLogin(player);
-                    }
-                });
-            }
-        });
+        dataManager.register(uuidString, passwordHash, securityPlugin.hasher.getTypeId(), ipAddress.toString());
+        return forceLogin(player);
     }
 }

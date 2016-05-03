@@ -2,6 +2,9 @@ package com.github.games647.fastlogin.bungee.hooks;
 
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
+/**
+ * Represents a supporting authentication plugin in BungeeCord/Waterfall/... servers
+ */
 public interface BungeeAuthPlugin {
 
     /**
@@ -9,8 +12,9 @@ public interface BungeeAuthPlugin {
      * the player joined successfully a server.
      *
      * @param player the player that needs to be logged in
+     * @return if the operation was successful
      */
-    void forceLogin(ProxiedPlayer player);
+    boolean forceLogin(ProxiedPlayer player);
 
     /**
      * Checks whether an account exists for this player name.
@@ -24,8 +28,9 @@ public interface BungeeAuthPlugin {
      *
      * @param playerName player name
      * @return if the player has an account
+     * @throws Exception if an error occurred
      */
-    boolean isRegistered(String playerName);
+    boolean isRegistered(String playerName) throws Exception;
 
     /**
      * Forces a register in order to protect the paid account.
@@ -44,6 +49,7 @@ public interface BungeeAuthPlugin {
      *
      * @param player the premium account
      * @param password a strong random generated password
+     * @return if the operation was successful
      */
-    void forceRegister(ProxiedPlayer player, String password);
+    boolean forceRegister(ProxiedPlayer player, String password);
 }

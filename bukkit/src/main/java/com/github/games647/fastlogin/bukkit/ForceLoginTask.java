@@ -2,11 +2,8 @@ package com.github.games647.fastlogin.bukkit;
 
 import com.github.games647.fastlogin.bukkit.hooks.BukkitAuthPlugin;
 
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -55,34 +52,14 @@ public class ForceLoginTask implements Runnable {
             }
 
             if (success) {
-                performForceAction(session, authPlugin);
+                if (session.needsRegistration()) {
+                    forceRegister(authPlugin, player);
+                } else {
+                    forceLogin(authPlugin, player);
+                }
             }
         } else if (playerProfile != null) {
             storage.save(playerProfile);
-        }
-    }
-
-    private void performForceAction(PlayerSession session, final BukkitAuthPlugin authPlugin) {
-        try {
-            if (session.needsRegistration()) {
-                Bukkit.getScheduler().callSyncMethod(plugin, new Callable<Object>() {
-                    @Override
-                    public Object call() throws Exception {
-                        forceRegister(authPlugin, player);
-                        return null;
-                    }
-                }).get();
-            } else {
-                Bukkit.getScheduler().callSyncMethod(plugin, new Callable<Object>() {
-                    @Override
-                    public Object call() throws Exception {
-                        forceLogin(authPlugin, player);
-                        return null;
-                    }
-                }).get();
-            }
-        } catch (InterruptedException | ExecutionException exception) {
-            plugin.getLogger().log(Level.SEVERE, "Failed to perform sync force action", exception);
         }
     }
 

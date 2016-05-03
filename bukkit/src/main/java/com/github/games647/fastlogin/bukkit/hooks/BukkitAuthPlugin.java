@@ -11,9 +11,13 @@ public interface BukkitAuthPlugin {
      * Login the premium (paid account) player after
      * the player joined successfully the server.
      *
+     * <strong>This operation will be performed async while the player successfully
+     * joined the server.</strong>
+     *
      * @param player the player that needs to be logged in
+     * @return if the operation was successful
      */
-    void forceLogin(Player player);
+    boolean forceLogin(Player player);
 
     /**
      * Checks whether an account exists for this player name.
@@ -23,16 +27,19 @@ public interface BukkitAuthPlugin {
      * of that player.
      *
      * This operation will be performed async while the player is
-     * connecting
+     * connecting.
      *
      * @param playerName player name
      * @return if the player has an account
+     * @throws Exception if an error occurred
      */
-    boolean isRegistered(String playerName);
+    boolean isRegistered(String playerName) throws Exception;
 
     /**
      * Forces a register in order to protect the paid account.
-     * The method will be invoked after the player joined the server.
+     *
+     * <strong>This operation will be performed async while the player successfully
+     * joined the server.</strong>
      *
      * After a successful registration the player should be logged
      * in too.
@@ -41,12 +48,13 @@ public interface BukkitAuthPlugin {
      * So it's recommended to set additionally premium property
      * if possible.
      *
-     * If we don't register an account, cracked players
+     * Background: If we don't register an account, cracked players
      * could steal the unregistered account from the paid
      * player account
      *
      * @param player the premium account
      * @param password a strong random generated password
+     * @return if the operation was successful
      */
-    void forceRegister(Player player, String password);
+    boolean forceRegister(Player player, String password);
 }

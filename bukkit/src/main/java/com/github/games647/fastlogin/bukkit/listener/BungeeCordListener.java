@@ -28,7 +28,7 @@ public class BungeeCordListener implements PluginMessageListener {
 
     private static final String FILE_NAME = "proxy-whitelist.txt";
 
-    private final FastLoginBukkit plugin;
+    protected final FastLoginBukkit plugin;
     //null if whitelist is empty so bungeecord support is disabled
     private final UUID proxyId;
 
@@ -72,9 +72,13 @@ public class BungeeCordListener implements PluginMessageListener {
                         @Override
                         public void run() {
                             BukkitAuthPlugin authPlugin = plugin.getAuthPlugin();
-                            //we need to check if the player is registered on Bukkit too
-                            if (authPlugin != null && !authPlugin.isRegistered(playerName)) {
-                                plugin.getSessions().put(checkedPlayer.getAddress().toString(), playerSession);
+                            try {
+                                //we need to check if the player is registered on Bukkit too
+                                if (authPlugin != null && !authPlugin.isRegistered(playerName)) {
+                                    plugin.getSessions().put(checkedPlayer.getAddress().toString(), playerSession);
+                                }
+                            } catch (Exception ex) {
+                                plugin.getLogger().log(Level.SEVERE, "Failed to query isRegistered", ex);
                             }
                         }
                     });
