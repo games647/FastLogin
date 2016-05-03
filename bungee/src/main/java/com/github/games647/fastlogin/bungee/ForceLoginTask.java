@@ -23,18 +23,15 @@ public class ForceLoginTask implements Runnable {
     public void run() {
         PlayerProfile playerProfile = plugin.getStorage().getProfile(player.getName(), false);
 
-        boolean success = true;
         if (playerProfile.getUserId() == -1) {
             playerProfile.setPremium(player.getPendingConnection().isOnlineMode());
             if (player.getPendingConnection().isOnlineMode()) {
                 playerProfile.setUuid(player.getUniqueId());
             }
-
-            success = plugin.getStorage().save(playerProfile);
         }
 
         //force login only on success
-        if (success && player.getPendingConnection().isOnlineMode()) {
+        if (player.getPendingConnection().isOnlineMode()) {
             Server server = player.getServer();
 
             boolean autoRegister = plugin.getPendingAutoRegister().remove(player.getPendingConnection()) != null;
@@ -61,11 +58,15 @@ public class ForceLoginTask implements Runnable {
             if (authPlugin != null) {
                 if (autoRegister) {
                     String password = plugin.generateStringPassword();
-                    authPlugin.forceRegister(player, password);
-                } else {
-                    authPlugin.forceLogin(player);
+                    if (authPlugin.forceRegister(player, password)) {
+                        plugin.getStorage().save(playerProfile);
+                    }
+                } else if (authPlugin.forceLogin(player)) {
+                    plugin.getStorage().save(playerProfile);
                 }
             }
+        } else {
+            plugin.getStorage().save(playerProfile);
         }
     }
 }

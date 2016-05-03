@@ -48,14 +48,17 @@ public class ForceLoginTask implements Runnable {
             if (playerProfile != null) {
                 playerProfile.setUuid(session.getUuid());
                 playerProfile.setPremium(true);
-                success = storage.save(playerProfile);
             }
 
             if (success) {
                 if (session.needsRegistration()) {
-                    forceRegister(authPlugin, player);
+                    if (forceRegister(authPlugin, player)) {
+                        storage.save(playerProfile);
+                    }
                 } else {
-                    forceLogin(authPlugin, player);
+                    if (forceLogin(authPlugin, player)) {
+                        storage.save(playerProfile);
+                    }
                 }
             }
         } else if (playerProfile != null) {
@@ -63,18 +66,20 @@ public class ForceLoginTask implements Runnable {
         }
     }
 
-    private void forceRegister(BukkitAuthPlugin authPlugin, Player player) {
+    private boolean forceRegister(BukkitAuthPlugin authPlugin, Player player) {
         plugin.getLogger().log(Level.FINE, "Register player {0}", player.getName());
 
         String generatedPassword = plugin.generateStringPassword();
-        authPlugin.forceRegister(player, generatedPassword);
+        boolean success = authPlugin.forceRegister(player, generatedPassword);
         player.sendMessage(ChatColor.DARK_GREEN + "Auto registered with password: " + generatedPassword);
         player.sendMessage(ChatColor.DARK_GREEN + "You may want change it?");
+        return success;
     }
 
-    private void forceLogin(BukkitAuthPlugin authPlugin, Player player) {
+    private boolean forceLogin(BukkitAuthPlugin authPlugin, Player player) {
         plugin.getLogger().log(Level.FINE, "Logging player {0} in", player.getName());
-        authPlugin.forceLogin(player);
+        boolean success = authPlugin.forceLogin(player);
         player.sendMessage(ChatColor.DARK_GREEN + "Auto logged in");
+        return success;
     }
 }

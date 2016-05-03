@@ -128,9 +128,6 @@ public class Storage {
 
         return null;
     }
-//    public PlayerProfile getProfile(UUID uuid, boolean fetch) {
-//todo
-//    }
 
     public boolean save(PlayerProfile playerProfile) {
         Connection con = null;
