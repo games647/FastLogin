@@ -1,14 +1,10 @@
 package com.github.games647.fastlogin.bungee;
 
 import com.github.games647.fastlogin.bungee.hooks.BungeeAuthPlugin;
-import com.google.common.cache.CacheBuilder;
 import com.google.common.io.ByteArrayDataInput;
-import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 
 import java.util.UUID;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
 import net.md_5.bungee.api.ChatColor;
@@ -31,10 +27,6 @@ import net.md_5.bungee.event.EventHandler;
 public class PlayerConnectionListener implements Listener {
 
     protected final FastLoginBungee plugin;
-    private final ConcurrentMap<PendingConnection, Object> pendingAutoRegister = CacheBuilder
-            .newBuilder()
-            .expireAfterWrite(1, TimeUnit.MINUTES)
-            .<PendingConnection, Object>build().asMap();
 
     public PlayerConnectionListener(FastLoginBungee plugin) {
         this.plugin = plugin;
@@ -53,7 +45,9 @@ public class PlayerConnectionListener implements Listener {
         PlayerProfile playerProfile = plugin.getStorage().getProfile(username, true);
         if (playerProfile != null) {
             if (playerProfile.isPremium()) {
-                connection.setOnlineMode(true);
+                if (playerProfile.getUserId() != -1) {
+                    connection.setOnlineMode(true);
+                }
             } else if (playerProfile.getUserId() == -1) {
                 //user not exists in the db
                 BungeeAuthPlugin authPlugin = plugin.getBungeeAuthPlugin();
@@ -63,7 +57,7 @@ public class PlayerConnectionListener implements Listener {
                     if (premiumUUID != null) {
                         plugin.getLogger().log(Level.FINER, "Player {0} uses a premium username", username);
                         connection.setOnlineMode(true);
-                        pendingAutoRegister.put(connection, new Object());
+                        plugin.getPendingAutoRegister().put(connection, new Object());
                     }
                 }
             }
@@ -73,51 +67,7 @@ public class PlayerConnectionListener implements Listener {
     @EventHandler
     public void onServerConnected(ServerConnectedEvent serverConnectedEvent) {
         ProxiedPlayer player = serverConnectedEvent.getPlayer();
-        //send message even when the online mode is activated by default
-
-        final PlayerProfile playerProfile = plugin.getStorage().getProfile(player.getName(), false);
-        if (playerProfile.getUserId() == -1) {
-            ProxyServer.getInstance().getScheduler().runAsync(plugin, new Runnable() {
-                @Override
-                public void run() {
-                    plugin.getStorage().save(playerProfile);
-                }
-            });
-        }
-
-        if (player.getPendingConnection().isOnlineMode()) {
-            Server server = serverConnectedEvent.getServer();
-
-            boolean autoRegister = pendingAutoRegister.remove(player.getPendingConnection()) != null;
-
-            ByteArrayDataOutput dataOutput = ByteStreams.newDataOutput();
-            //subchannel name
-            if (autoRegister) {
-                dataOutput.writeUTF("AUTO_REGISTER");
-            } else {
-                dataOutput.writeUTF("AUTO_LOGIN");
-            }
-
-            //Data is sent through a random player. We have to tell the Bukkit version of this plugin the target
-            dataOutput.writeUTF(player.getName());
-
-            //proxy identifier to check if it's a acceptable proxy
-            UUID proxyId = UUID.fromString(plugin.getProxy().getConfig().getUuid());
-            dataOutput.writeLong(proxyId.getMostSignificantBits());
-            dataOutput.writeLong(proxyId.getLeastSignificantBits());
-
-            server.sendData(plugin.getDescription().getName(), dataOutput.toByteArray());
-
-            BungeeAuthPlugin authPlugin = plugin.getBungeeAuthPlugin();
-            if (authPlugin != null) {
-                if (autoRegister) {
-                    String password = plugin.generateStringPassword();
-                    authPlugin.forceRegister(player, password);
-                } else {
-                    authPlugin.forceLogin(player);
-                }
-            }
-        }
+        ProxyServer.getInstance().getScheduler().runAsync(plugin, new ForceLoginTask(plugin, player));
     }
 
     @EventHandler
@@ -136,9 +86,9 @@ public class PlayerConnectionListener implements Listener {
             byte[] data = pluginMessageEvent.getData();
             ByteArrayDataInput dataInput = ByteStreams.newDataInput(data);
             String subchannel = dataInput.readUTF();
-            if ("ON".equals(subchannel)) {
-                final ProxiedPlayer forPlayer = (ProxiedPlayer) pluginMessageEvent.getReceiver();
 
+            final ProxiedPlayer forPlayer = (ProxiedPlayer) pluginMessageEvent.getReceiver();
+            if ("ON".equals(subchannel)) {
                 ProxyServer.getInstance().getScheduler().runAsync(plugin, new Runnable() {
                     @Override
                     public void run() {
@@ -159,7 +109,6 @@ public class PlayerConnectionListener implements Listener {
                     }
                 });
             } else if ("OFF".equals(subchannel)) {
-                final ProxiedPlayer forPlayer = (ProxiedPlayer) pluginMessageEvent.getReceiver();
                 ProxyServer.getInstance().getScheduler().runAsync(plugin, new Runnable() {
                     @Override
                     public void run() {

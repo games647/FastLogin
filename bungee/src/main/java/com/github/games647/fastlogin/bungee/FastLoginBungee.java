@@ -2,6 +2,7 @@ package com.github.games647.fastlogin.bungee;
 
 import com.github.games647.fastlogin.bungee.hooks.BungeeAuthHook;
 import com.github.games647.fastlogin.bungee.hooks.BungeeAuthPlugin;
+import com.google.common.cache.CacheBuilder;
 
 import java.io.File;
 import java.io.IOException;
@@ -9,7 +10,10 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.util.Random;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
+import net.md_5.bungee.api.connection.PendingConnection;
 
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.config.Configuration;
@@ -38,6 +42,11 @@ public class FastLoginBungee extends Plugin {
     private Configuration configuration;
 
     private final Random random = new Random();
+
+    private final ConcurrentMap<PendingConnection, Object> pendingAutoRegister = CacheBuilder
+            .newBuilder()
+            .expireAfterWrite(1, TimeUnit.MINUTES)
+            .<PendingConnection, Object>build().asMap();
 
     @Override
     public void onEnable() {
@@ -112,6 +121,10 @@ public class FastLoginBungee extends Plugin {
 
     public MojangApiConnector getMojangApiConnector() {
         return mojangApiConnector;
+    }
+
+    public ConcurrentMap<PendingConnection, Object> getPendingAutoRegister() {
+        return pendingAutoRegister;
     }
 
     /**

@@ -78,7 +78,9 @@ public class StartPacketListener extends PacketAdapter {
         PlayerProfile playerProfile = plugin.getStorage().getProfile(username, true);
         if (playerProfile != null) {
             if (playerProfile.isPremium()) {
-                enablePremiumLogin(username, sessionKey, player, packetEvent, true);
+                if (playerProfile.getUserId() != -1) {
+                    enablePremiumLogin(username, sessionKey, player, packetEvent, true);
+                }
             } else if (playerProfile.getUserId() == -1) {
                 //user not exists in the db
                 BukkitAuthPlugin authPlugin = plugin.getAuthPlugin();

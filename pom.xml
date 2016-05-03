@@ -4,7 +4,7 @@
 
     <groupId>com.github.games647</groupId>
     <!--This have to be in lowercase because it's used by plugin.yml-->
-    <artifactId>fastlogin-parent</artifactId>
+    <artifactId>fastlogin</artifactId>
     <packaging>pom</packaging>
 
     <name>FastLogin</name>
@@ -89,7 +89,7 @@
         <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
-            <version>2.4.5</version>
+            <version>2.4.6</version>
         </dependency>
 
         <!--Logging framework implements slf4j which is required by hikari-->

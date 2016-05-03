@@ -3,21 +3,15 @@ package com.github.games647.fastlogin.bukkit.listener;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
 import com.comphenix.protocol.wrappers.WrappedSignedProperty;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
-import com.github.games647.fastlogin.bukkit.PlayerProfile;
+import com.github.games647.fastlogin.bukkit.ForceLoginTask;
 import com.github.games647.fastlogin.bukkit.PlayerSession;
-import com.github.games647.fastlogin.bukkit.Storage;
-import com.github.games647.fastlogin.bukkit.hooks.BukkitAuthPlugin;
-
-import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.metadata.FixedMetadataValue;
 
 /**
  * This listener tells authentication plugins if the player has a premium account and we checked it successfully. So the
@@ -47,70 +41,8 @@ public class BukkitJoinListener implements Listener {
             }
         }
 
-        Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
-
-            @Override
-            public void run() {
-                if (!player.isOnline()) {
-                    return;
-                }
-
-                //remove the bungeecord identifier
-                String id = '/' + player.getAddress().getAddress().getHostAddress() + ':'
-                        + player.getAddress().getPort();
-                PlayerSession session = plugin.getSessions().get(id);
-
-                //blacklist this target player for BungeeCord Id brute force attacks
-                player.setMetadata(plugin.getName(), new FixedMetadataValue(plugin, true));
-                //check if it's the same player as we checked before
-
-                if (session != null && player.getName().equals(session.getUsername())) {
-                    final Storage storage = plugin.getStorage();
-                    PlayerProfile playerProfile = null;
-                    if (storage != null) {
-                        playerProfile = storage.getProfile(session.getUsername(), false);
-                    }
-
-                    BukkitAuthPlugin authPlugin = plugin.getAuthPlugin();
-                    if (session.isVerified() && authPlugin != null) {
-                        if (session.needsRegistration()) {
-                            plugin.getLogger().log(Level.FINE, "Register player {0}", player.getName());
-
-                            String generatedPassword = plugin.generateStringPassword();
-                            authPlugin.forceRegister(player, generatedPassword);
-                            player.sendMessage(ChatColor.DARK_GREEN + "Auto registered with password: "
-                                    + generatedPassword);
-                            player.sendMessage(ChatColor.DARK_GREEN + "You may want change it?");
-
-                            if (playerProfile != null) {
-                                playerProfile.setUuid(session.getUuid());
-                                playerProfile.setPremium(true);
-                            }
-                        } else {
-                            plugin.getLogger().log(Level.FINE, "Logging player {0} in", player.getName());
-                            authPlugin.forceLogin(player);
-                            player.sendMessage(ChatColor.DARK_GREEN + "Auto logged in");
-
-                            if (playerProfile != null) {
-                                playerProfile.setUuid(session.getUuid());
-                                playerProfile.setPremium(true);
-                            }
-                        }
-                    }
-
-                    final PlayerProfile toSave = playerProfile;
-                    if (toSave != null) {
-                        Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
-                            @Override
-                            public void run() {
-                                storage.save(toSave);
-                            }
-                        });
-                    }
-                }
-            }
-            //Wait before auth plugin and we received a message from BungeeCord initializes the player
-        }, DELAY_LOGIN);
+        //Wait before auth plugin and we received a message from BungeeCord initializes the player
+        Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, new ForceLoginTask(plugin, player), DELAY_LOGIN);
     }
 
     @EventHandler
