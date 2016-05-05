@@ -23,50 +23,49 @@ public class ForceLoginTask implements Runnable {
     public void run() {
         PlayerProfile playerProfile = plugin.getStorage().getProfile(player.getName(), false);
 
-        if (playerProfile.getUserId() == -1) {
-            playerProfile.setPremium(player.getPendingConnection().isOnlineMode());
-            if (player.getPendingConnection().isOnlineMode()) {
-                playerProfile.setUuid(player.getUniqueId());
-            }
-        }
-
         //force login only on success
         if (player.getPendingConnection().isOnlineMode()) {
-            Server server = player.getServer();
-
             boolean autoRegister = plugin.getPendingAutoRegister().remove(player.getPendingConnection()) != null;
 
-            ByteArrayDataOutput dataOutput = ByteStreams.newDataOutput();
-            //subchannel name
-            if (autoRegister) {
-                dataOutput.writeUTF("AUTO_REGISTER");
-            } else {
-                dataOutput.writeUTF("AUTO_LOGIN");
-            }
-
-            //Data is sent through a random player. We have to tell the Bukkit version of this plugin the target
-            dataOutput.writeUTF(player.getName());
-
-            //proxy identifier to check if it's a acceptable proxy
-            UUID proxyId = UUID.fromString(plugin.getProxy().getConfig().getUuid());
-            dataOutput.writeLong(proxyId.getMostSignificantBits());
-            dataOutput.writeLong(proxyId.getLeastSignificantBits());
-
-            server.sendData(plugin.getDescription().getName(), dataOutput.toByteArray());
-
             BungeeAuthPlugin authPlugin = plugin.getBungeeAuthPlugin();
-            if (authPlugin != null) {
+            if (authPlugin == null) {
+                sendBukkitLoginNotification(autoRegister);
+            } else {
                 if (autoRegister) {
                     String password = plugin.generateStringPassword();
                     if (authPlugin.forceRegister(player, password)) {
-                        plugin.getStorage().save(playerProfile);
+                        sendBukkitLoginNotification(autoRegister);
                     }
                 } else if (authPlugin.forceLogin(player)) {
-                    plugin.getStorage().save(playerProfile);
+                    sendBukkitLoginNotification(autoRegister);
                 }
             }
         } else {
+            //cracked player
+            //update only on success to prevent corrupt data
+            playerProfile.setPremium(false);
             plugin.getStorage().save(playerProfile);
         }
+    }
+
+    private void sendBukkitLoginNotification(boolean autoRegister) {
+        ByteArrayDataOutput dataOutput = ByteStreams.newDataOutput();
+        //subchannel name
+        if (autoRegister) {
+            dataOutput.writeUTF("AUTO_REGISTER");
+        } else {
+            dataOutput.writeUTF("AUTO_LOGIN");
+        }
+
+        //Data is sent through a random player. We have to tell the Bukkit version of this plugin the target
+        dataOutput.writeUTF(player.getName());
+
+        //proxy identifier to check if it's a acceptable proxy
+        UUID proxyId = UUID.fromString(plugin.getProxy().getConfig().getUuid());
+        dataOutput.writeLong(proxyId.getMostSignificantBits());
+        dataOutput.writeLong(proxyId.getLeastSignificantBits());
+
+        Server server = player.getServer();
+        server.sendData(plugin.getDescription().getName(), dataOutput.toByteArray());
     }
 }

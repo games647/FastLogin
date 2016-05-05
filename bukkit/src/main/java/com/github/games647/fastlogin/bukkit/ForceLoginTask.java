@@ -1,6 +1,8 @@
 package com.github.games647.fastlogin.bukkit;
 
 import com.github.games647.fastlogin.bukkit.hooks.BukkitAuthPlugin;
+import com.google.common.io.ByteArrayDataOutput;
+import com.google.common.io.ByteStreams;
 
 import java.util.logging.Level;
 
@@ -33,36 +35,47 @@ public class ForceLoginTask implements Runnable {
         //check if it's the same player as we checked before
 
         final BukkitAuthPlugin authPlugin = plugin.getAuthPlugin();
-        if (session == null || !player.getName().equals(session.getUsername()) || authPlugin == null) {
-            return;
-        }
 
         Storage storage = plugin.getStorage();
         PlayerProfile playerProfile = null;
         if (storage != null) {
-            playerProfile = storage.getProfile(session.getUsername(), false);
+            playerProfile = storage.getProfile(player.getName(), false);
         }
 
-        if (session.isVerified()) {
-            boolean success = true;
+        if (session == null) {
+            //cracked player
             if (playerProfile != null) {
-                playerProfile.setUuid(session.getUuid());
-                playerProfile.setPremium(true);
+                playerProfile.setUuid(null);
+                playerProfile.setPremium(false);
+                storage.save(playerProfile);
             }
-
-            if (success) {
-                if (session.needsRegistration()) {
-                    if (forceRegister(authPlugin, player)) {
-                        storage.save(playerProfile);
-                    }
-                } else {
-                    if (forceLogin(authPlugin, player)) {
-                        storage.save(playerProfile);
+        } else if (player.getName().equals(session.getUsername())) {
+            //premium player
+            if (authPlugin == null) {
+                //maybe only bungeecord plugin
+                sendSuccessNotification();
+            } else {
+                boolean success = false;
+                if (session.isVerified()) {
+                    if (session.needsRegistration()) {
+                        success = forceRegister(authPlugin, player);
+                    } else {
+                        success = forceLogin(authPlugin, player);
                     }
                 }
+
+                if (success) {
+                    //update only on success to prevent corrupt data
+                    if (playerProfile != null) {
+                        playerProfile.setUuid(session.getUuid());
+                        //save cracked players too
+                        playerProfile.setPremium(session.isVerified());
+                        storage.save(playerProfile);
+                    }
+
+                    sendSuccessNotification();
+                }
             }
-        } else if (playerProfile != null) {
-            storage.save(playerProfile);
         }
     }
 
@@ -81,5 +94,14 @@ public class ForceLoginTask implements Runnable {
         boolean success = authPlugin.forceLogin(player);
         player.sendMessage(ChatColor.DARK_GREEN + "Auto logged in");
         return success;
+    }
+
+    private void sendSuccessNotification() {
+        if (plugin.isBungeeCord()) {
+            ByteArrayDataOutput dataOutput = ByteStreams.newDataOutput();
+            dataOutput.writeUTF("SUCCESS");
+
+            player.sendPluginMessage(plugin, plugin.getName(), dataOutput.toByteArray());
+        }
     }
 }

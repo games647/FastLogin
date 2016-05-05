@@ -54,7 +54,7 @@ public class PremiumCommand implements CommandExecutor {
                             plugin.getStorage().save(profile);
                         }
                     });
-                    
+
                     sender.sendMessage(ChatColor.DARK_GREEN + "Added to the list of premium players");
                 }
             }

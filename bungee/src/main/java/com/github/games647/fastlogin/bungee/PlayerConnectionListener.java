@@ -139,6 +139,15 @@ public class PlayerConnectionListener implements Listener {
                         plugin.getStorage().save(playerProfile);
                     }
                 });
+            } else if ("SUCCESS".equals(subchannel)) {
+                if (forPlayer.getPendingConnection().isOnlineMode()) {
+                    //bukkit module successfully received and force logged in the user
+                    //update only on success to prevent corrupt data
+                    PlayerProfile playerProfile = plugin.getStorage().getProfile(forPlayer.getName(), false);
+                    playerProfile.setPremium(true);
+                    playerProfile.setUuid(forPlayer.getUniqueId());
+                    plugin.getStorage().save(playerProfile);
+                }
             }
         }
     }
