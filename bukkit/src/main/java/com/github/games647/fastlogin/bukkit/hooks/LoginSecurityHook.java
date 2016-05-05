@@ -81,6 +81,12 @@ public class LoginSecurityHook implements BukkitAuthPlugin {
 
         //this executes a sql query without interacting with other parts so we can run it async.
         dataManager.register(uuidString, passwordHash, securityPlugin.hasher.getTypeId(), ipAddress.toString());
-        return forceLogin(player);
+        String storedPassword = dataManager.getPassword(uuidString);
+        if (storedPassword != null && storedPassword.equals(passwordHash)) {
+            //the register method silents any excpetion so check if our entry was saved
+            return forceLogin(player);
+        }
+
+        return false;
     }
 }

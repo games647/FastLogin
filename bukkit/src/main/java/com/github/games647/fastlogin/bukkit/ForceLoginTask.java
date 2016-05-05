@@ -4,8 +4,12 @@ import com.github.games647.fastlogin.bukkit.hooks.BukkitAuthPlugin;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import java.util.logging.Level;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -13,7 +17,7 @@ import org.bukkit.metadata.FixedMetadataValue;
 public class ForceLoginTask implements Runnable {
 
     protected final FastLoginBukkit plugin;
-    private final Player player;
+    protected final Player player;
 
     public ForceLoginTask(FastLoginBukkit plugin, Player player) {
         this.plugin = plugin;
@@ -22,7 +26,7 @@ public class ForceLoginTask implements Runnable {
 
     @Override
     public void run() {
-        if (!player.isOnline()) {
+        if (!isOnlineThreadSafe()) {
             return;
         }
 
@@ -56,7 +60,7 @@ public class ForceLoginTask implements Runnable {
                 sendSuccessNotification();
             } else {
                 boolean success = false;
-                if (session.isVerified()) {
+                if (isOnlineThreadSafe() && session.isVerified()) {
                     if (session.needsRegistration()) {
                         success = forceRegister(authPlugin, player);
                     } else {
@@ -102,6 +106,23 @@ public class ForceLoginTask implements Runnable {
             dataOutput.writeUTF("SUCCESS");
 
             player.sendPluginMessage(plugin, plugin.getName(), dataOutput.toByteArray());
+        }
+    }
+
+    private boolean isOnlineThreadSafe() {
+        //the playerlist isn't thread-safe
+        Future<Boolean> onlineFuture = Bukkit.getScheduler().callSyncMethod(plugin, new Callable<Boolean>() {
+            @Override
+            public Boolean call() throws Exception {
+                return player.isOnline();
+            }
+        });
+
+        try {
+            return onlineFuture.get();
+        } catch (InterruptedException | ExecutionException ex) {
+            plugin.getLogger().log(Level.SEVERE, "Failed to perform thread-safe online check", ex);
+            return false;
         }
     }
 }

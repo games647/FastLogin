@@ -68,7 +68,7 @@ public class CrazyLoginHook implements BukkitAuthPlugin {
 
         try {
             LoginPlayerData result = future.get();
-            if (result != null) {
+            if (result != null && result.isLoggedIn()) {
                 //SQL-Queries should run async
                 crazyLoginPlugin.getCrazyDatabase().saveWithoutPassword(result);
                 return true;
@@ -88,7 +88,7 @@ public class CrazyLoginHook implements BukkitAuthPlugin {
 
     @Override
     public boolean forceRegister(final Player player, String password) {
-        final CrazyLoginDataDatabase crazyDatabase = crazyLoginPlugin.getCrazyDatabase();
+        CrazyLoginDataDatabase crazyDatabase = crazyLoginPlugin.getCrazyDatabase();
 
         //this executes a sql query and accesses only thread safe collections so we can run it async
         LoginPlayerData playerData = crazyLoginPlugin.getPlayerData(player.getName());

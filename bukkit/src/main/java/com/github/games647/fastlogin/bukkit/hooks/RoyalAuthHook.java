@@ -34,7 +34,7 @@ public class RoyalAuthHook implements BukkitAuthPlugin {
                 //not thread-safe
                 authPlayer.login();
 
-                return true;
+                return authPlayer.isLoggedIn();
             }
         });
 
