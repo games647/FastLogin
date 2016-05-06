@@ -13,8 +13,9 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
-import net.md_5.bungee.api.connection.PendingConnection;
 
+import net.md_5.bungee.Util;
+import net.md_5.bungee.api.connection.PendingConnection;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.config.ConfigurationProvider;
@@ -25,16 +26,12 @@ import net.md_5.bungee.config.YamlConfiguration;
  */
 public class FastLoginBungee extends Plugin {
 
-    public static UUID parseId(String withoutDashes) {
-        return UUID.fromString(withoutDashes.substring(0, 8)
-                + "-" + withoutDashes.substring(8, 12)
-                + "-" + withoutDashes.substring(12, 16)
-                + "-" + withoutDashes.substring(16, 20)
-                + "-" + withoutDashes.substring(20, 32));
-    }
-
     private static final char[] CHARACTERS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
             .toCharArray();
+
+    public static UUID parseId(String withoutDashes) {
+        return Util.getUUID(withoutDashes);
+    }
 
     private BungeeAuthPlugin bungeeAuthPlugin;
     private final MojangApiConnector mojangApiConnector = new MojangApiConnector(this);

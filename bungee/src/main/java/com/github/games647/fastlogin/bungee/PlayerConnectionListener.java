@@ -1,8 +1,10 @@
 package com.github.games647.fastlogin.bungee;
 
 import com.github.games647.fastlogin.bungee.hooks.BungeeAuthPlugin;
+import com.google.common.base.Charsets;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteStreams;
+import java.lang.reflect.Field;
 
 import java.util.UUID;
 import java.util.logging.Level;
@@ -14,9 +16,13 @@ import net.md_5.bungee.api.connection.PendingConnection;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.connection.Server;
 import net.md_5.bungee.api.event.PluginMessageEvent;
+import net.md_5.bungee.api.event.PostLoginEvent;
 import net.md_5.bungee.api.event.PreLoginEvent;
 import net.md_5.bungee.api.event.ServerConnectedEvent;
 import net.md_5.bungee.api.plugin.Listener;
+import net.md_5.bungee.connection.InitialHandler;
+import net.md_5.bungee.connection.LoginResult;
+import net.md_5.bungee.connection.LoginResult.Property;
 import net.md_5.bungee.event.EventHandler;
 
 /**
@@ -72,6 +78,42 @@ public class PlayerConnectionListener implements Listener {
                 }
             }
         });
+    }
+
+    @EventHandler
+    public void onLogin(PostLoginEvent loginEvent) {
+        ProxiedPlayer player = loginEvent.getPlayer();
+        PendingConnection connection = player.getPendingConnection();
+        String username = connection.getName();
+        if (connection.isOnlineMode()) {
+            PlayerProfile playerProfile = plugin.getStorage().getProfile(player.getName(), false);
+            playerProfile.setUuid(player.getUniqueId());
+
+            //bungeecord will do this automatically so override it on disabled option
+            InitialHandler initialHandler = (InitialHandler) connection;
+            if (!plugin.getConfiguration().getBoolean("premiumUuid")) {
+                try {
+                    UUID offlineUUID = UUID.nameUUIDFromBytes(("OfflinePlayer:" + username).getBytes(Charsets.UTF_8));
+
+                    Field idField = initialHandler.getClass().getDeclaredField("uniqueId");
+                    idField.setAccessible(true);
+                    idField.set(connection, offlineUUID);
+
+                    //bungeecord doesn't support overriding the premium uuid
+//                    connection.setUniqueId(offlineUUID);
+                } catch (NoSuchFieldException | IllegalAccessException ex) {
+                    plugin.getLogger().log(Level.SEVERE, "Failed to set offline uuid", ex);
+                }
+            }
+
+            if (!plugin.getConfiguration().getBoolean("forwardSkin")) {
+                //this is null on offline mode
+                LoginResult loginProfile = initialHandler.getLoginProfile();
+                if (loginProfile != null) {
+                    loginProfile.setProperties(new Property[]{});
+                }
+            }
+        }
     }
 
     @EventHandler
@@ -145,7 +187,8 @@ public class PlayerConnectionListener implements Listener {
                     //update only on success to prevent corrupt data
                     PlayerProfile playerProfile = plugin.getStorage().getProfile(forPlayer.getName(), false);
                     playerProfile.setPremium(true);
-                    playerProfile.setUuid(forPlayer.getUniqueId());
+                    //we override this in the loginevent
+//                    playerProfile.setUuid(forPlayer.getUniqueId());
                     plugin.getStorage().save(playerProfile);
                 }
             }

@@ -1,3 +1,7 @@
+######1.1
+
+* Make the configuration options also work under BungeeCord (premiumUUID, forwardSkin)
+
 ######1.0
 
 * Massive refactor to handle errors on force actions safely

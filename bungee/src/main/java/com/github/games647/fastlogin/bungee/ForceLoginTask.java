@@ -30,7 +30,7 @@ public class ForceLoginTask implements Runnable {
             BungeeAuthPlugin authPlugin = plugin.getBungeeAuthPlugin();
             if (authPlugin == null) {
                 sendBukkitLoginNotification(autoRegister);
-            } else {
+            } else if (player.isConnected()) {
                 if (autoRegister) {
                     String password = plugin.generateStringPassword();
                     if (authPlugin.forceRegister(player, password)) {
@@ -66,6 +66,8 @@ public class ForceLoginTask implements Runnable {
         dataOutput.writeLong(proxyId.getLeastSignificantBits());
 
         Server server = player.getServer();
-        server.sendData(plugin.getDescription().getName(), dataOutput.toByteArray());
+        if (server != null) {
+            server.sendData(plugin.getDescription().getName(), dataOutput.toByteArray());
+        }
     }
 }
