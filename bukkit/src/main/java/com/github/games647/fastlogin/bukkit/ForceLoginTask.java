@@ -30,15 +30,14 @@ public class ForceLoginTask implements Runnable {
             return;
         }
 
-        //remove the bungeecord identifier
+        //remove the bungeecord identifier if there is ones
         String id = '/' + player.getAddress().getAddress().getHostAddress() + ':' + player.getAddress().getPort();
         PlayerSession session = plugin.getSessions().get(id);
 
         //blacklist this target player for BungeeCord Id brute force attacks
         player.setMetadata(plugin.getName(), new FixedMetadataValue(plugin, true));
-        //check if it's the same player as we checked before
 
-        final BukkitAuthPlugin authPlugin = plugin.getAuthPlugin();
+        BukkitAuthPlugin authPlugin = plugin.getAuthPlugin();
 
         Storage storage = plugin.getStorage();
         PlayerProfile playerProfile = null;
@@ -53,6 +52,7 @@ public class ForceLoginTask implements Runnable {
                 playerProfile.setPremium(false);
                 storage.save(playerProfile);
             }
+            //check if it's the same player as we checked before
         } else if (player.getName().equals(session.getUsername())) {
             //premium player
             if (authPlugin == null) {

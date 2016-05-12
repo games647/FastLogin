@@ -3,6 +3,7 @@ package com.github.games647.fastlogin.bukkit;
 import com.comphenix.protocol.AsynchronousManager;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
+import com.comphenix.protocol.reflect.FuzzyReflection;
 import com.comphenix.protocol.utility.SafeCacheBuilder;
 import com.github.games647.fastlogin.bukkit.commands.CrackedCommand;
 import com.github.games647.fastlogin.bukkit.commands.PremiumCommand;
@@ -16,6 +17,7 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.reflect.ClassPath;
 
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.security.KeyPair;
 import java.sql.SQLException;
 import java.util.UUID;
@@ -25,6 +27,7 @@ import java.util.logging.Level;
 
 import org.apache.commons.lang.RandomStringUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -32,7 +35,7 @@ import org.bukkit.plugin.java.JavaPlugin;
  * This plugin checks if a player has a paid account and if so tries to skip offline mode authentication.
  */
 public class FastLoginBukkit extends JavaPlugin {
-    
+
     private static final int WORKER_THREADS = 5;
 
     public static UUID parseId(String withoutDashes) {
@@ -45,7 +48,6 @@ public class FastLoginBukkit extends JavaPlugin {
 
     //provide a immutable key pair to be thread safe | used for encrypting and decrypting traffic
     private final KeyPair keyPair = EncryptionUtil.generateKeyPair();
-
 
     private boolean bungeeCord;
     private Storage storage;
@@ -79,7 +81,20 @@ public class FastLoginBukkit extends JavaPlugin {
             return;
         }
 
-        bungeeCord = Bukkit.spigot().getConfig().getBoolean("settings.bungeecord");
+        try {
+            if (Bukkit.spigot().getConfig().isBoolean("settings.bungeecord")) {
+                bungeeCord = Bukkit.spigot().getConfig().getBoolean("settings.bungeecord");
+            } else {
+                Method getConfigMethod = FuzzyReflection.fromObject(getServer().spigot(), true)
+                        .getMethodByName("getSpigotConfig");
+                getConfigMethod.setAccessible(true);
+                YamlConfiguration spigotConfig = (YamlConfiguration) getConfigMethod.invoke(getServer().spigot());
+                bungeeCord = spigotConfig.getBoolean("settings.bungeecord");
+            }
+        } catch (Exception | NoSuchMethodError ex) {
+            getLogger().warning("Cannot check bungeecord support. You use a non-spigot build");
+        }
+
         boolean hookFound = registerHooks();
         if (bungeeCord) {
             getLogger().info("BungeeCord setting detected. No auth plugin is required");

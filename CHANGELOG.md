@@ -1,6 +1,8 @@
 ######1.1
 
 * Make the configuration options also work under BungeeCord (premiumUUID, forwardSkin)
+* Catch configuration loading exception if it's not spigot build
+* Fix config loading for older PaperSpigot builds
 
 ######1.0
 

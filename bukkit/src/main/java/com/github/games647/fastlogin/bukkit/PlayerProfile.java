@@ -68,7 +68,7 @@ public class PlayerProfile {
         this.lastIp = lastIp;
     }
 
-    public long getLastLogin() {
+    public synchronized long getLastLogin() {
         return lastLogin;
     }
 

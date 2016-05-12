@@ -19,7 +19,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
  */
 public class BukkitJoinListener implements Listener {
 
-    private static final long DELAY_LOGIN = 1 * 20L / 2;
+    private static final long DELAY_LOGIN = 20L / 2;
 
     protected final FastLoginBukkit plugin;
 
