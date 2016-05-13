@@ -12,7 +12,6 @@ import java.util.logging.Level;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
-import org.bukkit.metadata.FixedMetadataValue;
 
 public class ForceLoginTask implements Runnable {
 
@@ -33,9 +32,6 @@ public class ForceLoginTask implements Runnable {
         //remove the bungeecord identifier if there is ones
         String id = '/' + player.getAddress().getAddress().getHostAddress() + ':' + player.getAddress().getPort();
         PlayerSession session = plugin.getSessions().get(id);
-
-        //blacklist this target player for BungeeCord Id brute force attacks
-        player.setMetadata(plugin.getName(), new FixedMetadataValue(plugin, true));
 
         BukkitAuthPlugin authPlugin = plugin.getAuthPlugin();
 

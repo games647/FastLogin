@@ -1,6 +1,7 @@
 package com.github.games647.fastlogin.bukkit.listener;
 
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
+import com.github.games647.fastlogin.bukkit.ForceLoginTask;
 import com.github.games647.fastlogin.bukkit.PlayerSession;
 import com.github.games647.fastlogin.bukkit.hooks.BukkitAuthPlugin;
 import com.google.common.base.Charsets;
@@ -54,17 +55,24 @@ public class BungeeCordListener implements PluginMessageListener {
         final Player checkedPlayer = plugin.getServer().getPlayerExact(playerName);
         //fail if target player is blacklisted because already authed or wrong bungeecord id
         if (checkedPlayer != null && !checkedPlayer.hasMetadata(plugin.getName())) {
+            //blacklist this target player for BungeeCord Id brute force attacks
+            player.setMetadata(plugin.getName(), new FixedMetadataValue(plugin, true));
+
             //bungeecord UUID
             long mostSignificantBits = dataInput.readLong();
             long leastSignificantBits = dataInput.readLong();
             UUID sourceId = new UUID(mostSignificantBits, leastSignificantBits);
+            plugin.getLogger().log(Level.FINEST, "Received proxy id {0} from {1}", new Object[]{sourceId, player});
+
             //fail if BungeeCord support is disabled (id = null)
             if (sourceId.equals(proxyId)) {
                 final PlayerSession playerSession = new PlayerSession(playerName);
+                final String id = '/' + checkedPlayer.getAddress().getAddress().getHostAddress() + ':'
+                        + checkedPlayer.getAddress().getPort();
                 if ("AUTO_LOGIN".equalsIgnoreCase(subchannel)) {
                     playerSession.setVerified(true);
                     playerSession.setRegistered(true);
-                    plugin.getSessions().put(checkedPlayer.getAddress().toString(), playerSession);
+                    plugin.getSessions().put(id, playerSession);
                 } else if ("AUTO_REGISTER".equalsIgnoreCase(subchannel)) {
                     playerSession.setVerified(true);
 
@@ -75,7 +83,7 @@ public class BungeeCordListener implements PluginMessageListener {
                             try {
                                 //we need to check if the player is registered on Bukkit too
                                 if (authPlugin != null && !authPlugin.isRegistered(playerName)) {
-                                    plugin.getSessions().put(checkedPlayer.getAddress().toString(), playerSession);
+                                    plugin.getSessions().put(id, playerSession);
                                 }
                             } catch (Exception ex) {
                                 plugin.getLogger().log(Level.SEVERE, "Failed to query isRegistered", ex);
@@ -83,9 +91,8 @@ public class BungeeCordListener implements PluginMessageListener {
                         }
                     });
                 }
-            } else {
-                //blacklist target for the current login
-                checkedPlayer.setMetadata(plugin.getName(), new FixedMetadataValue(plugin, true));
+
+                Bukkit.getScheduler().runTaskAsynchronously(plugin, new ForceLoginTask(plugin, player));
             }
         }
     }

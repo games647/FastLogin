@@ -119,7 +119,8 @@ public class PlayerConnectionListener implements Listener {
     @EventHandler
     public void onServerConnected(ServerConnectedEvent serverConnectedEvent) {
         ProxiedPlayer player = serverConnectedEvent.getPlayer();
-        ProxyServer.getInstance().getScheduler().runAsync(plugin, new ForceLoginTask(plugin, player));
+        ForceLoginTask loginTask = new ForceLoginTask(plugin, player, serverConnectedEvent.getServer());
+        ProxyServer.getInstance().getScheduler().runAsync(plugin, loginTask);
     }
 
     @EventHandler
@@ -179,6 +180,9 @@ public class PlayerConnectionListener implements Listener {
                         playerProfile.setUuid(null);
                         //todo: set uuid
                         plugin.getStorage().save(playerProfile);
+                        TextComponent textComponent = new TextComponent("Added to the list of premium players");
+                        textComponent.setColor(ChatColor.DARK_GREEN);
+                        forPlayer.sendMessage(textComponent);
                     }
                 });
             } else if ("SUCCESS".equals(subchannel)) {
@@ -190,6 +194,9 @@ public class PlayerConnectionListener implements Listener {
                     //we override this in the loginevent
 //                    playerProfile.setUuid(forPlayer.getUniqueId());
                     plugin.getStorage().save(playerProfile);
+                    TextComponent textComponent = new TextComponent("Removed to the list of premium players");
+                    textComponent.setColor(ChatColor.DARK_GREEN);
+                    forPlayer.sendMessage(textComponent);
                 }
             }
         }

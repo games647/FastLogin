@@ -41,8 +41,10 @@ public class BukkitJoinListener implements Listener {
             }
         }
 
-        //Wait before auth plugin and we received a message from BungeeCord initializes the player
-        Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, new ForceLoginTask(plugin, player), DELAY_LOGIN);
+        if (!plugin.isBungeeCord()) {
+            //Wait before auth plugin and we received a message from BungeeCord initializes the player
+            Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, new ForceLoginTask(plugin, player), DELAY_LOGIN);
+        }
     }
 
     @EventHandler

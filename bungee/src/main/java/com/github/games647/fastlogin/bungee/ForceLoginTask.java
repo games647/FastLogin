@@ -13,10 +13,12 @@ public class ForceLoginTask implements Runnable {
 
     private final FastLoginBungee plugin;
     private final ProxiedPlayer player;
+    private final Server server;
 
-    public ForceLoginTask(FastLoginBungee plugin, ProxiedPlayer player) {
+    public ForceLoginTask(FastLoginBungee plugin, ProxiedPlayer player, Server server) {
         this.plugin = plugin;
         this.player = player;
+        this.server = server;
     }
 
     @Override
@@ -65,7 +67,6 @@ public class ForceLoginTask implements Runnable {
         dataOutput.writeLong(proxyId.getMostSignificantBits());
         dataOutput.writeLong(proxyId.getLeastSignificantBits());
 
-        Server server = player.getServer();
         if (server != null) {
             server.sendData(plugin.getDescription().getName(), dataOutput.toByteArray());
         }
