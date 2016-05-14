@@ -59,6 +59,25 @@ https://www.spigotmc.org/resources/fastlogin.14153/history
 
 ***
 
+###How to install
+
+####Bukkit/Spigot/PaperSPigot
+
+1. Download and install ProtocolLib
+2. Download and install FastLogin
+
+####BungeeCord/Waterfall
+
+1. Activate BungeeCord in the Spigot configuration
+2. Restart your server
+3. Now there is proxy-whitelist file in the FastLogin folder
+Put your stats id from the BungeeCord config into this file
+4. Activate ipForward in your BungeeCord config
+5. Download and Install FastLogin on BungeeCord AND Spigot
+6. Check your database settings in the config of FastLogin on BungeeCord
+
+***
+
 ###FAQ
 
 ####Index
