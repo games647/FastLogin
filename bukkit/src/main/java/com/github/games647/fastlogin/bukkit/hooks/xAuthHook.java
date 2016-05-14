@@ -70,10 +70,7 @@ public class xAuthHook implements BukkitAuthPlugin {
                     boolean registerSuccess = xAuthPlugin.getAuthClass(xAuthPlayer)
                             .adminRegister(player.getName(), password, null);
 
-                    if (registerSuccess) {
-                        //login in the player after registration
-                        return forceLogin(player);
-                    }
+                    return registerSuccess;
                 }
 
                 return false;
@@ -81,7 +78,13 @@ public class xAuthHook implements BukkitAuthPlugin {
         });
 
         try {
-            return future.get();
+            boolean success = future.get();
+            if (success) {
+                //login in the player after registration
+                return forceLogin(player);
+            }
+
+            return false;
         } catch (InterruptedException | ExecutionException ex) {
             xAuthPlugin.getLogger().log(Level.SEVERE, "Failed to forceLogin", ex);
             return false;

@@ -1,5 +1,7 @@
 ######1.2
 
+* Fix race condition in BungeeCord
+* Fix dead lock in xAuth
 * Added API methods for plugins to set their own password generator
 * Added API methods for plugins to set their own auth plugin hook
 => Added support for AdvancedLogin
