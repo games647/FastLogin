@@ -25,7 +25,6 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
-import org.apache.commons.lang.RandomStringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -69,6 +68,7 @@ public class FastLoginBukkit extends JavaPlugin {
 
     private BukkitAuthPlugin authPlugin;
     private final MojangApiConnector mojangApiConnector = new MojangApiConnector(this);
+    private PasswordGenerator passwordGenerator = new DefaultPasswordGenerator();
 
     @Override
     public void onEnable() {
@@ -166,8 +166,12 @@ public class FastLoginBukkit extends JavaPlugin {
         }
     }
 
-    public String generateStringPassword() {
-        return RandomStringUtils.random(8, true, true);
+    public String generateStringPassword(Player player) {
+        return passwordGenerator.getRandomPassword(player);
+    }
+
+    public void setPasswordGenerator(PasswordGenerator passwordGenerator) {
+        this.passwordGenerator = passwordGenerator;
     }
 
     /**
@@ -201,6 +205,10 @@ public class FastLoginBukkit extends JavaPlugin {
      */
     public BukkitAuthPlugin getAuthPlugin() {
         return authPlugin;
+    }
+
+    public void setAuthPluginHook(BukkitAuthPlugin authPlugin) {
+        this.authPlugin = authPlugin;
     }
 
     /**

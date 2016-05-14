@@ -1,3 +1,8 @@
+######1.2
+
+* Added API methods for plugins to set their own password generator
+* Added API methods for plugins to set their own auth plugin hook
+
 ######1.1
 
 * Make the configuration options also work under BungeeCord (premiumUUID, forwardSkin)
