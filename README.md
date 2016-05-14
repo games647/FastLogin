@@ -43,6 +43,7 @@ So they don't need to enter passwords. This is also called auto login (auto-logi
 
 * [AuthMe](http://dev.bukkit.org/bukkit-plugins/authme-reloaded/)
 * [xAuth](http://dev.bukkit.org/bukkit-plugins/xauth/)
+* [AdvancedLogin (Paid)](https://www.spigotmc.org/resources/advancedlogin.10510/)
 * [CrazyLogin](http://dev.bukkit.org/bukkit-plugins/crazylogin/)
 * [LoginSecurity](http://dev.bukkit.org/bukkit-plugins/loginsecurity/)
 * [RoyalAuth](http://dev.bukkit.org/bukkit-plugins/royalauth/)

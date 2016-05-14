@@ -75,6 +75,11 @@ public class StartPacketListener extends PacketAdapter {
         plugin.getLogger().log(Level.FINER, "Player {0} with {1} connecting to the server"
                 , new Object[]{sessionKey, username});
 
+        BukkitAuthPlugin authPlugin = plugin.getAuthPlugin();
+        if (authPlugin == null) {
+            return;
+        }
+
         PlayerProfile playerProfile = plugin.getStorage().getProfile(username, true);
         if (playerProfile != null) {
             if (playerProfile.isPremium()) {
@@ -83,7 +88,6 @@ public class StartPacketListener extends PacketAdapter {
                 }
             } else if (playerProfile.getUserId() == -1) {
                 //user not exists in the db
-                BukkitAuthPlugin authPlugin = plugin.getAuthPlugin();
                 try {
                     if (plugin.getConfig().getBoolean("autoRegister") && !authPlugin.isRegistered(username)) {
                         UUID premiumUUID = plugin.getApiConnector().getPremiumUUID(username);

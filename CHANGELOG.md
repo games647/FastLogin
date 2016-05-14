@@ -2,6 +2,7 @@
 
 * Added API methods for plugins to set their own password generator
 * Added API methods for plugins to set their own auth plugin hook
+=> Added support for AdvancedLogin
 
 ######1.1
 

@@ -34,6 +34,11 @@ public class ProtocolSupportListener implements Listener {
         //remove old data every time on a new login in order to keep the session only for one person
         plugin.getSessions().remove(username);
 
+        BukkitAuthPlugin authPlugin = plugin.getAuthPlugin();
+        if (authPlugin == null) {
+            return;
+        }
+
         PlayerProfile playerProfile = plugin.getStorage().getProfile(username, true);
         if (playerProfile != null) {
             if (playerProfile.isPremium()) {
@@ -42,7 +47,6 @@ public class ProtocolSupportListener implements Listener {
                 }
             } else if (playerProfile.getUserId() == -1) {
                 //user not exists in the db
-                BukkitAuthPlugin authPlugin = plugin.getAuthPlugin();
                 try {
                     if (plugin.getConfig().getBoolean("autoRegister") && !authPlugin.isRegistered(username)) {
                         UUID premiumUUID = plugin.getApiConnector().getPremiumUUID(username);
