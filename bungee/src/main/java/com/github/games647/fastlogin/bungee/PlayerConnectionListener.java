@@ -159,6 +159,9 @@ public class PlayerConnectionListener implements Listener {
                         playerProfile.setPremium(true);
                         //todo: set uuid
                         plugin.getStorage().save(playerProfile);
+                        TextComponent textComponent = new TextComponent("Added to the list of premium players");
+                        textComponent.setColor(ChatColor.DARK_GREEN);
+                        forPlayer.sendMessage(textComponent);
                     }
                 });
             } else if ("OFF".equals(subchannel)) {
@@ -178,9 +181,8 @@ public class PlayerConnectionListener implements Listener {
 
                         playerProfile.setPremium(false);
                         playerProfile.setUuid(null);
-                        //todo: set uuid
                         plugin.getStorage().save(playerProfile);
-                        TextComponent textComponent = new TextComponent("Added to the list of premium players");
+                        TextComponent textComponent = new TextComponent("Removed to the list of premium players");
                         textComponent.setColor(ChatColor.DARK_GREEN);
                         forPlayer.sendMessage(textComponent);
                     }
@@ -194,9 +196,6 @@ public class PlayerConnectionListener implements Listener {
                     //we override this in the loginevent
 //                    playerProfile.setUuid(forPlayer.getUniqueId());
                     plugin.getStorage().save(playerProfile);
-                    TextComponent textComponent = new TextComponent("Removed to the list of premium players");
-                    textComponent.setColor(ChatColor.DARK_GREEN);
-                    forPlayer.sendMessage(textComponent);
                 }
             }
         }

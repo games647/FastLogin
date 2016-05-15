@@ -39,7 +39,7 @@ So they don't need to enter passwords. This is also called auto login (auto-logi
 * Run Spigot and/or BungeeCord/Waterfall in offline mode (see server.properties or config.yml)
 * An auth plugin. Supported Plugins
 
-####Bukkit/Spigot/PaperSPigot
+####Bukkit/Spigot/PaperSpigot
 
 * [AuthMe](http://dev.bukkit.org/bukkit-plugins/authme-reloaded/)
 * [xAuth](http://dev.bukkit.org/bukkit-plugins/xauth/)
@@ -61,7 +61,7 @@ https://www.spigotmc.org/resources/fastlogin.14153/history
 
 ###How to install
 
-####Bukkit/Spigot/PaperSPigot
+####Bukkit/Spigot/PaperSpigot
 
 1. Download and install ProtocolLib
 2. Download and install FastLogin
@@ -157,11 +157,7 @@ and Mojang account. Then the command can be executed. So someone different canno
 by buying the username.
 
 ####Does the plugin have BungeeCord support?
-Yes it has. Just activate ipForward in your BungeeCord config and place the plugin in the plugins folder of
-Bukkit/Spigot and BungeeCord. Then you have fill your BungeeCord Id (from the Stats-Option in the BungeeCord config)
-into the whitelist file of your Bukkit/Spigot server. For security reasons, don't post this Id on Forums.
-
-This plugin will automatically detect if BungeeCord is running and handle premium checks on BungeeCord.
+Yes it has. See the how to install above.
 
 ####Could premium players have a premium UUID and Skin?
 Since 0.7 both features are implemented. You can check the config.yml in order to activate it.
