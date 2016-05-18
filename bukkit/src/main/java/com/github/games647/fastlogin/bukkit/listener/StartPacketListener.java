@@ -61,7 +61,9 @@ public class StartPacketListener extends PacketAdapter {
      */
     @Override
     public void onPacketReceiving(PacketEvent packetEvent) {
-        final Player player = packetEvent.getPlayer();
+        plugin.setServerStarted();
+
+        Player player = packetEvent.getPlayer();
 
         //this includes ip:port. Should be unique for an incoming login request with a timeout of 2 minutes
         String sessionKey = player.getAddress().toString();

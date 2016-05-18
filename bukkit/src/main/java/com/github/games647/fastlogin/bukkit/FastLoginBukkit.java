@@ -50,6 +50,7 @@ public class FastLoginBukkit extends JavaPlugin {
 
     private boolean bungeeCord;
     private Storage storage;
+    private boolean serverStarted;
 
     //this map is thread-safe for async access (Packet Listener)
     //SafeCacheBuilder is used in order to be version independent
@@ -254,5 +255,21 @@ public class FastLoginBukkit extends JavaPlugin {
 
     public boolean isBungeeCord() {
         return bungeeCord;
+    }
+
+    /**
+     * Wait before the server is fully started. This is workaround, because connections right on startup are not
+     * injected by ProtocolLib
+     *
+     * @return
+     */
+    public boolean isServerFullyStarted() {
+        return serverStarted;
+    }
+
+    public void setServerStarted() {
+        if (!this.serverStarted) {
+            this.serverStarted = true;
+        }
     }
 }

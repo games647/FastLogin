@@ -1,6 +1,7 @@
 ######1.3
 
 * Add support for AuthMe 3.X
+* Fixed premium logins if the server is not fully started
 
 ######1.2.1
 

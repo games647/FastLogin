@@ -9,8 +9,11 @@ import com.github.games647.fastlogin.bukkit.PlayerSession;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerLoginEvent;
+import org.bukkit.event.player.PlayerLoginEvent.Result;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 /**
@@ -27,12 +30,19 @@ public class BukkitJoinListener implements Listener {
         this.plugin = plugin;
     }
 
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onPlayerLogin(PlayerLoginEvent loginEvent) {
+        if (loginEvent.getResult() == Result.ALLOWED && !plugin.isServerFullyStarted()) {
+            loginEvent.disallow(Result.KICK_OTHER, "§cServer is not fully started yet. Please retry");
+        }
+    }
+
     @EventHandler(ignoreCancelled = true)
     public void onPlayerJoin(PlayerJoinEvent joinEvent) {
-        final Player player = joinEvent.getPlayer();
+        Player player = joinEvent.getPlayer();
 
         //removing the session because we now use it
-        final PlayerSession session = plugin.getSessions().get(player.getAddress().toString());
+        PlayerSession session = plugin.getSessions().get(player.getAddress().toString());
         if (session != null && plugin.getConfig().getBoolean("forwardSkin")) {
             WrappedGameProfile gameProfile = WrappedGameProfile.fromPlayer(player);
             WrappedSignedProperty skin = session.getSkin();
@@ -49,7 +59,7 @@ public class BukkitJoinListener implements Listener {
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent quitEvent) {
-        final Player player = quitEvent.getPlayer();
+        Player player = quitEvent.getPlayer();
 
         //prevent memory leaks
         player.removeMetadata(plugin.getName(), plugin);
