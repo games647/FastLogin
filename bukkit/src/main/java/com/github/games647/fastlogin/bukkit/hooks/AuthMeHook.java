@@ -1,5 +1,8 @@
 package com.github.games647.fastlogin.bukkit.hooks;
 
+import com.avaje.ebeaninternal.api.ClassUtil;
+
+import fr.xephi.authme.api.API;
 import fr.xephi.authme.api.NewAPI;
 
 import org.bukkit.entity.Player;
@@ -13,10 +16,21 @@ import org.bukkit.entity.Player;
  */
 public class AuthMeHook implements BukkitAuthPlugin {
 
+    private final boolean isNewAPIAvailable;
+
+    public AuthMeHook() {
+        this.isNewAPIAvailable = ClassUtil.isPresent("fr.​xephi.​authme.​api.NewAPI");
+    }
+
     @Override
     public boolean forceLogin(Player player) {
         //skips registration and login
-        NewAPI.getInstance().forceLogin(player);
+        if (isNewAPIAvailable) {
+            NewAPI.getInstance().forceLogin(player);
+        } else {
+            API.forceLogin(player);
+        }
+
         //commented because the operation above is performed async -> race conditions
 //        return NewAPI.getInstance().isAuthenticated(player);
         return true;
@@ -24,12 +38,21 @@ public class AuthMeHook implements BukkitAuthPlugin {
 
     @Override
     public boolean isRegistered(String playerName) throws Exception {
-        return NewAPI.getInstance().isRegistered(playerName);
+        if (isNewAPIAvailable) {
+            return NewAPI.getInstance().isRegistered(playerName);
+        } else {
+            return API.isRegistered(playerName);
+        }
     }
 
     @Override
     public boolean forceRegister(Player player, String password) {
-        NewAPI.getInstance().forceRegister(player, password);
+        if (isNewAPIAvailable) {
+            NewAPI.getInstance().forceRegister(player, password);
+        } else {
+            API.registerPlayer(player.getName(), password);
+        }
+
         return true;
     }
 }

@@ -1,3 +1,11 @@
+######1.3
+
+* Add support for AuthMe 3.X
+
+######1.2.1
+
+* Fix premium status change notification message on BungeeCord
+
 ######1.2
 
 * Fix race condition in BungeeCord

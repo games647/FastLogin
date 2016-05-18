@@ -3,7 +3,7 @@
 [![Build Status](https://travis-ci.org/games647/FastLogin.svg?branch=master)](https://travis-ci.org/games647/FastLogin)
 [![Donate Button](https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=8ZBULMAPN7MZC)
 
-Checks if a minecraft player has a paid account (premium). If so, they can skip offline authentication (auth plugins).
+Checks if a Minecraft player has a paid account (premium). If so, they can skip offline authentication (auth plugins).
 So they don't need to enter passwords. This is also called auto login (auto-login).
 
 ###Features:
@@ -37,11 +37,11 @@ So they don't need to enter passwords. This is also called auto login (auto-logi
 * Tested Bukkit/[Spigot](https://www.spigotmc.org) 1.9 (could also work with other versions)
 * Java 7+
 * Run Spigot and/or BungeeCord/Waterfall in offline mode (see server.properties or config.yml)
-* An auth plugin. Supported Plugins
+* An auth plugin. Supported plugins
 
 ####Bukkit/Spigot/PaperSpigot
 
-* [AuthMe](http://dev.bukkit.org/bukkit-plugins/authme-reloaded/)
+* [AuthMe (both 5.X and 3.X)](http://dev.bukkit.org/bukkit-plugins/authme-reloaded/)
 * [xAuth](http://dev.bukkit.org/bukkit-plugins/xauth/)
 * [AdvancedLogin (Paid)](https://www.spigotmc.org/resources/advancedlogin.10510/)
 * [CrazyLogin](http://dev.bukkit.org/bukkit-plugins/crazylogin/)
@@ -65,6 +65,7 @@ https://www.spigotmc.org/resources/fastlogin.14153/history
 
 1. Download and install ProtocolLib
 2. Download and install FastLogin
+3. Set your server in offline mode by setting the value onlinemode in your server.properties to false
 
 ####BungeeCord/Waterfall
 
@@ -75,13 +76,15 @@ Put your stats id from the BungeeCord config into this file
 4. Activate ipForward in your BungeeCord config
 5. Download and Install FastLogin on BungeeCord AND Spigot
 6. Check your database settings in the config of FastLogin on BungeeCord
+7. Set your proxy (BungeeCord) in offline mode by setting the value onlinemode in your config.yml to false
+8. (BungeeCord doesn't support SQLite per default, so you should change the configuration to MySQL or MariaDB)
 
 ***
 
 ###FAQ
 
 ####Index
-1. [How does minecraft logins work?](#how-does-minecraft-logins-work)
+1. [How does Minecraft logins work?](#how-does-minecraft-logins-work)
 2. [How does this plugin work?](#how-does-this-plugin-work)
 3. [Why does the plugin require offline mode?](#why-does-the-plugin-require-offline-mode)
 4. [Can cracked player join with premium usernames?](#can-cracked-player-join-with-premium-usernames)
