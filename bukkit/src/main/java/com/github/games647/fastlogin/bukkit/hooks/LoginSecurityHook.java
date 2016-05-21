@@ -72,12 +72,12 @@ public class LoginSecurityHook implements BukkitAuthPlugin {
 
     @Override
     public boolean forceRegister(final Player player, final String password) {
-        final DataManager dataManager = securityPlugin.data;
+        DataManager dataManager = securityPlugin.data;
 
         UUID playerUUID = player.getUniqueId();
-        final String uuidString = playerUUID.toString().replace("-", "");
-        final InetAddress ipAddress = player.getAddress().getAddress();
-        final String passwordHash = securityPlugin.hasher.hash(password);
+        String uuidString = playerUUID.toString().replace("-", "");
+        InetAddress ipAddress = player.getAddress().getAddress();
+        String passwordHash = securityPlugin.hasher.hash(password);
 
         //this executes a sql query without interacting with other parts so we can run it async.
         dataManager.register(uuidString, passwordHash, securityPlugin.hasher.getTypeId(), ipAddress.toString());

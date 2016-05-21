@@ -1,7 +1,8 @@
 ######1.3
 
-* Add support for AuthMe 3.X
+* Added support for AuthMe 3.X
 * Fixed premium logins if the server is not fully started
+* Added other command argument to /premium and /cracked
 
 ######1.2.1
 

@@ -47,11 +47,11 @@ permissions:
         children:
             ${project.artifactId}.command.premium: true
 
-    ${project.artifactId}.command.unpremium:
+    ${project.artifactId}.command.cracked:
         description: 'Label themselves as cracked'
         default: true
 
-    ${project.artifactId}.command..unpremium.other:
+    ${project.artifactId}.command..cracked.other:
         description: 'Label others as cracked'
         children:
-            ${project.artifactId}.command.unpremium: true
+            ${project.artifactId}.command.cracked: true

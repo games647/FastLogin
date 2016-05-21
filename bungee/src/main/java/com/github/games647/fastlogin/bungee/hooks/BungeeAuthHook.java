@@ -25,14 +25,14 @@ public class BungeeAuthHook implements BungeeAuthPlugin {
     private final Tables databaseConnection = new Tables();
 
     @Override
-    public boolean forceLogin(final ProxiedPlayer player) {
+    public boolean forceLogin(ProxiedPlayer player) {
 //https://github.com/MatteCarra/BungeeAuth/blob/master/src/me/vik1395/BungeeAuth/Login.java#L92-95
         Main.plonline.add(player.getName());
 
         //renamed from ct to databaseConnection
 //            databaseConnection.setStatus(player.getName(), "online");
-        final Class<?>[] parameterTypes = new Class<?>[]{String.class, String.class};
-        final Object[] arguments = new Object[]{player.getName(), "online"};
+        Class<?>[] parameterTypes = new Class<?>[]{String.class, String.class};
+        Object[] arguments = new Object[]{player.getName(), "online"};
 
         try {
             callProtected("setStatus", parameterTypes, arguments);
@@ -56,7 +56,7 @@ public class BungeeAuthHook implements BungeeAuthPlugin {
     }
 
     @Override
-    public boolean forceRegister(final ProxiedPlayer player, String password) {
+    public boolean forceRegister(ProxiedPlayer player, String password) {
         //https://github.com/MatteCarra/BungeeAuth/blob/master/src/me/vik1395/BungeeAuth/Register.java#L102
         PasswordHandler ph = new PasswordHandler();
         Random rand = new Random();
@@ -77,9 +77,9 @@ public class BungeeAuthHook implements BungeeAuthPlugin {
         //renamed t to databaseConnection
 //            databaseConnection.newPlayerEntry(player.getName(), hash, pType, "", lastip, regdate, lastip, lastseen);
 
-        final Class<?>[] parameterTypes = new Class<?>[] {String.class, String.class, String.class, String.class
+        Class<?>[] parameterTypes = new Class<?>[] {String.class, String.class, String.class, String.class
                 , String.class, String.class, String.class, String.class};
-        final Object[] arguments = new Object[] {player.getName(), hash, pType, "", lastip, regdate, lastip, lastseen};
+        Object[] arguments = new Object[] {player.getName(), hash, pType, "", lastip, regdate, lastip, lastseen};
 
         try {
             callProtected("newPlayerEntry", parameterTypes, arguments);

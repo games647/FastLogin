@@ -31,9 +31,10 @@ So they don't need to enter passwords. This is also called auto login (auto-logi
 
 ###Permissions:
     * fastlogin.bukkit.command.premium
+    * fastlogin.bukkit.command.cracked
 
 ###Requirements:
-* Plugin: [ProtocolLib](http://www.spigotmc.org/resources/protocollib.1997/)
+* Plugin: [ProtocolLib](http://www.spigotmc.org/resources/protocollib.1997/) or [ProtocolSupport](http://www.spigotmc.org/resources/protocolsupport.7201/)
 * Tested Bukkit/[Spigot](https://www.spigotmc.org) 1.9 (could also work with other versions)
 * Java 7+
 * Run Spigot and/or BungeeCord/Waterfall in offline mode (see server.properties or config.yml)

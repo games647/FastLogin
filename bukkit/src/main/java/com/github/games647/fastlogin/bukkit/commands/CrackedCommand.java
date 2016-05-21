@@ -29,15 +29,12 @@ public class CrackedCommand implements CommandExecutor {
                 return true;
             }
 
-            final Player player = (Player) sender;
-//            UUID uuid = player.getUniqueId();
-
             if (plugin.isBungeeCord()) {
-                notifiyBungeeCord((Player) sender);
+                notifiyBungeeCord(sender, sender.getName());
                 sender.sendMessage(ChatColor.YELLOW + "Sending request...");
             } else {
                 //todo: load async if it's not in the cache anymore
-                final PlayerProfile profile = plugin.getStorage().getProfile(player.getName(), true);
+                final PlayerProfile profile = plugin.getStorage().getProfile(sender.getName(), true);
                 if (profile.isPremium()) {
                     sender.sendMessage(ChatColor.DARK_GREEN + "Removed from the list of premium players");
                     profile.setPremium(false);
@@ -55,27 +52,58 @@ public class CrackedCommand implements CommandExecutor {
 
             return true;
         } else {
-            sender.sendMessage(ChatColor.DARK_RED + "NOT IMPLEMENTED YET");
-            //todo:
-//            String playerName = args[0];
-//            boolean existed = plugin.getEnabledPremium().remove(playerName);
-//            if (existed) {
-//                sender.sendMessage(ChatColor.DARK_GREEN + "Removed from the list of premium players");
-//                notifiyBungeeCord((Player) sender);
-//            } else {
-//                sender.sendMessage(ChatColor.DARK_RED + "User is not in the premium list");
-//            }
+            if (!sender.hasPermission(command.getPermission() + ".other")) {
+                sender.sendMessage(ChatColor.DARK_RED + "Not enough permissions");
+                return true;
+            }
+
+            if (plugin.isBungeeCord()) {
+                notifiyBungeeCord(sender, args[0]);
+                sender.sendMessage(ChatColor.YELLOW + "Sending request for player " + args[0] + "...");
+            } else {
+                //todo: load async if it's not in the cache anymore
+                final PlayerProfile profile = plugin.getStorage().getProfile(args[0], true);
+                if (profile == null) {
+                    sender.sendMessage(ChatColor.DARK_RED + "Player not in the database");
+                    return true;
+                }
+
+                if (profile.isPremium()) {
+                    sender.sendMessage(ChatColor.DARK_GREEN + "Removed from the list of premium players");
+                    profile.setPremium(false);
+                    profile.setUuid(null);
+                    Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+                        @Override
+                        public void run() {
+                            plugin.getStorage().save(profile);
+                        }
+                    });
+                } else {
+                    sender.sendMessage(ChatColor.DARK_RED + "Player is not in the premium list");
+                }
+            }
         }
 
         return true;
     }
 
-    private void notifiyBungeeCord(Player target) {
+    private void notifiyBungeeCord(CommandSender sender, String target) {
+        if (sender instanceof Player) {
+            notifiyBungeeCord(sender, target);
+        } else {
+            //todo: add console support
+//            Player firstPlayer = Iterables.getFirst(Bukkit.getOnlinePlayers(), null);
+//            notifiyBungeeCord(firstPlayer, target);
+        }
+    }
+
+    private void notifiyBungeeCord(Player sender, String target) {
         if (plugin.isBungeeCord()) {
             ByteArrayDataOutput dataOutput = ByteStreams.newDataOutput();
             dataOutput.writeUTF("OFF");
+            dataOutput.writeUTF(target);
 
-            target.sendPluginMessage(plugin, plugin.getName(), dataOutput.toByteArray());
+            plugin.getLogger().info("No player online to send a plugin message to the proxy");
         }
     }
 }
