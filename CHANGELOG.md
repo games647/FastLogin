@@ -4,6 +4,7 @@
 * Fixed premium logins if the server is not fully started
 * Added other command argument to /premium and /cracked
 * Added support for LogIt
+* Fixed 1.7 Minecraft support by removing guava 11+ only features -> Cauldron support
 
 ######1.2.1
 

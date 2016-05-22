@@ -7,19 +7,25 @@ import com.comphenix.protocol.reflect.FuzzyReflection;
 import com.comphenix.protocol.utility.SafeCacheBuilder;
 import com.github.games647.fastlogin.bukkit.commands.CrackedCommand;
 import com.github.games647.fastlogin.bukkit.commands.PremiumCommand;
+import com.github.games647.fastlogin.bukkit.hooks.AuthMeHook;
 import com.github.games647.fastlogin.bukkit.hooks.BukkitAuthPlugin;
+import com.github.games647.fastlogin.bukkit.hooks.LogItHook;
+import com.github.games647.fastlogin.bukkit.hooks.LoginSecurityHook;
+import com.github.games647.fastlogin.bukkit.hooks.UltraAuthHook;
+import com.github.games647.fastlogin.bukkit.hooks.xAuthHook;
 import com.github.games647.fastlogin.bukkit.listener.BukkitJoinListener;
 import com.github.games647.fastlogin.bukkit.listener.BungeeCordListener;
 import com.github.games647.fastlogin.bukkit.listener.EncryptionPacketListener;
 import com.github.games647.fastlogin.bukkit.listener.ProtocolSupportListener;
 import com.github.games647.fastlogin.bukkit.listener.StartPacketListener;
 import com.google.common.cache.CacheLoader;
-import com.google.common.reflect.ClassPath;
+import com.google.common.collect.Lists;
+import de.st_ddt.crazylogin.CrazyLogin;
 
-import java.io.IOException;
 import java.lang.reflect.Method;
 import java.security.KeyPair;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
@@ -224,12 +230,10 @@ public class FastLoginBukkit extends JavaPlugin {
     private boolean registerHooks() {
         BukkitAuthPlugin authPluginHook = null;
         try {
-            String hooksPackage = this.getClass().getPackage().getName() + ".hooks";
-            //Look through all classes in the hooks package and look for supporting plugins on the server
-            for (ClassPath.ClassInfo clazzInfo : ClassPath.from(getClassLoader()).getTopLevelClasses(hooksPackage)) {
-                //remove the hook suffix
-                String pluginName = clazzInfo.getSimpleName().replace("Hook", "");
-                Class<?> clazz = clazzInfo.load();
+            List<Class<?>> supportedHooks = Lists.newArrayList(AuthMeHook.class, CrazyLogin.class
+                    , LogItHook.class, LoginSecurityHook.class, UltraAuthHook.class, xAuthHook.class);
+            for (Class<?> clazz : supportedHooks) {
+                String pluginName = clazz.getSimpleName().replace("Hook", "");
                 //uses only member classes which uses AuthPlugin interface (skip interfaces)
                 if (BukkitAuthPlugin.class.isAssignableFrom(clazz)
                         //check only for enabled plugins. A single plugin could be disabled by plugin managers
@@ -239,7 +243,7 @@ public class FastLoginBukkit extends JavaPlugin {
                     break;
                 }
             }
-        } catch (InstantiationException | IllegalAccessException | IOException ex) {
+        } catch (InstantiationException | IllegalAccessException ex) {
             getLogger().log(Level.SEVERE, "Couldn't load the integration class", ex);
         }
 

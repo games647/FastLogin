@@ -1,15 +1,12 @@
 package com.github.games647.fastlogin.bungee.listener;
 
 import com.github.games647.fastlogin.bungee.FastLoginBungee;
-import com.github.games647.fastlogin.bungee.FastLoginBungee;
 import com.github.games647.fastlogin.bungee.ForceLoginTask;
-import com.github.games647.fastlogin.bungee.ForceLoginTask;
-import com.github.games647.fastlogin.bungee.PlayerProfile;
 import com.github.games647.fastlogin.bungee.PlayerProfile;
 import com.github.games647.fastlogin.bungee.hooks.BungeeAuthPlugin;
 import com.google.common.base.Charsets;
-import java.lang.reflect.Field;
 
+import java.lang.reflect.Field;
 import java.util.UUID;
 import java.util.logging.Level;
 
