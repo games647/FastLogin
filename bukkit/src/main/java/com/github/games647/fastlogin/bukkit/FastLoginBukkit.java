@@ -9,6 +9,7 @@ import com.github.games647.fastlogin.bukkit.commands.CrackedCommand;
 import com.github.games647.fastlogin.bukkit.commands.PremiumCommand;
 import com.github.games647.fastlogin.bukkit.hooks.AuthMeHook;
 import com.github.games647.fastlogin.bukkit.hooks.BukkitAuthPlugin;
+import com.github.games647.fastlogin.bukkit.hooks.CrazyLoginHook;
 import com.github.games647.fastlogin.bukkit.hooks.LogItHook;
 import com.github.games647.fastlogin.bukkit.hooks.LoginSecurityHook;
 import com.github.games647.fastlogin.bukkit.hooks.UltraAuthHook;
@@ -20,7 +21,6 @@ import com.github.games647.fastlogin.bukkit.listener.ProtocolSupportListener;
 import com.github.games647.fastlogin.bukkit.listener.StartPacketListener;
 import com.google.common.cache.CacheLoader;
 import com.google.common.collect.Lists;
-import de.st_ddt.crazylogin.CrazyLogin;
 
 import java.lang.reflect.Method;
 import java.security.KeyPair;
@@ -230,15 +230,15 @@ public class FastLoginBukkit extends JavaPlugin {
     private boolean registerHooks() {
         BukkitAuthPlugin authPluginHook = null;
         try {
-            List<Class<?>> supportedHooks = Lists.newArrayList(AuthMeHook.class, CrazyLogin.class
-                    , LogItHook.class, LoginSecurityHook.class, UltraAuthHook.class, xAuthHook.class);
-            for (Class<?> clazz : supportedHooks) {
+            List<Class<? extends BukkitAuthPlugin>> supportedHooks = Lists.newArrayList(AuthMeHook.class
+                    , CrazyLoginHook.class, LogItHook.class, LoginSecurityHook.class, UltraAuthHook.class
+                    , xAuthHook.class);
+            for (Class<? extends BukkitAuthPlugin> clazz : supportedHooks) {
                 String pluginName = clazz.getSimpleName().replace("Hook", "");
                 //uses only member classes which uses AuthPlugin interface (skip interfaces)
-                if (BukkitAuthPlugin.class.isAssignableFrom(clazz)
-                        //check only for enabled plugins. A single plugin could be disabled by plugin managers
-                        && getServer().getPluginManager().isPluginEnabled(pluginName)) {
-                    authPluginHook = (BukkitAuthPlugin) clazz.newInstance();
+                if (getServer().getPluginManager().isPluginEnabled(pluginName)) {
+                    //check only for enabled plugins. A single plugin could be disabled by plugin managers
+                    authPluginHook = clazz.newInstance();
                     getLogger().log(Level.INFO, "Hooking into auth plugin: {0}", pluginName);
                     break;
                 }
