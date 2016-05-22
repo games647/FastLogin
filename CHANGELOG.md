@@ -3,6 +3,7 @@
 * Added support for AuthMe 3.X
 * Fixed premium logins if the server is not fully started
 * Added other command argument to /premium and /cracked
+* Added support for LogIt
 
 ######1.2.1
 
