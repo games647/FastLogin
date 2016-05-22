@@ -51,6 +51,7 @@ public class AuthMeHook implements BukkitAuthPlugin {
             NewAPI.getInstance().forceRegister(player, password);
         } else {
             API.registerPlayer(player.getName(), password);
+            forceLogin(player);
         }
 
         return true;
