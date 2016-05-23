@@ -5,6 +5,7 @@
 * Added other command argument to /premium and /cracked
 * Added support for LogIt
 * Fixed 1.7 Minecraft support by removing guava 11+ only features -> Cauldron support
+* Fixed BungeeCord support in Cauldron
 
 ######1.2.1
 

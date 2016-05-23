@@ -1,5 +1,6 @@
 package com.github.games647.fastlogin.bukkit;
 
+import com.avaje.ebeaninternal.api.ClassUtil;
 import com.comphenix.protocol.AsynchronousManager;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
@@ -22,7 +23,6 @@ import com.github.games647.fastlogin.bukkit.listener.StartPacketListener;
 import com.google.common.cache.CacheLoader;
 import com.google.common.collect.Lists;
 
-import java.lang.reflect.Method;
 import java.security.KeyPair;
 import java.sql.SQLException;
 import java.util.List;
@@ -32,8 +32,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.bukkit.Bukkit;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -81,17 +79,13 @@ public class FastLoginBukkit extends JavaPlugin {
     @Override
     public void onEnable() {
         try {
-            if (Bukkit.spigot().getConfig().isBoolean("settings.bungeecord")) {
-                bungeeCord = Bukkit.spigot().getConfig().getBoolean("settings.bungeecord");
-            } else {
-                Method getConfigMethod = FuzzyReflection.fromObject(getServer().spigot(), true)
-                        .getMethodByName("getSpigotConfig");
-                getConfigMethod.setAccessible(true);
-                YamlConfiguration spigotConfig = (YamlConfiguration) getConfigMethod.invoke(getServer().spigot());
-                bungeeCord = spigotConfig.getBoolean("settings.bungeecord");
+            if (ClassUtil.isPresent("org.spigotmc.SpigotConfig")) {
+                bungeeCord = (boolean) FuzzyReflection.fromClass(Class.forName("org.spigotmc.SpigotConfig"))
+                        .getFieldByType("bungee", Boolean.TYPE).get(null);
             }
         } catch (Exception | NoSuchMethodError ex) {
             getLogger().warning("Cannot check bungeecord support. You use a non-spigot build");
+            ex.printStackTrace();
         }
 
         saveDefaultConfig();

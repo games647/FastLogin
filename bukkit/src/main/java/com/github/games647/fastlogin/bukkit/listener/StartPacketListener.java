@@ -61,7 +61,6 @@ public class StartPacketListener extends PacketAdapter {
      */
     @Override
     public void onPacketReceiving(PacketEvent packetEvent) {
-        System.out.println("ON LOGIN");
         plugin.setServerStarted();
 
         Player player = packetEvent.getPlayer();
@@ -74,13 +73,13 @@ public class StartPacketListener extends PacketAdapter {
 
         //player.getName() won't work at this state
         PacketContainer packet = packetEvent.getPacket();
+
         String username = packet.getGameProfiles().read(0).getName();
         plugin.getLogger().log(Level.FINER, "Player {0} with {1} connecting to the server"
                 , new Object[]{sessionKey, username});
 
         BukkitAuthPlugin authPlugin = plugin.getAuthPlugin();
         if (authPlugin == null) {
-            System.out.println("NO AUTH PLUGIN");
             return;
         }
 

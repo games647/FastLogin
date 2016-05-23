@@ -71,6 +71,7 @@ public class EncryptionPacketListener extends PacketAdapter {
      */
     @Override
     public void onPacketReceiving(PacketEvent packetEvent) {
+        System.out.println("ENCRYPTION REQUEST");
         Player player = packetEvent.getPlayer();
 
         //the player name is unknown to ProtocolLib (so getName() doesn't work) - now uses ip:port as key

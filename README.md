@@ -26,8 +26,8 @@ So they don't need to enter passwords. This is also called auto login (auto-logi
 ***
 
 ###Commands:
-    * /premium [player] Label the invoker as paid account
-    * /cracked [player] Label the invoker as cracked account
+    * /premium [player] Label the invoker or the argument as paid account
+    * /cracked [player] Label the invoker or the argument as cracked account
 
 ###Permissions:
     * fastlogin.bukkit.command.premium
