@@ -25,6 +25,7 @@ public class ProtocolSupportListener implements Listener {
 
     @EventHandler(ignoreCancelled = true)
     public void onLoginStart(PlayerLoginStartEvent loginStartEvent) {
+        plugin.setServerStarted();
         if (loginStartEvent.isLoginDenied()) {
             return;
         }

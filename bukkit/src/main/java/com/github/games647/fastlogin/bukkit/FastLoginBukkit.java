@@ -104,6 +104,7 @@ public class FastLoginBukkit extends JavaPlugin {
 
         boolean hookFound = registerHooks();
         if (bungeeCord) {
+            setServerStarted();
             getLogger().info("BungeeCord setting detected. No auth plugin is required");
         } else if (!hookFound) {
             getLogger().warning("No auth plugin were found by this plugin "
