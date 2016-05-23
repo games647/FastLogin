@@ -89,7 +89,7 @@ public class CrackedCommand implements CommandExecutor {
 
     private void notifiyBungeeCord(CommandSender sender, String target) {
         if (sender instanceof Player) {
-            notifiyBungeeCord(sender, target);
+            notifiyBungeeCord((Player) sender, target);
         } else {
             //todo: add console support
 //            Player firstPlayer = Iterables.getFirst(Bukkit.getOnlinePlayers(), null);
