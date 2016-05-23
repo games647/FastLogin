@@ -61,6 +61,7 @@ public class StartPacketListener extends PacketAdapter {
      */
     @Override
     public void onPacketReceiving(PacketEvent packetEvent) {
+        System.out.println("ON LOGIN");
         plugin.setServerStarted();
 
         Player player = packetEvent.getPlayer();
@@ -79,6 +80,7 @@ public class StartPacketListener extends PacketAdapter {
 
         BukkitAuthPlugin authPlugin = plugin.getAuthPlugin();
         if (authPlugin == null) {
+            System.out.println("NO AUTH PLUGIN");
             return;
         }
 

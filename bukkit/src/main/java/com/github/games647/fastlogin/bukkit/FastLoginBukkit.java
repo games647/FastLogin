@@ -30,6 +30,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -54,7 +55,7 @@ public class FastLoginBukkit extends JavaPlugin {
     //provide a immutable key pair to be thread safe | used for encrypting and decrypting traffic
     private final KeyPair keyPair = EncryptionUtil.generateKeyPair();
 
-    private boolean bungeeCord;
+    protected boolean bungeeCord;
     private Storage storage;
     private boolean serverStarted;
 
@@ -76,18 +77,9 @@ public class FastLoginBukkit extends JavaPlugin {
     private BukkitAuthPlugin authPlugin;
     private final MojangApiConnector mojangApiConnector = new MojangApiConnector(this);
     private PasswordGenerator passwordGenerator = new DefaultPasswordGenerator();
-
+    
     @Override
     public void onEnable() {
-        saveDefaultConfig();
-
-        if (getServer().getOnlineMode()) {
-            //we need to require offline to prevent a session request for a offline player
-            getLogger().severe("Server have to be in offline mode");
-            setEnabled(false);
-            return;
-        }
-
         try {
             if (Bukkit.spigot().getConfig().isBoolean("settings.bungeecord")) {
                 bungeeCord = Bukkit.spigot().getConfig().getBoolean("settings.bungeecord");
@@ -102,18 +94,18 @@ public class FastLoginBukkit extends JavaPlugin {
             getLogger().warning("Cannot check bungeecord support. You use a non-spigot build");
         }
 
-        boolean hookFound = registerHooks();
-        if (bungeeCord) {
-            setServerStarted();
-            getLogger().info("BungeeCord setting detected. No auth plugin is required");
-        } else if (!hookFound) {
-            getLogger().warning("No auth plugin were found by this plugin "
-                    + "(other plugins could hook into this after the intialization of this plugin)"
-                    + "and bungeecord is deactivated. "
-                    + "Either one or both of the checks have to pass in order to use this plugin");
+        saveDefaultConfig();
+
+        if (getServer().getOnlineMode()) {
+            //we need to require offline to prevent a session request for a offline player
+            getLogger().severe("Server have to be in offline mode");
+            setEnabled(false);
+            return;
         }
 
         if (bungeeCord) {
+            setServerStarted();
+            
             //check for incoming messages from the bungeecord version of this plugin
             getServer().getMessenger().registerIncomingPluginChannel(this, getName(), new BungeeCordListener(this));
             getServer().getMessenger().registerOutgoingPluginChannel(this, getName());
@@ -151,6 +143,22 @@ public class FastLoginBukkit extends JavaPlugin {
                 asynchronousManager.registerAsyncHandler(encryptionPacketListener).start(WORKER_THREADS);
             }
         }
+
+        //delay dependency setup because we load the plugin very early where plugins are initialized yet
+        getServer().getScheduler().runTask(this, new Runnable() {
+            @Override
+            public void run() {
+                boolean hookFound = registerHooks();
+                if (bungeeCord) {
+                    getLogger().info("BungeeCord setting detected. No auth plugin is required");
+                } else if (!hookFound) {
+                    getLogger().warning("No auth plugin were found by this plugin "
+                            + "(other plugins could hook into this after the intialization of this plugin)"
+                            + "and bungeecord is deactivated. "
+                            + "Either one or both of the checks have to pass in order to use this plugin");
+                }
+            }
+        });
 
         getServer().getPluginManager().registerEvents(new BukkitJoinListener(this), this);
 
@@ -212,6 +220,14 @@ public class FastLoginBukkit extends JavaPlugin {
      * @return interface to any supported auth plugin
      */
     public BukkitAuthPlugin getAuthPlugin() {
+        if (authPlugin == null) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(FastLoginBukkit.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+
         return authPlugin;
     }
 
@@ -237,7 +253,7 @@ public class FastLoginBukkit extends JavaPlugin {
             for (Class<? extends BukkitAuthPlugin> clazz : supportedHooks) {
                 String pluginName = clazz.getSimpleName().replace("Hook", "");
                 //uses only member classes which uses AuthPlugin interface (skip interfaces)
-                if (getServer().getPluginManager().isPluginEnabled(pluginName)) {
+                if (getServer().getPluginManager().getPlugin(pluginName) != null) {
                     //check only for enabled plugins. A single plugin could be disabled by plugin managers
                     authPluginHook = clazz.newInstance();
                     getLogger().log(Level.INFO, "Hooking into auth plugin: {0}", pluginName);

@@ -11,19 +11,22 @@ description: |
 website: ${project.url}
 dev-url: ${project.url}
 
+# Load the plugin as early as possible to inject it for all players
+load: STARTUP
+
 # Without Protocollib the plugin does not work at all
 depend: [ProtocolLib]
 
 softdepend:
     - ProtocolSupport
     # Auth plugins
-    - xAuth
-    - AuthMe
-    - LogIt
-    - CrazyLogin
-    - LoginSecurity
-    - RoyalAuth
-    - UltraAuth
+#    - xAuth
+#    - AuthMe
+#    - LogIt
+#    - CrazyLogin
+#    - LoginSecurity
+#    - RoyalAuth
+#    - UltraAuth
 
 commands:
     ${project.parent.name}:
