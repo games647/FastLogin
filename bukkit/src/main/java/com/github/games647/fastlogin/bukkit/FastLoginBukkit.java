@@ -4,7 +4,6 @@ import com.avaje.ebeaninternal.api.ClassUtil;
 import com.comphenix.protocol.AsynchronousManager;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
-import com.comphenix.protocol.reflect.FuzzyReflection;
 import com.comphenix.protocol.utility.SafeCacheBuilder;
 import com.github.games647.fastlogin.bukkit.commands.CrackedCommand;
 import com.github.games647.fastlogin.bukkit.commands.PremiumCommand;
@@ -80,8 +79,7 @@ public class FastLoginBukkit extends JavaPlugin {
     public void onEnable() {
         try {
             if (ClassUtil.isPresent("org.spigotmc.SpigotConfig")) {
-                bungeeCord = (boolean) FuzzyReflection.fromClass(Class.forName("org.spigotmc.SpigotConfig"))
-                        .getFieldByType("bungee", Boolean.TYPE).get(null);
+                bungeeCord = Class.forName("org.spigotmc.SpigotConfig").getDeclaredField("bungee").getBoolean(null);
             }
         } catch (Exception | NoSuchMethodError ex) {
             getLogger().warning("Cannot check bungeecord support. You use a non-spigot build");
