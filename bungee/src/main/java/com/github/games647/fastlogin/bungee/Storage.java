@@ -2,6 +2,7 @@ package com.github.games647.fastlogin.bungee;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
@@ -14,6 +15,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
+import net.md_5.bungee.api.scheduler.GroupedThreadFactory;
 
 public class Storage {
 
@@ -42,6 +44,14 @@ public class Storage {
         databaseConfig.setUsername(user);
         databaseConfig.setPassword(pass);
         databaseConfig.setDriverClassName(driver);
+        String pluginName = plugin.getDescription().getName();
+
+        //set a custom thread factory to remove BungeeCord warning about different threads
+        databaseConfig.setThreadFactory(new ThreadFactoryBuilder()
+                .setNameFormat(pluginName + " Database Pool Thread #%1$d")
+                //Hikari create daemons by default
+                .setDaemon(true)
+                .setThreadFactory(new GroupedThreadFactory(plugin, pluginName)).build());
 
         databasePath = databasePath.replace("{pluginDir}", plugin.getDataFolder().getAbsolutePath());
 

@@ -1,3 +1,7 @@
+######1.3.1
+
+* Prevent thread create violation in BungeeCord
+
 ######1.3
 
 * Added support for AuthMe 3.X
