@@ -1,8 +1,5 @@
-package com.github.games647.fastlogin.bungee;
+package com.github.games647.fastlogin.core;
 
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
@@ -13,47 +10,28 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
-import net.md_5.bungee.api.scheduler.GroupedThreadFactory;
 
 public class Storage {
 
     private static final String PREMIUM_TABLE = "premium";
 
-    private final ConcurrentMap<String, PlayerProfile> profileCache = CacheBuilder
-            .<String, PlayerProfile>newBuilder()
-            .concurrencyLevel(20)
-            .expireAfterAccess(30, TimeUnit.MINUTES)
-            .build(new CacheLoader<String, PlayerProfile>() {
-                @Override
-                public PlayerProfile load(String key) throws Exception {
-                    //should be fetched manually
-                    throw new UnsupportedOperationException("Not supported yet.");
-                }
-            }).asMap();
-
+    private final FastLoginCore core;
+    private final ConcurrentMap<String, PlayerProfile> profileCache;
     private final HikariDataSource dataSource;
-    private final FastLoginBungee plugin;
 
-    public Storage(FastLoginBungee plugin, String driver, String host, int port, String databasePath
+    public Storage(FastLoginCore core, String driver, String host, int port, String databasePath
             , String user, String pass) {
-        this.plugin = plugin;
+        this.core = core;
+        this.profileCache = core.buildCache();
 
         HikariConfig databaseConfig = new HikariConfig();
         databaseConfig.setUsername(user);
         databaseConfig.setPassword(pass);
         databaseConfig.setDriverClassName(driver);
-        String pluginName = plugin.getDescription().getName();
+        databaseConfig.setThreadFactory(core.getThreadFactory());
 
-        //set a custom thread factory to remove BungeeCord warning about different threads
-        databaseConfig.setThreadFactory(new ThreadFactoryBuilder()
-                .setNameFormat(pluginName + " Database Pool Thread #%1$d")
-                //Hikari create daemons by default
-                .setDaemon(true)
-                .setThreadFactory(new GroupedThreadFactory(plugin, pluginName)).build());
-
-        databasePath = databasePath.replace("{pluginDir}", plugin.getDataFolder().getAbsolutePath());
+        databasePath = databasePath.replace("{pluginDir}", core.getDataFolder().getAbsolutePath());
 
         String jdbcUrl = "jdbc:";
         if (driver.contains("sqlite")) {
@@ -114,7 +92,7 @@ public class Storage {
                     if (unparsedUUID == null) {
                         uuid = null;
                     } else {
-                        uuid = FastLoginBungee.parseId(unparsedUUID);
+                        uuid = FastLoginCore.parseId(unparsedUUID);
                     }
 
 //                    String name = resultSet.getString(3);
@@ -130,7 +108,7 @@ public class Storage {
                     return crackedProfile;
                 }
             } catch (SQLException sqlEx) {
-                plugin.getLogger().log(Level.SEVERE, "Failed to query profile", sqlEx);
+                core.getLogger().log(Level.SEVERE, "Failed to query profile", sqlEx);
             } finally {
                 closeQuietly(con);
             }
@@ -186,7 +164,7 @@ public class Storage {
 
             return true;
         } catch (SQLException ex) {
-            plugin.getLogger().log(Level.SEVERE, "Failed to save playerProfile", ex);
+            core.getLogger().log(Level.SEVERE, "Failed to save playerProfile", ex);
         } finally {
             closeQuietly(con);
         }
@@ -204,7 +182,7 @@ public class Storage {
             try {
                 con.close();
             } catch (SQLException sqlEx) {
-                plugin.getLogger().log(Level.SEVERE, "Failed to close connection", sqlEx);
+                core.getLogger().log(Level.SEVERE, "Failed to close connection", sqlEx);
             }
         }
     }

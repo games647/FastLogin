@@ -1,9 +1,9 @@
 package com.github.games647.fastlogin.bungee.listener;
 
+import com.github.games647.fastlogin.bungee.AsyncPremiumCheck;
 import com.github.games647.fastlogin.bungee.FastLoginBungee;
 import com.github.games647.fastlogin.bungee.ForceLoginTask;
-import com.github.games647.fastlogin.bungee.PlayerProfile;
-import com.github.games647.fastlogin.bungee.hooks.BungeeAuthPlugin;
+import com.github.games647.fastlogin.core.PlayerProfile;
 import com.google.common.base.Charsets;
 
 import java.lang.reflect.Field;
@@ -36,45 +36,13 @@ public class PlayerConnectionListener implements Listener {
     }
 
     @EventHandler
-    public void onPreLogin(final PreLoginEvent preLoginEvent) {
+    public void onPreLogin(PreLoginEvent preLoginEvent) {
         if (preLoginEvent.isCancelled()) {
             return;
         }
 
         preLoginEvent.registerIntent(plugin);
-        ProxyServer.getInstance().getScheduler().runAsync(plugin, new Runnable() {
-            @Override
-            public void run() {
-                PendingConnection connection = preLoginEvent.getConnection();
-                String username = connection.getName();
-                try {
-                    PlayerProfile playerProfile = plugin.getStorage().getProfile(username, true);
-                    if (playerProfile != null) {
-                        if (playerProfile.isPremium()) {
-                            if (playerProfile.getUserId() != -1) {
-                                connection.setOnlineMode(true);
-                            }
-                        } else if (playerProfile.getUserId() == -1) {
-                            //user not exists in the db
-                            BungeeAuthPlugin authPlugin = plugin.getBungeeAuthPlugin();
-                            if (plugin.getConfiguration().getBoolean("autoRegister")
-                                    && (authPlugin == null || !authPlugin.isRegistered(username))) {
-                                UUID premiumUUID = plugin.getMojangApiConnector().getPremiumUUID(username);
-                                if (premiumUUID != null) {
-                                    plugin.getLogger().log(Level.FINER, "Player {0} uses a premium username", username);
-                                    connection.setOnlineMode(true);
-                                    plugin.getPendingAutoRegister().put(connection, new Object());
-                                }
-                            }
-                        }
-                    }
-                } catch (Exception ex) {
-                    plugin.getLogger().log(Level.SEVERE, "Failed to check premium state", ex);
-                } finally {
-                    preLoginEvent.completeIntent(plugin);
-                }
-            }
-        });
+        ProxyServer.getInstance().getScheduler().runAsync(plugin, new AsyncPremiumCheck(plugin, preLoginEvent));
     }
 
     @EventHandler
@@ -83,7 +51,7 @@ public class PlayerConnectionListener implements Listener {
         PendingConnection connection = player.getPendingConnection();
         String username = connection.getName();
         if (connection.isOnlineMode()) {
-            PlayerProfile playerProfile = plugin.getStorage().getProfile(player.getName(), false);
+            PlayerProfile playerProfile = plugin.getCore().getStorage().getProfile(player.getName(), false);
             playerProfile.setUuid(player.getUniqueId());
 
             //bungeecord will do this automatically so override it on disabled option
@@ -92,12 +60,11 @@ public class PlayerConnectionListener implements Listener {
                 try {
                     UUID offlineUUID = UUID.nameUUIDFromBytes(("OfflinePlayer:" + username).getBytes(Charsets.UTF_8));
 
+                    //bungeecord doesn't support overriding the premium uuid
+                    //so we have to do it with reflection
                     Field idField = initialHandler.getClass().getDeclaredField("uniqueId");
                     idField.setAccessible(true);
                     idField.set(connection, offlineUUID);
-
-                    //bungeecord doesn't support overriding the premium uuid
-//                    connection.setUniqueId(offlineUUID);
                 } catch (NoSuchFieldException | IllegalAccessException ex) {
                     plugin.getLogger().log(Level.SEVERE, "Failed to set offline uuid", ex);
                 }

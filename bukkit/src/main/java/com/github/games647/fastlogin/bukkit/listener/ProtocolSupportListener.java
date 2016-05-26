@@ -1,9 +1,9 @@
 package com.github.games647.fastlogin.bukkit.listener;
 
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
-import com.github.games647.fastlogin.bukkit.PlayerProfile;
 import com.github.games647.fastlogin.bukkit.PlayerSession;
 import com.github.games647.fastlogin.bukkit.hooks.BukkitAuthPlugin;
+import com.github.games647.fastlogin.core.PlayerProfile;
 
 import java.net.InetSocketAddress;
 import java.util.UUID;
@@ -40,7 +40,7 @@ public class ProtocolSupportListener implements Listener {
             return;
         }
 
-        PlayerProfile playerProfile = plugin.getStorage().getProfile(username, true);
+        PlayerProfile playerProfile = plugin.getCore().getStorage().getProfile(username, true);
         if (playerProfile != null) {
             if (playerProfile.isPremium()) {
                 if (playerProfile.getUserId() != -1) {
@@ -50,7 +50,7 @@ public class ProtocolSupportListener implements Listener {
                 //user not exists in the db
                 try {
                     if (plugin.getConfig().getBoolean("autoRegister") && !authPlugin.isRegistered(username)) {
-                        UUID premiumUUID = plugin.getApiConnector().getPremiumUUID(username);
+                        UUID premiumUUID = plugin.getCore().getMojangApiConnector().getPremiumUUID(username);
                         if (premiumUUID != null) {
                             plugin.getLogger().log(Level.FINER, "Player {0} uses a premium username", username);
                             startPremiumSession(username, loginStartEvent, false);

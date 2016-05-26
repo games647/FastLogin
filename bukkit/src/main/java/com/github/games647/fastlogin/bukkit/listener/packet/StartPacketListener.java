@@ -1,4 +1,4 @@
-package com.github.games647.fastlogin.bukkit.listener;
+package com.github.games647.fastlogin.bukkit.listener.packet;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolManager;
@@ -6,7 +6,7 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
-import com.github.games647.fastlogin.bukkit.PlayerProfile;
+import com.github.games647.fastlogin.core.PlayerProfile;
 import com.github.games647.fastlogin.bukkit.PlayerSession;
 import com.github.games647.fastlogin.bukkit.hooks.BukkitAuthPlugin;
 
@@ -83,7 +83,7 @@ public class StartPacketListener extends PacketAdapter {
             return;
         }
 
-        PlayerProfile playerProfile = plugin.getStorage().getProfile(username, true);
+        PlayerProfile playerProfile = plugin.getCore().getStorage().getProfile(username, true);
         if (playerProfile != null) {
             if (playerProfile.isPremium()) {
                 if (playerProfile.getUserId() != -1) {
@@ -93,7 +93,7 @@ public class StartPacketListener extends PacketAdapter {
                 //user not exists in the db
                 try {
                     if (plugin.getConfig().getBoolean("autoRegister") && !authPlugin.isRegistered(username)) {
-                        UUID premiumUUID = plugin.getApiConnector().getPremiumUUID(username);
+                        UUID premiumUUID = plugin.getCore().getMojangApiConnector().getPremiumUUID(username);
                         if (premiumUUID != null) {
                             plugin.getLogger().log(Level.FINER, "Player {0} uses a premium username", username);
                             enablePremiumLogin(username, sessionKey, player, packetEvent, false);

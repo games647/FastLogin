@@ -7,29 +7,19 @@ import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.utility.SafeCacheBuilder;
 import com.github.games647.fastlogin.bukkit.commands.CrackedCommand;
 import com.github.games647.fastlogin.bukkit.commands.PremiumCommand;
-import com.github.games647.fastlogin.bukkit.hooks.AuthMeHook;
 import com.github.games647.fastlogin.bukkit.hooks.BukkitAuthPlugin;
-import com.github.games647.fastlogin.bukkit.hooks.CrazyLoginHook;
-import com.github.games647.fastlogin.bukkit.hooks.LogItHook;
-import com.github.games647.fastlogin.bukkit.hooks.LoginSecurityHook;
-import com.github.games647.fastlogin.bukkit.hooks.UltraAuthHook;
-import com.github.games647.fastlogin.bukkit.hooks.xAuthHook;
 import com.github.games647.fastlogin.bukkit.listener.BukkitJoinListener;
 import com.github.games647.fastlogin.bukkit.listener.BungeeCordListener;
-import com.github.games647.fastlogin.bukkit.listener.EncryptionPacketListener;
 import com.github.games647.fastlogin.bukkit.listener.ProtocolSupportListener;
-import com.github.games647.fastlogin.bukkit.listener.StartPacketListener;
+import com.github.games647.fastlogin.bukkit.listener.packet.EncryptionPacketListener;
+import com.github.games647.fastlogin.bukkit.listener.packet.StartPacketListener;
+import com.github.games647.fastlogin.core.FastLoginCore;
 import com.google.common.cache.CacheLoader;
-import com.google.common.collect.Lists;
 
 import java.security.KeyPair;
-import java.sql.SQLException;
-import java.util.List;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -41,19 +31,11 @@ public class FastLoginBukkit extends JavaPlugin {
 
     private static final int WORKER_THREADS = 5;
 
-    public static UUID parseId(String withoutDashes) {
-        return UUID.fromString(withoutDashes.substring(0, 8)
-                + "-" + withoutDashes.substring(8, 12)
-                + "-" + withoutDashes.substring(12, 16)
-                + "-" + withoutDashes.substring(16, 20)
-                + "-" + withoutDashes.substring(20, 32));
-    }
-
     //provide a immutable key pair to be thread safe | used for encrypting and decrypting traffic
     private final KeyPair keyPair = EncryptionUtil.generateKeyPair();
 
-    protected boolean bungeeCord;
-    private Storage storage;
+    private boolean bungeeCord;
+    private final FastLoginCore core = new BukkitCore(this);
     private boolean serverStarted;
 
     //this map is thread-safe for async access (Packet Listener)
@@ -72,11 +54,12 @@ public class FastLoginBukkit extends JavaPlugin {
             });
 
     private BukkitAuthPlugin authPlugin;
-    private final MojangApiConnector mojangApiConnector = new MojangApiConnector(this);
     private PasswordGenerator passwordGenerator = new DefaultPasswordGenerator();
     
     @Override
     public void onEnable() {
+        core.setMojangApiConnector(new MojangApiBukkit(core));
+
         try {
             if (ClassUtil.isPresent("org.spigotmc.SpigotConfig")) {
                 bungeeCord = Class.forName("org.spigotmc.SpigotConfig").getDeclaredField("bungee").getBoolean(null);
@@ -111,11 +94,7 @@ public class FastLoginBukkit extends JavaPlugin {
             String username = getConfig().getString("username", "");
             String password = getConfig().getString("password", "");
 
-            this.storage = new Storage(this, driver, host, port, database, username, password);
-            try {
-                storage.createTables();
-            } catch (SQLException sqlEx) {
-                getLogger().log(Level.SEVERE, "Failed to create database tables. Disabling plugin...", sqlEx);
+            if (!core.setupDatabase(driver, host, port, database, username, password)) {
                 setEnabled(false);
                 return;
             }
@@ -137,20 +116,7 @@ public class FastLoginBukkit extends JavaPlugin {
         }
 
         //delay dependency setup because we load the plugin very early where plugins are initialized yet
-        getServer().getScheduler().runTask(this, new Runnable() {
-            @Override
-            public void run() {
-                boolean hookFound = registerHooks();
-                if (bungeeCord) {
-                    getLogger().info("BungeeCord setting detected. No auth plugin is required");
-                } else if (!hookFound) {
-                    getLogger().warning("No auth plugin were found by this plugin "
-                            + "(other plugins could hook into this after the intialization of this plugin)"
-                            + "and bungeecord is deactivated. "
-                            + "Either one or both of the checks have to pass in order to use this plugin");
-                }
-            }
-        });
+        getServer().getScheduler().runTask(this, new DelayedAuthHook(this));
 
         getServer().getPluginManager().registerEvents(new BukkitJoinListener(this), this);
 
@@ -169,9 +135,13 @@ public class FastLoginBukkit extends JavaPlugin {
             player.removeMetadata(getName(), this);
         }
 
-        if (storage != null) {
-            storage.close();
+        if (core != null) {
+            core.close();
         }
+    }
+
+    public FastLoginCore getCore() {
+        return core;
     }
 
     public String generateStringPassword(Player player) {
@@ -201,10 +171,6 @@ public class FastLoginBukkit extends JavaPlugin {
         return keyPair;
     }
 
-    public Storage getStorage() {
-        return storage;
-    }
-
     /**
      * Gets the auth plugin hook in order to interact with the plugins. This can be null if no supporting auth plugin
      * was found.
@@ -216,7 +182,7 @@ public class FastLoginBukkit extends JavaPlugin {
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException ex) {
-                Logger.getLogger(FastLoginBukkit.class.getName()).log(Level.SEVERE, null, ex);
+                getLogger().log(Level.SEVERE, null, ex);
             }
         }
 
@@ -225,45 +191,6 @@ public class FastLoginBukkit extends JavaPlugin {
 
     public void setAuthPluginHook(BukkitAuthPlugin authPlugin) {
         this.authPlugin = authPlugin;
-    }
-
-    /**
-     * Gets the a connection in order to access important features from the Mojang API.
-     *
-     * @return the connector instance
-     */
-    public MojangApiConnector getApiConnector() {
-        return mojangApiConnector;
-    }
-
-    private boolean registerHooks() {
-        BukkitAuthPlugin authPluginHook = null;
-        try {
-            List<Class<? extends BukkitAuthPlugin>> supportedHooks = Lists.newArrayList(AuthMeHook.class
-                    , CrazyLoginHook.class, LogItHook.class, LoginSecurityHook.class, UltraAuthHook.class
-                    , xAuthHook.class);
-            for (Class<? extends BukkitAuthPlugin> clazz : supportedHooks) {
-                String pluginName = clazz.getSimpleName().replace("Hook", "");
-                //uses only member classes which uses AuthPlugin interface (skip interfaces)
-                if (getServer().getPluginManager().getPlugin(pluginName) != null) {
-                    //check only for enabled plugins. A single plugin could be disabled by plugin managers
-                    authPluginHook = clazz.newInstance();
-                    getLogger().log(Level.INFO, "Hooking into auth plugin: {0}", pluginName);
-                    break;
-                }
-            }
-        } catch (InstantiationException | IllegalAccessException ex) {
-            getLogger().log(Level.SEVERE, "Couldn't load the integration class", ex);
-        }
-
-        if (authPluginHook == null) {
-            //run this check for exceptions (errors) and not found plugins
-            getLogger().warning("No support offline Auth plugin found. ");
-            return false;
-        }
-
-        authPlugin = authPluginHook;
-        return true;
     }
 
     public boolean isBungeeCord() {

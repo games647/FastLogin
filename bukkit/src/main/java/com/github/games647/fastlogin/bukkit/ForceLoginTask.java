@@ -1,6 +1,8 @@
 package com.github.games647.fastlogin.bukkit;
 
 import com.github.games647.fastlogin.bukkit.hooks.BukkitAuthPlugin;
+import com.github.games647.fastlogin.core.PlayerProfile;
+import com.github.games647.fastlogin.core.Storage;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 
@@ -35,7 +37,7 @@ public class ForceLoginTask implements Runnable {
 
         BukkitAuthPlugin authPlugin = plugin.getAuthPlugin();
 
-        Storage storage = plugin.getStorage();
+        Storage storage = plugin.getCore().getStorage();
         PlayerProfile playerProfile = null;
         if (storage != null) {
             playerProfile = storage.getProfile(player.getName(), false);

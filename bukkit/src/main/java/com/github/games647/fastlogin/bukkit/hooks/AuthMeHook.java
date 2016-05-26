@@ -30,9 +30,7 @@ public class AuthMeHook implements BukkitAuthPlugin {
         } else {
             API.forceLogin(player);
         }
-
-        //commented because the operation above is performed async -> race conditions
-//        return NewAPI.getInstance().isAuthenticated(player);
+        
         return true;
     }
 

@@ -41,7 +41,6 @@ public class BukkitJoinListener implements Listener {
     public void onPlayerJoin(PlayerJoinEvent joinEvent) {
         Player player = joinEvent.getPlayer();
 
-        //removing the session because we now use it
         PlayerSession session = plugin.getSessions().get(player.getAddress().toString());
         if (session != null && plugin.getConfig().getBoolean("forwardSkin")) {
             WrappedGameProfile gameProfile = WrappedGameProfile.fromPlayer(player);

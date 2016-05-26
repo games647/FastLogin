@@ -1,5 +1,6 @@
 package com.github.games647.fastlogin.bungee;
 
+import com.github.games647.fastlogin.core.PlayerProfile;
 import com.github.games647.fastlogin.bungee.hooks.BungeeAuthPlugin;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
@@ -23,7 +24,7 @@ public class ForceLoginTask implements Runnable {
 
     @Override
     public void run() {
-        PlayerProfile playerProfile = plugin.getStorage().getProfile(player.getName(), false);
+        PlayerProfile playerProfile = plugin.getCore().getStorage().getProfile(player.getName(), false);
 
         //force login only on success
         if (player.getPendingConnection().isOnlineMode()) {
@@ -46,7 +47,7 @@ public class ForceLoginTask implements Runnable {
             //cracked player
             //update only on success to prevent corrupt data
             playerProfile.setPremium(false);
-            plugin.getStorage().save(playerProfile);
+            plugin.getCore().getStorage().save(playerProfile);
         }
     }
 

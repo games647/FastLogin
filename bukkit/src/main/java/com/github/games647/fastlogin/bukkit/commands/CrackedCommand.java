@@ -1,7 +1,7 @@
 package com.github.games647.fastlogin.bukkit.commands;
 
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
-import com.github.games647.fastlogin.bukkit.PlayerProfile;
+import com.github.games647.fastlogin.core.PlayerProfile;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 
@@ -34,7 +34,7 @@ public class CrackedCommand implements CommandExecutor {
                 sender.sendMessage(ChatColor.YELLOW + "Sending request...");
             } else {
                 //todo: load async if it's not in the cache anymore
-                final PlayerProfile profile = plugin.getStorage().getProfile(sender.getName(), true);
+                final PlayerProfile profile = plugin.getCore().getStorage().getProfile(sender.getName(), true);
                 if (profile.isPremium()) {
                     sender.sendMessage(ChatColor.DARK_GREEN + "Removed from the list of premium players");
                     profile.setPremium(false);
@@ -42,7 +42,7 @@ public class CrackedCommand implements CommandExecutor {
                     Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
                         @Override
                         public void run() {
-                            plugin.getStorage().save(profile);
+                            plugin.getCore().getStorage().save(profile);
                         }
                     });
                 } else {
@@ -62,7 +62,7 @@ public class CrackedCommand implements CommandExecutor {
                 sender.sendMessage(ChatColor.YELLOW + "Sending request for player " + args[0] + "...");
             } else {
                 //todo: load async if it's not in the cache anymore
-                final PlayerProfile profile = plugin.getStorage().getProfile(args[0], true);
+                final PlayerProfile profile = plugin.getCore().getStorage().getProfile(args[0], true);
                 if (profile == null) {
                     sender.sendMessage(ChatColor.DARK_RED + "Player not in the database");
                     return true;
@@ -75,7 +75,7 @@ public class CrackedCommand implements CommandExecutor {
                     Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
                         @Override
                         public void run() {
-                            plugin.getStorage().save(profile);
+                            plugin.getCore().getStorage().save(profile);
                         }
                     });
                 } else {

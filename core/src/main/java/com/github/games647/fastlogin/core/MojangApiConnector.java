@@ -1,6 +1,4 @@
-package com.github.games647.fastlogin.bungee;
-
-import com.google.gson.Gson;
+package com.github.games647.fastlogin.core;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -11,16 +9,11 @@ import java.util.UUID;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
 
-import net.md_5.bungee.BungeeCord;
-
-public class MojangApiConnector {
+public abstract class MojangApiConnector {
 
     //http connection, read timeout and user agent for a connection to mojang api servers
     private static final int TIMEOUT = 1 * 1_000;
     private static final String USER_AGENT = "Premium-Checker";
-
-    //mojang api check to prove a player is logged in minecraft and made a join server request
-    private static final String HAS_JOINED_URL = "https://sessionserver.mojang.com/session/minecraft/hasJoined?";
 
     //only premium (paid account) users have a uuid from here
     private static final String UUID_LINK = "https://api.mojang.com/users/profiles/minecraft/";
@@ -30,11 +23,9 @@ public class MojangApiConnector {
     //compile the pattern only on plugin enable -> and this have to be threadsafe
     private final Pattern playernameMatcher = Pattern.compile(VALID_PLAYERNAME);
 
-    private final FastLoginBungee plugin;
+    protected final FastLoginCore plugin;
 
-    private final Gson gson = new Gson();
-
-    public MojangApiConnector(FastLoginBungee plugin) {
+    public MojangApiConnector(FastLoginCore plugin) {
         this.plugin = plugin;
     }
 
@@ -53,8 +44,7 @@ public class MojangApiConnector {
                     BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
                     String line = reader.readLine();
                     if (line != null && !line.equals("null")) {
-                        MojangPlayer mojangPlayer = BungeeCord.getInstance().gson.fromJson(line, MojangPlayer.class);
-                        return FastLoginBungee.parseId(mojangPlayer.getId());
+                        return getUUIDFromJson(line);
                     }
                 }
                 //204 - no content for not found
@@ -67,10 +57,14 @@ public class MojangApiConnector {
         return null;
     }
 
-    private HttpURLConnection getConnection(String url) throws IOException {
+    public abstract boolean hasJoinedServer(Object session, String serverId);
+
+    protected abstract UUID getUUIDFromJson(String json);
+
+    protected HttpURLConnection getConnection(String url) throws IOException {
         HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
         connection.setConnectTimeout(TIMEOUT);
-        connection.setReadTimeout(TIMEOUT);
+        connection.setReadTimeout(2 * TIMEOUT);
         //the new Mojang API just uses json as response
         connection.setRequestProperty("Content-Type", "application/json");
         connection.setRequestProperty("User-Agent", USER_AGENT);

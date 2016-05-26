@@ -1,9 +1,10 @@
 package com.github.games647.fastlogin.bungee;
 
-import com.github.games647.fastlogin.bungee.listener.PlayerConnectionListener;
 import com.github.games647.fastlogin.bungee.hooks.BungeeAuthHook;
 import com.github.games647.fastlogin.bungee.hooks.BungeeAuthPlugin;
+import com.github.games647.fastlogin.bungee.listener.PlayerConnectionListener;
 import com.github.games647.fastlogin.bungee.listener.PluginMessageListener;
+import com.github.games647.fastlogin.core.FastLoginCore;
 import com.google.common.cache.CacheBuilder;
 
 import java.io.File;
@@ -11,12 +12,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.util.Random;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
-import net.md_5.bungee.Util;
 import net.md_5.bungee.api.connection.PendingConnection;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.config.Configuration;
@@ -28,16 +27,11 @@ import net.md_5.bungee.config.YamlConfiguration;
  */
 public class FastLoginBungee extends Plugin {
 
-    private static final char[] CHARACTERS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+    private static final char[] PASSWORD_CHARACTERS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
             .toCharArray();
 
-    public static UUID parseId(String withoutDashes) {
-        return Util.getUUID(withoutDashes);
-    }
-
+    private final FastLoginCore loginCore = new BungeeCore(this);
     private BungeeAuthPlugin bungeeAuthPlugin;
-    private final MojangApiConnector mojangApiConnector = new MojangApiConnector(this);
-    private Storage storage;
     private Configuration configuration;
 
     private final Random random = new Random();
@@ -49,6 +43,8 @@ public class FastLoginBungee extends Plugin {
 
     @Override
     public void onEnable() {
+        loginCore.setMojangApiConnector(new MojangApiBungee(loginCore));
+
         if (!getDataFolder().exists()) {
             getDataFolder().mkdir();
         }
@@ -72,14 +68,9 @@ public class FastLoginBungee extends Plugin {
 
             String username = configuration.getString("username", "");
             String password = configuration.getString("password", "");
-            storage = new Storage(this, driver, host, port, database, username, password);
-            try {
-                storage.createTables();
-            } catch (Exception ex) {
-                getLogger().log(Level.SEVERE, "Failed to setup database. Disabling plugin...", ex);
+            if (!loginCore.setupDatabase(driver, host, port, database, username, password)) {
                 return;
             }
-
         } catch (IOException ioExc) {
             getLogger().log(Level.SEVERE, "Error loading config. Disabling plugin...", ioExc);
             return;
@@ -98,7 +89,7 @@ public class FastLoginBungee extends Plugin {
     public String generateStringPassword() {
         StringBuilder generatedPassword = new StringBuilder(8);
         for (int i = 1; i <= 8; i++) {
-            generatedPassword.append(CHARACTERS[random.nextInt(CHARACTERS.length - 1)]);
+            generatedPassword.append(PASSWORD_CHARACTERS[random.nextInt(PASSWORD_CHARACTERS.length - 1)]);
         }
 
         return generatedPassword.toString();
@@ -106,21 +97,19 @@ public class FastLoginBungee extends Plugin {
 
     @Override
     public void onDisable() {
-        if (storage != null) {
-            storage.close();
-        }
+        loginCore.close();
+    }
+
+    public FastLoginCore getCore() {
+        return loginCore;
+    }
+
+    public void setAuthPluginHook(BungeeAuthPlugin authPlugin) {
+        this.bungeeAuthPlugin = authPlugin;
     }
 
     public Configuration getConfiguration() {
         return configuration;
-    }
-
-    public Storage getStorage() {
-        return storage;
-    }
-
-    public MojangApiConnector getMojangApiConnector() {
-        return mojangApiConnector;
     }
 
     public ConcurrentMap<PendingConnection, Object> getPendingAutoRegister() {

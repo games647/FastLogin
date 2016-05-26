@@ -1,4 +1,4 @@
-package com.github.games647.fastlogin.bukkit.listener;
+package com.github.games647.fastlogin.bukkit.listener.packet;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolManager;
@@ -71,7 +71,6 @@ public class EncryptionPacketListener extends PacketAdapter {
      */
     @Override
     public void onPacketReceiving(PacketEvent packetEvent) {
-        System.out.println("ENCRYPTION REQUEST");
         Player player = packetEvent.getPlayer();
 
         //the player name is unknown to ProtocolLib (so getName() doesn't work) - now uses ip:port as key
@@ -102,7 +101,7 @@ public class EncryptionPacketListener extends PacketAdapter {
         String serverId = (new BigInteger(serverIdHash)).toString(16);
 
         String username = session.getUsername();
-        if (plugin.getApiConnector().hasJoinedServer(session, serverId)) {
+        if (plugin.getCore().getMojangApiConnector().hasJoinedServer(session, serverId)) {
             plugin.getLogger().log(Level.FINE, "Player {0} has a verified premium account", username);
 
             session.setVerified(true);

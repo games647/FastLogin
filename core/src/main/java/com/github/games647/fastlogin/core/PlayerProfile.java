@@ -1,4 +1,4 @@
-package com.github.games647.fastlogin.bungee;
+package com.github.games647.fastlogin.core;
 
 import java.util.UUID;
 
@@ -40,7 +40,7 @@ public class PlayerProfile {
         return userId;
     }
 
-    protected synchronized void setUserId(long generatedId) {
+    public synchronized void setUserId(long generatedId) {
         this.userId = generatedId;
     }
 
