@@ -2,9 +2,12 @@ package com.github.games647.fastlogin.bungee;
 
 import com.github.games647.fastlogin.bungee.FastLoginBungee;
 import com.github.games647.fastlogin.bungee.hooks.BungeeAuthPlugin;
+import com.github.games647.fastlogin.core.LoginSession;
 import com.github.games647.fastlogin.core.PlayerProfile;
+
 import java.util.UUID;
 import java.util.logging.Level;
+
 import net.md_5.bungee.api.connection.PendingConnection;
 import net.md_5.bungee.api.event.PreLoginEvent;
 
@@ -21,15 +24,18 @@ public class AsyncPremiumCheck implements Runnable {
     @Override
     public void run() {
         PendingConnection connection = preLoginEvent.getConnection();
+        plugin.getSession().remove(connection);
+
         String username = connection.getName();
         try {
-            PlayerProfile playerProfile = plugin.getCore().getStorage().getProfile(username, true);
-            if (playerProfile != null) {
-                if (playerProfile.isPremium()) {
-                    if (playerProfile.getUserId() != -1) {
+            PlayerProfile profile = plugin.getCore().getStorage().loadProfile(username);
+            if (profile != null) {
+                if (profile.isPremium()) {
+                    if (profile.getUserId() != -1) {
+                        plugin.getSession().put(connection, new LoginSession(username, true, profile));
                         connection.setOnlineMode(true);
                     }
-                } else if (playerProfile.getUserId() == -1) {
+                } else if (profile.getUserId() == -1) {
                     //user not exists in the db
                     BungeeAuthPlugin authPlugin = plugin.getBungeeAuthPlugin();
                     if (plugin.getConfiguration().getBoolean("autoRegister")
@@ -38,7 +44,7 @@ public class AsyncPremiumCheck implements Runnable {
                         if (premiumUUID != null) {
                             plugin.getLogger().log(Level.FINER, "Player {0} uses a premium username", username);
                             connection.setOnlineMode(true);
-                            plugin.getPendingAutoRegister().put(connection, new Object());
+                            plugin.getSession().put(connection, new LoginSession(username, false, profile));
                         }
                     }
                 }

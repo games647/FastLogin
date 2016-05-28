@@ -25,11 +25,11 @@ public class MojangApiBukkit extends MojangApiConnector {
 
     @Override
     public boolean hasJoinedServer(Object session, String serverId) {
-        if (!(session instanceof PlayerSession)) {
+        if (!(session instanceof BukkitLoginSession)) {
             return false;
         }
 
-        PlayerSession playerSession = (PlayerSession) session;
+        BukkitLoginSession playerSession = (BukkitLoginSession) session;
         try {
             String url = HAS_JOINED_URL + "username=" + playerSession.getUsername() + "&serverId=" + serverId;
             HttpURLConnection conn = getConnection(url);

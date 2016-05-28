@@ -1,7 +1,7 @@
 package com.github.games647.fastlogin.bukkit.listener;
 
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
-import com.github.games647.fastlogin.bukkit.PlayerSession;
+import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
 import com.github.games647.fastlogin.bukkit.hooks.BukkitAuthPlugin;
 import com.github.games647.fastlogin.core.PlayerProfile;
 
@@ -33,18 +33,18 @@ public class ProtocolSupportListener implements Listener {
         String username = loginStartEvent.getName();
 
         //remove old data every time on a new login in order to keep the session only for one person
-        plugin.getSessions().remove(username);
+        plugin.getSessions().remove(loginStartEvent.getAddress().toString());
 
         BukkitAuthPlugin authPlugin = plugin.getAuthPlugin();
         if (authPlugin == null) {
             return;
         }
 
-        PlayerProfile playerProfile = plugin.getCore().getStorage().getProfile(username, true);
+        PlayerProfile playerProfile = plugin.getCore().getStorage().loadProfile(username);
         if (playerProfile != null) {
             if (playerProfile.isPremium()) {
                 if (playerProfile.getUserId() != -1) {
-                    startPremiumSession(username, loginStartEvent, true);
+                    startPremiumSession(username, loginStartEvent, true, playerProfile);
                 }
             } else if (playerProfile.getUserId() == -1) {
                 //user not exists in the db
@@ -53,7 +53,7 @@ public class ProtocolSupportListener implements Listener {
                         UUID premiumUUID = plugin.getCore().getMojangApiConnector().getPremiumUUID(username);
                         if (premiumUUID != null) {
                             plugin.getLogger().log(Level.FINER, "Player {0} uses a premium username", username);
-                            startPremiumSession(username, loginStartEvent, false);
+                            startPremiumSession(username, loginStartEvent, false, playerProfile);
                         }
                     }
                 } catch (Exception ex) {
@@ -68,19 +68,19 @@ public class ProtocolSupportListener implements Listener {
         //skin was resolved -> premium player
         if (propertiesResolveEvent.hasProperty("textures")) {
             InetSocketAddress address = propertiesResolveEvent.getAddress();
-            PlayerSession session = plugin.getSessions().get(address.toString());
+            BukkitLoginSession session = plugin.getSessions().get(address.toString());
             if (session != null) {
                 session.setVerified(true);
             }
         }
     }
 
-    private void startPremiumSession(String playerName, PlayerLoginStartEvent loginStartEvent, boolean registered) {
+    private void startPremiumSession(String playerName, PlayerLoginStartEvent loginStartEvent, boolean registered
+            , PlayerProfile playerProfile) {
         loginStartEvent.setOnlineMode(true);
         InetSocketAddress address = loginStartEvent.getAddress();
 
-        PlayerSession playerSession = new PlayerSession(playerName, null, null);
-        playerSession.setRegistered(registered);
+        BukkitLoginSession playerSession = new BukkitLoginSession(playerName, null, null, registered, playerProfile);
         plugin.getSessions().put(address.toString(), playerSession);
         if (plugin.getConfig().getBoolean("premiumUuid")) {
             loginStartEvent.setUseOnlineModeUUID(true);

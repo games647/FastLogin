@@ -9,7 +9,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentMap;
 import java.util.logging.Level;
 
 public class Storage {
@@ -17,13 +16,11 @@ public class Storage {
     private static final String PREMIUM_TABLE = "premium";
 
     private final FastLoginCore core;
-    private final ConcurrentMap<String, PlayerProfile> profileCache;
     private final HikariDataSource dataSource;
 
     public Storage(FastLoginCore core, String driver, String host, int port, String databasePath
             , String user, String pass) {
         this.core = core;
-        this.profileCache = core.buildCache();
 
         HikariConfig databaseConfig = new HikariConfig();
         databaseConfig.setUsername(user);
@@ -32,6 +29,8 @@ public class Storage {
         databaseConfig.setThreadFactory(core.getThreadFactory());
 
         databasePath = databasePath.replace("{pluginDir}", core.getDataFolder().getAbsolutePath());
+
+        databaseConfig.setThreadFactory(core.getThreadFactory());
 
         String jdbcUrl = "jdbc:";
         if (driver.contains("sqlite")) {
@@ -51,15 +50,15 @@ public class Storage {
             con = dataSource.getConnection();
             Statement statement = con.createStatement();
             String createDataStmt = "CREATE TABLE IF NOT EXISTS " + PREMIUM_TABLE + " ("
-                    + "`UserID` INTEGER PRIMARY KEY AUTO_INCREMENT, "
-                    + "`UUID` CHAR(36), "
-                    + "`Name` VARCHAR(16) NOT NULL, "
-                    + "`Premium` BOOLEAN NOT NULL, "
-                    + "`LastIp` VARCHAR(255) NOT NULL, "
-                    + "`LastLogin` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
-                    + "UNIQUE (`UUID`), "
+                    + "UserID INTEGER PRIMARY KEY AUTO_INCREMENT, "
+                    + "UUID CHAR(36), "
+                    + "Name VARCHAR(16) NOT NULL, "
+                    + "Premium BOOLEAN NOT NULL, "
+                    + "LastIp VARCHAR(255) NOT NULL, "
+                    + "LastLogin TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
+                    + "UNIQUE (UUID), "
                     //the premium shouldn't steal the cracked account by changing the name
-                    + "UNIQUE (`Name`) "
+                    + "UNIQUE (Name) "
                     + ")";
 
             if (dataSource.getJdbcUrl().contains("sqlite")) {
@@ -72,46 +71,39 @@ public class Storage {
         }
     }
 
-    public PlayerProfile getProfile(String name, boolean fetch) {
-        if (profileCache.containsKey(name)) {
-            return profileCache.get(name);
-        } else if (fetch) {
-            Connection con = null;
-            try {
-                con = dataSource.getConnection();
-                PreparedStatement loadStatement = con.prepareStatement("SELECT * FROM " + PREMIUM_TABLE
-                        + " WHERE `Name`=? LIMIT 1");
-                loadStatement.setString(1, name);
+    public PlayerProfile loadProfile(String name) {
+        Connection con = null;
+        try {
+            con = dataSource.getConnection();
+            PreparedStatement loadStatement = con.prepareStatement("SELECT * FROM " + PREMIUM_TABLE
+                    + " WHERE Name=? LIMIT 1");
+            loadStatement.setString(1, name);
 
-                ResultSet resultSet = loadStatement.executeQuery();
-                if (resultSet.next()) {
-                    long userId = resultSet.getInt(1);
+            ResultSet resultSet = loadStatement.executeQuery();
+            if (resultSet.next()) {
+                long userId = resultSet.getInt(1);
 
-                    String unparsedUUID = resultSet.getString(2);
-                    UUID uuid;
-                    if (unparsedUUID == null) {
-                        uuid = null;
-                    } else {
-                        uuid = FastLoginCore.parseId(unparsedUUID);
-                    }
-
-//                    String name = resultSet.getString(3);
-                    boolean premium = resultSet.getBoolean(4);
-                    String lastIp = resultSet.getString(5);
-                    long lastLogin = resultSet.getTimestamp(6).getTime();
-                    PlayerProfile playerProfile = new PlayerProfile(userId, uuid, name, premium, lastIp, lastLogin);
-                    profileCache.put(name, playerProfile);
-                    return playerProfile;
+                String unparsedUUID = resultSet.getString(2);
+                UUID uuid;
+                if (unparsedUUID == null) {
+                    uuid = null;
                 } else {
-                    PlayerProfile crackedProfile = new PlayerProfile(null, name, false, "");
-                    profileCache.put(name, crackedProfile);
-                    return crackedProfile;
+                    uuid = FastLoginCore.parseId(unparsedUUID);
                 }
-            } catch (SQLException sqlEx) {
-                core.getLogger().log(Level.SEVERE, "Failed to query profile", sqlEx);
-            } finally {
-                closeQuietly(con);
+
+                boolean premium = resultSet.getBoolean(4);
+                String lastIp = resultSet.getString(5);
+                long lastLogin = resultSet.getTimestamp(6).getTime();
+                PlayerProfile playerProfile = new PlayerProfile(userId, uuid, name, premium, lastIp, lastLogin);
+                return playerProfile;
+            } else {
+                PlayerProfile crackedProfile = new PlayerProfile(null, name, false, "");
+                return crackedProfile;
             }
+        } catch (SQLException sqlEx) {
+            core.getLogger().log(Level.SEVERE, "Failed to query profile", sqlEx);
+        } finally {
+            closeQuietly(con);
         }
 
         return null;
@@ -156,7 +148,6 @@ public class Storage {
                 saveStatement.setString(2, playerProfile.getPlayerName());
                 saveStatement.setBoolean(3, playerProfile.isPremium());
                 saveStatement.setString(4, playerProfile.getLastIp());
-//                saveStatement.setTimestamp(5, new Timestamp(playerProfile.getLastLogin()));
 
                 saveStatement.setLong(5, playerProfile.getUserId());
                 saveStatement.execute();
@@ -174,7 +165,6 @@ public class Storage {
 
     public void close() {
         dataSource.close();
-        profileCache.clear();
     }
 
     private void closeQuietly(Connection con) {

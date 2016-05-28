@@ -40,14 +40,14 @@ public class FastLoginBukkit extends JavaPlugin {
 
     //this map is thread-safe for async access (Packet Listener)
     //SafeCacheBuilder is used in order to be version independent
-    private final ConcurrentMap<String, PlayerSession> session = SafeCacheBuilder.<String, PlayerSession>newBuilder()
+    private final ConcurrentMap<String, BukkitLoginSession> session = SafeCacheBuilder.<String, BukkitLoginSession>newBuilder()
             //2 minutes should be enough as a timeout for bad internet connection (Server, Client and Mojang)
             .expireAfterWrite(1, TimeUnit.MINUTES)
             //mapped by ip:port -> PlayerSession
-            .build(new CacheLoader<String, PlayerSession>() {
+            .build(new CacheLoader<String, BukkitLoginSession>() {
 
                 @Override
-                public PlayerSession load(String key) throws Exception {
+                public BukkitLoginSession load(String key) throws Exception {
                     //A key should be inserted manually on start packet
                     throw new UnsupportedOperationException("Not supported");
                 }
@@ -158,7 +158,7 @@ public class FastLoginBukkit extends JavaPlugin {
      *
      * @return a thread-safe session map
      */
-    public ConcurrentMap<String, PlayerSession> getSessions() {
+    public ConcurrentMap<String, BukkitLoginSession> getSessions() {
         return session;
     }
 

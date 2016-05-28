@@ -1,14 +1,10 @@
 package com.github.games647.fastlogin.bungee;
 
 import com.github.games647.fastlogin.core.FastLoginCore;
-import com.github.games647.fastlogin.core.PlayerProfile;
-import com.google.common.cache.CacheBuilder;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 import java.io.File;
-import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 import net.md_5.bungee.api.scheduler.GroupedThreadFactory;
@@ -29,15 +25,6 @@ public class BungeeCore extends FastLoginCore {
     @Override
     public Logger getLogger() {
         return plugin.getLogger();
-    }
-
-    @Override
-    public ConcurrentMap<String, PlayerProfile> buildCache() {
-        return CacheBuilder
-                .newBuilder()
-                .concurrencyLevel(20)
-                .expireAfterAccess(30, TimeUnit.MINUTES)
-                .<String, PlayerProfile>build().asMap();
     }
 
     @Override

@@ -3,6 +3,7 @@ package com.github.games647.fastlogin.bungee.listener;
 import com.github.games647.fastlogin.bungee.AsyncPremiumCheck;
 import com.github.games647.fastlogin.bungee.FastLoginBungee;
 import com.github.games647.fastlogin.bungee.ForceLoginTask;
+import com.github.games647.fastlogin.core.LoginSession;
 import com.github.games647.fastlogin.core.PlayerProfile;
 import com.google.common.base.Charsets;
 
@@ -51,7 +52,8 @@ public class PlayerConnectionListener implements Listener {
         PendingConnection connection = player.getPendingConnection();
         String username = connection.getName();
         if (connection.isOnlineMode()) {
-            PlayerProfile playerProfile = plugin.getCore().getStorage().getProfile(player.getName(), false);
+            LoginSession session = plugin.getSession().get(connection);
+            PlayerProfile playerProfile = session.getProfile();
             playerProfile.setUuid(player.getUniqueId());
 
             //bungeecord will do this automatically so override it on disabled option

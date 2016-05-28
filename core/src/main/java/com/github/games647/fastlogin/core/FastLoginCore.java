@@ -2,7 +2,6 @@ package com.github.games647.fastlogin.core;
 
 import java.io.File;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ThreadFactory;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -35,8 +34,6 @@ public abstract class FastLoginCore {
     public abstract File getDataFolder();
 
     public abstract Logger getLogger();
-
-    public abstract ConcurrentMap<String, PlayerProfile> buildCache();
 
     public abstract ThreadFactory getThreadFactory();
 

@@ -1,3 +1,8 @@
+######1.4
+
+* Added Bungee setAuthPlugin method
+* Multiple BungeeCord support
+
 ######1.3.1
 
 * Prevent thread create violation in BungeeCord

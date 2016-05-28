@@ -1,11 +1,13 @@
 package com.github.games647.fastlogin.bungee;
 
-import com.github.games647.fastlogin.core.PlayerProfile;
 import com.github.games647.fastlogin.bungee.hooks.BungeeAuthPlugin;
+import com.github.games647.fastlogin.core.LoginSession;
+import com.github.games647.fastlogin.core.PlayerProfile;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 
 import java.util.UUID;
+import net.md_5.bungee.api.connection.PendingConnection;
 
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.connection.Server;
@@ -24,17 +26,19 @@ public class ForceLoginTask implements Runnable {
 
     @Override
     public void run() {
-        PlayerProfile playerProfile = plugin.getCore().getStorage().getProfile(player.getName(), false);
+        PendingConnection pendingConnection = player.getPendingConnection();
+        LoginSession session = plugin.getSession().remove(pendingConnection);
+        PlayerProfile playerProfile = session.getProfile();
 
         //force login only on success
-        if (player.getPendingConnection().isOnlineMode()) {
-            boolean autoRegister = plugin.getPendingAutoRegister().remove(player.getPendingConnection()) != null;
+        if (pendingConnection.isOnlineMode()) {
+            boolean autoRegister = session.needsRegistration();
 
             BungeeAuthPlugin authPlugin = plugin.getBungeeAuthPlugin();
             if (authPlugin == null) {
                 sendBukkitLoginNotification(autoRegister);
             } else if (player.isConnected()) {
-                if (autoRegister) {
+                if (session.needsRegistration()) {
                     String password = plugin.generateStringPassword();
                     if (authPlugin.forceRegister(player, password)) {
                         sendBukkitLoginNotification(autoRegister);

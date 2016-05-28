@@ -57,7 +57,7 @@ public class PluginMessageListener implements Listener {
             if (fromPlayer.getPendingConnection().isOnlineMode()) {
                 //bukkit module successfully received and force logged in the user
                 //update only on success to prevent corrupt data
-                PlayerProfile playerProfile = plugin.getCore().getStorage().getProfile(fromPlayer.getName(), false);
+                PlayerProfile playerProfile = plugin.getCore().getStorage().loadProfile(fromPlayer.getName());
                 playerProfile.setPremium(true);
                 //we override this in the loginevent
                 plugin.getCore().getStorage().save(playerProfile);

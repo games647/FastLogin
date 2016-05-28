@@ -1,6 +1,8 @@
 package com.github.games647.fastlogin.bukkit;
 
 import com.comphenix.protocol.wrappers.WrappedSignedProperty;
+import com.github.games647.fastlogin.core.LoginSession;
+import com.github.games647.fastlogin.core.PlayerProfile;
 
 import java.util.UUID;
 
@@ -11,33 +13,32 @@ import org.apache.commons.lang.ArrayUtils;
  *
  * This session is invalid if the player disconnects or the login was successful
  */
-public class PlayerSession {
+public class BukkitLoginSession extends LoginSession {
 
-    private final String username;
     private final String serverId;
     private final byte[] verifyToken;
 
     private UUID uuid;
     private WrappedSignedProperty skinProperty;
     private boolean verified;
-    private boolean registered;
 
-    public PlayerSession(String username, String serverId, byte[] verifyToken) {
-        this.username = username;
+    public BukkitLoginSession(String username, String serverId, byte[] verifyToken, boolean registered
+            , PlayerProfile profile) {
+        super(username, registered, profile);
+
         this.serverId = serverId;
         this.verifyToken = ArrayUtils.clone(verifyToken);
     }
 
-    public PlayerSession(String username) {
-        this(username, "", ArrayUtils.EMPTY_BYTE_ARRAY);
+    //available for bungeecord
+    public BukkitLoginSession(String username, boolean registered) {
+        this(username, "", ArrayUtils.EMPTY_BYTE_ARRAY, registered, null);
     }
 
     /**
-     * Gets the random generated server id. This makes sure the request
-     * sent from the client is just for this server.
+     * Gets the random generated server id. This makes sure the request sent from the client is just for this server.
      *
-     * See this for details
-     * http://www.sk89q.com/2011/09/minecraft-name-spoofing-exploit/
+     * See this for details http://www.sk89q.com/2011/09/minecraft-name-spoofing-exploit/
      *
      * Empty if it's a BungeeCord connection
      *
@@ -59,15 +60,6 @@ public class PlayerSession {
     }
 
     /**
-     * Gets the username the player sent to the server
-     *
-     * @return the client sent username
-     */
-    public String getUsername() {
-        return username;
-    }
-
-    /**
      * Gets the premium skin of this player
      *
      * @return skin property or null if the player has no skin or is a cracked account
@@ -86,26 +78,7 @@ public class PlayerSession {
     }
 
     /**
-     * Sets whether the account of this player already exists
-     *
-     * @param registered whether the account exists
-     */
-    public synchronized void setRegistered(boolean registered) {
-        this.registered = registered;
-    }
-
-    /**
-     * Gets whether the account of this player already exists.
-     *
-     * @return whether the account exists
-     */
-    public synchronized boolean needsRegistration() {
-        return !registered;
-    }
-
-    /**
-     * Sets whether the player has a premium (paid account) account
-     * and valid session
+     * Sets whether the player has a premium (paid account) account and valid session
      *
      * @param verified whether the player has valid session
      */
@@ -122,7 +95,6 @@ public class PlayerSession {
         return uuid;
     }
 
-
     /**
      * Set the online UUID if it's fetched
      *
@@ -133,8 +105,7 @@ public class PlayerSession {
     }
 
     /**
-     * Get whether the player has a premium (paid account) account
-     * and valid session
+     * Get whether the player has a premium (paid account) account and valid session
      *
      * @return whether the player has a valid session
      */

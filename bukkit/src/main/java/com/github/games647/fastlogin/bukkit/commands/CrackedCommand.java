@@ -34,7 +34,7 @@ public class CrackedCommand implements CommandExecutor {
                 sender.sendMessage(ChatColor.YELLOW + "Sending request...");
             } else {
                 //todo: load async if it's not in the cache anymore
-                final PlayerProfile profile = plugin.getCore().getStorage().getProfile(sender.getName(), true);
+                final PlayerProfile profile = plugin.getCore().getStorage().loadProfile(sender.getName());
                 if (profile.isPremium()) {
                     sender.sendMessage(ChatColor.DARK_GREEN + "Removed from the list of premium players");
                     profile.setPremium(false);
@@ -62,7 +62,7 @@ public class CrackedCommand implements CommandExecutor {
                 sender.sendMessage(ChatColor.YELLOW + "Sending request for player " + args[0] + "...");
             } else {
                 //todo: load async if it's not in the cache anymore
-                final PlayerProfile profile = plugin.getCore().getStorage().getProfile(args[0], true);
+                final PlayerProfile profile = plugin.getCore().getStorage().loadProfile(args[0]);
                 if (profile == null) {
                     sender.sendMessage(ChatColor.DARK_RED + "Player not in the database");
                     return true;

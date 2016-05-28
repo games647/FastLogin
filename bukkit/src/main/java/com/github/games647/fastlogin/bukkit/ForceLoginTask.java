@@ -17,7 +17,7 @@ import org.bukkit.entity.Player;
 
 public class ForceLoginTask implements Runnable {
 
-    protected final FastLoginBukkit plugin;
+    private final FastLoginBukkit plugin;
     protected final Player player;
 
     public ForceLoginTask(FastLoginBukkit plugin, Player player) {
@@ -33,14 +33,12 @@ public class ForceLoginTask implements Runnable {
 
         //remove the bungeecord identifier if there is ones
         String id = '/' + player.getAddress().getAddress().getHostAddress() + ':' + player.getAddress().getPort();
-        PlayerSession session = plugin.getSessions().get(id);
-
-        BukkitAuthPlugin authPlugin = plugin.getAuthPlugin();
+        BukkitLoginSession session = plugin.getSessions().remove(id);
 
         Storage storage = plugin.getCore().getStorage();
         PlayerProfile playerProfile = null;
-        if (storage != null) {
-            playerProfile = storage.getProfile(player.getName(), false);
+        if (session != null) {
+            playerProfile = session.getProfile();
         }
 
         if (session == null) {
@@ -53,6 +51,7 @@ public class ForceLoginTask implements Runnable {
             //check if it's the same player as we checked before
         } else if (player.getName().equals(session.getUsername())) {
             //premium player
+            BukkitAuthPlugin authPlugin = plugin.getAuthPlugin();
             if (authPlugin == null) {
                 //maybe only bungeecord plugin
                 sendSuccessNotification();

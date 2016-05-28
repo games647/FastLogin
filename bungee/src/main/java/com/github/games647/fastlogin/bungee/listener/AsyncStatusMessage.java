@@ -14,7 +14,8 @@ public class AsyncStatusMessage implements Runnable {
     private final String targetPlayer;
     private final boolean toPremium;
 
-    public AsyncStatusMessage(FastLoginBungee plugin, ProxiedPlayer fromPlayer, String targetPlayer, boolean toPremium) {
+    public AsyncStatusMessage(FastLoginBungee plugin, ProxiedPlayer fromPlayer, String targetPlayer
+            , boolean toPremium) {
         this.plugin = plugin;
         this.fromPlayer = fromPlayer;
         this.targetPlayer = targetPlayer;
@@ -31,7 +32,7 @@ public class AsyncStatusMessage implements Runnable {
     }
 
     private void turnOffPremium() {
-        PlayerProfile playerProfile = plugin.getCore().getStorage().getProfile(targetPlayer, true);
+        PlayerProfile playerProfile = plugin.getCore().getStorage().loadProfile(targetPlayer);
         if (!playerProfile.isPremium()) {
             if (fromPlayer.isConnected()) {
                 TextComponent textComponent = new TextComponent("You are not in the premium list");
@@ -51,7 +52,7 @@ public class AsyncStatusMessage implements Runnable {
     }
 
     private void activatePremium() {
-        PlayerProfile playerProfile = plugin.getCore().getStorage().getProfile(targetPlayer, true);
+        PlayerProfile playerProfile = plugin.getCore().getStorage().loadProfile(targetPlayer);
         if (playerProfile.isPremium()) {
             if (fromPlayer.isConnected()) {
                 TextComponent textComponent = new TextComponent("You are already on the premium list");
@@ -63,7 +64,6 @@ public class AsyncStatusMessage implements Runnable {
         }
 
         playerProfile.setPremium(true);
-        //todo: set uuid
         plugin.getCore().getStorage().save(playerProfile);
         TextComponent textComponent = new TextComponent("Added to the list of premium players");
         textComponent.setColor(ChatColor.DARK_GREEN);

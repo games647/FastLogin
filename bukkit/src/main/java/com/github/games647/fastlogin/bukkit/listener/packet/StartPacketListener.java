@@ -6,9 +6,9 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
-import com.github.games647.fastlogin.core.PlayerProfile;
-import com.github.games647.fastlogin.bukkit.PlayerSession;
+import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
 import com.github.games647.fastlogin.bukkit.hooks.BukkitAuthPlugin;
+import com.github.games647.fastlogin.core.PlayerProfile;
 
 import java.lang.reflect.InvocationTargetException;
 import java.security.PublicKey;
@@ -83,20 +83,20 @@ public class StartPacketListener extends PacketAdapter {
             return;
         }
 
-        PlayerProfile playerProfile = plugin.getCore().getStorage().getProfile(username, true);
-        if (playerProfile != null) {
-            if (playerProfile.isPremium()) {
-                if (playerProfile.getUserId() != -1) {
-                    enablePremiumLogin(username, sessionKey, player, packetEvent, true);
+        PlayerProfile profile = plugin.getCore().getStorage().loadProfile(username);
+        if (profile != null) {
+            if (profile.isPremium()) {
+                if (profile.getUserId() != -1) {
+                    enablePremiumLogin(username, profile, sessionKey, player, packetEvent, true);
                 }
-            } else if (playerProfile.getUserId() == -1) {
+            } else if (profile.getUserId() == -1) {
                 //user not exists in the db
                 try {
                     if (plugin.getConfig().getBoolean("autoRegister") && !authPlugin.isRegistered(username)) {
                         UUID premiumUUID = plugin.getCore().getMojangApiConnector().getPremiumUUID(username);
                         if (premiumUUID != null) {
                             plugin.getLogger().log(Level.FINER, "Player {0} uses a premium username", username);
-                            enablePremiumLogin(username, sessionKey, player, packetEvent, false);
+                            enablePremiumLogin(username, profile, sessionKey, player, packetEvent, false);
                         }
                     }
                 } catch (Exception ex) {
@@ -108,8 +108,8 @@ public class StartPacketListener extends PacketAdapter {
 
     //minecraft server implementation
     //https://github.com/bergerkiller/CraftSource/blob/master/net.minecraft.server/LoginListener.java#L161
-    private void enablePremiumLogin(String username, String sessionKey, Player player, PacketEvent packetEvent
-            , boolean registered) {
+    private void enablePremiumLogin(String username, PlayerProfile profile, String sessionKey, Player player
+            , PacketEvent packetEvent, boolean registered) {
         //randomized server id to make sure the request is for our server
         //this could be relevant http://www.sk89q.com/2011/09/minecraft-name-spoofing-exploit/
         String serverId = Long.toString(random.nextLong(), 16);
@@ -120,8 +120,8 @@ public class StartPacketListener extends PacketAdapter {
 
         boolean success = sentEncryptionRequest(player, serverId, verifyToken);
         if (success) {
-            PlayerSession playerSession = new PlayerSession(username, serverId, verifyToken);
-            playerSession.setRegistered(registered);
+            BukkitLoginSession playerSession = new BukkitLoginSession(username, serverId
+                    , verifyToken, registered, profile);
             plugin.getSessions().put(sessionKey, playerSession);
             //cancel only if the player has a paid account otherwise login as normal offline player
             packetEvent.setCancelled(true);

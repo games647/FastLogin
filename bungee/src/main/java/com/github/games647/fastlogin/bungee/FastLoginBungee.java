@@ -5,6 +5,7 @@ import com.github.games647.fastlogin.bungee.hooks.BungeeAuthPlugin;
 import com.github.games647.fastlogin.bungee.listener.PlayerConnectionListener;
 import com.github.games647.fastlogin.bungee.listener.PluginMessageListener;
 import com.github.games647.fastlogin.core.FastLoginCore;
+import com.github.games647.fastlogin.core.LoginSession;
 import com.google.common.cache.CacheBuilder;
 
 import java.io.File;
@@ -40,6 +41,11 @@ public class FastLoginBungee extends Plugin {
             .newBuilder()
             .expireAfterWrite(1, TimeUnit.MINUTES)
             .<PendingConnection, Object>build().asMap();
+
+    private final ConcurrentMap<PendingConnection, LoginSession> session = CacheBuilder
+            .newBuilder()
+            .expireAfterWrite(1, TimeUnit.MINUTES)
+            .<PendingConnection, LoginSession>build().asMap();
 
     @Override
     public void onEnable() {
@@ -112,8 +118,8 @@ public class FastLoginBungee extends Plugin {
         return configuration;
     }
 
-    public ConcurrentMap<PendingConnection, Object> getPendingAutoRegister() {
-        return pendingAutoRegister;
+    public ConcurrentMap<PendingConnection, LoginSession> getSession() {
+        return session;
     }
 
     /**

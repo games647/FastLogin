@@ -11,7 +11,7 @@ import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
 import com.github.games647.fastlogin.bukkit.EncryptionUtil;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
-import com.github.games647.fastlogin.bukkit.PlayerSession;
+import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -73,13 +73,10 @@ public class EncryptionPacketListener extends PacketAdapter {
     public void onPacketReceiving(PacketEvent packetEvent) {
         Player player = packetEvent.getPlayer();
 
-        //the player name is unknown to ProtocolLib (so getName() doesn't work) - now uses ip:port as key
-        String uniqueSessionKey = player.getAddress().toString();
-        PlayerSession session = plugin.getSessions().get(uniqueSessionKey);
+        BukkitLoginSession session = plugin.getSessions().get(player.getAddress().toString());
         if (session == null) {
             disconnect(packetEvent, "Invalid request", Level.FINE
-                    , "Player {0} tried to send encryption response at invalid state"
-                    , player.getAddress());
+                    , "Player {0} tried to send encryption response at invalid state", player.getAddress());
             return;
         }
 
@@ -118,7 +115,7 @@ public class EncryptionPacketListener extends PacketAdapter {
         packetEvent.setCancelled(true);
     }
 
-    private void setPremiumUUID(PlayerSession session, Player player) {
+    private void setPremiumUUID(BukkitLoginSession session, Player player) {
         UUID uuid = session.getUuid();
         if (plugin.getConfig().getBoolean("premiumUuid") && uuid != null) {
             try {
@@ -132,7 +129,7 @@ public class EncryptionPacketListener extends PacketAdapter {
         }
     }
 
-    private boolean checkVerifyToken(PlayerSession session, PrivateKey privateKey, PacketEvent packetEvent) {
+    private boolean checkVerifyToken(BukkitLoginSession session, PrivateKey privateKey, PacketEvent packetEvent) {
         byte[] requestVerify = session.getVerifyToken();
         //encrypted verify token
         byte[] responseVerify = packetEvent.getPacket().getByteArrays().read(1);

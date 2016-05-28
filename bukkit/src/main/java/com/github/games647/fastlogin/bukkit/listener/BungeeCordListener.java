@@ -2,15 +2,18 @@ package com.github.games647.fastlogin.bukkit.listener;
 
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 import com.github.games647.fastlogin.bukkit.ForceLoginTask;
-import com.github.games647.fastlogin.bukkit.PlayerSession;
+import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
 import com.github.games647.fastlogin.bukkit.hooks.BukkitAuthPlugin;
 import com.google.common.base.Charsets;
+import com.google.common.collect.Sets;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteStreams;
 import com.google.common.io.Files;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
 
@@ -31,11 +34,11 @@ public class BungeeCordListener implements PluginMessageListener {
 
     protected final FastLoginBukkit plugin;
     //null if whitelist is empty so bungeecord support is disabled
-    private final UUID proxyId;
+    private final Set<UUID> proxyIds;
 
     public BungeeCordListener(FastLoginBukkit plugin) {
         this.plugin = plugin;
-        this.proxyId = loadBungeeCordId();
+        this.proxyIds = loadBungeeCordIds();
     }
 
     @Override
@@ -65,17 +68,14 @@ public class BungeeCordListener implements PluginMessageListener {
             plugin.getLogger().log(Level.FINEST, "Received proxy id {0} from {1}", new Object[]{sourceId, player});
 
             //fail if BungeeCord support is disabled (id = null)
-            if (sourceId.equals(proxyId)) {
-                final PlayerSession playerSession = new PlayerSession(playerName);
+            if (proxyIds.contains(sourceId)) {
                 final String id = '/' + checkedPlayer.getAddress().getAddress().getHostAddress() + ':'
                         + checkedPlayer.getAddress().getPort();
                 if ("AUTO_LOGIN".equalsIgnoreCase(subchannel)) {
+                    BukkitLoginSession playerSession = new BukkitLoginSession(playerName, true);
                     playerSession.setVerified(true);
-                    playerSession.setRegistered(true);
                     plugin.getSessions().put(id, playerSession);
                 } else if ("AUTO_REGISTER".equalsIgnoreCase(subchannel)) {
-                    playerSession.setVerified(true);
-
                     Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
                         @Override
                         public void run() {
@@ -83,6 +83,8 @@ public class BungeeCordListener implements PluginMessageListener {
                             try {
                                 //we need to check if the player is registered on Bukkit too
                                 if (authPlugin != null && !authPlugin.isRegistered(playerName)) {
+                                    BukkitLoginSession playerSession = new BukkitLoginSession(playerName, false);
+                                    playerSession.setVerified(true);
                                     plugin.getSessions().put(id, playerSession);
                                 }
                             } catch (Exception ex) {
@@ -97,7 +99,7 @@ public class BungeeCordListener implements PluginMessageListener {
         }
     }
 
-    public UUID loadBungeeCordId() {
+    public Set<UUID> loadBungeeCordIds() {
         File whitelistFile = new File(plugin.getDataFolder(), FILE_NAME);
         //create a new folder if it doesn't exist. Fail silently otherwise
         whitelistFile.getParentFile().mkdir();
@@ -106,9 +108,16 @@ public class BungeeCordListener implements PluginMessageListener {
                 whitelistFile.createNewFile();
             }
 
-            String firstLine = Files.readFirstLine(whitelistFile, Charsets.UTF_8);
-            if (firstLine != null && !firstLine.isEmpty()) {
-                return UUID.fromString(firstLine.trim());
+            Set<UUID> ids = Sets.newHashSet();
+
+            List<String> lines = Files.readLines(whitelistFile, Charsets.UTF_8);
+            for (String line : lines) {
+                if (line == null || line.trim().isEmpty()) {
+                    continue;
+                }
+
+                UUID uuid = UUID.fromString(line.trim());
+                ids.add(uuid);
             }
         } catch (IOException ex) {
             plugin.getLogger().log(Level.SEVERE, "Failed to create file for Proxy whitelist", ex);
