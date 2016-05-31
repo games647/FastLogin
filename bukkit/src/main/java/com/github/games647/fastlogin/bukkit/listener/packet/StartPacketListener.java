@@ -5,8 +5,8 @@ import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
-import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
+import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 import com.github.games647.fastlogin.bukkit.hooks.BukkitAuthPlugin;
 import com.github.games647.fastlogin.core.PlayerProfile;
 
@@ -92,6 +92,17 @@ public class StartPacketListener extends PacketAdapter {
             } else if (profile.getUserId() == -1) {
                 //user not exists in the db
                 try {
+                    if (plugin.getConfig().getBoolean("nameChangeCheck")) {
+                        UUID premiumUUID = plugin.getCore().getMojangApiConnector().getPremiumUUID(username);
+                        if (premiumUUID != null) {
+                            profile = plugin.getCore().getStorage().loadProfile(premiumUUID);
+                            if (profile != null) {
+                                plugin.getLogger().log(Level.FINER, "Player {0} changed it's username", premiumUUID);
+                                enablePremiumLogin(username, profile, sessionKey, player, packetEvent, false);
+                            }
+                        }
+                    }
+
                     if (plugin.getConfig().getBoolean("autoRegister") && !authPlugin.isRegistered(username)) {
                         UUID premiumUUID = plugin.getCore().getMojangApiConnector().getPremiumUUID(username);
                         if (premiumUUID != null) {

@@ -1,7 +1,7 @@
 package com.github.games647.fastlogin.bukkit.listener;
 
-import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
+import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 import com.github.games647.fastlogin.bukkit.hooks.BukkitAuthPlugin;
 import com.github.games647.fastlogin.core.PlayerProfile;
 
@@ -40,20 +40,31 @@ public class ProtocolSupportListener implements Listener {
             return;
         }
 
-        PlayerProfile playerProfile = plugin.getCore().getStorage().loadProfile(username);
-        if (playerProfile != null) {
-            if (playerProfile.isPremium()) {
-                if (playerProfile.getUserId() != -1) {
-                    startPremiumSession(username, loginStartEvent, true, playerProfile);
+        PlayerProfile profile = plugin.getCore().getStorage().loadProfile(username);
+        if (profile != null) {
+            if (profile.isPremium()) {
+                if (profile.getUserId() != -1) {
+                    startPremiumSession(username, loginStartEvent, true, profile);
                 }
-            } else if (playerProfile.getUserId() == -1) {
+            } else if (profile.getUserId() == -1) {
                 //user not exists in the db
                 try {
+                    if (plugin.getConfig().getBoolean("nameChangeCheck")) {
+                        UUID premiumUUID = plugin.getCore().getMojangApiConnector().getPremiumUUID(username);
+                        if (premiumUUID != null) {
+                            profile = plugin.getCore().getStorage().loadProfile(premiumUUID);
+                            if (profile != null) {
+                                plugin.getLogger().log(Level.FINER, "Player {0} changed it's username", premiumUUID);
+                                startPremiumSession(username, loginStartEvent, false, profile);
+                            }
+                        }
+                    }
+
                     if (plugin.getConfig().getBoolean("autoRegister") && !authPlugin.isRegistered(username)) {
                         UUID premiumUUID = plugin.getCore().getMojangApiConnector().getPremiumUUID(username);
                         if (premiumUUID != null) {
                             plugin.getLogger().log(Level.FINER, "Player {0} uses a premium username", username);
-                            startPremiumSession(username, loginStartEvent, false, playerProfile);
+                            startPremiumSession(username, loginStartEvent, false, profile);
                         }
                     }
                 } catch (Exception ex) {
@@ -75,8 +86,7 @@ public class ProtocolSupportListener implements Listener {
         }
     }
 
-    private void startPremiumSession(String playerName, PlayerLoginStartEvent loginStartEvent, boolean registered
-            , PlayerProfile playerProfile) {
+    private void startPremiumSession(String playerName, PlayerLoginStartEvent loginStartEvent, boolean registered, PlayerProfile playerProfile) {
         loginStartEvent.setOnlineMode(true);
         InetSocketAddress address = loginStartEvent.getAddress();
 

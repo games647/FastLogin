@@ -37,14 +37,9 @@ public class FastLoginBungee extends Plugin {
 
     private final Random random = new Random();
 
-    private final ConcurrentMap<PendingConnection, Object> pendingAutoRegister = CacheBuilder
-            .newBuilder()
-            .expireAfterWrite(1, TimeUnit.MINUTES)
-            .<PendingConnection, Object>build().asMap();
-
     private final ConcurrentMap<PendingConnection, LoginSession> session = CacheBuilder
             .newBuilder()
-            .expireAfterWrite(1, TimeUnit.MINUTES)
+            .expireAfterWrite(5, TimeUnit.MINUTES)
             .<PendingConnection, LoginSession>build().asMap();
 
     @Override

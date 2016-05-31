@@ -1,6 +1,7 @@
 ######1.4
 
 * Added Bungee setAuthPlugin method
+* Added nameChangeCheck 
 * Multiple BungeeCord support
 
 ######1.3.1

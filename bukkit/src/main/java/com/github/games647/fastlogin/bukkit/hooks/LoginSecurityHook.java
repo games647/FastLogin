@@ -71,7 +71,7 @@ public class LoginSecurityHook implements BukkitAuthPlugin {
     }
 
     @Override
-    public boolean forceRegister(final Player player, final String password) {
+    public boolean forceRegister(Player player, String password) {
         DataManager dataManager = securityPlugin.data;
 
         UUID playerUUID = player.getUniqueId();

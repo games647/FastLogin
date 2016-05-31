@@ -15,6 +15,7 @@ So they don't need to enter passwords. This is also called auto login (auto-logi
 * Forge/Sponge message support
 * Premium UUID support
 * Forwards Skins
+* Detect user name changed and will update the existing database record
 * BungeeCord support
 * Auto register new premium players
 * Plugin: ProtocolSupport is supported and can be used as an alternative to ProtocolLib

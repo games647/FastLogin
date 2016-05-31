@@ -38,6 +38,18 @@ public class AsyncPremiumCheck implements Runnable {
                 } else if (profile.getUserId() == -1) {
                     //user not exists in the db
                     BungeeAuthPlugin authPlugin = plugin.getBungeeAuthPlugin();
+                    if (plugin.getConfiguration().getBoolean("nameChangeCheck")) {
+                        UUID premiumUUID = plugin.getCore().getMojangApiConnector().getPremiumUUID(username);
+                        if (premiumUUID != null) {
+                            profile = plugin.getCore().getStorage().loadProfile(premiumUUID);
+                            if (profile != null) {
+                                plugin.getLogger().log(Level.FINER, "Player {0} changed it's username", premiumUUID);
+                                connection.setOnlineMode(true);
+                                plugin.getSession().put(connection, new LoginSession(username, false, profile));
+                            }
+                        }
+                    }
+
                     if (plugin.getConfiguration().getBoolean("autoRegister")
                             && (authPlugin == null || !authPlugin.isRegistered(username))) {
                         UUID premiumUUID = plugin.getCore().getMojangApiConnector().getPremiumUUID(username);

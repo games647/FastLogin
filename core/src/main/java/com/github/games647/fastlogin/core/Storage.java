@@ -46,9 +46,10 @@ public class Storage {
 
     public void createTables() throws SQLException {
         Connection con = null;
+        Statement createStmt = null;
         try {
             con = dataSource.getConnection();
-            Statement statement = con.createStatement();
+            createStmt = con.createStatement();
             String createDataStmt = "CREATE TABLE IF NOT EXISTS " + PREMIUM_TABLE + " ("
                     + "UserID INTEGER PRIMARY KEY AUTO_INCREMENT, "
                     + "UUID CHAR(36), "
@@ -65,21 +66,23 @@ public class Storage {
                 createDataStmt = createDataStmt.replace("AUTO_INCREMENT", "AUTOINCREMENT");
             }
 
-            statement.executeUpdate(createDataStmt);
+            createStmt.executeUpdate(createDataStmt);
         } finally {
             closeQuietly(con);
+            closeQuietly(createStmt);
         }
     }
 
     public PlayerProfile loadProfile(String name) {
         Connection con = null;
+        PreparedStatement loadStmt = null;
+        ResultSet resultSet = null;
         try {
             con = dataSource.getConnection();
-            PreparedStatement loadStatement = con.prepareStatement("SELECT * FROM " + PREMIUM_TABLE
-                    + " WHERE Name=? LIMIT 1");
-            loadStatement.setString(1, name);
+            loadStmt = con.prepareStatement("SELECT * FROM " + PREMIUM_TABLE + " WHERE Name=?");
+            loadStmt.setString(1, name);
 
-            ResultSet resultSet = loadStatement.executeQuery();
+            resultSet = loadStmt.executeQuery();
             if (resultSet.next()) {
                 long userId = resultSet.getInt(1);
 
@@ -104,6 +107,39 @@ public class Storage {
             core.getLogger().log(Level.SEVERE, "Failed to query profile", sqlEx);
         } finally {
             closeQuietly(con);
+            closeQuietly(loadStmt);
+            closeQuietly(resultSet);
+        }
+
+        return null;
+    }
+
+    public PlayerProfile loadProfile(UUID uuid) {
+        Connection con = null;
+        PreparedStatement loadStmt = null;
+        ResultSet resultSet = null;
+        try {
+            con = dataSource.getConnection();
+            loadStmt = con.prepareStatement("SELECT * FROM " + PREMIUM_TABLE + " WHERE UUID=?");
+            loadStmt.setString(1, uuid.toString().replace("-", ""));
+
+            resultSet = loadStmt.executeQuery();
+            if (resultSet.next()) {
+                long userId = resultSet.getInt(1);
+
+                String name = resultSet.getString(3);
+                boolean premium = resultSet.getBoolean(4);
+                String lastIp = resultSet.getString(5);
+                long lastLogin = resultSet.getTimestamp(6).getTime();
+                PlayerProfile playerProfile = new PlayerProfile(userId, uuid, name, premium, lastIp, lastLogin);
+                return playerProfile;
+            }
+        } catch (SQLException sqlEx) {
+            core.getLogger().log(Level.SEVERE, "Failed to query profile", sqlEx);
+        } finally {
+            closeQuietly(con);
+            closeQuietly(loadStmt);
+            closeQuietly(resultSet);
         }
 
         return null;
@@ -111,46 +147,69 @@ public class Storage {
 
     public boolean save(PlayerProfile playerProfile) {
         Connection con = null;
+        PreparedStatement updateStmt = null;
+        PreparedStatement saveStmt = null;
+
+        ResultSet generatedKeys = null;
         try {
             con = dataSource.getConnection();
 
             UUID uuid = playerProfile.getUuid();
-
             if (playerProfile.getUserId() == -1) {
-                PreparedStatement saveStatement = con.prepareStatement("INSERT INTO " + PREMIUM_TABLE
-                        + " (UUID, Name, Premium, LastIp) VALUES (?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+                //User was authenticated with a premium authentication, so it's possible that the player is premium
+                if (uuid != null) {
+                    updateStmt = con.prepareStatement("UPDATE " + PREMIUM_TABLE
+                            + " SET NAME=?, LastIp=?, LastLogin=CURRENT_TIMESTAMP"
+                            + " WHERE UUID=? AND PREMIUM=1");
 
-                if (uuid == null) {
-                    saveStatement.setString(1, null);
-                } else {
-                    saveStatement.setString(1, uuid.toString().replace("-", ""));
+                    updateStmt.setString(1, playerProfile.getPlayerName());
+                    updateStmt.setString(2, playerProfile.getLastIp());
+                    updateStmt.setString(3, uuid.toString().replace("-", ""));
+
+                    int affectedRows = updateStmt.executeUpdate();
+                    if (affectedRows > 0) {
+                        //username changed and we updated the existing database record
+                        //so we don't need to run an insert
+                        return true;
+                    }
                 }
 
-                saveStatement.setString(2, playerProfile.getPlayerName());
-                saveStatement.setBoolean(3, playerProfile.isPremium());
-                saveStatement.setString(4, playerProfile.getLastIp());
-                saveStatement.execute();
+                saveStmt = con.prepareStatement("INSERT INTO " + PREMIUM_TABLE
+                        + " (UUID, Name, Premium, LastIp) VALUES (?, ?, ?, ?) "
+                        , Statement.RETURN_GENERATED_KEYS);
 
-                ResultSet generatedKeys = saveStatement.getGeneratedKeys();
+                if (uuid == null) {
+                    saveStmt.setString(1, null);
+                } else {
+                    saveStmt.setString(1, uuid.toString().replace("-", ""));
+                }
+
+                saveStmt.setString(2, playerProfile.getPlayerName());
+                saveStmt.setBoolean(3, playerProfile.isPremium());
+                saveStmt.setString(4, playerProfile.getLastIp());
+
+                saveStmt.execute();
+
+                generatedKeys = saveStmt.getGeneratedKeys();
                 if (generatedKeys != null && generatedKeys.next()) {
                     playerProfile.setUserId(generatedKeys.getInt(1));
                 }
             } else {
-                PreparedStatement saveStatement = con.prepareStatement("UPDATE " + PREMIUM_TABLE
+                saveStmt = con.prepareStatement("UPDATE " + PREMIUM_TABLE
                         + " SET UUID=?, Name=?, Premium=?, LastIp=?, LastLogin=CURRENT_TIMESTAMP WHERE UserID=?");
 
                 if (uuid == null) {
-                    saveStatement.setString(1, null);
+                    saveStmt.setString(1, null);
                 } else {
-                    saveStatement.setString(1, uuid.toString().replace("-", ""));
+                    saveStmt.setString(1, uuid.toString().replace("-", ""));
                 }
 
-                saveStatement.setString(2, playerProfile.getPlayerName());
-                saveStatement.setBoolean(3, playerProfile.isPremium());
-                saveStatement.setString(4, playerProfile.getLastIp());
+                saveStmt.setString(2, playerProfile.getPlayerName());
+                saveStmt.setBoolean(3, playerProfile.isPremium());
+                saveStmt.setString(4, playerProfile.getLastIp());
 
-                saveStatement.setLong(5, playerProfile.getUserId());
-                saveStatement.execute();
+                saveStmt.setLong(5, playerProfile.getUserId());
+                saveStmt.execute();
             }
 
             return true;
@@ -158,6 +217,9 @@ public class Storage {
             core.getLogger().log(Level.SEVERE, "Failed to save playerProfile", ex);
         } finally {
             closeQuietly(con);
+            closeQuietly(updateStmt);
+            closeQuietly(saveStmt);
+            closeQuietly(generatedKeys);
         }
 
         return false;
@@ -167,12 +229,12 @@ public class Storage {
         dataSource.close();
     }
 
-    private void closeQuietly(Connection con) {
-        if (con != null) {
+    private void closeQuietly(AutoCloseable closeable) {
+        if (closeable != null) {
             try {
-                con.close();
-            } catch (SQLException sqlEx) {
-                core.getLogger().log(Level.SEVERE, "Failed to close connection", sqlEx);
+                closeable.close();
+            } catch (Exception closeEx) {
+                core.getLogger().log(Level.SEVERE, "Failed to close connection", closeEx);
             }
         }
     }

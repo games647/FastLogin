@@ -40,6 +40,50 @@ autoRegister: false
 # This feature requires Cauldron, Spigot or a fork of Spigot (PaperSpigot, TacoSpigot)
 premiumUuid: false
 
+# This will make an additional check (only for player names which are not in the database) against the mojang servers
+# in order to get the premium UUID. If that premium UUID is in the database, we can assume on sucessful login that the
+# player changed it's  username and we just update the name in the database.
+# Examples:
+# #### Case 1
+# nameChangeCheck = false ----- autoRegister = false
+#
+# Player logins as cracked until the player invoked the command /premium. Then we could override the existing database
+# record.
+#
+# #### Case 2
+#
+# nameChangeCheck = true ----- autoRegister = false
+#
+# Connect the Mojang API and check what UUID the player has (UUID exists => Paid Minecraft account). If that UUID is in
+# the database it's an **existing player** and FastLogin can **assume** the player is premium and changed the username.
+# If it's not in the database, it's a new player and **could be a cracked player**. So we just use a offline mode
+# authentication for this player.
+#
+# **Limitation**: Cracked players who uses the new username of a paid account cannot join the server if the database
+# contains the old name. (Example: The owner of the paid account no longer plays on the server, but changed the username
+# in the meanwhile).
+#
+# #### Case 3
+#
+# nameChangeCheck = false ----- autoRegister = true
+#
+# We will always request a premium authentication if the username is unknown to us, but is in use by a paid minecraft
+# account. This means it's kind of a more aggressive check like nameChangeCheck = true and autoRegister = false, because
+# it request a premium authentication which are completely new to us, that even the premium UUID is not in our database.
+#
+# **Limitation**: see below
+#
+# #### Case 4
+#
+# nameChangeCheck = true ----- autoRegister = true
+#
+# Based on autoRegister it checks if the player name is premium and login using a premium authentication. After that
+# fastlogin receives the premium UUID and can update the database record.
+#
+# **Limitation from autoRegister**: New offline players who uses the username of an existing minecraft cannot join the
+# server.
+nameChangeCheck: false
+
 # If your players have a premium account and a skin associated to their account, this plugin
 # can download the data and set it to the online player.
 #
