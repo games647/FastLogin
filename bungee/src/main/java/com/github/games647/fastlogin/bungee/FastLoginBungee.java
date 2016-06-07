@@ -109,7 +109,7 @@ public class FastLoginBungee extends Plugin {
         this.bungeeAuthPlugin = authPlugin;
     }
 
-    public Configuration getConfiguration() {
+    public Configuration getConfig() {
         return configuration;
     }
 

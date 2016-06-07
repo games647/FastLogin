@@ -58,7 +58,7 @@ public class PlayerConnectionListener implements Listener {
 
             //bungeecord will do this automatically so override it on disabled option
             InitialHandler initialHandler = (InitialHandler) connection;
-            if (!plugin.getConfiguration().getBoolean("premiumUuid")) {
+            if (!plugin.getConfig().getBoolean("premiumUuid")) {
                 try {
                     UUID offlineUUID = UUID.nameUUIDFromBytes(("OfflinePlayer:" + username).getBytes(Charsets.UTF_8));
 
@@ -72,7 +72,7 @@ public class PlayerConnectionListener implements Listener {
                 }
             }
 
-            if (!plugin.getConfiguration().getBoolean("forwardSkin")) {
+            if (!plugin.getConfig().getBoolean("forwardSkin")) {
                 //this is null on offline mode
                 LoginResult loginProfile = initialHandler.getLoginProfile();
                 if (loginProfile != null) {

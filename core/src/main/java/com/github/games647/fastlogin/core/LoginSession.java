@@ -16,6 +16,11 @@ public class LoginSession {
         return username;
     }
 
+    /**
+     * This value is always false if we authenticate the player with a cracked authentication
+     *
+     * @return
+     */
     public boolean needsRegistration() {
         return !registered;
     }

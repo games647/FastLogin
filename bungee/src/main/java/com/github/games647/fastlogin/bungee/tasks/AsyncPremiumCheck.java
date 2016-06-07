@@ -35,8 +35,7 @@ public class AsyncPremiumCheck implements Runnable {
 
             if (profile.getUserId() == -1) {
                 UUID premiumUUID = null;
-                if (plugin.getConfiguration().getBoolean("nameChangeCheck")
-                        || plugin.getConfiguration().getBoolean("autoRegister")) {
+                if (plugin.getConfig().getBoolean("nameChangeCheck") || plugin.getConfig().getBoolean("autoRegister")) {
                     premiumUUID = plugin.getCore().getMojangApiConnector().getPremiumUUID(username);
                 }
 
@@ -59,7 +58,7 @@ public class AsyncPremiumCheck implements Runnable {
     private boolean checkPremiumName(String username, PendingConnection connection, PlayerProfile profile)
             throws Exception {
         BungeeAuthPlugin authPlugin = plugin.getBungeeAuthPlugin();
-        if (plugin.getConfiguration().getBoolean("autoRegister")
+        if (plugin.getConfig().getBoolean("autoRegister")
                 && (authPlugin == null || !authPlugin.isRegistered(username))) {
             plugin.getLogger().log(Level.FINER, "Player {0} uses a premium username", username);
             requestPremiumLogin(connection, profile, username, false);
@@ -71,7 +70,7 @@ public class AsyncPremiumCheck implements Runnable {
 
     private boolean checkNameChange(UUID premiumUUID, PendingConnection connection, String username) {
         //user not exists in the db
-        if (plugin.getConfiguration().getBoolean("nameChangeCheck")) {
+        if (plugin.getConfig().getBoolean("nameChangeCheck")) {
             PlayerProfile profile = plugin.getCore().getStorage().loadProfile(premiumUUID);
             if (profile != null) {
                 //uuid exists in the database

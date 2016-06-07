@@ -85,34 +85,37 @@ public class StartPacketListener extends PacketAdapter {
 
         PlayerProfile profile = plugin.getCore().getStorage().loadProfile(username);
         if (profile != null) {
-            if (profile.isPremium()) {
-                if (profile.getUserId() != -1) {
-                    enablePremiumLogin(username, profile, sessionKey, player, packetEvent, true);
+            if (profile.getUserId() == -1) {
+                UUID premiumUUID = null;
+                if (plugin.getConfig().getBoolean("nameChangeCheck") || plugin.getConfig().getBoolean("autoRegister")) {
+                    premiumUUID = plugin.getCore().getMojangApiConnector().getPremiumUUID(username);
                 }
-            } else if (profile.getUserId() == -1) {
+
                 //user not exists in the db
                 try {
                     if (plugin.getConfig().getBoolean("nameChangeCheck")) {
-                        UUID premiumUUID = plugin.getCore().getMojangApiConnector().getPremiumUUID(username);
-                        if (premiumUUID != null) {
-                            profile = plugin.getCore().getStorage().loadProfile(premiumUUID);
-                            if (profile != null) {
-                                plugin.getLogger().log(Level.FINER, "Player {0} changed it's username", premiumUUID);
-                                enablePremiumLogin(username, profile, sessionKey, player, packetEvent, false);
-                            }
+                        profile = plugin.getCore().getStorage().loadProfile(premiumUUID);
+                        if (profile != null) {
+                            plugin.getLogger().log(Level.FINER, "Player {0} changed it's username", premiumUUID);
+                            enablePremiumLogin(username, profile, sessionKey, player, packetEvent, false);
+                            return;
                         }
                     }
 
                     if (plugin.getConfig().getBoolean("autoRegister") && !authPlugin.isRegistered(username)) {
-                        UUID premiumUUID = plugin.getCore().getMojangApiConnector().getPremiumUUID(username);
-                        if (premiumUUID != null) {
-                            plugin.getLogger().log(Level.FINER, "Player {0} uses a premium username", username);
-                            enablePremiumLogin(username, profile, sessionKey, player, packetEvent, false);
-                        }
+                        plugin.getLogger().log(Level.FINER, "Player {0} uses a premium username", username);
+                        enablePremiumLogin(username, profile, sessionKey, player, packetEvent, false);
+                        return;
                     }
+
+                    //no premium check passed so we save it as a cracked player
+                    BukkitLoginSession loginSession = new BukkitLoginSession(username, profile);
+                    plugin.getSessions().put(sessionKey, loginSession);
                 } catch (Exception ex) {
                     plugin.getLogger().log(Level.SEVERE, "Failed to query isRegistered", ex);
                 }
+            } else if (profile.isPremium()) {
+                enablePremiumLogin(username, profile, sessionKey, player, packetEvent, true);
             }
         }
     }

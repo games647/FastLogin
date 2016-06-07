@@ -72,7 +72,7 @@
         <dependency>
             <groupId>com.comphenix.protocol</groupId>
             <artifactId>ProtocolLib</artifactId>
-            <version>3.6.5-SNAPSHOT</version>
+            <version>4.0.1</version>
             <optional>true</optional>
         </dependency>
 

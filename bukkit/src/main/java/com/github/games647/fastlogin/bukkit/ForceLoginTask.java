@@ -34,22 +34,15 @@ public class ForceLoginTask implements Runnable {
         //remove the bungeecord identifier if there is ones
         String id = '/' + player.getAddress().getAddress().getHostAddress() + ':' + player.getAddress().getPort();
         BukkitLoginSession session = plugin.getSessions().remove(id);
-
-        Storage storage = plugin.getCore().getStorage();
-        PlayerProfile playerProfile = null;
-        if (session != null) {
-            playerProfile = session.getProfile();
+        if (session == null) {
+            return;
         }
 
-        if (session == null) {
-            //cracked player
-            if (playerProfile != null) {
-                playerProfile.setUuid(null);
-                playerProfile.setPremium(false);
-                storage.save(playerProfile);
-            }
-            //check if it's the same player as we checked before
-        } else if (player.getName().equals(session.getUsername())) {
+        Storage storage = plugin.getCore().getStorage();
+        PlayerProfile playerProfile = session.getProfile();
+
+        //check if it's the same player as we checked before
+        if (session.isVerified() && player.getName().equals(session.getUsername())) {
             //premium player
             BukkitAuthPlugin authPlugin = plugin.getAuthPlugin();
             if (authPlugin == null) {
@@ -76,6 +69,13 @@ public class ForceLoginTask implements Runnable {
 
                     sendSuccessNotification();
                 }
+            }
+        } else {
+            //cracked player
+            if (playerProfile != null) {
+                playerProfile.setUuid(null);
+                playerProfile.setPremium(false);
+                storage.save(playerProfile);
             }
         }
     }

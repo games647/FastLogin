@@ -35,6 +35,11 @@ public class BukkitLoginSession extends LoginSession {
         this(username, "", ArrayUtils.EMPTY_BYTE_ARRAY, registered, null);
     }
 
+    //cracked player
+    public BukkitLoginSession(String username, PlayerProfile profile) {
+        this(username, "", ArrayUtils.EMPTY_BYTE_ARRAY, false, profile);
+    }
+
     /**
      * Gets the random generated server id. This makes sure the request sent from the client is just for this server.
      *

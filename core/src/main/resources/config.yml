@@ -108,7 +108,7 @@ driver: org.sqlite.JDBC
 # File location
 database: '{pluginDir}/FastLogin.db'
 
-# MySQL and SQLite
+# MySQL
 #driver: com.mysql.jdbc.Driver
 #host: localhost
 #port: 3306

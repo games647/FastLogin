@@ -1,7 +1,7 @@
 package com.github.games647.fastlogin.bungee.listener;
 
-import com.github.games647.fastlogin.bungee.tasks.AsyncToggleMessage;
 import com.github.games647.fastlogin.bungee.FastLoginBungee;
+import com.github.games647.fastlogin.bungee.tasks.AsyncToggleMessage;
 import com.github.games647.fastlogin.core.PlayerProfile;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteStreams;
