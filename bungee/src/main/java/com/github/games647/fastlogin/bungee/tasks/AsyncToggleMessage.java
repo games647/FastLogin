@@ -1,4 +1,4 @@
-package com.github.games647.fastlogin.bungee.listener;
+package com.github.games647.fastlogin.bungee.tasks;
 
 import com.github.games647.fastlogin.bungee.FastLoginBungee;
 import com.github.games647.fastlogin.core.PlayerProfile;
@@ -7,14 +7,14 @@ import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
-public class AsyncStatusMessage implements Runnable {
+public class AsyncToggleMessage implements Runnable {
 
     private final FastLoginBungee plugin;
     private final ProxiedPlayer fromPlayer;
     private final String targetPlayer;
     private final boolean toPremium;
 
-    public AsyncStatusMessage(FastLoginBungee plugin, ProxiedPlayer fromPlayer, String targetPlayer
+    public AsyncToggleMessage(FastLoginBungee plugin, ProxiedPlayer fromPlayer, String targetPlayer
             , boolean toPremium) {
         this.plugin = plugin;
         this.fromPlayer = fromPlayer;

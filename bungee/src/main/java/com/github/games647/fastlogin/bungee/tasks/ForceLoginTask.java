@@ -1,5 +1,6 @@
-package com.github.games647.fastlogin.bungee;
+package com.github.games647.fastlogin.bungee.tasks;
 
+import com.github.games647.fastlogin.bungee.FastLoginBungee;
 import com.github.games647.fastlogin.bungee.hooks.BungeeAuthPlugin;
 import com.github.games647.fastlogin.core.LoginSession;
 import com.github.games647.fastlogin.core.PlayerProfile;
@@ -7,8 +8,8 @@ import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 
 import java.util.UUID;
-import net.md_5.bungee.api.connection.PendingConnection;
 
+import net.md_5.bungee.api.connection.PendingConnection;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.connection.Server;
 
@@ -49,7 +50,6 @@ public class ForceLoginTask implements Runnable {
             }
         } else {
             //cracked player
-            //update only on success to prevent corrupt data
             playerProfile.setPremium(false);
             plugin.getCore().getStorage().save(playerProfile);
         }

@@ -1,5 +1,6 @@
 package com.github.games647.fastlogin.bungee.listener;
 
+import com.github.games647.fastlogin.bungee.tasks.AsyncToggleMessage;
 import com.github.games647.fastlogin.bungee.FastLoginBungee;
 import com.github.games647.fastlogin.core.PlayerProfile;
 import com.google.common.io.ByteArrayDataInput;
@@ -46,12 +47,12 @@ public class PluginMessageListener implements Listener {
         if ("ON".equals(subchannel)) {
             String playerName = dataInput.readUTF();
 
-            AsyncStatusMessage task = new AsyncStatusMessage(plugin, fromPlayer, playerName, true);
+            AsyncToggleMessage task = new AsyncToggleMessage(plugin, fromPlayer, playerName, true);
             ProxyServer.getInstance().getScheduler().runAsync(plugin, task);
         } else if ("OFF".equals(subchannel)) {
             String playerName = dataInput.readUTF();
 
-            AsyncStatusMessage task = new AsyncStatusMessage(plugin, fromPlayer, playerName, false);
+            AsyncToggleMessage task = new AsyncToggleMessage(plugin, fromPlayer, playerName, false);
             ProxyServer.getInstance().getScheduler().runAsync(plugin, task);
         } else if ("SUCCESS".equals(subchannel)) {
             if (fromPlayer.getPendingConnection().isOnlineMode()) {
