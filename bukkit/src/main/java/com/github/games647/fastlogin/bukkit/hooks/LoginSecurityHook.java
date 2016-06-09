@@ -5,14 +5,13 @@ import com.lenis0012.bukkit.ls.LoginSecurity;
 import com.lenis0012.bukkit.ls.data.DataManager;
 
 import java.net.InetAddress;
-
 import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.logging.Level;
-import org.bukkit.Bukkit;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 /**
@@ -27,6 +26,11 @@ import org.bukkit.entity.Player;
 public class LoginSecurityHook implements BukkitAuthPlugin {
 
     protected final LoginSecurity securityPlugin = LoginSecurity.instance;
+//    protected final boolean newVersion;
+
+    public LoginSecurityHook() {
+//        this.newVersion = ClassUtil.isPresent("com.lenis0012.bukkit.loginsecurity.session.action.LoginAction");
+    }
 
     @Override
     public boolean forceLogin(final Player player) {

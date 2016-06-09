@@ -7,6 +7,9 @@ import java.io.File;
 import java.util.concurrent.ThreadFactory;
 import java.util.logging.Logger;
 
+import org.bukkit.ChatColor;
+import org.bukkit.configuration.file.YamlConfiguration;
+
 public class BukkitCore extends FastLoginCore {
 
     private final FastLoginBukkit plugin;
@@ -33,5 +36,22 @@ public class BukkitCore extends FastLoginCore {
                 //Hikari create daemons by default
                 .setDaemon(true)
                 .build();
+    }
+
+    @Override
+    public void loadMessages() {
+        plugin.saveResource("messages.yml", false);
+
+        File messageFile = new File(plugin.getDataFolder(), "messages.yml");
+        YamlConfiguration messageConfig = YamlConfiguration.loadConfiguration(messageFile);
+        for (String key : messageConfig.getKeys(false)) {
+            String message = ChatColor.translateAlternateColorCodes('&', messageConfig.getString(key));
+            localeMessages.put(key, message);
+        }
+    }
+
+    @Override
+    public void loadConfig() {
+        plugin.saveConfig();
     }
 }

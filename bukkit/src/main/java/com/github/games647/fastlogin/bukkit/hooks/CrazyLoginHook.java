@@ -7,10 +7,10 @@ import de.st_ddt.crazylogin.data.LoginPlayerData;
 import de.st_ddt.crazylogin.databases.CrazyLoginDataDatabase;
 import de.st_ddt.crazylogin.listener.PlayerListener;
 import de.st_ddt.crazylogin.metadata.Authenticated;
+
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;

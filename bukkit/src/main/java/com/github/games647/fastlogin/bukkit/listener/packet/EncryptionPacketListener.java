@@ -9,9 +9,9 @@ import com.comphenix.protocol.injector.server.TemporaryPlayerFactory;
 import com.comphenix.protocol.reflect.FuzzyReflection;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
+import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
 import com.github.games647.fastlogin.bukkit.EncryptionUtil;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
-import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -75,7 +75,7 @@ public class EncryptionPacketListener extends PacketAdapter {
 
         BukkitLoginSession session = plugin.getSessions().get(player.getAddress().toString());
         if (session == null) {
-            disconnect(packetEvent, "Invalid request", Level.FINE
+            disconnect(packetEvent, plugin.getCore().getMessage("invalid-requst"), true
                     , "Player {0} tried to send encryption response at invalid state", player.getAddress());
             return;
         }
@@ -106,7 +106,7 @@ public class EncryptionPacketListener extends PacketAdapter {
             receiveFakeStartPacket(username, player);
         } else {
             //user tried to fake a authentication
-            disconnect(packetEvent, "Invalid session", Level.FINE
+            disconnect(packetEvent, plugin.getCore().getMessage("invalid-session"), true
                     , "Player {0} ({1}) tried to log in with an invalid session ServerId: {2}"
                     , session.getUsername(), player.getAddress(), serverId);
         }
@@ -137,9 +137,8 @@ public class EncryptionPacketListener extends PacketAdapter {
         //https://github.com/bergerkiller/CraftSource/blob/master/net.minecraft.server/LoginListener.java#L182
         if (!Arrays.equals(requestVerify, EncryptionUtil.decryptData(privateKey, responseVerify))) {
             //check if the verify token are equal to the server sent one
-            disconnect(packetEvent, "Invalid token", Level.FINE
-                    , "Player {0} ({1}) tried to login with an invalid verify token. "
-                            + "Server: {2} Client: {3}"
+            disconnect(packetEvent, plugin.getCore().getMessage("invalid-verify-token"), true
+                    , "Player {0} ({1}) tried to login with an invalid verify token. Server: {2} Client: {3}"
                     , session.getUsername(), packetEvent.getPlayer().getAddress(), requestVerify, responseVerify);
             return false;
         }
@@ -168,23 +167,28 @@ public class EncryptionPacketListener extends PacketAdapter {
             Object networkManager = getNetworkManager(player);
 
             //try to detect the method by parameters
-            Method encryptConnectionMethod = FuzzyReflection.fromObject(networkManager)
-                    .getMethodByParameters("a", SecretKey.class);
+            Method encryptConnectionMethod = FuzzyReflection
+                    .fromObject(networkManager).getMethodByParameters("a", SecretKey.class);
 
             //encrypt/decrypt following packets
             //the client expects this behaviour
             encryptConnectionMethod.invoke(networkManager, loginKey);
         } catch (ReflectiveOperationException ex) {
-            disconnect(packetEvent, "Error occurred", Level.SEVERE, "Couldn't enable encryption", ex);
+            disconnect(packetEvent, plugin.getCore().getMessage("error-kick"), false, "Couldn't enable encryption", ex);
             return false;
         }
 
         return true;
     }
 
-    private void disconnect(PacketEvent packetEvent, String kickReason, Level logLevel, String logMessage
+    private void disconnect(PacketEvent packetEvent, String kickReason, boolean debugLevel, String logMessage
             , Object... arguments) {
-        plugin.getLogger().log(logLevel, logMessage, arguments);
+        if (debugLevel) {
+            plugin.getLogger().log(Level.FINE, logMessage, arguments);
+        } else {
+            plugin.getLogger().log(Level.SEVERE, logMessage, arguments);
+        }
+
         kickPlayer(packetEvent.getPlayer(), kickReason);
         //cancel the event in order to prevent the server receiving an invalid packet
         packetEvent.setCancelled(true);
@@ -219,7 +223,7 @@ public class EncryptionPacketListener extends PacketAdapter {
         } catch (InvocationTargetException | IllegalAccessException ex) {
             plugin.getLogger().log(Level.WARNING, "Failed to fake a new start packet", ex);
             //cancel the event in order to prevent the server receiving an invalid packet
-            kickPlayer(from, "Error occured");
+            kickPlayer(from, plugin.getCore().getMessage("error-kick"));
         }
     }
 }

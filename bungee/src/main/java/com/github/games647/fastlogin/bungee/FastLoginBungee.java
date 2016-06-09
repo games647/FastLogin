@@ -10,8 +10,6 @@ import com.google.common.cache.CacheBuilder;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
 import java.util.Random;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
@@ -46,20 +44,11 @@ public class FastLoginBungee extends Plugin {
     public void onEnable() {
         loginCore.setMojangApiConnector(new MojangApiBungee(loginCore));
 
-        if (!getDataFolder().exists()) {
-            getDataFolder().mkdir();
-        }
-
-        File configFile = new File(getDataFolder(), "config.yml");
-        if (!configFile.exists()) {
-            try (InputStream in = getResourceAsStream("config.yml")) {
-                Files.copy(in, configFile.toPath());
-            } catch (IOException ioExc) {
-                getLogger().log(Level.SEVERE, "Error saving default config", ioExc);
-            }
-        }
+        loginCore.loadConfig();
+        loginCore.loadMessages();
 
         try {
+            File configFile = new File(getDataFolder(), "config.yml");
             configuration = ConfigurationProvider.getProvider(YamlConfiguration.class).load(configFile);
 
             String driver = configuration.getString("driver");

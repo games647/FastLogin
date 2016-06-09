@@ -4,7 +4,7 @@ import com.comphenix.protocol.wrappers.WrappedGameProfile;
 import com.comphenix.protocol.wrappers.WrappedSignedProperty;
 import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
-import com.github.games647.fastlogin.bukkit.ForceLoginTask;
+import com.github.games647.fastlogin.bukkit.tasks.ForceLoginTask;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;

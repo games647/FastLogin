@@ -1,5 +1,6 @@
 package com.github.games647.fastlogin.bukkit;
 
+import com.github.games647.fastlogin.bukkit.tasks.DelayedAuthHook;
 import com.avaje.ebeaninternal.api.ClassUtil;
 import com.comphenix.protocol.AsynchronousManager;
 import com.comphenix.protocol.ProtocolLibrary;
@@ -59,6 +60,9 @@ public class FastLoginBukkit extends JavaPlugin {
     @Override
     public void onEnable() {
         core.setMojangApiConnector(new MojangApiBukkit(core));
+        
+        core.loadConfig();
+        core.loadMessages();
 
         try {
             if (ClassUtil.isPresent("org.spigotmc.SpigotConfig")) {
@@ -68,8 +72,6 @@ public class FastLoginBukkit extends JavaPlugin {
             getLogger().warning("Cannot check bungeecord support. You use a non-spigot build");
             ex.printStackTrace();
         }
-
-        saveDefaultConfig();
 
         if (getServer().getOnlineMode()) {
             //we need to require offline to prevent a session request for a offline player

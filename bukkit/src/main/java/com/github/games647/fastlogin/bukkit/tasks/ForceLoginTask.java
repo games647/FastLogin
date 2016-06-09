@@ -1,5 +1,7 @@
-package com.github.games647.fastlogin.bukkit;
+package com.github.games647.fastlogin.bukkit.tasks;
 
+import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
+import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 import com.github.games647.fastlogin.bukkit.hooks.BukkitAuthPlugin;
 import com.github.games647.fastlogin.core.PlayerProfile;
 import com.github.games647.fastlogin.core.Storage;
@@ -12,7 +14,6 @@ import java.util.concurrent.Future;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 public class ForceLoginTask implements Runnable {
@@ -85,15 +86,14 @@ public class ForceLoginTask implements Runnable {
 
         String generatedPassword = plugin.generateStringPassword(player);
         boolean success = authPlugin.forceRegister(player, generatedPassword);
-        player.sendMessage(ChatColor.DARK_GREEN + "Auto registered with password: " + generatedPassword);
-        player.sendMessage(ChatColor.DARK_GREEN + "You may want change it?");
+        player.sendMessage(plugin.getCore().getMessage("auto-register").replace("%password", generatedPassword));
         return success;
     }
 
     private boolean forceLogin(BukkitAuthPlugin authPlugin, Player player) {
         plugin.getLogger().log(Level.FINE, "Logging player {0} in", player.getName());
         boolean success = authPlugin.forceLogin(player);
-        player.sendMessage(ChatColor.DARK_GREEN + "Auto logged in");
+        player.sendMessage(plugin.getCore().getMessage("auto-login"));
         return success;
     }
 

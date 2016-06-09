@@ -1,5 +1,6 @@
-package com.github.games647.fastlogin.bukkit;
+package com.github.games647.fastlogin.bukkit.tasks;
 
+import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 import com.github.games647.fastlogin.bukkit.hooks.AuthMeHook;
 import com.github.games647.fastlogin.bukkit.hooks.BukkitAuthPlugin;
 import com.github.games647.fastlogin.bukkit.hooks.CrazyLoginHook;

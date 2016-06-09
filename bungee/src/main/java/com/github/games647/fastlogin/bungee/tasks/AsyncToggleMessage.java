@@ -3,7 +3,6 @@ package com.github.games647.fastlogin.bungee.tasks;
 import com.github.games647.fastlogin.bungee.FastLoginBungee;
 import com.github.games647.fastlogin.core.PlayerProfile;
 
-import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
@@ -34,39 +33,25 @@ public class AsyncToggleMessage implements Runnable {
     private void turnOffPremium() {
         PlayerProfile playerProfile = plugin.getCore().getStorage().loadProfile(targetPlayer);
         if (!playerProfile.isPremium()) {
-            if (fromPlayer.isConnected()) {
-                TextComponent textComponent = new TextComponent("You are not in the premium list");
-                textComponent.setColor(ChatColor.DARK_RED);
-                fromPlayer.sendMessage(textComponent);
-            }
-
+            fromPlayer.sendMessage(TextComponent.fromLegacyText(plugin.getCore().getMessage("not-premium")));
             return;
         }
 
         playerProfile.setPremium(false);
         playerProfile.setUuid(null);
         plugin.getCore().getStorage().save(playerProfile);
-        TextComponent textComponent = new TextComponent("Removed to the list of premium players");
-        textComponent.setColor(ChatColor.DARK_GREEN);
-        fromPlayer.sendMessage(textComponent);
+        fromPlayer.sendMessage(TextComponent.fromLegacyText(plugin.getCore().getMessage("remove-premium")));
     }
 
     private void activatePremium() {
         PlayerProfile playerProfile = plugin.getCore().getStorage().loadProfile(targetPlayer);
         if (playerProfile.isPremium()) {
-            if (fromPlayer.isConnected()) {
-                TextComponent textComponent = new TextComponent("You are already on the premium list");
-                textComponent.setColor(ChatColor.DARK_RED);
-                fromPlayer.sendMessage(textComponent);
-            }
-
+            fromPlayer.sendMessage(TextComponent.fromLegacyText(plugin.getCore().getMessage("already-exists")));
             return;
         }
 
         playerProfile.setPremium(true);
         plugin.getCore().getStorage().save(playerProfile);
-        TextComponent textComponent = new TextComponent("Added to the list of premium players");
-        textComponent.setColor(ChatColor.DARK_GREEN);
-        fromPlayer.sendMessage(textComponent);
+        fromPlayer.sendMessage(TextComponent.fromLegacyText(plugin.getCore().getMessage("add-premium")));
     }
 }

@@ -3,6 +3,7 @@ package com.github.games647.fastlogin.core.importer;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+
 import javax.sql.DataSource;
 
 public class ElDziAuthImporter extends Importer {

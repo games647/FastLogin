@@ -30,13 +30,13 @@ public class PremiumCommand implements CommandExecutor {
         if (args.length == 0) {
             if (!(sender instanceof Player)) {
                 //console or command block
-                sender.sendMessage(ChatColor.DARK_RED + "Only players can add themselves as premium");
+                sender.sendMessage(plugin.getCore().getMessage("no-console"));
                 return true;
             }
 
             if (plugin.isBungeeCord()) {
                 notifiyBungeeCord(sender, sender.getName());
-                sender.sendMessage(ChatColor.YELLOW + "Sending request...");
+                sender.sendMessage(plugin.getCore().getMessage("wait-on-proxy"));
             } else {
 //            //todo: load async if it's not in the cache anymore
                 final PlayerProfile profile = plugin.getCore().getStorage().loadProfile(sender.getName());
@@ -59,18 +59,18 @@ public class PremiumCommand implements CommandExecutor {
             return true;
         } else {
             if (!sender.hasPermission(command.getPermission() + ".other")) {
-                sender.sendMessage(ChatColor.DARK_RED + "Not enough permissions");
+                sender.sendMessage(plugin.getCore().getMessage("no-permission"));
                 return true;
             }
 
             if (plugin.isBungeeCord()) {
                 notifiyBungeeCord(sender, args[0]);
-                sender.sendMessage(ChatColor.YELLOW + "Sending request...");
+                sender.sendMessage(plugin.getCore().getMessage("wait-on-proxy"));
             } else {
                 //todo: load async if it's not in the cache anymore
                 final PlayerProfile profile = plugin.getCore().getStorage().loadProfile(args[0]);
                 if (profile == null) {
-                    sender.sendMessage(ChatColor.DARK_RED + "Player not in the database");
+                    sender.sendMessage(plugin.getCore().getMessage("player-unknown"));
                     return true;
                 }
 

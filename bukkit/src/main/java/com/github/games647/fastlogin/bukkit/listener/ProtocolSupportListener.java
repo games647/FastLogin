@@ -89,7 +89,8 @@ public class ProtocolSupportListener implements Listener {
         }
     }
 
-    private void startPremiumSession(String playerName, PlayerLoginStartEvent loginStartEvent, boolean registered, PlayerProfile playerProfile) {
+    private void startPremiumSession(String playerName, PlayerLoginStartEvent loginStartEvent, boolean registered
+            , PlayerProfile playerProfile) {
         loginStartEvent.setOnlineMode(true);
         InetSocketAddress address = loginStartEvent.getAddress();
 
