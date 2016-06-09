@@ -46,7 +46,9 @@ public class BukkitCore extends FastLoginCore {
         YamlConfiguration messageConfig = YamlConfiguration.loadConfiguration(messageFile);
         for (String key : messageConfig.getKeys(false)) {
             String message = ChatColor.translateAlternateColorCodes('&', messageConfig.getString(key));
-            localeMessages.put(key, message);
+            if (!message.isEmpty()) {
+                localeMessages.put(key, message);
+            }
         }
     }
 

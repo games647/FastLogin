@@ -86,7 +86,12 @@ public class ForceLoginTask implements Runnable {
 
         String generatedPassword = plugin.generateStringPassword(player);
         boolean success = authPlugin.forceRegister(player, generatedPassword);
-        player.sendMessage(plugin.getCore().getMessage("auto-register").replace("%password", generatedPassword));
+        String message = plugin.getCore().getMessage("auto-register");
+        if (message != null) {
+            message = message.replace("%password", generatedPassword);
+        }
+
+        player.sendMessage(message);
         return success;
     }
 
