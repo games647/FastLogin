@@ -21,6 +21,7 @@ So they don't need to enter passwords. This is also called auto login (auto-logi
 * Plugin: ProtocolSupport is supported and can be used as an alternative to ProtocolLib
 * No client modifications needed
 * Good performance by using async non blocking operations
+* Locale messages
 * Free
 * Open source
 

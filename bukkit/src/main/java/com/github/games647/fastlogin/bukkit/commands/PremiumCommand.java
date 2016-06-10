@@ -36,7 +36,10 @@ public class PremiumCommand implements CommandExecutor {
 
             if (plugin.isBungeeCord()) {
                 notifiyBungeeCord(sender, sender.getName());
-                sender.sendMessage(plugin.getCore().getMessage("wait-on-proxy"));
+                String message = plugin.getCore().getMessage("wait-on-proxy");
+                if (message != null) {
+                    sender.sendMessage(message);
+                }
             } else {
 //            //todo: load async if it's not in the cache anymore
                 final PlayerProfile profile = plugin.getCore().getStorage().loadProfile(sender.getName());
@@ -65,7 +68,10 @@ public class PremiumCommand implements CommandExecutor {
 
             if (plugin.isBungeeCord()) {
                 notifiyBungeeCord(sender, args[0]);
-                sender.sendMessage(plugin.getCore().getMessage("wait-on-proxy"));
+                String message = plugin.getCore().getMessage("wait-on-proxy");
+                if (message != null) {
+                    sender.sendMessage(message);
+                }
             } else {
                 //todo: load async if it's not in the cache anymore
                 final PlayerProfile profile = plugin.getCore().getStorage().loadProfile(args[0]);

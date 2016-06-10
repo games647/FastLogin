@@ -89,16 +89,21 @@ public class ForceLoginTask implements Runnable {
         String message = plugin.getCore().getMessage("auto-register");
         if (message != null) {
             message = message.replace("%password", generatedPassword);
+            player.sendMessage(message);
         }
 
-        player.sendMessage(message);
         return success;
     }
 
     private boolean forceLogin(BukkitAuthPlugin authPlugin, Player player) {
         plugin.getLogger().log(Level.FINE, "Logging player {0} in", player.getName());
         boolean success = authPlugin.forceLogin(player);
-        player.sendMessage(plugin.getCore().getMessage("auto-login"));
+
+        String message = plugin.getCore().getMessage("auto-login");
+        if (message != null) {
+            player.sendMessage(message);
+        }
+
         return success;
     }
 
