@@ -1,7 +1,12 @@
+######1.5
+
+* Added localization
+* Fixed NPE on premium name check if it's pure cracked player
+
 ######1.4
 
 * Added Bungee setAuthPlugin method
-* Added nameChangeCheck 
+* Added nameChangeCheck
 * Multiple BungeeCord support
 
 ######1.3.1

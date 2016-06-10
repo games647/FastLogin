@@ -93,7 +93,7 @@ public class StartPacketListener extends PacketAdapter {
 
                 //user not exists in the db
                 try {
-                    if (plugin.getConfig().getBoolean("nameChangeCheck")) {
+                    if (premiumUUID != null && plugin.getConfig().getBoolean("nameChangeCheck")) {
                         profile = plugin.getCore().getStorage().loadProfile(premiumUUID);
                         if (profile != null) {
                             plugin.getLogger().log(Level.FINER, "Player {0} changed it's username", premiumUUID);
@@ -102,7 +102,8 @@ public class StartPacketListener extends PacketAdapter {
                         }
                     }
 
-                    if (plugin.getConfig().getBoolean("autoRegister") && !authPlugin.isRegistered(username)) {
+                    if (premiumUUID != null
+                            && plugin.getConfig().getBoolean("autoRegister") && !authPlugin.isRegistered(username)) {
                         plugin.getLogger().log(Level.FINER, "Player {0} uses a premium username", username);
                         enablePremiumLogin(username, profile, sessionKey, player, packetEvent, false);
                         return;
