@@ -1,9 +1,9 @@
 package com.github.games647.fastlogin.core;
 
 import java.io.File;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadFactory;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -18,7 +18,7 @@ public abstract class FastLoginCore {
                 + "-" + withoutDashes.substring(20, 32));
     }
 
-    protected final Map<String, String> localeMessages = new HashMap<>();
+    protected final Map<String, String> localeMessages = new ConcurrentHashMap<>();
     private MojangApiConnector mojangApiConnector;
     private Storage storage;
 
