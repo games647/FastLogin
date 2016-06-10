@@ -47,6 +47,8 @@ public class AsyncPremiumCheck implements Runnable {
                 }
             } else if (profile.isPremium()) {
                 requestPremiumLogin(connection, profile, username, true);
+            } else {
+                plugin.getSession().put(connection, new LoginSession(username, false, profile));
             }
         } catch (Exception ex) {
             plugin.getLogger().log(Level.SEVERE, "Failed to check premium state", ex);

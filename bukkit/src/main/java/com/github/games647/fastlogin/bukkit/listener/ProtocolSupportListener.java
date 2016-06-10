@@ -74,6 +74,9 @@ public class ProtocolSupportListener implements Listener {
                 }
             } else if (profile.isPremium()) {
                 startPremiumSession(username, loginStartEvent, true, profile);
+            } else {
+                BukkitLoginSession loginSession = new BukkitLoginSession(username, profile);
+                plugin.getSessions().put(loginStartEvent.getAddress().toString(), loginSession);
             }
         }
     }

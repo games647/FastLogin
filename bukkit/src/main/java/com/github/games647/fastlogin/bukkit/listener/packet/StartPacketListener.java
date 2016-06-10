@@ -117,6 +117,9 @@ public class StartPacketListener extends PacketAdapter {
                 }
             } else if (profile.isPremium()) {
                 enablePremiumLogin(username, profile, sessionKey, player, packetEvent, true);
+            } else {
+                BukkitLoginSession loginSession = new BukkitLoginSession(username, profile);
+                plugin.getSessions().put(sessionKey, loginSession);
             }
         }
     }
