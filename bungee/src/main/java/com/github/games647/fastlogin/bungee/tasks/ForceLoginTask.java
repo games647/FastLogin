@@ -28,7 +28,7 @@ public class ForceLoginTask implements Runnable {
     @Override
     public void run() {
         PendingConnection pendingConnection = player.getPendingConnection();
-        LoginSession session = plugin.getSession().remove(pendingConnection);
+        LoginSession session = plugin.getSession().get(pendingConnection);
         PlayerProfile playerProfile = session.getProfile();
 
         //force login only on success

@@ -5,7 +5,7 @@
     <parent>
         <groupId>com.github.games647</groupId>
         <artifactId>fastlogin</artifactId>
-        <version>1.5.1</version>
+        <version>1.5.2</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -17,12 +17,6 @@
     <name>FastLoginBungee</name>
 
     <repositories>
-        <!--Waterfall-->
-<!--        <repository>
-            <id>ellune-releases</id>
-            <url>https://repo.ellune.net/content/repositories/snapshots/</url>
-        </repository>-->
-
         <!--BungeeCord with also the part outside the API-->
         <repository>
             <id>RYRED-REPO</id>

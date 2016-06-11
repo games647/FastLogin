@@ -14,6 +14,7 @@ import java.util.logging.Level;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.PendingConnection;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.md_5.bungee.api.event.PlayerDisconnectEvent;
 import net.md_5.bungee.api.event.PostLoginEvent;
 import net.md_5.bungee.api.event.PreLoginEvent;
 import net.md_5.bungee.api.event.ServerConnectedEvent;
@@ -87,5 +88,11 @@ public class PlayerConnectionListener implements Listener {
         ProxiedPlayer player = serverConnectedEvent.getPlayer();
         ForceLoginTask loginTask = new ForceLoginTask(plugin, player, serverConnectedEvent.getServer());
         ProxyServer.getInstance().getScheduler().runAsync(plugin, loginTask);
+    }
+
+    @EventHandler
+    public void onServerConnected(PlayerDisconnectEvent disconnectEvent) {
+        ProxiedPlayer player = disconnectEvent.getPlayer();
+        plugin.getSession().remove(player.getPendingConnection());
     }
 }

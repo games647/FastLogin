@@ -1,3 +1,7 @@
+######1.5.2
+
+* Fixed BungeeCord force logins if there is a lobby server
+
 ######1.5.1
 
 * Fixed BungeeCord support by correctly saving the proxy ids
