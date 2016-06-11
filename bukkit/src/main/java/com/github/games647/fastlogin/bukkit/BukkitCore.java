@@ -54,6 +54,6 @@ public class BukkitCore extends FastLoginCore {
 
     @Override
     public void loadConfig() {
-        plugin.saveConfig();
+        plugin.saveDefaultConfig();
     }
 }
