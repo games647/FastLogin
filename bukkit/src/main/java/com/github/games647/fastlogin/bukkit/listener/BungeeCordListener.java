@@ -119,6 +119,8 @@ public class BungeeCordListener implements PluginMessageListener {
                 UUID uuid = UUID.fromString(line.trim());
                 ids.add(uuid);
             }
+
+            return ids;
         } catch (IOException ex) {
             plugin.getLogger().log(Level.SEVERE, "Failed to create file for Proxy whitelist", ex);
         } catch (Exception ex) {

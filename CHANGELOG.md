@@ -1,8 +1,13 @@
+######1.5.1
+
+* Fixed BungeeCord support by correctly saving the proxy ids
+
 ######1.5
 
 * Added localization
 * Fixed NPE on premium name check if it's pure cracked player
 * Fixed NPE in BungeeCord on cracked login for existing players
+* Fixed saving of existing cracked players
 
 ######1.4
 

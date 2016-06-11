@@ -51,7 +51,7 @@ public class ForceLoginTask implements Runnable {
                 sendSuccessNotification();
             } else {
                 boolean success = false;
-                if (isOnlineThreadSafe() && session.isVerified()) {
+                if (isOnlineThreadSafe()) {
                     if (session.needsRegistration()) {
                         success = forceRegister(authPlugin, player);
                     } else {
