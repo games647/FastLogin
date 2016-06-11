@@ -1,8 +1,8 @@
 package com.github.games647.fastlogin.bungee.tasks;
 
+import com.github.games647.fastlogin.bungee.BungeeLoginSession;
 import com.github.games647.fastlogin.bungee.FastLoginBungee;
 import com.github.games647.fastlogin.bungee.hooks.BungeeAuthPlugin;
-import com.github.games647.fastlogin.core.LoginSession;
 import com.github.games647.fastlogin.core.PlayerProfile;
 
 import java.util.UUID;
@@ -43,12 +43,12 @@ public class AsyncPremiumCheck implements Runnable {
                         || checkNameChange(premiumUUID, connection, username)
                         || checkPremiumName(username, connection, profile)) {
                     //nothing detected the player as premium -> start a cracked session
-                    plugin.getSession().put(connection, new LoginSession(username, false, profile));
+                    plugin.getSession().put(connection, new BungeeLoginSession(username, false, profile));
                 }
             } else if (profile.isPremium()) {
                 requestPremiumLogin(connection, profile, username, true);
             } else {
-                plugin.getSession().put(connection, new LoginSession(username, false, profile));
+                plugin.getSession().put(connection, new BungeeLoginSession(username, false, profile));
             }
         } catch (Exception ex) {
             plugin.getLogger().log(Level.SEVERE, "Failed to check premium state", ex);
@@ -87,6 +87,6 @@ public class AsyncPremiumCheck implements Runnable {
 
     private void requestPremiumLogin(PendingConnection con, PlayerProfile profile, String username, boolean register) {
         con.setOnlineMode(true);
-        plugin.getSession().put(con, new LoginSession(username, register, profile));
+        plugin.getSession().put(con, new BungeeLoginSession(username, register, profile));
     }
 }

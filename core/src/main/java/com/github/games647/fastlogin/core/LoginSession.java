@@ -3,8 +3,8 @@ package com.github.games647.fastlogin.core;
 public class LoginSession {
 
     private final String username;
-    private final boolean registered;
     private final PlayerProfile profile;
+    protected boolean registered;
 
     public LoginSession(String username, boolean registered, PlayerProfile profile) {
         this.username = username;

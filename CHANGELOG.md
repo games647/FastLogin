@@ -1,6 +1,7 @@
 ######1.5.2
 
 * Fixed BungeeCord force logins if there is a lobby server
+* Removed cache expire in BungeeCord
 
 ######1.5.1
 

@@ -1,8 +1,8 @@
 package com.github.games647.fastlogin.bungee.tasks;
 
+import com.github.games647.fastlogin.bungee.BungeeLoginSession;
 import com.github.games647.fastlogin.bungee.FastLoginBungee;
 import com.github.games647.fastlogin.bungee.hooks.BungeeAuthPlugin;
-import com.github.games647.fastlogin.core.LoginSession;
 import com.github.games647.fastlogin.core.PlayerProfile;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
@@ -28,8 +28,12 @@ public class ForceLoginTask implements Runnable {
     @Override
     public void run() {
         PendingConnection pendingConnection = player.getPendingConnection();
-        LoginSession session = plugin.getSession().get(pendingConnection);
+        BungeeLoginSession session = plugin.getSession().get(pendingConnection);
         PlayerProfile playerProfile = session.getProfile();
+
+        if (player.isConnected()) {
+            return;
+        }
 
         //force login only on success
         if (pendingConnection.isOnlineMode()) {
@@ -37,21 +41,25 @@ public class ForceLoginTask implements Runnable {
 
             BungeeAuthPlugin authPlugin = plugin.getBungeeAuthPlugin();
             if (authPlugin == null) {
+                //save will happen on success message from bukkit
                 sendBukkitLoginNotification(autoRegister);
-            } else if (player.isConnected()) {
-                if (session.needsRegistration()) {
-                    String password = plugin.generateStringPassword();
-                    if (authPlugin.forceRegister(player, password)) {
-                        sendBukkitLoginNotification(autoRegister);
-                    }
-                } else if (authPlugin.forceLogin(player)) {
+            } else if (session.needsRegistration()) {
+                String password = plugin.generateStringPassword();
+                if (authPlugin.forceRegister(player, password)) {
+                    //save will happen on success message from bukkit
                     sendBukkitLoginNotification(autoRegister);
                 }
+            } else if (authPlugin.forceLogin(player)) {
+                //save will happen on success message from bukkit
+                sendBukkitLoginNotification(autoRegister);
             }
         } else {
             //cracked player
-            playerProfile.setPremium(false);
-            plugin.getCore().getStorage().save(playerProfile);
+            if (!session.isAlreadySaved()) {
+                playerProfile.setPremium(false);
+                plugin.getCore().getStorage().save(playerProfile);
+                session.setAlreadySaved(true);
+            }
         }
     }
 
