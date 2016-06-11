@@ -2,6 +2,7 @@
 
 * Fixed BungeeCord force logins if there is a lobby server
 * Removed cache expire in BungeeCord
+* Applies skin earlier to make it visible for other plugins listening on login events
 
 ######1.5.1
 

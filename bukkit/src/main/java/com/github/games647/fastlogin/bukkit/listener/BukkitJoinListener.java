@@ -1,8 +1,5 @@
 package com.github.games647.fastlogin.bukkit.listener;
 
-import com.comphenix.protocol.wrappers.WrappedGameProfile;
-import com.comphenix.protocol.wrappers.WrappedSignedProperty;
-import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 import com.github.games647.fastlogin.bukkit.tasks.ForceLoginTask;
 
@@ -39,15 +36,6 @@ public class BukkitJoinListener implements Listener {
     @EventHandler(ignoreCancelled = true)
     public void onPlayerJoin(PlayerJoinEvent joinEvent) {
         Player player = joinEvent.getPlayer();
-
-        BukkitLoginSession session = plugin.getSessions().get(player.getAddress().toString());
-        if (session != null && plugin.getConfig().getBoolean("forwardSkin")) {
-            WrappedGameProfile gameProfile = WrappedGameProfile.fromPlayer(player);
-            WrappedSignedProperty skin = session.getSkin();
-            if (skin != null) {
-                gameProfile.getProperties().put("textures", skin);
-            }
-        }
 
         if (!plugin.isBungeeCord()) {
             //Wait before auth plugin and we received a message from BungeeCord initializes the player

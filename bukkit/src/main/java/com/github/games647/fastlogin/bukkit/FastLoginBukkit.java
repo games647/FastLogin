@@ -12,6 +12,7 @@ import com.github.games647.fastlogin.bukkit.hooks.BukkitAuthPlugin;
 import com.github.games647.fastlogin.bukkit.listener.BukkitJoinListener;
 import com.github.games647.fastlogin.bukkit.listener.BungeeCordListener;
 import com.github.games647.fastlogin.bukkit.listener.ProtocolSupportListener;
+import com.github.games647.fastlogin.bukkit.listener.packet.LoginSkinApplyListener;
 import com.github.games647.fastlogin.bukkit.listener.packet.EncryptionPacketListener;
 import com.github.games647.fastlogin.bukkit.listener.packet.StartPacketListener;
 import com.github.games647.fastlogin.core.FastLoginCore;
@@ -114,6 +115,7 @@ public class FastLoginBukkit extends JavaPlugin {
 
                 asynchronousManager.registerAsyncHandler(startPacketListener).start(WORKER_THREADS);
                 asynchronousManager.registerAsyncHandler(encryptionPacketListener).start(WORKER_THREADS);
+                getServer().getPluginManager().registerEvents(new LoginSkinApplyListener(this), this);
             }
         }
 
