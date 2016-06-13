@@ -134,13 +134,13 @@ public class FastLoginBukkit extends JavaPlugin {
         //clean up
         session.clear();
 
+        if (core != null) {
+            core.close();
+        }
+
         //remove old blacklists
         for (Player player : getServer().getOnlinePlayers()) {
             player.removeMetadata(getName(), this);
-        }
-
-        if (core != null) {
-            core.close();
         }
     }
 

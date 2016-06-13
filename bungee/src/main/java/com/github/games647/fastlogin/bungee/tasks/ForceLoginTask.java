@@ -31,7 +31,7 @@ public class ForceLoginTask implements Runnable {
         BungeeLoginSession session = plugin.getSession().get(pendingConnection);
         PlayerProfile playerProfile = session.getProfile();
 
-        if (player.isConnected()) {
+        if (!player.isConnected()) {
             return;
         }
 

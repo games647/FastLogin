@@ -11,6 +11,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerLoginEvent.Result;
+import org.bukkit.event.player.PlayerQuitEvent;
 
 /**
  * This listener tells authentication plugins if the player has a premium account and we checked it successfully. So the
@@ -41,5 +42,11 @@ public class BukkitJoinListener implements Listener {
             //Wait before auth plugin and we received a message from BungeeCord initializes the player
             Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, new ForceLoginTask(plugin, player), DELAY_LOGIN);
         }
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onPlayerQuit(PlayerQuitEvent quitEvent) {
+        Player player = quitEvent.getPlayer();
+        player.removeMetadata(plugin.getName(), plugin);
     }
 }
