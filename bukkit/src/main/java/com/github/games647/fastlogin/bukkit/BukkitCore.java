@@ -1,9 +1,11 @@
 package com.github.games647.fastlogin.bukkit;
 
 import com.github.games647.fastlogin.core.FastLoginCore;
+import com.google.common.base.Charsets;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 import java.io.File;
+import java.io.InputStreamReader;
 import java.util.concurrent.ThreadFactory;
 import java.util.logging.Logger;
 
@@ -44,6 +46,11 @@ public class BukkitCore extends FastLoginCore {
 
         File messageFile = new File(plugin.getDataFolder(), "messages.yml");
         YamlConfiguration messageConfig = YamlConfiguration.loadConfiguration(messageFile);
+
+        InputStreamReader defaultReader = new InputStreamReader(plugin.getResource("messages.yml"), Charsets.UTF_8);
+        YamlConfiguration defaults = YamlConfiguration.loadConfiguration(defaultReader);
+        messageConfig.setDefaults(defaults);
+
         for (String key : messageConfig.getKeys(false)) {
             String message = ChatColor.translateAlternateColorCodes('&', messageConfig.getString(key));
             if (!message.isEmpty()) {

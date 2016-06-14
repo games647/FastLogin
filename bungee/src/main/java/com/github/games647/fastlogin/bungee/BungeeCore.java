@@ -49,9 +49,13 @@ public class BungeeCore extends FastLoginCore {
     public void loadMessages() {
         try {
             saveDefaultFile("messages.yml");
-            
+
+            Configuration defaults = ConfigurationProvider.getProvider(YamlConfiguration.class)
+                    .load(getClass().getResourceAsStream("/messages.yml"));
+
             File messageFile = new File(getDataFolder(), "messages.yml");
-            Configuration messageConfig = ConfigurationProvider.getProvider(YamlConfiguration.class).load(messageFile);
+            Configuration messageConfig = ConfigurationProvider.getProvider(YamlConfiguration.class)
+                    .load(messageFile, defaults);
             for (String key : messageConfig.getKeys()) {
                 String message = ChatColor.translateAlternateColorCodes('&', messageConfig.getString(key));
                 if (!message.isEmpty()) {
