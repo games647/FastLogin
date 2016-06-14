@@ -1,19 +1,18 @@
 package com.github.games647.fastlogin.bukkit;
 
-import com.github.games647.fastlogin.bukkit.tasks.DelayedAuthHook;
 import com.avaje.ebeaninternal.api.ClassUtil;
 import com.comphenix.protocol.AsynchronousManager;
 import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.ProtocolManager;
 import com.github.games647.fastlogin.bukkit.commands.CrackedCommand;
 import com.github.games647.fastlogin.bukkit.commands.PremiumCommand;
 import com.github.games647.fastlogin.bukkit.hooks.BukkitAuthPlugin;
 import com.github.games647.fastlogin.bukkit.listener.BukkitJoinListener;
 import com.github.games647.fastlogin.bukkit.listener.BungeeCordListener;
-import com.github.games647.fastlogin.bukkit.listener.ProtocolSupportListener;
-import com.github.games647.fastlogin.bukkit.listener.packet.LoginSkinApplyListener;
-import com.github.games647.fastlogin.bukkit.listener.packet.EncryptionPacketListener;
-import com.github.games647.fastlogin.bukkit.listener.packet.StartPacketListener;
+import com.github.games647.fastlogin.bukkit.listener.protocollib.EncryptionPacketListener;
+import com.github.games647.fastlogin.bukkit.listener.protocollib.LoginSkinApplyListener;
+import com.github.games647.fastlogin.bukkit.listener.protocollib.StartPacketListener;
+import com.github.games647.fastlogin.bukkit.listener.protocolsupport.ProtocolSupportListener;
+import com.github.games647.fastlogin.bukkit.tasks.DelayedAuthHook;
 import com.github.games647.fastlogin.core.FastLoginCore;
 import com.google.common.cache.CacheLoader;
 
@@ -30,7 +29,7 @@ import org.bukkit.plugin.java.JavaPlugin;
  */
 public class FastLoginBukkit extends JavaPlugin {
 
-    private static final int WORKER_THREADS = 5;
+    private static final int WORKER_THREADS = 3;
 
     //provide a immutable key pair to be thread safe | used for encrypting and decrypting traffic
     private final KeyPair keyPair = EncryptionUtil.generateKeyPair();
@@ -41,7 +40,8 @@ public class FastLoginBukkit extends JavaPlugin {
 
     //this map is thread-safe for async access (Packet Listener)
     //SafeCacheBuilder is used in order to be version independent
-    private final ConcurrentMap<String, BukkitLoginSession> session = CacheBuilder.<String, BukkitLoginSession>newBuilder()
+    private final ConcurrentMap<String, BukkitLoginSession> session = CompatibleCacheBuilder
+            .<String, BukkitLoginSession>newBuilder()
             //2 minutes should be enough as a timeout for bad internet connection (Server, Client and Mojang)
             .expireAfterWrite(1, TimeUnit.MINUTES)
             //mapped by ip:port -> PlayerSession
@@ -104,13 +104,11 @@ public class FastLoginBukkit extends JavaPlugin {
             if (getServer().getPluginManager().isPluginEnabled("ProtocolSupport")) {
                 getServer().getPluginManager().registerEvents(new ProtocolSupportListener(this), this);
             } else if (getServer().getPluginManager().isPluginEnabled("ProtocolLib")) {
-                ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
-
                 //we are performing HTTP request on these so run it async (seperate from the Netty IO threads)
-                AsynchronousManager asynchronousManager = protocolManager.getAsynchronousManager();
+                AsynchronousManager asynchronousManager = ProtocolLibrary.getProtocolManager().getAsynchronousManager();
 
-                StartPacketListener startPacketListener = new StartPacketListener(this, protocolManager);
-                EncryptionPacketListener encryptionPacketListener = new EncryptionPacketListener(this, protocolManager);
+                StartPacketListener startPacketListener = new StartPacketListener(this);
+                EncryptionPacketListener encryptionPacketListener = new EncryptionPacketListener(this);
 
                 asynchronousManager.registerAsyncHandler(startPacketListener).start(WORKER_THREADS);
                 asynchronousManager.registerAsyncHandler(encryptionPacketListener).start(WORKER_THREADS);

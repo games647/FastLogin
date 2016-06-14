@@ -1,6 +1,9 @@
 ######1.6
 
 * Removed ProtocolLib as required dependency. You can use ProtocolSupport or BungeeCord as alternative
+* Reduce the number of worker threads from 5 to 3 in ProtocolLib
+* Process packets in ProtocolLib async/non-blocking -> better performance
+* Fix error if forward skins is disabled
 
 ######1.5.2
 

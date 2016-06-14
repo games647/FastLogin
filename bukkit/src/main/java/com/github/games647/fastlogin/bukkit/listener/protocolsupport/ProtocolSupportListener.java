@@ -1,4 +1,4 @@
-package com.github.games647.fastlogin.bukkit.listener;
+package com.github.games647.fastlogin.bukkit.listener.protocolsupport;
 
 import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;

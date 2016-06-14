@@ -1,8 +1,8 @@
-package com.github.games647.fastlogin.bukkit.listener.packet;
+package com.github.games647.fastlogin.bukkit.listener.protocollib;
 
 import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
-import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.injector.server.TemporaryPlayerFactory;
@@ -26,65 +26,42 @@ import javax.crypto.SecretKey;
 
 import org.bukkit.entity.Player;
 
-/**
- * Handles incoming encryption responses from connecting clients.
- * It prevents them from reaching the server because that cannot handle
- * it in offline mode.
- *
- * Moreover this manages a started premium check from
- * this plugin. So check if all data is correct and we can prove him as a
- * owner of a paid minecraft account.
- *
- * Receiving packet information:
- * http://wiki.vg/Protocol#Encryption_Response
- *
- * sharedSecret=encrypted byte array
- * verify token=encrypted byte array
- */
-public class EncryptionPacketListener extends PacketAdapter {
+public class VerifyResponseTask implements Runnable {
 
-    private final ProtocolManager protocolManager;
-    //hides the inherit Plugin plugin field, but we need this type
     private final FastLoginBukkit plugin;
+    private final PacketEvent packetEvent;
 
-    public EncryptionPacketListener(FastLoginBukkit plugin, ProtocolManager protocolManger) {
-        //run async in order to not block the server, because we make api calls to Mojang
-        super(params(plugin, PacketType.Login.Client.ENCRYPTION_BEGIN).optionAsync());
+    private final Player fromPlayer;
 
+    private final byte[] sharedSecret;
+
+    public VerifyResponseTask(FastLoginBukkit plugin, PacketEvent packetEvent, Player fromPlayer, byte[] sharedSecret) {
         this.plugin = plugin;
-        this.protocolManager = protocolManger;
+        this.packetEvent = packetEvent;
+        this.fromPlayer = fromPlayer;
+        this.sharedSecret = sharedSecret;
     }
 
-    /**
-     * C->S : Handshake State=2
-     * C->S : Login Start
-     * S->C : Encryption Key Request
-     * (Client Auth)
-     * C->S : Encryption Key Response
-     * (Server Auth, Both enable encryption)
-     * S->C : Login Success (*)
-     *
-     * On offline logins is Login Start followed by Login Success
-     *
-     * Minecraft Server implementation
-     * https://github.com/bergerkiller/CraftSource/blob/master/net.minecraft.server/LoginListener.java#L180
-     */
     @Override
-    public void onPacketReceiving(PacketEvent packetEvent) {
-        Player player = packetEvent.getPlayer();
-
-        BukkitLoginSession session = plugin.getSessions().get(player.getAddress().toString());
-        if (session == null) {
-            disconnect(packetEvent, plugin.getCore().getMessage("invalid-requst"), true
-                    , "Player {0} tried to send encryption response at invalid state", player.getAddress());
-            return;
+    public void run() {
+        try {
+            BukkitLoginSession session = plugin.getSessions().get(fromPlayer.getAddress().toString());
+            if (session == null) {
+                disconnect(plugin.getCore().getMessage("invalid-requst"), true
+                        , "Player {0} tried to send encryption response at invalid state", fromPlayer.getAddress());
+            } else {
+                verifyResponse(session);
+            }
+        } finally {
+            ProtocolLibrary.getProtocolManager().getAsynchronousManager().signalPacketTransmission(packetEvent);
         }
+    }
 
+    private void verifyResponse(BukkitLoginSession session) {
         PrivateKey privateKey = plugin.getServerKey().getPrivate();
 
-        byte[] sharedSecret = packetEvent.getPacket().getByteArrays().read(0);
         SecretKey loginKey = EncryptionUtil.decryptSharedKey(privateKey, sharedSecret);
-        if (!checkVerifyToken(session, privateKey, packetEvent) || !encryptConnection(player, loginKey, packetEvent)) {
+        if (!checkVerifyToken(session, privateKey) || !encryptConnection(loginKey)) {
             return;
         }
 
@@ -102,34 +79,35 @@ public class EncryptionPacketListener extends PacketAdapter {
             plugin.getLogger().log(Level.FINE, "Player {0} has a verified premium account", username);
 
             session.setVerified(true);
-            setPremiumUUID(session, player);
-            receiveFakeStartPacket(username, player);
+            setPremiumUUID(session.getUuid());
+            receiveFakeStartPacket(username);
         } else {
             //user tried to fake a authentication
-            disconnect(packetEvent, plugin.getCore().getMessage("invalid-session"), true
+            disconnect(plugin.getCore().getMessage("invalid-session"), true
                     , "Player {0} ({1}) tried to log in with an invalid session ServerId: {2}"
-                    , session.getUsername(), player.getAddress(), serverId);
+                    , session.getUsername(), fromPlayer.getAddress(), serverId);
         }
 
         //this is a fake packet; it shouldn't be send to the server
-        packetEvent.setCancelled(true);
+        synchronized (packetEvent.getAsyncMarker().getProcessingLock()) {
+            packetEvent.setCancelled(true);
+        }
     }
 
-    private void setPremiumUUID(BukkitLoginSession session, Player player) {
-        UUID uuid = session.getUuid();
-        if (plugin.getConfig().getBoolean("premiumUuid") && uuid != null) {
+    private void setPremiumUUID(UUID premiumUUID) {
+        if (plugin.getConfig().getBoolean("premiumUuid") && premiumUUID != null) {
             try {
-                Object networkManager = getNetworkManager(player);
+                Object networkManager = getNetworkManager();
                 //https://github.com/bergerkiller/CraftSource/blob/master/net.minecraft.server/NetworkManager.java#L69
                 Field spoofField = FuzzyReflection.fromObject(networkManager).getFieldByType("spoofedUUID", UUID.class);
-                spoofField.set(networkManager, uuid);
+                spoofField.set(networkManager, premiumUUID);
             } catch (ReflectiveOperationException reflectiveOperationException) {
                 plugin.getLogger().log(Level.SEVERE, "Error setting premium uuid", reflectiveOperationException);
             }
         }
     }
 
-    private boolean checkVerifyToken(BukkitLoginSession session, PrivateKey privateKey, PacketEvent packetEvent) {
+    private boolean checkVerifyToken(BukkitLoginSession session, PrivateKey privateKey) {
         byte[] requestVerify = session.getVerifyToken();
         //encrypted verify token
         byte[] responseVerify = packetEvent.getPacket().getByteArrays().read(1);
@@ -137,7 +115,7 @@ public class EncryptionPacketListener extends PacketAdapter {
         //https://github.com/bergerkiller/CraftSource/blob/master/net.minecraft.server/LoginListener.java#L182
         if (!Arrays.equals(requestVerify, EncryptionUtil.decryptData(privateKey, responseVerify))) {
             //check if the verify token are equal to the server sent one
-            disconnect(packetEvent, plugin.getCore().getMessage("invalid-verify-token"), true
+            disconnect(plugin.getCore().getMessage("invalid-verify-token"), true
                     , "Player {0} ({1}) tried to login with an invalid verify token. Server: {2} Client: {3}"
                     , session.getUsername(), packetEvent.getPlayer().getAddress(), requestVerify, responseVerify);
             return false;
@@ -147,9 +125,8 @@ public class EncryptionPacketListener extends PacketAdapter {
     }
 
     //try to get the networkManager from ProtocolLib
-    private Object getNetworkManager(Player player)
-            throws IllegalAccessException, NoSuchFieldException {
-        Object socketInjector = TemporaryPlayerFactory.getInjectorFromPlayer(player);
+    private Object getNetworkManager() throws IllegalAccessException, NoSuchFieldException {
+        Object socketInjector = TemporaryPlayerFactory.getInjectorFromPlayer(fromPlayer);
         Field injectorField = socketInjector.getClass().getDeclaredField("injector");
         injectorField.setAccessible(true);
 
@@ -160,11 +137,10 @@ public class EncryptionPacketListener extends PacketAdapter {
         return injectorField.get(rawInjector);
     }
 
-    private boolean encryptConnection(Player player, SecretKey loginKey, PacketEvent packetEvent)
-            throws IllegalArgumentException {
+    private boolean encryptConnection(SecretKey loginKey) throws IllegalArgumentException {
         try {
             //get the NMS connection handle of this player
-            Object networkManager = getNetworkManager(player);
+            Object networkManager = getNetworkManager();
 
             //try to detect the method by parameters
             Method encryptConnectionMethod = FuzzyReflection
@@ -174,16 +150,15 @@ public class EncryptionPacketListener extends PacketAdapter {
             //the client expects this behaviour
             encryptConnectionMethod.invoke(networkManager, loginKey);
         } catch (ReflectiveOperationException ex) {
-            disconnect(packetEvent, plugin.getCore().getMessage("error-kick"), false, "Couldn't enable encryption", ex);
+            disconnect(plugin.getCore().getMessage("error-kick"), false, "Couldn't enable encryption", ex);
             return false;
         }
 
         return true;
     }
 
-    private void disconnect(PacketEvent packetEvent, String kickReason, boolean debugLevel, String logMessage
-            , Object... arguments) {
-        if (debugLevel) {
+    private void disconnect(String kickReason, boolean debug, String logMessage, Object... arguments) {
+        if (debug) {
             plugin.getLogger().log(Level.FINE, logMessage, arguments);
         } else {
             plugin.getLogger().log(Level.SEVERE, logMessage, arguments);
@@ -191,10 +166,14 @@ public class EncryptionPacketListener extends PacketAdapter {
 
         kickPlayer(packetEvent.getPlayer(), kickReason);
         //cancel the event in order to prevent the server receiving an invalid packet
-        packetEvent.setCancelled(true);
+        synchronized (packetEvent.getAsyncMarker().getProcessingLock()) {
+            packetEvent.setCancelled(true);
+        }
     }
 
     private void kickPlayer(Player player, String reason) {
+        ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
+
         PacketContainer kickPacket = protocolManager.createPacket(PacketType.Login.Server.DISCONNECT);
         kickPacket.getChatComponents().write(0, WrappedChatComponent.fromText(reason));
 
@@ -210,7 +189,9 @@ public class EncryptionPacketListener extends PacketAdapter {
     }
 
     //fake a new login packet in order to let the server handle all the other stuff
-    private void receiveFakeStartPacket(String username, Player from) {
+    private void receiveFakeStartPacket(String username) {
+        ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
+        
         //see StartPacketListener for packet information
         PacketContainer startPacket = protocolManager.createPacket(PacketType.Login.Client.START);
 
@@ -219,11 +200,11 @@ public class EncryptionPacketListener extends PacketAdapter {
         startPacket.getGameProfiles().write(0, fakeProfile);
         try {
             //we don't want to handle our own packets so ignore filters
-            protocolManager.recieveClientPacket(from, startPacket, false);
+            protocolManager.recieveClientPacket(fromPlayer, startPacket, false);
         } catch (InvocationTargetException | IllegalAccessException ex) {
             plugin.getLogger().log(Level.WARNING, "Failed to fake a new start packet", ex);
             //cancel the event in order to prevent the server receiving an invalid packet
-            kickPlayer(from, plugin.getCore().getMessage("error-kick"));
+            kickPlayer(fromPlayer, plugin.getCore().getMessage("error-kick"));
         }
     }
 }

@@ -5,23 +5,18 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 
 import com.google.common.base.Ticker;
+import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.RemovalListener;
 
 /**
  * Represents a Guava CacheBuilder that is compatible with both Guava 10 and 13
  */
-public class CacheBuilder<K, V> {
-
-    private CacheBuilder<K, V> builder;
+public class CompatibleCacheBuilder<K, V> {
 
     private static Method BUILD_METHOD;
     private static Method AS_MAP_METHOD;
 
-    @SuppressWarnings("unchecked")
-    private CacheBuilder() {
-        builder = (CacheBuilder<K, V>) CacheBuilder.newBuilder();
-    }
 
     /**
      * Construct a new safe cache builder.
@@ -31,8 +26,15 @@ public class CacheBuilder<K, V> {
      *
      * @return A new cache builder.
      */
-    public static <K, V> CacheBuilder<K, V> newBuilder() {
-        return new CacheBuilder<K, V>();
+    public static <K, V> CompatibleCacheBuilder<K, V> newBuilder() {
+        return new CompatibleCacheBuilder<K, V>();
+    }
+
+    private CacheBuilder<K, V> builder;
+    
+    @SuppressWarnings("unchecked")
+    private CompatibleCacheBuilder() {
+        builder = (CacheBuilder<K, V>) CacheBuilder.newBuilder();
     }
 
     /**
@@ -56,7 +58,7 @@ public class CacheBuilder<K, V> {
      * @throws IllegalArgumentException if {@code concurrencyLevel} is nonpositive
      * @throws IllegalStateException if a concurrency level was already set
      */
-    public CacheBuilder<K, V> concurrencyLevel(int concurrencyLevel) {
+    public CompatibleCacheBuilder<K, V> concurrencyLevel(int concurrencyLevel) {
         builder.concurrencyLevel(concurrencyLevel);
         return this;
     }
@@ -84,7 +86,7 @@ public class CacheBuilder<K, V> {
      * @throws IllegalArgumentException if {@code duration} is negative
      * @throws IllegalStateException if the time to idle or time to live was already set
      */
-    public CacheBuilder<K, V> expireAfterAccess(long duration, TimeUnit unit) {
+    public CompatibleCacheBuilder<K, V> expireAfterAccess(long duration, TimeUnit unit) {
         builder.expireAfterAccess(duration, unit);
         return this;
     }
@@ -110,7 +112,7 @@ public class CacheBuilder<K, V> {
      * @throws IllegalArgumentException if {@code duration} is negative
      * @throws IllegalStateException if the time to live or time to idle was already set
      */
-    public CacheBuilder<K, V> expireAfterWrite(long duration, TimeUnit unit) {
+    public CompatibleCacheBuilder<K, V> expireAfterWrite(long duration, TimeUnit unit) {
         builder.expireAfterWrite(duration, unit);
         return this;
     }
@@ -127,7 +129,7 @@ public class CacheBuilder<K, V> {
      * @throws IllegalArgumentException if {@code initialCapacity} is negative
      * @throws IllegalStateException if an initial capacity was already set
      */
-    public CacheBuilder<K, V> initialCapacity(int initialCapacity) {
+    public CompatibleCacheBuilder<K, V> initialCapacity(int initialCapacity) {
         builder.initialCapacity(initialCapacity);
         return this;
     }
@@ -149,7 +151,7 @@ public class CacheBuilder<K, V> {
      * @throws IllegalArgumentException if {@code size} is negative
      * @throws IllegalStateException if a maximum size was already set
      */
-    public CacheBuilder<K, V> maximumSize(int size) {
+    public CompatibleCacheBuilder<K, V> maximumSize(int size) {
         builder.maximumSize(size);
         return this;
     }
@@ -186,9 +188,9 @@ public class CacheBuilder<K, V> {
      * @throws IllegalStateException if a removal listener was already set
      */
     @SuppressWarnings("unchecked")
-    public <K1 extends K, V1 extends V> CacheBuilder<K1, V1> removalListener(RemovalListener<? super K1, ? super V1> listener) {
+    public <K1 extends K, V1 extends V> CompatibleCacheBuilder<K1, V1> removalListener(RemovalListener<? super K1, ? super V1> listener) {
         builder.removalListener(listener);
-        return (CacheBuilder<K1, V1>) this;
+        return (CompatibleCacheBuilder<K1, V1>) this;
     }
 
     /**
@@ -204,7 +206,7 @@ public class CacheBuilder<K, V> {
      *
      * @throws IllegalStateException if a ticker was already set
      */
-    public CacheBuilder<K, V> ticker(Ticker ticker) {
+    public CompatibleCacheBuilder<K, V> ticker(Ticker ticker) {
         builder.ticker(ticker);
         return this;
     }
@@ -228,7 +230,7 @@ public class CacheBuilder<K, V> {
      *
      * @throws IllegalStateException if the value strength was already set
      */
-    public CacheBuilder<K, V> softValues() {
+    public CompatibleCacheBuilder<K, V> softValues() {
         builder.softValues();
         return this;
     }
@@ -245,7 +247,7 @@ public class CacheBuilder<K, V> {
      *
      * @throws IllegalStateException if the key strength was already set
      */
-    public CacheBuilder<K, V> weakKeys() {
+    public CompatibleCacheBuilder<K, V> weakKeys() {
         builder.weakKeys();
         return this;
     }
@@ -266,7 +268,7 @@ public class CacheBuilder<K, V> {
      *
      * @throws IllegalStateException if the value strength was already set
      */
-    public CacheBuilder<K, V> weakValues() {
+    public CompatibleCacheBuilder<K, V> weakValues() {
         builder.weakValues();
         return this;
     }
