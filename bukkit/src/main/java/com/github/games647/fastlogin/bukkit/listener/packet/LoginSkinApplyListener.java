@@ -19,15 +19,17 @@ public class LoginSkinApplyListener implements Listener {
         this.plugin = plugin;
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.LOW)
     public void onPlayerLogin(PlayerLoginEvent loginEvent) {
         Player player = loginEvent.getPlayer();
 
         BukkitLoginSession session = plugin.getSessions().get(player.getAddress().toString());
         if (session != null && plugin.getConfig().getBoolean("forwardSkin")) {
             WrappedGameProfile gameProfile = WrappedGameProfile.fromPlayer(player);
-            WrappedSignedProperty skin = session.getSkin();
-            if (skin != null) {
+            String skinData = session.getEncodedSkinData();
+            String signature = session.getSkinSignature();
+            if (skinData != null && signature != null) {
+                WrappedSignedProperty skin = WrappedSignedProperty.fromValues("textures", skinData, signature);
                 gameProfile.getProperties().put("textures", skin);
             }
         }

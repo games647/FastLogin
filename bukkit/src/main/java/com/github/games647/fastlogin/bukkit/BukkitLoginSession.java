@@ -1,6 +1,5 @@
 package com.github.games647.fastlogin.bukkit;
 
-import com.comphenix.protocol.wrappers.WrappedSignedProperty;
 import com.github.games647.fastlogin.core.LoginSession;
 import com.github.games647.fastlogin.core.PlayerProfile;
 
@@ -19,8 +18,10 @@ public class BukkitLoginSession extends LoginSession {
     private final byte[] verifyToken;
 
     private UUID uuid;
-    private WrappedSignedProperty skinProperty;
     private boolean verified;
+
+    private String encodedSkinData;
+    private String skinSignature;
 
     public BukkitLoginSession(String username, String serverId, byte[] verifyToken, boolean registered
             , PlayerProfile profile) {
@@ -64,22 +65,23 @@ public class BukkitLoginSession extends LoginSession {
         return ArrayUtils.clone(verifyToken);
     }
 
-    /**
-     * Gets the premium skin of this player
-     *
-     * @return skin property or null if the player has no skin or is a cracked account
-     */
-    public synchronized WrappedSignedProperty getSkin() {
-        return this.skinProperty;
+    public synchronized String getEncodedSkinData() {
+        return encodedSkinData;
+    }
+
+    public synchronized String getSkinSignature() {
+        return skinSignature;
     }
 
     /**
      * Sets the premium skin property which was retrieved by the session server
      *
-     * @param skinProperty premium skin property
+     * @param encodedData
+     * @param skinSignature
      */
-    public synchronized void setSkin(WrappedSignedProperty skinProperty) {
-        this.skinProperty = skinProperty;
+    public synchronized void setSkin(String encodedData, String skinSignature) {
+        this.encodedSkinData = encodedData;
+        this.skinSignature = skinSignature;
     }
 
     /**

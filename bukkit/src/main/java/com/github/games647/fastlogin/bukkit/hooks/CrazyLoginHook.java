@@ -1,7 +1,5 @@
 package com.github.games647.fastlogin.bukkit.hooks;
 
-import com.comphenix.protocol.reflect.FuzzyReflection;
-
 import de.st_ddt.crazylogin.CrazyLogin;
 import de.st_ddt.crazylogin.data.LoginPlayerData;
 import de.st_ddt.crazylogin.databases.CrazyLoginDataDatabase;
@@ -13,6 +11,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.logging.Level;
 
+import org.apache.commons.lang.reflect.FieldUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -108,7 +107,7 @@ public class CrazyLoginHook implements BukkitAuthPlugin {
     private PlayerListener getListener() {
         PlayerListener listener;
         try {
-            listener = FuzzyReflection.getFieldValue(crazyLoginPlugin, PlayerListener.class, true);
+            listener = (PlayerListener) FieldUtils.readField(crazyLoginPlugin, "playerListener", true);
         } catch (Exception ex) {
             crazyLoginPlugin.getLogger().log(Level.SEVERE, "Failed to get the listener instance for auto login", ex);
             listener = null;

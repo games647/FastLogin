@@ -5,7 +5,6 @@ import com.avaje.ebeaninternal.api.ClassUtil;
 import com.comphenix.protocol.AsynchronousManager;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
-import com.comphenix.protocol.utility.SafeCacheBuilder;
 import com.github.games647.fastlogin.bukkit.commands.CrackedCommand;
 import com.github.games647.fastlogin.bukkit.commands.PremiumCommand;
 import com.github.games647.fastlogin.bukkit.hooks.BukkitAuthPlugin;
@@ -42,7 +41,7 @@ public class FastLoginBukkit extends JavaPlugin {
 
     //this map is thread-safe for async access (Packet Listener)
     //SafeCacheBuilder is used in order to be version independent
-    private final ConcurrentMap<String, BukkitLoginSession> session = SafeCacheBuilder.<String, BukkitLoginSession>newBuilder()
+    private final ConcurrentMap<String, BukkitLoginSession> session = CacheBuilder.<String, BukkitLoginSession>newBuilder()
             //2 minutes should be enough as a timeout for bad internet connection (Server, Client and Mojang)
             .expireAfterWrite(1, TimeUnit.MINUTES)
             //mapped by ip:port -> PlayerSession
@@ -104,7 +103,7 @@ public class FastLoginBukkit extends JavaPlugin {
 
             if (getServer().getPluginManager().isPluginEnabled("ProtocolSupport")) {
                 getServer().getPluginManager().registerEvents(new ProtocolSupportListener(this), this);
-            } else {
+            } else if (getServer().getPluginManager().isPluginEnabled("ProtocolLib")) {
                 ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
 
                 //we are performing HTTP request on these so run it async (seperate from the Netty IO threads)
@@ -116,6 +115,9 @@ public class FastLoginBukkit extends JavaPlugin {
                 asynchronousManager.registerAsyncHandler(startPacketListener).start(WORKER_THREADS);
                 asynchronousManager.registerAsyncHandler(encryptionPacketListener).start(WORKER_THREADS);
                 getServer().getPluginManager().registerEvents(new LoginSkinApplyListener(this), this);
+            } else {
+                getLogger().warning("Either ProtocolLib or ProtocolSupport have to be installed "
+                        + "if you don't use BungeeCord");
             }
         }
 

@@ -1,3 +1,7 @@
+######1.6
+
+* Removed ProtocolLib as required dependency. You can use ProtocolSupport or BungeeCord as alternative
+
 ######1.5.2
 
 * Fixed BungeeCord force logins if there is a lobby server

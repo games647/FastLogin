@@ -14,12 +14,11 @@ dev-url: ${project.url}
 # Load the plugin as early as possible to inject it for all players
 load: STARTUP
 
-# Without Protocollib the plugin does not work at all
-depend: [ProtocolLib]
-
 softdepend:
+    # We require either ProtocolLib or ProtocolSupport
     - ProtocolSupport
-    # Auth plugins
+    - ProtocolLib
+    # Auth plugins - we delay the hook
 #    - xAuth
 #    - AuthMe
 #    - LogIt

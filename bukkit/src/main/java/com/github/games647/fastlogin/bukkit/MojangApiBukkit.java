@@ -1,6 +1,5 @@
 package com.github.games647.fastlogin.bukkit;
 
-import com.comphenix.protocol.wrappers.WrappedSignedProperty;
 import com.github.games647.fastlogin.core.FastLoginCore;
 import com.github.games647.fastlogin.core.MojangApiConnector;
 
@@ -50,7 +49,7 @@ public class MojangApiBukkit extends MojangApiConnector {
                 if (propertyName.equals("textures")) {
                     String skinValue = (String) skinProperty.get("value");
                     String signature = (String) skinProperty.get("signature");
-                    playerSession.setSkin(WrappedSignedProperty.fromValues(propertyName, skinValue, signature));
+                    playerSession.setSkin(skinValue, signature);
                 }
 
                 return true;
