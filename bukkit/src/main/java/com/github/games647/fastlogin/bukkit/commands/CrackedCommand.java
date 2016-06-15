@@ -35,7 +35,7 @@ public class CrackedCommand implements CommandExecutor {
                     sender.sendMessage(message);
                 }
             } else {
-                //todo: load async if it's not in the cache anymore
+                //todo: load async if
                 final PlayerProfile profile = plugin.getCore().getStorage().loadProfile(sender.getName());
                 if (profile.isPremium()) {
                     sender.sendMessage(plugin.getCore().getMessage("remove-premium"));
@@ -54,42 +54,46 @@ public class CrackedCommand implements CommandExecutor {
 
             return true;
         } else {
-            if (!sender.hasPermission(command.getPermission() + ".other")) {
-                sender.sendMessage(plugin.getCore().getMessage("no-permission"));
-                return true;
-            }
-
-            if (plugin.isBungeeCord()) {
-                notifiyBungeeCord(sender, args[0]);
-                String message = plugin.getCore().getMessage("wait-on-proxy");
-                if (message != null) {
-                    sender.sendMessage(message);
-                }
-            } else {
-                //todo: load async if it's not in the cache anymore
-                final PlayerProfile profile = plugin.getCore().getStorage().loadProfile(args[0]);
-                if (profile == null) {
-                    sender.sendMessage(plugin.getCore().getMessage("player-unknown"));
-                    return true;
-                }
-
-                if (profile.isPremium()) {
-                    sender.sendMessage(plugin.getCore().getMessage("remove-premium"));
-                    profile.setPremium(false);
-                    profile.setUuid(null);
-                    Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
-                        @Override
-                        public void run() {
-                            plugin.getCore().getStorage().save(profile);
-                        }
-                    });
-                } else {
-                    sender.sendMessage(plugin.getCore().getMessage("not-premium-other"));
-                }
-            }
+            onCrackedOther(sender, command, args);
         }
 
         return true;
+    }
+
+    private void onCrackedOther(CommandSender sender, Command command, String[] args) {
+        if (!sender.hasPermission(command.getPermission() + ".other")) {
+            sender.sendMessage(plugin.getCore().getMessage("no-permission"));
+            return;
+        }
+        
+        if (plugin.isBungeeCord()) {
+            notifiyBungeeCord(sender, args[0]);
+            String message = plugin.getCore().getMessage("wait-on-proxy");
+            if (message != null) {
+                sender.sendMessage(message);
+            }
+        } else {
+            //todo: load async
+            final PlayerProfile profile = plugin.getCore().getStorage().loadProfile(args[0]);
+            if (profile == null) {
+                sender.sendMessage(plugin.getCore().getMessage("player-unknown"));
+                return;
+            }
+
+            if (profile.isPremium()) {
+                sender.sendMessage(plugin.getCore().getMessage("remove-premium"));
+                profile.setPremium(false);
+                profile.setUuid(null);
+                Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+                    @Override
+                    public void run() {
+                        plugin.getCore().getStorage().save(profile);
+                    }
+                });
+            } else {
+                sender.sendMessage(plugin.getCore().getMessage("not-premium-other"));
+            }
+        }
     }
 
     private void notifiyBungeeCord(CommandSender sender, String target) {

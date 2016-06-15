@@ -6,10 +6,13 @@ import com.github.games647.fastlogin.bungee.listener.PlayerConnectionListener;
 import com.github.games647.fastlogin.bungee.listener.PluginMessageListener;
 import com.github.games647.fastlogin.core.FastLoginCore;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Random;
+import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentMap;
 import java.util.logging.Level;
 
@@ -32,6 +35,7 @@ public class FastLoginBungee extends Plugin {
     private Configuration configuration;
 
     private final Random random = new Random();
+    private final Set<UUID> pendingConfirms = Sets.newHashSet();
 
     private final ConcurrentMap<PendingConnection, BungeeLoginSession> session = Maps.newConcurrentMap();
 
@@ -99,6 +103,10 @@ public class FastLoginBungee extends Plugin {
 
     public ConcurrentMap<PendingConnection, BungeeLoginSession> getSession() {
         return session;
+    }
+
+    public Set<UUID> getPendingConfirms() {
+        return pendingConfirms;
     }
 
     /**

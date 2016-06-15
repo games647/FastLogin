@@ -8,6 +8,7 @@ import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteStreams;
 
 import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.connection.Server;
 import net.md_5.bungee.api.event.PluginMessageEvent;
@@ -48,6 +49,14 @@ public class PluginMessageListener implements Listener {
         if ("ON".equals(subchannel)) {
             String playerName = dataInput.readUTF();
 
+            if (playerName.equals(fromPlayer.getName()) && plugin.getConfig().getBoolean("premium-warning")
+                    && !plugin.getPendingConfirms().contains(fromPlayer.getUniqueId())) {
+                fromPlayer.sendMessage(TextComponent.fromLegacyText(plugin.getCore().getMessage("premium-warming")));
+                plugin.getPendingConfirms().add(fromPlayer.getUniqueId());
+                return;
+            }
+
+            plugin.getPendingConfirms().remove(fromPlayer.getUniqueId());
             AsyncToggleMessage task = new AsyncToggleMessage(plugin, fromPlayer, playerName, true);
             ProxyServer.getInstance().getScheduler().runAsync(plugin, task);
         } else if ("OFF".equals(subchannel)) {

@@ -15,8 +15,11 @@ import com.github.games647.fastlogin.bukkit.listener.protocolsupport.ProtocolSup
 import com.github.games647.fastlogin.bukkit.tasks.DelayedAuthHook;
 import com.github.games647.fastlogin.core.FastLoginCore;
 import com.google.common.cache.CacheLoader;
+import com.google.common.collect.Sets;
 
 import java.security.KeyPair;
+import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
@@ -37,6 +40,8 @@ public class FastLoginBukkit extends JavaPlugin {
     private boolean bungeeCord;
     private final FastLoginCore core = new BukkitCore(this);
     private boolean serverStarted;
+
+    private final Set<UUID> pendingConfirms = Sets.newHashSet();
 
     //this map is thread-safe for async access (Packet Listener)
     //SafeCacheBuilder is used in order to be version independent
@@ -209,6 +214,10 @@ public class FastLoginBukkit extends JavaPlugin {
      */
     public boolean isServerFullyStarted() {
         return serverStarted;
+    }
+
+    public Set<UUID> getPendingConfirms() {
+        return pendingConfirms;
     }
 
     public void setServerStarted() {

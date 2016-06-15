@@ -5,6 +5,8 @@ import com.github.games647.fastlogin.core.PlayerProfile;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 
+import java.util.UUID;
+
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -40,7 +42,15 @@ public class PremiumCommand implements CommandExecutor {
                     sender.sendMessage(message);
                 }
             } else {
-//            //todo: load async if it's not in the cache anymore
+                UUID id = ((Player) sender).getUniqueId();
+                if (plugin.getConfig().getBoolean("premium-warning") && !plugin.getPendingConfirms().contains(id)) {
+                    sender.sendMessage(plugin.getCore().getMessage("premium-warming"));
+                    plugin.getPendingConfirms().add(id);
+                    return true;
+                }
+
+                plugin.getPendingConfirms().remove(id);
+                //todo: load async
                 final PlayerProfile profile = plugin.getCore().getStorage().loadProfile(sender.getName());
                 if (profile.isPremium()) {
                     sender.sendMessage(plugin.getCore().getMessage("already-exists"));
@@ -60,43 +70,47 @@ public class PremiumCommand implements CommandExecutor {
 
             return true;
         } else {
-            if (!sender.hasPermission(command.getPermission() + ".other")) {
-                sender.sendMessage(plugin.getCore().getMessage("no-permission"));
-                return true;
-            }
-
-            if (plugin.isBungeeCord()) {
-                notifiyBungeeCord(sender, args[0]);
-                String message = plugin.getCore().getMessage("wait-on-proxy");
-                if (message != null) {
-                    sender.sendMessage(message);
-                }
-            } else {
-                //todo: load async if it's not in the cache anymore
-                final PlayerProfile profile = plugin.getCore().getStorage().loadProfile(args[0]);
-                if (profile == null) {
-                    sender.sendMessage(plugin.getCore().getMessage("player-unknown"));
-                    return true;
-                }
-
-                if (profile.isPremium()) {
-                    sender.sendMessage(plugin.getCore().getMessage("already-exists-other"));
-                } else {
-                    //todo: resolve uuid
-                    profile.setPremium(true);
-                    Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
-                        @Override
-                        public void run() {
-                            plugin.getCore().getStorage().save(profile);
-                        }
-                    });
-
-                    sender.sendMessage(plugin.getCore().getMessage("add-premium"));
-                }
-            }
+            onPremiumOther(sender, command, args);
         }
 
         return true;
+    }
+
+    private void onPremiumOther(CommandSender sender, Command command, String[] args) {
+        if (!sender.hasPermission(command.getPermission() + ".other")) {
+            sender.sendMessage(plugin.getCore().getMessage("no-permission"));
+            return ;
+        }
+
+        if (plugin.isBungeeCord()) {
+            notifiyBungeeCord(sender, args[0]);
+            String message = plugin.getCore().getMessage("wait-on-proxy");
+            if (message != null) {
+                sender.sendMessage(message);
+            }
+        } else {
+            //todo: load async
+            final PlayerProfile profile = plugin.getCore().getStorage().loadProfile(args[0]);
+            if (profile == null) {
+                sender.sendMessage(plugin.getCore().getMessage("player-unknown"));
+                return;
+            }
+            
+            if (profile.isPremium()) {
+                sender.sendMessage(plugin.getCore().getMessage("already-exists-other"));
+            } else {
+                //todo: resolve uuid
+                profile.setPremium(true);
+                Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+                    @Override
+                    public void run() {
+                        plugin.getCore().getStorage().save(profile);
+                    }
+                });
+
+                sender.sendMessage(plugin.getCore().getMessage("add-premium"));
+            }
+        }
     }
 
     private void notifiyBungeeCord(CommandSender sender, String target) {
