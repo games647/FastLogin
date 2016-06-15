@@ -27,11 +27,17 @@ add-premium: '&2Added to the list of premium players'
 # Player is already set be a paid account
 already-exists: '&4You are already on the premium list'
 
+# Player is already set be a paid account
+already-exists-other: '&4You are already on the premium list'
+
 # Player was changed to be cracked
 remove-premium: '&2Removed from the list of premium players'
 
 # Player is already set to be cracked
 not-premium: '&4You are not in the premium list'
+
+# Player is already set to be cracked
+not-premium-other: '&4You are not in the premium list'
 
 # Admin wanted to change the premium of a user that isn't known to the plugin
 player-unknown: '&4Player not in the database'
@@ -73,6 +79,13 @@ invalid-session: '&4Invalid session'
 
 # The client sent a malicous packet without a login request packet
 invalid-requst: '&4Invalid request'
+
+# Message if the bukkit isn't fully started to inject the packets
+not-started: '&cServer is not fully started yet. Please retry'
+
+# Warning message if a user invoked /premium command
+premium-warming: '&6WARNING: This command should only be invoked if you are the owner of this paid minecraft account
+Type /premium again to confirm'
 
 # ========= Bungee/Waterfall only ================================
 

@@ -6,7 +6,6 @@ import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -39,7 +38,7 @@ public class CrackedCommand implements CommandExecutor {
                 //todo: load async if it's not in the cache anymore
                 final PlayerProfile profile = plugin.getCore().getStorage().loadProfile(sender.getName());
                 if (profile.isPremium()) {
-                    sender.sendMessage(ChatColor.DARK_GREEN + "Removed from the list of premium players");
+                    sender.sendMessage(plugin.getCore().getMessage("remove-premium"));
                     profile.setPremium(false);
                     profile.setUuid(null);
                     Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
@@ -49,7 +48,7 @@ public class CrackedCommand implements CommandExecutor {
                         }
                     });
                 } else {
-                    sender.sendMessage(ChatColor.DARK_RED + "You are not in the premium list");
+                    sender.sendMessage(plugin.getCore().getMessage("not-premium"));
                 }
             }
 
@@ -75,7 +74,7 @@ public class CrackedCommand implements CommandExecutor {
                 }
 
                 if (profile.isPremium()) {
-                    sender.sendMessage(ChatColor.DARK_GREEN + "Removed from the list of premium players");
+                    sender.sendMessage(plugin.getCore().getMessage("remove-premium"));
                     profile.setPremium(false);
                     profile.setUuid(null);
                     Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
@@ -85,7 +84,7 @@ public class CrackedCommand implements CommandExecutor {
                         }
                     });
                 } else {
-                    sender.sendMessage(ChatColor.DARK_RED + "Player is not in the premium list");
+                    sender.sendMessage(plugin.getCore().getMessage("not-premium-other"));
                 }
             }
         }
@@ -97,6 +96,7 @@ public class CrackedCommand implements CommandExecutor {
         if (sender instanceof Player) {
             notifiyBungeeCord((Player) sender, target);
         } else {
+            plugin.getLogger().info("No player online to send a plugin message to the proxy");
             //todo: add console support
 //            Player firstPlayer = Iterables.getFirst(Bukkit.getOnlinePlayers(), null);
 //            notifiyBungeeCord(firstPlayer, target);
@@ -109,7 +109,7 @@ public class CrackedCommand implements CommandExecutor {
             dataOutput.writeUTF("OFF");
             dataOutput.writeUTF(target);
 
-            plugin.getLogger().info("No player online to send a plugin message to the proxy");
+            sender.sendPluginMessage(plugin, plugin.getName(), dataOutput.toByteArray());
         }
     }
 }

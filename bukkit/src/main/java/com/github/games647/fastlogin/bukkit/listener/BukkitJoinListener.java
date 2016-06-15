@@ -30,7 +30,7 @@ public class BukkitJoinListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerLogin(PlayerLoginEvent loginEvent) {
         if (loginEvent.getResult() == Result.ALLOWED && !plugin.isServerFullyStarted()) {
-            loginEvent.disallow(Result.KICK_OTHER, "§cServer is not fully started yet. Please retry");
+            loginEvent.disallow(Result.KICK_OTHER, plugin.getCore().getMessage("not-started"));
         }
     }
 

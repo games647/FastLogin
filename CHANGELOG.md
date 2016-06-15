@@ -1,8 +1,12 @@
 ######1.6
 
+* Add a warning message if the user tries to invoke the premium command
+* Added missing translation if the server isn't fully started
 * Removed ProtocolLib as required dependency. You can use ProtocolSupport or BungeeCord as alternative
 * Reduce the number of worker threads from 5 to 3 in ProtocolLib
 * Process packets in ProtocolLib async/non-blocking -> better performance
+* Fixed missing translation in commands
+* Fixed cracked command not working on BungeeCord
 * Fix error if forward skins is disabled
 
 ######1.5.2

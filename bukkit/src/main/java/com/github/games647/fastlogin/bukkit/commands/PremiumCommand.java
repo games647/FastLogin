@@ -6,7 +6,6 @@ import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -44,7 +43,7 @@ public class PremiumCommand implements CommandExecutor {
 //            //todo: load async if it's not in the cache anymore
                 final PlayerProfile profile = plugin.getCore().getStorage().loadProfile(sender.getName());
                 if (profile.isPremium()) {
-                    sender.sendMessage(ChatColor.DARK_RED + "You are already on the premium list");
+                    sender.sendMessage(plugin.getCore().getMessage("already-exists"));
                 } else {
                     //todo: resolve uuid
                     profile.setPremium(true);
@@ -55,7 +54,7 @@ public class PremiumCommand implements CommandExecutor {
                         }
                     });
 
-                    sender.sendMessage(ChatColor.DARK_GREEN + "Added to the list of premium players");
+                    sender.sendMessage(plugin.getCore().getMessage("add-premium"));
                 }
             }
 
@@ -81,7 +80,7 @@ public class PremiumCommand implements CommandExecutor {
                 }
 
                 if (profile.isPremium()) {
-                    sender.sendMessage(ChatColor.DARK_RED + "Player is already on the premium list");
+                    sender.sendMessage(plugin.getCore().getMessage("already-exists-other"));
                 } else {
                     //todo: resolve uuid
                     profile.setPremium(true);
@@ -92,7 +91,7 @@ public class PremiumCommand implements CommandExecutor {
                         }
                     });
 
-                    sender.sendMessage(ChatColor.DARK_GREEN + "Added to the list of premium players");
+                    sender.sendMessage(plugin.getCore().getMessage("add-premium"));
                 }
             }
         }
@@ -104,6 +103,7 @@ public class PremiumCommand implements CommandExecutor {
         if (sender instanceof Player) {
             notifiyBungeeCord((Player) sender, target);
         } else {
+            plugin.getLogger().info("No player online to send a plugin message to the proxy");
             //todo: add console support
 //            Player firstPlayer = Iterables.getFirst(Bukkit.getOnlinePlayers(), null);
 //            notifiyBungeeCord(firstPlayer, target);

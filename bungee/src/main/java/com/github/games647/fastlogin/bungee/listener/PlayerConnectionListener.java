@@ -91,7 +91,7 @@ public class PlayerConnectionListener implements Listener {
     }
 
     @EventHandler
-    public void onServerConnected(PlayerDisconnectEvent disconnectEvent) {
+    public void onDisconnect(PlayerDisconnectEvent disconnectEvent) {
         ProxiedPlayer player = disconnectEvent.getPlayer();
         plugin.getSession().remove(player.getPendingConnection());
     }

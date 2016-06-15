@@ -100,6 +100,12 @@ nameChangeCheck: false
 # ChangeSkin, SkinRestoer, ...
 forwardSkin: true
 
+# Displays a warning message that this message SHOULD only be invoked by
+# users who actually are the owner of this account. So not by cracked players
+#
+# If they still want to invoke the command, they have to invoke /premium again
+premium-warning: true
+
 # Database configuration
 # Recommened is the use of MariaDB (a better version of MySQL)
 
