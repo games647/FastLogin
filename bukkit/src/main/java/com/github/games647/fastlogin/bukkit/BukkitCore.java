@@ -49,11 +49,18 @@ public class BukkitCore extends FastLoginCore {
 
         InputStreamReader defaultReader = new InputStreamReader(plugin.getResource("messages.yml"), Charsets.UTF_8);
         YamlConfiguration defaults = YamlConfiguration.loadConfiguration(defaultReader);
-        messageConfig.setDefaults(defaults);
+        for (String key : defaults.getKeys(false)) {
+            String message = ChatColor.translateAlternateColorCodes('&', defaults.getString(key));
+            if (!message.isEmpty()) {
+                localeMessages.put(key, message);
+            }
+        }
 
         for (String key : messageConfig.getKeys(false)) {
             String message = ChatColor.translateAlternateColorCodes('&', messageConfig.getString(key));
-            if (!message.isEmpty()) {
+            if (message.isEmpty()) {
+                localeMessages.remove(key);
+            } else {
                 localeMessages.put(key, message);
             }
         }

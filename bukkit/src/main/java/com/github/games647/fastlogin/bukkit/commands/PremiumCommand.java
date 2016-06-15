@@ -44,7 +44,7 @@ public class PremiumCommand implements CommandExecutor {
             } else {
                 UUID id = ((Player) sender).getUniqueId();
                 if (plugin.getConfig().getBoolean("premium-warning") && !plugin.getPendingConfirms().contains(id)) {
-                    sender.sendMessage(plugin.getCore().getMessage("premium-warming"));
+                    sender.sendMessage(plugin.getCore().getMessage("premium-warning"));
                     plugin.getPendingConfirms().add(id);
                     return true;
                 }
