@@ -64,7 +64,7 @@ public class ForceLoginTask implements Runnable {
                     if (playerProfile != null) {
                         playerProfile.setUuid(session.getUuid());
                         //save cracked players too
-                        playerProfile.setPremium(session.isVerified());
+                        playerProfile.setPremium(true);
                         storage.save(playerProfile);
                     }
 
@@ -87,7 +87,7 @@ public class ForceLoginTask implements Runnable {
         String generatedPassword = plugin.generateStringPassword(player);
         boolean success = authPlugin.forceRegister(player, generatedPassword);
         String message = plugin.getCore().getMessage("auto-register");
-        if (message != null) {
+        if (success && message != null) {
             message = message.replace("%password", generatedPassword);
             player.sendMessage(message);
         }
@@ -100,7 +100,7 @@ public class ForceLoginTask implements Runnable {
         boolean success = authPlugin.forceLogin(player);
 
         String message = plugin.getCore().getMessage("auto-login");
-        if (message != null) {
+        if (success && message != null) {
             player.sendMessage(message);
         }
 

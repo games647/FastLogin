@@ -83,7 +83,6 @@ public class CrackedCommand implements CommandExecutor {
             if (profile.isPremium()) {
                 sender.sendMessage(plugin.getCore().getMessage("remove-premium"));
                 profile.setPremium(false);
-                profile.setUuid(null);
                 Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
                     @Override
                     public void run() {

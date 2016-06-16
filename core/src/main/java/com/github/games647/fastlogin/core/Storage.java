@@ -79,7 +79,7 @@ public class Storage {
         ResultSet resultSet = null;
         try {
             con = dataSource.getConnection();
-            loadStmt = con.prepareStatement("SELECT * FROM " + PREMIUM_TABLE + " WHERE Name=?");
+            loadStmt = con.prepareStatement("SELECT * FROM " + PREMIUM_TABLE + " WHERE Name=? LIMIT 1");
             loadStmt.setString(1, name);
 
             resultSet = loadStmt.executeQuery();
@@ -120,7 +120,7 @@ public class Storage {
         ResultSet resultSet = null;
         try {
             con = dataSource.getConnection();
-            loadStmt = con.prepareStatement("SELECT * FROM " + PREMIUM_TABLE + " WHERE UUID=?");
+            loadStmt = con.prepareStatement("SELECT * FROM " + PREMIUM_TABLE + " WHERE UUID=? LIMIT 1");
             loadStmt.setString(1, uuid.toString().replace("-", ""));
 
             resultSet = loadStmt.executeQuery();

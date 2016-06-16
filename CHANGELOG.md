@@ -1,3 +1,7 @@
+######1.6.1
+
+* Fix message typo in BungeeCord which created a NPE if premium-warning is activated
+
 ######1.6
 
 * Add a warning message if the user tries to invoke the premium command

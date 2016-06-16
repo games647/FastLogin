@@ -51,7 +51,7 @@ public class PluginMessageListener implements Listener {
 
             if (playerName.equals(fromPlayer.getName()) && plugin.getConfig().getBoolean("premium-warning")
                     && !plugin.getPendingConfirms().contains(fromPlayer.getUniqueId())) {
-                fromPlayer.sendMessage(TextComponent.fromLegacyText(plugin.getCore().getMessage("premium-warming")));
+                fromPlayer.sendMessage(TextComponent.fromLegacyText(plugin.getCore().getMessage("premium-warning")));
                 plugin.getPendingConfirms().add(fromPlayer.getUniqueId());
                 return;
             }
