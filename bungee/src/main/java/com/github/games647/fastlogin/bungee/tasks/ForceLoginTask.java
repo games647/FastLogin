@@ -8,6 +8,7 @@ import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 
 import java.util.UUID;
+import java.util.logging.Level;
 
 import net.md_5.bungee.api.connection.PendingConnection;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -27,40 +28,43 @@ public class ForceLoginTask implements Runnable {
 
     @Override
     public void run() {
-        PendingConnection pendingConnection = player.getPendingConnection();
-        BungeeLoginSession session = plugin.getSession().get(pendingConnection);
-        PlayerProfile playerProfile = session.getProfile();
+        try {
+            PendingConnection pendingConnection = player.getPendingConnection();
+            BungeeLoginSession session = plugin.getSession().get(pendingConnection);
+            PlayerProfile playerProfile = session.getProfile();
 
-        if (!player.isConnected()) {
-            return;
-        }
+            if (!player.isConnected()) {
+                return;
+            }
 
-        //force login only on success
-        if (pendingConnection.isOnlineMode()) {
-            boolean autoRegister = session.needsRegistration();
+            //force login only on success
+            if (pendingConnection.isOnlineMode()) {
+                boolean autoRegister = session.needsRegistration();
 
-            BungeeAuthPlugin authPlugin = plugin.getBungeeAuthPlugin();
-            if (authPlugin == null) {
-                //save will happen on success message from bukkit
-                sendBukkitLoginNotification(autoRegister);
-            } else if (session.needsRegistration()) {
-                String password = plugin.generateStringPassword();
-                if (authPlugin.forceRegister(player, password)) {
+                BungeeAuthPlugin authPlugin = plugin.getBungeeAuthPlugin();
+                if (authPlugin == null) {
+                    //save will happen on success message from bukkit
+                    sendBukkitLoginNotification(autoRegister);
+                } else if (session.needsRegistration()) {
+                    String password = plugin.generateStringPassword();
+                    if (authPlugin.forceRegister(player, password)) {
+                        //save will happen on success message from bukkit
+                        sendBukkitLoginNotification(autoRegister);
+                    }
+                } else if (authPlugin.forceLogin(player)) {
                     //save will happen on success message from bukkit
                     sendBukkitLoginNotification(autoRegister);
                 }
-            } else if (authPlugin.forceLogin(player)) {
-                //save will happen on success message from bukkit
-                sendBukkitLoginNotification(autoRegister);
-            }
-        } else {
-            //cracked player
+            } else //cracked player
             if (!session.isAlreadySaved()) {
                 playerProfile.setPremium(false);
                 plugin.getCore().getStorage().save(playerProfile);
                 session.setAlreadySaved(true);
             }
+        } catch (Exception ex) {
+            plugin.getLogger().log(Level.INFO, "ERROR ON FORCE LOGIN", ex);
         }
+
     }
 
     private void sendBukkitLoginNotification(boolean autoRegister) {

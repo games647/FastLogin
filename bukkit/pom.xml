@@ -99,10 +99,24 @@
         </dependency>
 
         <dependency>
+            <!--Oringal owner is lenis, but maven always uses the newest version-->
+            <groupId>com.github.games647</groupId>
+            <artifactId>LoginSecurity-2</artifactId>
+            <!--Old version 2.0 -->
+            <version>-9c09e73b7f-1</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
             <groupId>com.github.lenis0012</groupId>
             <artifactId>LoginSecurity-2</artifactId>
-            <!--Old version 2.0-->
-            <version>-9c09e73b7f-1</version>
+            <!--New version 2.1-->
+            <version>3fa977c486</version>
             <exclusions>
                 <exclusion>
                     <groupId>*</groupId>
