@@ -54,12 +54,14 @@ public class NameCheckTask implements Runnable {
 
         if (profile.getUserId() == -1) {
             UUID premiumUUID = null;
-            if (plugin.getConfig().getBoolean("nameChangeCheck") || plugin.getConfig().getBoolean("autoRegister")) {
-                premiumUUID = plugin.getCore().getMojangApiConnector().getPremiumUUID(username);
-            }
-
+            
             //user not exists in the db
             try {
+                if (plugin.getConfig().getBoolean("nameChangeCheck") || (plugin.getConfig().getBoolean("autoRegister")
+                        && plugin.getAuthPlugin().isRegistered(username))) {
+                    premiumUUID = plugin.getCore().getMojangApiConnector().getPremiumUUID(username);
+                }
+
                 if (premiumUUID != null && plugin.getConfig().getBoolean("nameChangeCheck")) {
                     profile = plugin.getCore().getStorage().loadProfile(premiumUUID);
                     if (profile != null) {
@@ -69,8 +71,7 @@ public class NameCheckTask implements Runnable {
                     }
                 }
 
-                if (premiumUUID != null && plugin.getConfig().getBoolean("autoRegister")
-                        && !plugin.getAuthPlugin().isRegistered(username)) {
+                if (premiumUUID != null && plugin.getConfig().getBoolean("autoRegister")) {
                     plugin.getLogger().log(Level.FINER, "Player {0} uses a premium username", username);
                     enablePremiumLogin(profile, false);
                     return;

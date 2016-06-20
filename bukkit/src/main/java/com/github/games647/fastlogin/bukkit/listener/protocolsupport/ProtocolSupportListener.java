@@ -44,12 +44,14 @@ public class ProtocolSupportListener implements Listener {
         if (profile != null) {
             if (profile.getUserId() == -1) {
                 UUID premiumUUID = null;
-                if (plugin.getConfig().getBoolean("nameChangeCheck") || plugin.getConfig().getBoolean("autoRegister")) {
-                    premiumUUID = plugin.getCore().getMojangApiConnector().getPremiumUUID(username);
-                }
 
                 //user not exists in the db
                 try {
+                    if (plugin.getConfig().getBoolean("nameChangeCheck") || (plugin.getConfig().getBoolean("autoRegister")
+                            && plugin.getAuthPlugin().isRegistered(username))) {
+                        premiumUUID = plugin.getCore().getMojangApiConnector().getPremiumUUID(username);
+                    }
+
                     if (premiumUUID != null && plugin.getConfig().getBoolean("nameChangeCheck")) {
                         profile = plugin.getCore().getStorage().loadProfile(premiumUUID);
                         if (profile != null) {

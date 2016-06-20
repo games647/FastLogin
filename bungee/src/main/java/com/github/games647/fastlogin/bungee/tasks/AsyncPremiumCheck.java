@@ -40,8 +40,8 @@ public class AsyncPremiumCheck implements Runnable {
                 }
 
                 if (premiumUUID == null
-                        || checkNameChange(premiumUUID, connection, username)
-                        || checkPremiumName(username, connection, profile)) {
+                        || !checkNameChange(premiumUUID, connection, username)
+                        || !checkPremiumName(username, connection, profile)) {
                     //nothing detected the player as premium -> start a cracked session
                     plugin.getSession().put(connection, new BungeeLoginSession(username, false, profile));
                 }
