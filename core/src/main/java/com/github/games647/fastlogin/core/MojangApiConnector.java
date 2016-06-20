@@ -121,7 +121,7 @@ public abstract class MojangApiConnector {
             BufferedReader reader = new BufferedReader(new InputStreamReader(httpConnection.getInputStream()));
             String line = reader.readLine();
             if (line != null && !line.equals("null")) {
-                return getUUIDFromAPI(playerName);
+                return getUUIDFromJsonAPI(playerName);
             }
         } catch (IOException iOException) {
             plugin.getLogger().log(Level.SEVERE, "Tried converting name->uuid from third-party api", iOException);
