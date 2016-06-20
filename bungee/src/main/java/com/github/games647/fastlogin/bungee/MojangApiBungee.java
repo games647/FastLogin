@@ -10,8 +10,8 @@ import net.md_5.bungee.BungeeCord;
 
 public class MojangApiBungee extends MojangApiConnector {
 
-    public MojangApiBungee(FastLoginCore plugin, List<String> localAddresses) {
-        super(plugin, localAddresses);
+    public MojangApiBungee(FastLoginCore plugin, List<String> localAddresses, boolean apiLookup) {
+        super(plugin, localAddresses, apiLookup);
     }
 
     @Override
@@ -24,5 +24,11 @@ public class MojangApiBungee extends MojangApiConnector {
     public boolean hasJoinedServer(Object session, String serverId) {
         //this is not needed in Bungee
         throw new UnsupportedOperationException("Not supported");
+    }
+
+    @Override
+    protected UUID getUUIDFromJsonAPI(String json) {
+        McAPIProfile apiPlayer = BungeeCord.getInstance().gson.fromJson(json, McAPIProfile.class);
+        return FastLoginCore.parseId(apiPlayer.getUuid());
     }
 }

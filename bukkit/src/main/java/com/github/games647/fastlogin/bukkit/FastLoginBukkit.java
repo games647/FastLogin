@@ -67,7 +67,9 @@ public class FastLoginBukkit extends JavaPlugin {
         core.loadConfig();
         core.loadMessages();
 
-        core.setMojangApiConnector(new MojangApiBukkit(core, getConfig().getStringList("ip-addresses")));
+        core.setMojangApiConnector(new MojangApiBukkit(core
+                , getConfig().getStringList("ip-addresses")
+                , getConfig().getBoolean("lookup-third-party")));
 
         try {
             if (ClassUtil.isPresent("org.spigotmc.SpigotConfig")) {

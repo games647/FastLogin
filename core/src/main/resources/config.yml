@@ -122,6 +122,15 @@ premium-warning: true
 #    - 192-168-0-2
 ip-addresses: []
 
+# This option exists because of the reason as the previous one. Once FastLogin hits the rate-limit it will make requests
+# to a third-party API. In this case: https://us.mc-api.net - Please support them if you can
+#
+# For the next ten minutes FastLogin will make requests to this website. Once the ten minutes are expired FastLogin
+# will make requests to Mojang again, because the rate-limit expired. (in order to reduce the load to the third-party-api)
+#
+# If you want to join the discussion visit this: https://github.com/games647/FastLogin/issues/27#issuecomment-226954350
+lookup-third-party: true
+
 # Database configuration
 # Recommened is the use of MariaDB (a better version of MySQL)
 

@@ -48,7 +48,9 @@ public class FastLoginBungee extends Plugin {
             File configFile = new File(getDataFolder(), "config.yml");
             config = ConfigurationProvider.getProvider(YamlConfiguration.class).load(configFile);
 
-            loginCore.setMojangApiConnector(new MojangApiBungee(loginCore, config.getStringList("ip-addresses")));
+            loginCore.setMojangApiConnector(new MojangApiBungee(loginCore
+                    , config.getStringList("ip-addresses")
+                    , config.getBoolean("lookup-third-party")));
 
             String driver = config.getString("driver");
             String host = config.getString("host", "");

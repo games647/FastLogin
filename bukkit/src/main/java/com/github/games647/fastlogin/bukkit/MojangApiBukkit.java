@@ -19,8 +19,8 @@ public class MojangApiBukkit extends MojangApiConnector {
     //mojang api check to prove a player is logged in minecraft and made a join server request
     private static final String HAS_JOINED_URL = "https://sessionserver.mojang.com/session/minecraft/hasJoined?";
 
-    public MojangApiBukkit(FastLoginCore plugin, List<String> localAddresses) {
-        super(plugin, localAddresses);
+    public MojangApiBukkit(FastLoginCore plugin, List<String> localAddresses, boolean apiLookup) {
+        super(plugin, localAddresses, apiLookup);
     }
 
     @Override
@@ -68,6 +68,13 @@ public class MojangApiBukkit extends MojangApiConnector {
     protected UUID getUUIDFromJson(String json) {
         JSONObject userData = (JSONObject) JSONValue.parse(json);
         String uuid = (String) userData.get("id");
+        return FastLoginCore.parseId(uuid);
+    }
+
+    @Override
+    protected UUID getUUIDFromJsonAPI(String json) {
+        JSONObject userData = (JSONObject) JSONValue.parse(json);
+        String uuid = (String) userData.get("uuid");
         return FastLoginCore.parseId(uuid);
     }
 }

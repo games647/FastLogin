@@ -1,6 +1,7 @@
 ######1.7
 
 * Added support for making requests to Mojang from different IPv4 addresses
+* Added us.mcapi.com as third-party APIs to workaround rate-limits
 
 ######1.6.2
 
