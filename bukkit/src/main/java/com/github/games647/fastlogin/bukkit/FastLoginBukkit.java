@@ -64,10 +64,10 @@ public class FastLoginBukkit extends JavaPlugin {
     
     @Override
     public void onEnable() {
-        core.setMojangApiConnector(new MojangApiBukkit(core));
-        
         core.loadConfig();
         core.loadMessages();
+
+        core.setMojangApiConnector(new MojangApiBukkit(core, getConfig().getStringList("ip-addresses")));
 
         try {
             if (ClassUtil.isPresent("org.spigotmc.SpigotConfig")) {

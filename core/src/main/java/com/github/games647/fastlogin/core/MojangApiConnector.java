@@ -4,10 +4,17 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.InetAddress;
 import java.net.URL;
+import java.net.UnknownHostException;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
+
+import javax.net.ssl.HttpsURLConnection;
 
 public abstract class MojangApiConnector {
 
@@ -23,10 +30,33 @@ public abstract class MojangApiConnector {
     //compile the pattern only on plugin enable -> and this have to be threadsafe
     private final Pattern playernameMatcher = Pattern.compile(VALID_PLAYERNAME);
 
+    private final BalancedSSLFactory sslFactory;
+
     protected final FastLoginCore plugin;
 
-    public MojangApiConnector(FastLoginCore plugin) {
+    public MojangApiConnector(FastLoginCore plugin, List<String> localAddresses) {
         this.plugin = plugin;
+
+        if (localAddresses.isEmpty()) {
+            this.sslFactory = null;
+        } else {
+            Set<InetAddress> addresses = new HashSet<>();
+            for (String localAddress : localAddresses) {
+                try {
+                    InetAddress address = InetAddress.getByName(localAddress);
+                    if (!address.isAnyLocalAddress()) {
+                        plugin.getLogger().log(Level.WARNING, "Submitted IP-Address is not local", address);
+                        continue;
+                    }
+
+                    addresses.add(address);
+                } catch (UnknownHostException ex) {
+                    plugin.getLogger().log(Level.SEVERE, "IP-Address is unknown to us", ex);
+                }
+            }
+
+            this.sslFactory = new BalancedSSLFactory(HttpsURLConnection.getDefaultSSLSocketFactory(), addresses);
+        }
     }
 
     /**
@@ -39,7 +69,7 @@ public abstract class MojangApiConnector {
         if (playernameMatcher.matcher(playerName).matches()) {
             //only make a API call if the name is valid existing mojang account
             try {
-                HttpURLConnection connection = getConnection(UUID_LINK + playerName);
+                HttpsURLConnection connection = getConnection(UUID_LINK + playerName);
                 if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
                     BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
                     String line = reader.readLine();
@@ -61,13 +91,17 @@ public abstract class MojangApiConnector {
 
     protected abstract UUID getUUIDFromJson(String json);
 
-    protected HttpURLConnection getConnection(String url) throws IOException {
-        HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+    protected HttpsURLConnection getConnection(String url) throws IOException {
+        HttpsURLConnection connection = (HttpsURLConnection) new URL(url).openConnection();
         connection.setConnectTimeout(TIMEOUT);
         connection.setReadTimeout(2 * TIMEOUT);
         //the new Mojang API just uses json as response
         connection.setRequestProperty("Content-Type", "application/json");
         connection.setRequestProperty("User-Agent", USER_AGENT);
+
+        if (sslFactory != null) {
+            connection.setSSLSocketFactory(sslFactory);
+        }
 
         return connection;
     }

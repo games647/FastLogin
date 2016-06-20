@@ -1,3 +1,11 @@
+######1.7
+
+* Added support for making requests to Mojang from different IPv4 addresses
+
+######1.6.2
+
+* Fixed support for new LoginSecurity version
+
 ######1.6.1
 
 * Fix message typo in BungeeCord which created a NPE if premium-warning is activated

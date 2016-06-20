@@ -32,7 +32,7 @@ public class FastLoginBungee extends Plugin {
 
     private final FastLoginCore loginCore = new BungeeCore(this);
     private BungeeAuthPlugin bungeeAuthPlugin;
-    private Configuration configuration;
+    private Configuration config;
 
     private final Random random = new Random();
     private final Set<UUID> pendingConfirms = Sets.newHashSet();
@@ -41,22 +41,22 @@ public class FastLoginBungee extends Plugin {
 
     @Override
     public void onEnable() {
-        loginCore.setMojangApiConnector(new MojangApiBungee(loginCore));
-
         loginCore.loadConfig();
         loginCore.loadMessages();
 
         try {
             File configFile = new File(getDataFolder(), "config.yml");
-            configuration = ConfigurationProvider.getProvider(YamlConfiguration.class).load(configFile);
+            config = ConfigurationProvider.getProvider(YamlConfiguration.class).load(configFile);
 
-            String driver = configuration.getString("driver");
-            String host = configuration.getString("host", "");
-            int port = configuration.getInt("port", 3306);
-            String database = configuration.getString("database");
+            loginCore.setMojangApiConnector(new MojangApiBungee(loginCore, config.getStringList("ip-addresses")));
 
-            String username = configuration.getString("username", "");
-            String password = configuration.getString("password", "");
+            String driver = config.getString("driver");
+            String host = config.getString("host", "");
+            int port = config.getInt("port", 3306);
+            String database = config.getString("database");
+
+            String username = config.getString("username", "");
+            String password = config.getString("password", "");
             if (!loginCore.setupDatabase(driver, host, port, database, username, password)) {
                 return;
             }
@@ -98,7 +98,7 @@ public class FastLoginBungee extends Plugin {
     }
 
     public Configuration getConfig() {
-        return configuration;
+        return config;
     }
 
     public ConcurrentMap<PendingConnection, BungeeLoginSession> getSession() {

@@ -6,6 +6,7 @@ import com.github.games647.fastlogin.core.MojangApiConnector;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
 
@@ -18,8 +19,8 @@ public class MojangApiBukkit extends MojangApiConnector {
     //mojang api check to prove a player is logged in minecraft and made a join server request
     private static final String HAS_JOINED_URL = "https://sessionserver.mojang.com/session/minecraft/hasJoined?";
 
-    public MojangApiBukkit(FastLoginCore plugin) {
-        super(plugin);
+    public MojangApiBukkit(FastLoginCore plugin, List<String> localAddresses) {
+        super(plugin, localAddresses);
     }
 
     @Override

@@ -106,6 +106,22 @@ forwardSkin: true
 # If they still want to invoke the command, they have to invoke /premium again
 premium-warning: true
 
+# If you have autoRegister or nameChangeCheck enabled, you could be rate-limited by Mojang.
+# The requests of the both options will be only made by FastLogin if the username is unknown to the server
+# You are allowed to make 600 requests per 10-minutes (60 per minute)
+# If you own a big server this value could be too low
+# Once the limit is reached, new players are always logged in as cracked until the rate-limit is expired.
+# (to the next ten minutes)
+#
+# The limit is IP-wide. If you have multiple IPv4-Addreses you specify them here. FastLogin will then use it in rotating
+# order --> 5 different IP-addreses 5 * 600 per 10 minutes
+# If this list is empty only the default one will be used
+#
+# Lists are created like this:
+#ip-addresses:
+#    - 192-168-0-2
+ip-addresses: []
+
 # Database configuration
 # Recommened is the use of MariaDB (a better version of MySQL)
 

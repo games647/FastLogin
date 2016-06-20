@@ -3,14 +3,15 @@ package com.github.games647.fastlogin.bungee;
 import com.github.games647.fastlogin.core.FastLoginCore;
 import com.github.games647.fastlogin.core.MojangApiConnector;
 
+import java.util.List;
 import java.util.UUID;
 
 import net.md_5.bungee.BungeeCord;
 
 public class MojangApiBungee extends MojangApiConnector {
 
-    public MojangApiBungee(FastLoginCore plugin) {
-        super(plugin);
+    public MojangApiBungee(FastLoginCore plugin, List<String> localAddresses) {
+        super(plugin, localAddresses);
     }
 
     @Override
