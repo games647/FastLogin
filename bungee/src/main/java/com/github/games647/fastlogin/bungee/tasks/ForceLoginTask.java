@@ -31,11 +31,13 @@ public class ForceLoginTask implements Runnable {
         try {
             PendingConnection pendingConnection = player.getPendingConnection();
             BungeeLoginSession session = plugin.getSession().get(pendingConnection);
-            PlayerProfile playerProfile = session.getProfile();
 
-            if (!player.isConnected()) {
+            if (session == null || !player.isConnected()) {
+                plugin.getLogger().log(Level.FINE, "Invalid session player {0} proparly left the server", player);
                 return;
             }
+
+            PlayerProfile playerProfile = session.getProfile();
 
             //force login only on success
             if (pendingConnection.isOnlineMode()) {

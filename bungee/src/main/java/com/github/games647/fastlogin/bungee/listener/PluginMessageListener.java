@@ -45,31 +45,31 @@ public class PluginMessageListener implements Listener {
         ByteArrayDataInput dataInput = ByteStreams.newDataInput(data);
         String subchannel = dataInput.readUTF();
 
-        ProxiedPlayer fromPlayer = (ProxiedPlayer) pluginMessageEvent.getReceiver();
+        ProxiedPlayer forPlayer = (ProxiedPlayer) pluginMessageEvent.getReceiver();
         if ("ON".equals(subchannel)) {
             String playerName = dataInput.readUTF();
 
-            if (playerName.equals(fromPlayer.getName()) && plugin.getConfig().getBoolean("premium-warning")
-                    && !plugin.getPendingConfirms().contains(fromPlayer.getUniqueId())) {
-                fromPlayer.sendMessage(TextComponent.fromLegacyText(plugin.getCore().getMessage("premium-warning")));
-                plugin.getPendingConfirms().add(fromPlayer.getUniqueId());
+            if (playerName.equals(forPlayer.getName()) && plugin.getConfig().getBoolean("premium-warning")
+                    && !plugin.getPendingConfirms().contains(forPlayer.getUniqueId())) {
+                forPlayer.sendMessage(TextComponent.fromLegacyText(plugin.getCore().getMessage("premium-warning")));
+                plugin.getPendingConfirms().add(forPlayer.getUniqueId());
                 return;
             }
 
-            plugin.getPendingConfirms().remove(fromPlayer.getUniqueId());
-            AsyncToggleMessage task = new AsyncToggleMessage(plugin, fromPlayer, playerName, true);
+            plugin.getPendingConfirms().remove(forPlayer.getUniqueId());
+            AsyncToggleMessage task = new AsyncToggleMessage(plugin, forPlayer, playerName, true);
             ProxyServer.getInstance().getScheduler().runAsync(plugin, task);
         } else if ("OFF".equals(subchannel)) {
             String playerName = dataInput.readUTF();
 
-            AsyncToggleMessage task = new AsyncToggleMessage(plugin, fromPlayer, playerName, false);
+            AsyncToggleMessage task = new AsyncToggleMessage(plugin, forPlayer, playerName, false);
             ProxyServer.getInstance().getScheduler().runAsync(plugin, task);
         } else if ("SUCCESS".equals(subchannel)) {
-            if (fromPlayer.getPendingConnection().isOnlineMode()) {
+            if (forPlayer.getPendingConnection().isOnlineMode()) {
                 //bukkit module successfully received and force logged in the user
                 //update only on success to prevent corrupt data
-                PlayerProfile playerProfile = plugin.getCore().getStorage().loadProfile(fromPlayer.getName());
-                BungeeLoginSession loginSession = plugin.getSession().get(fromPlayer.getPendingConnection());
+                PlayerProfile playerProfile = plugin.getCore().getStorage().loadProfile(forPlayer.getName());
+                BungeeLoginSession loginSession = plugin.getSession().get(forPlayer.getPendingConnection());
                 loginSession.setRegistered(true);
 
                 if (!loginSession.isAlreadySaved()) {

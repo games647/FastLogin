@@ -112,6 +112,7 @@ public abstract class MojangApiConnector {
         try {
             HttpURLConnection httpConnection = (HttpURLConnection) new URL(MCAPI_UUID_URL + playerName).openConnection();
             httpConnection.addRequestProperty("Content-Type", "application/json");
+            httpConnection.setRequestProperty("User-Agent", USER_AGENT);
 
             if (httpConnection.getResponseCode() == HttpURLConnection.HTTP_NOT_FOUND) {
                 //cracked

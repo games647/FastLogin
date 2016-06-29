@@ -1424,4 +1424,34 @@ public class FakePlayer implements Player {
     public boolean isCollidable() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
+
+    @Override
+    public void stopSound(Sound sound) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void stopSound(String sound) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public boolean isSilent() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void setSilent(boolean flag) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public boolean hasGravity() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void setGravity(boolean gravity) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
 }
