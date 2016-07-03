@@ -48,6 +48,7 @@ public class AsyncPremiumCheck implements Runnable {
             } else if (profile.isPremium()) {
                 requestPremiumLogin(connection, profile, username, true);
             } else {
+                //Cracked session
                 plugin.getSession().put(connection, new BungeeLoginSession(username, false, profile));
             }
         } catch (Exception ex) {
