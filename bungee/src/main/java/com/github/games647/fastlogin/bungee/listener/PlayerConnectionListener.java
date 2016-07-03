@@ -49,6 +49,10 @@ public class PlayerConnectionListener implements Listener {
 
     @EventHandler
     public void onLogin(LoginEvent loginEvent) {
+        if (loginEvent.isCancelled()) {
+            return;
+        }
+
         //use the loginevent instead of the postlogin event in order to send the loginsuccess packet to the client
         //with the offline uuid this makes it possible to set the skin then
 

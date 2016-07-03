@@ -52,6 +52,10 @@ public class StartPacketListener extends PacketAdapter {
      */
     @Override
     public void onPacketReceiving(PacketEvent packetEvent) {
+        if (packetEvent.isCancelled()) {
+            return;
+        }
+
         plugin.setServerStarted();
 
         Player player = packetEvent.getPlayer();

@@ -51,6 +51,10 @@ public class EncryptionPacketListener extends PacketAdapter {
      */
     @Override
     public void onPacketReceiving(PacketEvent packetEvent) {
+        if (packetEvent.isCancelled()) {
+            return;
+        }
+
         Player sender = packetEvent.getPlayer();
         byte[] sharedSecret = packetEvent.getPacket().getByteArrays().read(0);
         
