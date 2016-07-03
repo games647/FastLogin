@@ -91,7 +91,6 @@ nameChangeCheck: false
 # * is the owner of the premium account
 # * the serverconnection is established through a premium connection (paid account authentification)
 # * has a skin
-# * and you activated premium uuids
 #
 # This means this plugin doesn't need to create a new connection to the Mojang servers, because
 # the skin data is included in the Auth-Verification-Response sent by Mojang. If you want to use for other

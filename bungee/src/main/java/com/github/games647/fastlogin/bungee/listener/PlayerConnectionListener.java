@@ -14,8 +14,8 @@ import java.util.logging.Level;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.PendingConnection;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.md_5.bungee.api.event.LoginEvent;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
-import net.md_5.bungee.api.event.PostLoginEvent;
 import net.md_5.bungee.api.event.PreLoginEvent;
 import net.md_5.bungee.api.event.ServerConnectedEvent;
 import net.md_5.bungee.api.plugin.Listener;
@@ -48,14 +48,16 @@ public class PlayerConnectionListener implements Listener {
     }
 
     @EventHandler
-    public void onLogin(PostLoginEvent loginEvent) {
-        ProxiedPlayer player = loginEvent.getPlayer();
-        PendingConnection connection = player.getPendingConnection();
+    public void onLogin(LoginEvent loginEvent) {
+        //use the loginevent instead of the postlogin event in order to send the loginsuccess packet to the client
+        //with the offline uuid this makes it possible to set the skin then
+
+        PendingConnection connection = loginEvent.getConnection();
         String username = connection.getName();
         if (connection.isOnlineMode()) {
             LoginSession session = plugin.getSession().get(connection);
             PlayerProfile playerProfile = session.getProfile();
-            playerProfile.setUuid(player.getUniqueId());
+            playerProfile.setUuid(connection.getUniqueId());
 
             //bungeecord will do this automatically so override it on disabled option
             InitialHandler initialHandler = (InitialHandler) connection;
