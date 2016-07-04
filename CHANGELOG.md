@@ -5,6 +5,7 @@
 * Fixed NPE in BungeeCord on cracked session
 * Fixed skin applies if premium uuid is deactivated
 * Fix player entry is not saved if namechangecheck is enabled
+* Fix skin applies for third-party plugins
 
 ######1.6.2
 

@@ -19,8 +19,8 @@
     <repositories>
         <!--BungeeCord with also the part outside the API-->
         <repository>
-            <id>RYRED-REPO</id>
-            <url>http://mvn.ryred.co/repository/snapshots/</url>
+            <id>myplayplanet-REPO</id>
+            <url>http://maven.myplayplanet.net/</url>
         </repository>
 
         <!--Github automatic maven builds-->
@@ -41,10 +41,10 @@
         <dependency>
             <groupId>net.md-5</groupId>
             <artifactId>bungeecord-proxy</artifactId>
-            <version>1.9-SNAPSHOT</version>
+            <version>1.8-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
-<!--        <dependency>
+        <!--        <dependency>
             <groupId>io.github.waterfallmc</groupId>
             <artifactId>waterfall-api</artifactId>
             <version>1.9-SNAPSHOT</version>
