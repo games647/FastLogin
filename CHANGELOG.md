@@ -4,6 +4,7 @@
 * Added us.mcapi.com as third-party APIs to workaround rate-limits
 * Fixed NPE in BungeeCord on cracked session
 * Fixed skin applies if premium uuid is deactivated
+* Fix player entry is not saved if namechangecheck is enabled
 
 ######1.6.2
 
