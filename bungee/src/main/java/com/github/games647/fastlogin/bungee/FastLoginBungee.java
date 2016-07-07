@@ -5,15 +5,18 @@ import com.github.games647.fastlogin.bungee.hooks.BungeeAuthPlugin;
 import com.github.games647.fastlogin.bungee.listener.PlayerConnectionListener;
 import com.github.games647.fastlogin.bungee.listener.PluginMessageListener;
 import com.github.games647.fastlogin.core.FastLoginCore;
+import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
 import net.md_5.bungee.api.connection.PendingConnection;
@@ -48,9 +51,12 @@ public class FastLoginBungee extends Plugin {
             File configFile = new File(getDataFolder(), "config.yml");
             config = ConfigurationProvider.getProvider(YamlConfiguration.class).load(configFile);
 
-            loginCore.setMojangApiConnector(new MojangApiBungee(loginCore
-                    , config.getStringList("ip-addresses")
-                    , config.getBoolean("lookup-third-party")));
+            List<String> ipAddresses = getConfig().getStringList("ip-addresses");
+            int requestLimit = getConfig().getInt("mojang-request-limit");
+            ConcurrentMap<Object, Object> requestCache = CacheBuilder.newBuilder()
+                    .expireAfterWrite(10, TimeUnit.MINUTES).build().asMap();
+            MojangApiBungee mojangApi = new MojangApiBungee(requestCache, getLogger(), ipAddresses, requestLimit);
+            loginCore.setMojangApiConnector(mojangApi);
 
             String driver = config.getString("driver");
             String host = config.getString("host", "");

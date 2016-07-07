@@ -18,6 +18,7 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.collect.Sets;
 
 import java.security.KeyPair;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentMap;
@@ -45,19 +46,8 @@ public class FastLoginBukkit extends JavaPlugin {
 
     //this map is thread-safe for async access (Packet Listener)
     //SafeCacheBuilder is used in order to be version independent
-    private final ConcurrentMap<String, BukkitLoginSession> session = CompatibleCacheBuilder
-            .<String, BukkitLoginSession>newBuilder()
-            //2 minutes should be enough as a timeout for bad internet connection (Server, Client and Mojang)
-            .expireAfterWrite(1, TimeUnit.MINUTES)
-            //mapped by ip:port -> PlayerSession
-            .build(new CacheLoader<String, BukkitLoginSession>() {
-
-                @Override
-                public BukkitLoginSession load(String key) throws Exception {
-                    //A key should be inserted manually on start packet
-                    throw new UnsupportedOperationException("Not supported");
-                }
-            });
+    private final ConcurrentMap<String, BukkitLoginSession> session = buildCache(1, -1);
+    //1 minutes should be enough as a timeout for bad internet connection (Server, Client and Mojang)
 
     private BukkitAuthPlugin authPlugin;
     private PasswordGenerator passwordGenerator = new DefaultPasswordGenerator();
@@ -67,9 +57,10 @@ public class FastLoginBukkit extends JavaPlugin {
         core.loadConfig();
         core.loadMessages();
 
-        core.setMojangApiConnector(new MojangApiBukkit(core
-                , getConfig().getStringList("ip-addresses")
-                , getConfig().getBoolean("lookup-third-party")));
+        List<String> ipAddresses = getConfig().getStringList("ip-addresses");
+        int requestLimit = getConfig().getInt("mojang-request-limit");
+        MojangApiBukkit mojangApi = new MojangApiBukkit(buildCache(10, -1), getLogger(), ipAddresses, requestLimit);
+        core.setMojangApiConnector(mojangApi);
 
         try {
             if (ClassUtil.isPresent("org.spigotmc.SpigotConfig")) {
@@ -226,5 +217,24 @@ public class FastLoginBukkit extends JavaPlugin {
         if (!this.serverStarted) {
             this.serverStarted = true;
         }
+    }
+
+    private <K, V> ConcurrentMap<K, V> buildCache(int minutes, int maxSize) {
+        CompatibleCacheBuilder<Object, Object> builder = CompatibleCacheBuilder.newBuilder();
+
+        if (minutes > 0) {
+            builder.expireAfterWrite(minutes, TimeUnit.MINUTES);
+        }
+
+        if (maxSize > 0) {
+            builder.maximumSize(maxSize);
+        }
+
+        return builder.build(new CacheLoader<K, V>() {
+            @Override
+            public V load(K key) throws Exception {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
+        });
     }
 }

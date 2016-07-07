@@ -6,6 +6,7 @@
 * Fixed skin applies if premium uuid is deactivated
 * Fix player entry is not saved if namechangecheck is enabled
 * Fix skin applies for third-party plugins
+* Switch to mcapi.ca for uuid lookups
 
 ######1.6.2
 
