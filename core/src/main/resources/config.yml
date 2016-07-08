@@ -40,6 +40,12 @@ autoRegister: false
 # This feature requires Cauldron, Spigot or a fork of Spigot (PaperSpigot, TacoSpigot)
 premiumUuid: false
 
+# if this is true, it can protect premium username, 
+# cracked player can't use premium username to join server,
+# if you want to force cracked can join server
+# you can use /cracked [player] to enable it 
+protectPremiumUserName: true
+
 # This will make an additional check (only for player names which are not in the database) against the mojang servers
 # in order to get the premium UUID. If that premium UUID is in the database, we can assume on sucessful login that the
 # player changed it's  username and we just update the name in the database.
