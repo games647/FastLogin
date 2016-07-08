@@ -9,7 +9,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerLoginEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 
 public class LoginSkinApplyListener implements Listener {
 
@@ -20,7 +20,7 @@ public class LoginSkinApplyListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.LOW)
-    public void onPlayerLogin(PlayerLoginEvent loginEvent) {
+    public void onPlayerLogin(PlayerJoinEvent loginEvent) {
         Player player = loginEvent.getPlayer();
 
         BukkitLoginSession session = plugin.getSessions().get(player.getAddress().toString());
