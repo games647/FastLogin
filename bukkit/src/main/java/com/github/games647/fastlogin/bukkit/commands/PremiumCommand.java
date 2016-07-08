@@ -108,7 +108,7 @@ public class PremiumCommand implements CommandExecutor {
                     }
                 });
 
-                sender.sendMessage(plugin.getCore().getMessage("add-premium"));
+                sender.sendMessage(plugin.getCore().getMessage("add-premium-other"));
             }
         }
     }
