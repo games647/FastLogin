@@ -35,13 +35,15 @@ public class AsyncPremiumCheck implements Runnable {
 
             if (profile.getUserId() == -1) {
                 UUID premiumUUID = null;
-                if (plugin.getConfig().getBoolean("nameChangeCheck") || plugin.getConfig().getBoolean("autoRegister")) {
+                if (plugin.getConfig().getBoolean("nameChangeCheck") || plugin.getConfig().getBoolean("autoRegister")
+                        || plugin.getConfig().getBoolean("protectPremiumUserName")) {
                     premiumUUID = plugin.getCore().getMojangApiConnector().getPremiumUUID(username);
                 }
 
                 if (premiumUUID == null
                         || !checkNameChange(premiumUUID, connection, username)
-                        || !checkPremiumName(username, connection, profile)) {
+                        || !checkPremiumName(username, connection, profile)
+                        || !protectPremiumUserName(username, connection, profile)) {
                     //nothing detected the player as premium -> start a cracked session
                     plugin.getSession().put(connection, new BungeeLoginSession(username, false, profile));
                 }
@@ -56,6 +58,16 @@ public class AsyncPremiumCheck implements Runnable {
         } finally {
             preLoginEvent.completeIntent(plugin);
         }
+    }
+
+    private boolean protectPremiumUserName(String username, PendingConnection connection, PlayerProfile profile) {
+        if (plugin.getConfig().getBoolean("protectPremiumUserName")) {
+            plugin.getLogger().log(Level.FINER, "Player {0} uses a premium username", username);
+            requestPremiumLogin(connection, profile, username, false);
+            return true;
+        }
+
+        return false;
     }
 
     private boolean checkPremiumName(String username, PendingConnection connection, PlayerProfile profile)

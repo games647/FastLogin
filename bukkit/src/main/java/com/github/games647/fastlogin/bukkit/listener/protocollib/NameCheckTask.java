@@ -58,7 +58,7 @@ public class NameCheckTask implements Runnable {
             //user not exists in the db
             try {
                 if (plugin.getConfig().getBoolean("nameChangeCheck") || (plugin.getConfig().getBoolean("autoRegister")
-                        && plugin.getAuthPlugin().isRegistered(username))) {
+                        && plugin.getAuthPlugin().isRegistered(username)) || plugin.getConfig().getBoolean("protectPremiumUserName")) {
                     premiumUUID = plugin.getCore().getMojangApiConnector().getPremiumUUID(username);
                 }
 
@@ -77,9 +77,16 @@ public class NameCheckTask implements Runnable {
                     return;
                 }
 
+                if(premiumUUID != null && plugin.getConfig().getBoolean("protectPremiumUserName")){
+                    plugin.getLogger().log(Level.INFO, "Player {0} uses a premium username", username);
+                    enablePremiumLogin(profile, false);
+                    return;
+                }
+
                 //no premium check passed so we save it as a cracked player
                 BukkitLoginSession loginSession = new BukkitLoginSession(username, profile);
                 plugin.getSessions().put(player.getAddress().toString(), loginSession);
+                
             } catch (Exception ex) {
                 plugin.getLogger().log(Level.SEVERE, "Failed to query isRegistered", ex);
             }
