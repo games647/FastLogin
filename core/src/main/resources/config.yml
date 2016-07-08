@@ -42,8 +42,6 @@ premiumUuid: false
 
 # if this is true, it can protect premium username, 
 # cracked player can't use premium username to join server,
-# if you want to force cracked can join server
-# you can use /cracked [player] to enable it 
 protectPremiumUserName: false
 
 # This will make an additional check (only for player names which are not in the database) against the mojang servers
