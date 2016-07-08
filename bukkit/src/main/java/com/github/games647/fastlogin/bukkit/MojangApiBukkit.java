@@ -8,7 +8,9 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentMap;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -19,8 +21,9 @@ public class MojangApiBukkit extends MojangApiConnector {
     //mojang api check to prove a player is logged in minecraft and made a join server request
     private static final String HAS_JOINED_URL = "https://sessionserver.mojang.com/session/minecraft/hasJoined?";
 
-    public MojangApiBukkit(FastLoginCore plugin, List<String> localAddresses, boolean apiLookup) {
-        super(plugin, localAddresses, apiLookup);
+    public MojangApiBukkit(ConcurrentMap<Object, Object> requests, Logger logger, List<String> localAddresses
+            , int rateLimit) {
+        super(requests, logger, localAddresses, rateLimit);
     }
 
     @Override
@@ -57,7 +60,7 @@ public class MojangApiBukkit extends MojangApiConnector {
             }
         } catch (Exception ex) {
             //catch not only ioexceptions also parse and NPE on unexpected json format
-            plugin.getLogger().log(Level.WARNING, "Failed to verify session", ex);
+            logger.log(Level.WARNING, "Failed to verify session", ex);
         }
 
         //this connection doesn't need to be closed. So can make use of keep alive in java
@@ -68,13 +71,6 @@ public class MojangApiBukkit extends MojangApiConnector {
     protected UUID getUUIDFromJson(String json) {
         JSONObject userData = (JSONObject) JSONValue.parse(json);
         String uuid = (String) userData.get("id");
-        return FastLoginCore.parseId(uuid);
-    }
-
-    @Override
-    protected UUID getUUIDFromJsonAPI(String json) {
-        JSONObject userData = (JSONObject) JSONValue.parse(json);
-        String uuid = (String) userData.get("uuid");
         return FastLoginCore.parseId(uuid);
     }
 }
