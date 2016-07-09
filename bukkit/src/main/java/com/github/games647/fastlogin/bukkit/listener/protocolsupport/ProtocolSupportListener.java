@@ -47,8 +47,9 @@ public class ProtocolSupportListener implements Listener {
 
                 //user not exists in the db
                 try {
-                    if (plugin.getConfig().getBoolean("nameChangeCheck") || (plugin.getConfig().getBoolean("autoRegister")
-                            && plugin.getAuthPlugin().isRegistered(username))) {
+                    boolean isRegistered = plugin.getAuthPlugin().isRegistered(username);
+                    if (plugin.getConfig().getBoolean("nameChangeCheck") 
+                            || (plugin.getConfig().getBoolean("autoRegister") && isRegistered)) {
                         premiumUUID = plugin.getCore().getMojangApiConnector().getPremiumUUID(username);
                     }
 
@@ -61,8 +62,7 @@ public class ProtocolSupportListener implements Listener {
                         }
                     }
 
-                    if (premiumUUID != null
-                            && plugin.getConfig().getBoolean("autoRegister") && !authPlugin.isRegistered(username)) {
+                    if (premiumUUID != null && plugin.getConfig().getBoolean("autoRegister") && !isRegistered) {
                         plugin.getLogger().log(Level.FINER, "Player {0} uses a premium username", username);
                         startPremiumSession(username, loginStartEvent, false, profile);
                         return;

@@ -7,6 +7,7 @@
 * Fix player entry is not saved if namechangecheck is enabled
 * Fix skin applies for third-party plugins
 * Switch to mcapi.ca for uuid lookups
+* Fix BungeeCord not setting an premium uuid
 
 ######1.6.2
 

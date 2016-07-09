@@ -57,11 +57,13 @@ public class ForceLoginTask implements Runnable {
                     //save will happen on success message from bukkit
                     sendBukkitLoginNotification(autoRegister);
                 }
-            } else //cracked player
-            if (!session.isAlreadySaved()) {
-                playerProfile.setPremium(false);
-                plugin.getCore().getStorage().save(playerProfile);
-                session.setAlreadySaved(true);
+            } else {
+                //cracked player
+                if (!session.isAlreadySaved()) {
+                    playerProfile.setPremium(false);
+                    plugin.getCore().getStorage().save(playerProfile);
+                    session.setAlreadySaved(true);
+                }
             }
         } catch (Exception ex) {
             plugin.getLogger().log(Level.INFO, "ERROR ON FORCE LOGIN", ex);
