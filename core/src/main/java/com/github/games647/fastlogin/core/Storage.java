@@ -155,28 +155,27 @@ public class Storage {
             con = dataSource.getConnection();
 
             UUID uuid = playerProfile.getUuid();
-            if (playerProfile.getUserId() == -1) {
+            if (uuid != null) {
                 //User was authenticated with a premium authentication, so it's possible that the player is premium
-                if (uuid != null) {
-                    updateStmt = con.prepareStatement("UPDATE " + PREMIUM_TABLE
-                            + " SET NAME=?, LastIp=?, LastLogin=CURRENT_TIMESTAMP"
-                            + " WHERE UUID=? AND PREMIUM=1");
+                updateStmt = con.prepareStatement("UPDATE " + PREMIUM_TABLE
+                        + " SET NAME=?, LastIp=?, LastLogin=CURRENT_TIMESTAMP"
+                        + " WHERE UUID=?");
 
-                    updateStmt.setString(1, playerProfile.getPlayerName());
-                    updateStmt.setString(2, playerProfile.getLastIp());
-                    updateStmt.setString(3, uuid.toString().replace("-", ""));
+                updateStmt.setString(1, playerProfile.getPlayerName());
+                updateStmt.setString(2, playerProfile.getLastIp());
+                updateStmt.setString(3, uuid.toString().replace("-", ""));
 
-                    int affectedRows = updateStmt.executeUpdate();
-                    if (affectedRows > 0) {
-                        //username changed and we updated the existing database record
-                        //so we don't need to run an insert
-                        return true;
-                    }
+                int affectedRows = updateStmt.executeUpdate();
+                if (affectedRows > 0) {
+                    //username changed and we updated the existing database record
+                    //so we don't need to run an insert
+                    return true;
                 }
-
+            }
+            
+            if (playerProfile.getUserId() == -1) {
                 saveStmt = con.prepareStatement("INSERT INTO " + PREMIUM_TABLE
-                        + " (UUID, Name, Premium, LastIp) VALUES (?, ?, ?, ?) "
-                        , Statement.RETURN_GENERATED_KEYS);
+                        + " (UUID, Name, Premium, LastIp) VALUES (?, ?, ?, ?) ", Statement.RETURN_GENERATED_KEYS);
 
                 if (uuid == null) {
                     saveStmt.setString(1, null);

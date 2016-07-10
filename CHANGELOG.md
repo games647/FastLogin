@@ -8,6 +8,8 @@
 * Fix skin applies for third-party plugins
 * Switch to mcapi.ca for uuid lookups
 * Fix BungeeCord not setting an premium uuid
+* Fix setting skin on Cauldron
+* Fix saving on name change
 
 ######1.6.2
 
