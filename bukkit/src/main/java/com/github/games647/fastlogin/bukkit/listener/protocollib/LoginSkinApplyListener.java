@@ -1,11 +1,17 @@
 package com.github.games647.fastlogin.bukkit.listener.protocollib;
 
+import com.comphenix.protocol.reflect.accessors.Accessors;
+import com.comphenix.protocol.reflect.accessors.MethodAccessor;
+import com.comphenix.protocol.utility.MinecraftReflection;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
 import com.comphenix.protocol.wrappers.WrappedSignedProperty;
 import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Collection;
+import java.util.logging.Level;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -14,6 +20,11 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerLoginEvent;
 
 public class LoginSkinApplyListener implements Listener {
+
+    private static final Class<?> GAME_PROFILE = MinecraftReflection.getGameProfileClass();
+
+    private static final MethodAccessor GET_PROPERTIES = Accessors.getMethodAcccessorOrNull(
+            GAME_PROFILE, "getProperties");
 
     private final FastLoginBukkit plugin;
 
@@ -45,7 +56,17 @@ public class LoginSkinApplyListener implements Listener {
         String signature = session.getSkinSignature();
         if (skinData != null && signature != null) {
             WrappedSignedProperty skin = WrappedSignedProperty.fromValues("textures", skinData, signature);
-            gameProfile.getProperties().put("textures", skin);
+            try {
+                gameProfile.getProperties().put("textures", skin);
+            } catch (ClassCastException castException) {
+                Object map = GET_PROPERTIES.invoke(gameProfile.getHandle());
+                try {
+                    Method putMethod = map.getClass().getMethod("put", Object.class, Object.class);
+                    putMethod.invoke(map, "textures", skin.getHandle());
+                } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException ex) {
+                    plugin.getLogger().log(Level.SEVERE, "Error setting premium skin", ex);
+                }
+            }
         }
     }
 }
