@@ -57,7 +57,6 @@ public class Storage {
                     + "Premium BOOLEAN NOT NULL, "
                     + "LastIp VARCHAR(255) NOT NULL, "
                     + "LastLogin TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
-                    + "UNIQUE (UUID), "
                     //the premium shouldn't steal the cracked account by changing the name
                     + "UNIQUE (Name) "
                     + ")";
@@ -67,6 +66,19 @@ public class Storage {
             }
 
             createStmt.executeUpdate(createDataStmt);
+
+            //drop the old unique index
+            try {
+                createStmt.executeUpdate("ALTER TABLE premium DROP INDEX UUID");
+            } catch (SQLException sqlEx) {
+                core.getLogger().log(Level.FINE, "Error dropping unique uuid index", sqlEx);
+            }
+
+            try {
+                createStmt.executeUpdate("CREATE INDEX uuid_idx on premium (UUID)");
+            } catch (SQLException sqlEx) {
+                core.getLogger().log(Level.FINE, "Error creating uuid index", sqlEx);
+            }
         } finally {
             closeQuietly(con);
             closeQuietly(createStmt);
@@ -155,25 +167,26 @@ public class Storage {
             con = dataSource.getConnection();
 
             UUID uuid = playerProfile.getUuid();
-            if (uuid != null) {
-                //User was authenticated with a premium authentication, so it's possible that the player is premium
-                updateStmt = con.prepareStatement("UPDATE " + PREMIUM_TABLE
-                        + " SET NAME=?, LastIp=?, LastLogin=CURRENT_TIMESTAMP"
-                        + " WHERE UUID=?");
-
-                updateStmt.setString(1, playerProfile.getPlayerName());
-                updateStmt.setString(2, playerProfile.getLastIp());
-                updateStmt.setString(3, uuid.toString().replace("-", ""));
-
-                int affectedRows = updateStmt.executeUpdate();
-                if (affectedRows > 0) {
-                    //username changed and we updated the existing database record
-                    //so we don't need to run an insert
-                    return true;
-                }
-            }
             
             if (playerProfile.getUserId() == -1) {
+                if (uuid != null) {
+                    //User was authenticated with a premium authentication, so it's possible that the player is premium
+                    updateStmt = con.prepareStatement("UPDATE " + PREMIUM_TABLE
+                            + " SET NAME=?, LastIp=?, LastLogin=CURRENT_TIMESTAMP"
+                            + " WHERE UUID=?");
+
+                    updateStmt.setString(1, playerProfile.getPlayerName());
+                    updateStmt.setString(2, playerProfile.getLastIp());
+                    updateStmt.setString(3, uuid.toString().replace("-", ""));
+
+                    int affectedRows = updateStmt.executeUpdate();
+                    if (affectedRows > 0) {
+                        //username changed and we updated the existing database record
+                        //so we don't need to run an insert
+                        return true;
+                    }
+                }
+
                 saveStmt = con.prepareStatement("INSERT INTO " + PREMIUM_TABLE
                         + " (UUID, Name, Premium, LastIp) VALUES (?, ?, ?, ?) ", Statement.RETURN_GENERATED_KEYS);
 
