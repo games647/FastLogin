@@ -50,6 +50,7 @@ public class Storage {
         try {
             con = dataSource.getConnection();
             createStmt = con.createStatement();
+
             String createDataStmt = "CREATE TABLE IF NOT EXISTS " + PREMIUM_TABLE + " ("
                     + "UserID INTEGER PRIMARY KEY AUTO_INCREMENT, "
                     + "UUID CHAR(36), "
@@ -57,6 +58,7 @@ public class Storage {
                     + "Premium BOOLEAN NOT NULL, "
                     + "LastIp VARCHAR(255) NOT NULL, "
                     + "LastLogin TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
+//                    + "UNIQUE (UUID), "
                     //the premium shouldn't steal the cracked account by changing the name
                     + "UNIQUE (Name) "
                     + ")";
@@ -67,9 +69,16 @@ public class Storage {
 
             createStmt.executeUpdate(createDataStmt);
 
-            //drop the old unique index
+            //drop the old unique uuid index
             try {
-                createStmt.executeUpdate("ALTER TABLE premium DROP INDEX UUID");
+                if (dataSource.getJdbcUrl().contains("sqlite")) {
+                    //create a temp table insert it there and then back
+                    createStmt.executeUpdate(createDataStmt.replace(PREMIUM_TABLE, PREMIUM_TABLE + "-TEMP"));
+                    createStmt.executeUpdate("INSERT INTO " + PREMIUM_TABLE + "-2 SELECT * FROM " + PREMIUM_TABLE);
+                    createStmt.executeUpdate("INSERT INTO " + PREMIUM_TABLE + " SELECT * FROM " + PREMIUM_TABLE + "-TEMP");
+                } else {
+                    createStmt.executeUpdate("ALTER TABLE premium DROP INDEX UUID");
+                }
             } catch (SQLException sqlEx) {
                 core.getLogger().log(Level.FINE, "Error dropping unique uuid index", sqlEx);
             }
