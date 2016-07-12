@@ -19,14 +19,29 @@ public class AutoInImporter extends Importer {
         try {
             con = source.getConnection();
             stmt = con.createStatement();
-            int importedRows = stmt.executeUpdate("INSERT INTO " + targetTable + " SELECT"
+            int importedRows = stmt.executeUpdate("INSERT INTO " + targetTable + " (Name, Premium, LastIp, UUID) SELECT"
                     + " name AS Name,"
-                    + " enabledLogin AS Premium,"
+                    /* Enable premium authentication only for those who want to be auto logged in, so
+                    they have their cracked protection disabled */
+                    + " !protection AND premium AS Premium,"
                     + " '' AS LastIp,"
+                    /* Remove the dashes - returns null if puuid is null too */
                     + " REPLACE(puuid, '-', '') AS UUID"
                     + " FROM " + USER_TABLE
-                    + " JOIN " + UUID_TABLE
-                    + " ON " + UUID_TABLE + ".id = " + UUID_TABLE + ".nickname_id");
+                    /* Get the premium uuid */
+                    + " LEFT JOIN " + " ("
+                    /* Prevent duplicates */
+                    + "SELECT * FROM " + UUID_TABLE + " GROUP BY nickname_id"
+                    + ") uuids"
+                    + " ON " + USER_TABLE + ".id = uuids.nickname_id");
+
+            /* FastLogin will also make lookups on the uuid column for name changes
+            the old 1.6.2 version won't check if those user have premium enabled
+
+            so it could happen that a premium could steal the account if we don't do this
+
+            It seems the uuid is saved on autoin too if the player is cracked */
+            stmt.executeUpdate("UPDATE `premium` SET `UUID`=NULL WHERE PREMIUM=0");
             return importedRows;
         } finally {
             closeQuietly(stmt);
