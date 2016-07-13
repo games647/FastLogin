@@ -58,7 +58,6 @@ public class Storage {
                     + "Premium BOOLEAN NOT NULL, "
                     + "LastIp VARCHAR(255) NOT NULL, "
                     + "LastLogin TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
-//                    + "UNIQUE (UUID), "
                     //the premium shouldn't steal the cracked account by changing the name
                     + "UNIQUE (Name) "
                     + ")";
@@ -72,10 +71,18 @@ public class Storage {
             //drop the old unique uuid index
             try {
                 if (dataSource.getJdbcUrl().contains("sqlite")) {
+                    String tempTableCreate = createDataStmt.replace(PREMIUM_TABLE, PREMIUM_TABLE + "_TEMP")
+                            //if we already imported the table fail here
+                            .replace("IF NOT EXISTS", "");
                     //create a temp table insert it there and then back
-                    createStmt.executeUpdate(createDataStmt.replace(PREMIUM_TABLE, PREMIUM_TABLE + "-TEMP"));
-                    createStmt.executeUpdate("INSERT INTO " + PREMIUM_TABLE + "-2 SELECT * FROM " + PREMIUM_TABLE);
-                    createStmt.executeUpdate("INSERT INTO " + PREMIUM_TABLE + " SELECT * FROM " + PREMIUM_TABLE + "-TEMP");
+                    createStmt.executeUpdate(tempTableCreate);
+                    createStmt.executeUpdate("INSERT INTO " + PREMIUM_TABLE + "_TEMP SELECT * FROM " + PREMIUM_TABLE);
+
+                    createStmt.executeUpdate("DROP TABLE " + PREMIUM_TABLE);
+                    createStmt.executeUpdate(createDataStmt);
+
+                    //insert it back into the new table
+                    createStmt.executeUpdate("INSERT INTO " + PREMIUM_TABLE + " SELECT * FROM " + PREMIUM_TABLE + "_TEMP");
                 } else {
                     createStmt.executeUpdate("ALTER TABLE premium DROP INDEX UUID");
                 }
