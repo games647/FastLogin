@@ -21,7 +21,7 @@ import javax.net.ssl.HttpsURLConnection;
 public abstract class MojangApiConnector {
 
     //http connection, read timeout and user agent for a connection to mojang api servers
-    private static final int TIMEOUT = 1 * 1_000;
+    private static final int TIMEOUT = 3 * 1_000;
     private static final String USER_AGENT = "Premium-Checker";
 
     private static final String MCAPI_UUID_URL = "https://mcapi.ca/uuid/player/";
