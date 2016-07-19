@@ -69,8 +69,17 @@ public class MojangApiBukkit extends MojangApiConnector {
 
     @Override
     protected UUID getUUIDFromJson(String json) {
-        JSONObject userData = (JSONObject) JSONValue.parse(json);
-        String uuid = (String) userData.get("id");
+        boolean isArray = json.startsWith("[");
+
+        JSONObject mojangPlayer;
+        if (isArray) {
+            JSONArray array = (JSONArray) JSONValue.parse(json);
+            mojangPlayer = (JSONObject) array.get(0);
+        } else {
+            mojangPlayer = (JSONObject) JSONValue.parse(json);
+        }
+
+        String uuid = (String) mojangPlayer.get("id");
         return FastLoginCore.parseId(uuid);
     }
 }

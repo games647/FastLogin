@@ -19,7 +19,15 @@ public class MojangApiBungee extends MojangApiConnector {
 
     @Override
     protected UUID getUUIDFromJson(String json) {
-        MojangPlayer mojangPlayer = BungeeCord.getInstance().gson.fromJson(json, MojangPlayer.class);
+        boolean isArray = json.startsWith("[");
+
+        MojangPlayer mojangPlayer;
+        if (isArray) {
+            mojangPlayer = BungeeCord.getInstance().gson.fromJson(json, MojangPlayer[].class)[0];
+        } else {
+            mojangPlayer = BungeeCord.getInstance().gson.fromJson(json, MojangPlayer.class);
+        }
+
         return FastLoginCore.parseId(mojangPlayer.getId());
     }
 

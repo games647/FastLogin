@@ -23,6 +23,7 @@ import net.md_5.bungee.connection.InitialHandler;
 import net.md_5.bungee.connection.LoginResult;
 import net.md_5.bungee.connection.LoginResult.Property;
 import net.md_5.bungee.event.EventHandler;
+import net.md_5.bungee.event.EventPriority;
 
 /**
  * Enables online mode logins for specified users and sends
@@ -47,7 +48,7 @@ public class PlayerConnectionListener implements Listener {
         ProxyServer.getInstance().getScheduler().runAsync(plugin, new AsyncPremiumCheck(plugin, preLoginEvent));
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOW)
     public void onLogin(LoginEvent loginEvent) {
         if (loginEvent.isCancelled()) {
             return;
