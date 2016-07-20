@@ -83,37 +83,37 @@ public abstract class MojangApiConnector {
      */
     public UUID getPremiumUUID(String playerName) {
         //check if it's a valid playername
-        if (playernameMatcher.matcher(playerName).matches()) {
+//        if (playernameMatcher.matcher(playerName).matches()) {
             //only make a API call if the name is valid existing mojang account
 
-            if (requests.size() >= rateLimit || System.currentTimeMillis() - lastRateLimit < 1_000 * 60 * 10) {
+//            if (requests.size() >= rateLimit || System.currentTimeMillis() - lastRateLimit < 1_000 * 60 * 10) {
 //                plugin.getLogger().fine("STILL WAITING FOR RATE_LIMIT - TRYING Third-party API");
                 return getUUIDFromAPI(playerName);
-            }
+//            }
 
-            requests.put(new Object(), new Object());
-
-            try {
-                HttpsURLConnection connection = getConnection(UUID_LINK + playerName);
-                if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                    String line = reader.readLine();
-                    if (line != null && !line.equals("null")) {
-                        return getUUIDFromJson(line);
-                    }
-                } else if (connection.getResponseCode() == RATE_LIMIT_CODE) {
-                    logger.info("RATE_LIMIT REACHED - TRYING THIRD-PARTY API");
-                    lastRateLimit = System.currentTimeMillis();
-                    return getUUIDFromAPI(playerName);
-                }
-                //204 - no content for not found
-            } catch (Exception ex) {
-                logger.log(Level.SEVERE, "Failed to check if player has a paid account", ex);
-            }
-            //this connection doesn't need to be closed. So can make use of keep alive in java
-        }
-
-        return null;
+//            requests.put(new Object(), new Object());
+//
+//            try {
+//                HttpsURLConnection connection = getConnection(UUID_LINK + playerName);
+//                if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+//                    BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+//                    String line = reader.readLine();
+//                    if (line != null && !line.equals("null")) {
+//                        return getUUIDFromJson(line);
+//                    }
+//                } else if (connection.getResponseCode() == RATE_LIMIT_CODE) {
+//                    logger.info("RATE_LIMIT REACHED - TRYING THIRD-PARTY API");
+//                    lastRateLimit = System.currentTimeMillis();
+//                    return getUUIDFromAPI(playerName);
+//                }
+//                //204 - no content for not found
+//            } catch (Exception ex) {
+//                logger.log(Level.SEVERE, "Failed to check if player has a paid account", ex);
+//            }
+//            //this connection doesn't need to be closed. So can make use of keep alive in java
+//        }
+//
+//        return null;
     }
 
     public UUID getUUIDFromAPI(String playerName) {
@@ -128,10 +128,14 @@ public abstract class MojangApiConnector {
             }
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(httpConnection.getInputStream()));
-            String line = reader.readLine();
-            if (line != null && !line.equals("null")) {
-                return getUUIDFromJson(line);
+            StringBuilder inputBuilder = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                inputBuilder.append(line);
             }
+
+            String input = inputBuilder.toString();
+            return getUUIDFromJson(input);
         } catch (IOException iOException) {
             logger.log(Level.SEVERE, "Tried converting name->uuid from third-party api", iOException);
         }
