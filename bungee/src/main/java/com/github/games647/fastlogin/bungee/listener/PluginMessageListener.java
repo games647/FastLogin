@@ -6,6 +6,7 @@ import com.github.games647.fastlogin.bungee.tasks.AsyncToggleMessage;
 import com.github.games647.fastlogin.core.PlayerProfile;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteStreams;
+import java.util.Arrays;
 
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -41,43 +42,50 @@ public class PluginMessageListener implements Listener {
     }
 
     private void readMessage(PluginMessageEvent pluginMessageEvent) {
-        byte[] data = pluginMessageEvent.getData();
-        ByteArrayDataInput dataInput = ByteStreams.newDataInput(data);
-        String subchannel = dataInput.readUTF();
+        //so that we can safely process this in the background
+        final byte[] data = Arrays.copyOf(pluginMessageEvent.getData(), pluginMessageEvent.getData().length);
+        final ProxiedPlayer forPlayer = (ProxiedPlayer) pluginMessageEvent.getReceiver();
 
-        ProxiedPlayer forPlayer = (ProxiedPlayer) pluginMessageEvent.getReceiver();
-        if ("ON".equals(subchannel)) {
-            String playerName = dataInput.readUTF();
+        ProxyServer.getInstance().getScheduler().runAsync(plugin, new Runnable() {
+            @Override
+            public void run() {
+                ByteArrayDataInput dataInput = ByteStreams.newDataInput(data);
+                String subchannel = dataInput.readUTF();
+                if ("ON".equals(subchannel)) {
+                    String playerName = dataInput.readUTF();
 
-            if (playerName.equals(forPlayer.getName()) && plugin.getConfig().getBoolean("premium-warning")
-                    && !plugin.getPendingConfirms().contains(forPlayer.getUniqueId())) {
-                forPlayer.sendMessage(TextComponent.fromLegacyText(plugin.getCore().getMessage("premium-warning")));
-                plugin.getPendingConfirms().add(forPlayer.getUniqueId());
-                return;
-            }
+                    if (playerName.equals(forPlayer.getName()) && plugin.getConfig().getBoolean("premium-warning")
+                            && !plugin.getPendingConfirms().contains(forPlayer.getUniqueId())) {
+                        String message = plugin.getCore().getMessage("premium-warning");
+                        forPlayer.sendMessage(TextComponent.fromLegacyText(message));
+                        plugin.getPendingConfirms().add(forPlayer.getUniqueId());
+                        return;
+                    }
 
-            plugin.getPendingConfirms().remove(forPlayer.getUniqueId());
-            AsyncToggleMessage task = new AsyncToggleMessage(plugin, forPlayer, playerName, true);
-            ProxyServer.getInstance().getScheduler().runAsync(plugin, task);
-        } else if ("OFF".equals(subchannel)) {
-            String playerName = dataInput.readUTF();
+                    plugin.getPendingConfirms().remove(forPlayer.getUniqueId());
+                    AsyncToggleMessage task = new AsyncToggleMessage(plugin, forPlayer, playerName, true);
+                    ProxyServer.getInstance().getScheduler().runAsync(plugin, task);
+                } else if ("OFF".equals(subchannel)) {
+                    String playerName = dataInput.readUTF();
 
-            AsyncToggleMessage task = new AsyncToggleMessage(plugin, forPlayer, playerName, false);
-            ProxyServer.getInstance().getScheduler().runAsync(plugin, task);
-        } else if ("SUCCESS".equals(subchannel)) {
-            if (forPlayer.getPendingConnection().isOnlineMode()) {
-                //bukkit module successfully received and force logged in the user
-                //update only on success to prevent corrupt data
-                BungeeLoginSession loginSession = plugin.getSession().get(forPlayer.getPendingConnection());
-                PlayerProfile playerProfile = loginSession.getProfile();
-                loginSession.setRegistered(true);
+                    AsyncToggleMessage task = new AsyncToggleMessage(plugin, forPlayer, playerName, false);
+                    ProxyServer.getInstance().getScheduler().runAsync(plugin, task);
+                } else if ("SUCCESS".equals(subchannel)) {
+                    if (forPlayer.getPendingConnection().isOnlineMode()) {
+                        //bukkit module successfully received and force logged in the user
+                        //update only on success to prevent corrupt data
+                        BungeeLoginSession loginSession = plugin.getSession().get(forPlayer.getPendingConnection());
+                        PlayerProfile playerProfile = loginSession.getProfile();
+                        loginSession.setRegistered(true);
 
-                if (!loginSession.isAlreadySaved()) {
-                    playerProfile.setPremium(true);
-                    plugin.getCore().getStorage().save(playerProfile);
-                    loginSession.setAlreadySaved(true);
+                        if (!loginSession.isAlreadySaved()) {
+                            playerProfile.setPremium(true);
+                            plugin.getCore().getStorage().save(playerProfile);
+                            loginSession.setAlreadySaved(true);
+                        }
+                    }
                 }
             }
-        }
+        });
     }
 }
