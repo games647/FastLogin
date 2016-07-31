@@ -3,8 +3,8 @@ package com.github.games647.fastlogin.bukkit.tasks;
 import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 import com.github.games647.fastlogin.bukkit.hooks.BukkitAuthPlugin;
+import com.github.games647.fastlogin.core.AuthStorage;
 import com.github.games647.fastlogin.core.PlayerProfile;
-import com.github.games647.fastlogin.core.Storage;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 
@@ -39,7 +39,7 @@ public class ForceLoginTask implements Runnable {
             return;
         }
 
-        Storage storage = plugin.getCore().getStorage();
+        AuthStorage storage = plugin.getCore().getStorage();
         PlayerProfile playerProfile = session.getProfile();
 
         //check if it's the same player as we checked before

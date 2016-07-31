@@ -20,7 +20,7 @@ public abstract class FastLoginCore {
 
     protected final Map<String, String> localeMessages = new ConcurrentHashMap<>();
     private MojangApiConnector mojangApiConnector;
-    private Storage storage;
+    private AuthStorage storage;
 
     public void setMojangApiConnector(MojangApiConnector mojangApiConnector) {
         this.mojangApiConnector = mojangApiConnector;
@@ -30,7 +30,7 @@ public abstract class FastLoginCore {
         return mojangApiConnector;
     }
 
-    public Storage getStorage() {
+    public AuthStorage getStorage() {
         return storage;
     }
 
@@ -49,7 +49,7 @@ public abstract class FastLoginCore {
     public abstract void loadConfig();
 
     public boolean setupDatabase(String driver, String host, int port, String database, String user, String password) {
-        storage = new Storage(this, driver, host, port, database, user, password);
+        storage = new AuthStorage(this, driver, host, port, database, user, password);
         try {
             storage.createTables();
             return true;

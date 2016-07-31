@@ -16,17 +16,16 @@
     <name>FastLoginBukkit</name>
 
     <repositories>
-        <!--LoginSecurity-->
-        <repository>
-            <id>lenis0012-repo</id>
-            <url>http://ci.lenis0012.com/plugin/repository/everything/</url>
-        </repository>
-
-
         <!--Bukkit-Server-API -->
         <repository>
             <id>spigot-repo</id>
             <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+        </repository>
+
+        <!--LoginSecurity-->
+        <repository>
+            <id>lenis0012-repo</id>
+            <url>http://ci.lenis0012.com/plugin/repository/everything/</url>
         </repository>
 
         <!--ProtocolLib-->

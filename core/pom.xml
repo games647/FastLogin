@@ -19,7 +19,7 @@
         <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
-            <version>2.4.6</version>
+            <version>2.4.7</version>
         </dependency>
 
         <!--Logging framework implements slf4j which is required by hikari-->

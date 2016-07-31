@@ -11,14 +11,14 @@ import java.sql.Statement;
 import java.util.UUID;
 import java.util.logging.Level;
 
-public class Storage {
+public class AuthStorage {
 
     private static final String PREMIUM_TABLE = "premium";
 
     private final FastLoginCore core;
     private final HikariDataSource dataSource;
 
-    public Storage(FastLoginCore core, String driver, String host, int port, String databasePath
+    public AuthStorage(FastLoginCore core, String driver, String host, int port, String databasePath
             , String user, String pass) {
         this.core = core;
 
@@ -29,8 +29,6 @@ public class Storage {
         databaseConfig.setThreadFactory(core.getThreadFactory());
 
         databasePath = databasePath.replace("{pluginDir}", core.getDataFolder().getAbsolutePath());
-
-        databaseConfig.setThreadFactory(core.getThreadFactory());
 
         String jdbcUrl = "jdbc:";
         if (driver.contains("sqlite")) {
