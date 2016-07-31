@@ -49,7 +49,7 @@ public class ProtocolSupportListener implements Listener {
                 try {
                     boolean isRegistered = plugin.getAuthPlugin().isRegistered(username);
                     if (plugin.getConfig().getBoolean("nameChangeCheck") 
-                            || (plugin.getConfig().getBoolean("autoRegister") && isRegistered)) {
+                            || (plugin.getConfig().getBoolean("autoRegister") && !isRegistered)) {
                         premiumUUID = plugin.getCore().getMojangApiConnector().getPremiumUUID(username);
                     }
 
