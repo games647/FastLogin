@@ -1,3 +1,8 @@
+######1.7.1
+
+* Fix BungeeCord autoRegister (Fixes #46)
+* Fix protocollsupport autoregister
+
 ######1.7
 
 * Added support for making requests to Mojang from different IPv4 addresses
