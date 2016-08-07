@@ -95,7 +95,7 @@ public class BungeeAuthHook implements BungeeAuthPlugin {
 
     //pail ;(
     private void callProtected(String methodName, Class<?>[] parameterTypes, Object[] arguments) throws Exception {
-        Class<? extends Tables> tableClass = databaseConnection.getClass();
+        Class<Tables> tableClass = Tables.class;
 
         Method method = tableClass.getDeclaredMethod(methodName, parameterTypes);
         method.setAccessible(true);

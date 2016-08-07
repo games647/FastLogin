@@ -71,7 +71,7 @@ public class PlayerConnectionListener implements Listener {
 
                     //bungeecord doesn't support overriding the premium uuid
                     //so we have to do it with reflection
-                    Field idField = initialHandler.getClass().getDeclaredField("uniqueId");
+                    Field idField = InitialHandler.class.getDeclaredField("uniqueId");
                     idField.setAccessible(true);
                     idField.set(connection, offlineUUID);
                 } catch (NoSuchFieldException | IllegalAccessException ex) {
