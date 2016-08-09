@@ -80,6 +80,10 @@ public class MojangApiBukkit extends MojangApiConnector {
         }
 
         String uuid = (String) mojangPlayer.get("id");
+        if (uuid == null || uuid.equals("null")) {
+            return null;
+        }
+        
         return FastLoginCore.parseId(uuid);
     }
 }

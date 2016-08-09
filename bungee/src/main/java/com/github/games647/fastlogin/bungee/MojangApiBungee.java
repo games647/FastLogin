@@ -28,6 +28,10 @@ public class MojangApiBungee extends MojangApiConnector {
             mojangPlayer = BungeeCord.getInstance().gson.fromJson(json, MojangPlayer.class);
         }
 
+        if (mojangPlayer.getId() == null || mojangPlayer.getId().equals("null")) {
+            return null;
+        }
+        
         return FastLoginCore.parseId(mojangPlayer.getId());
     }
 
