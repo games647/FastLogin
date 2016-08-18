@@ -1,3 +1,8 @@
+######1.8
+
+* Fix third-party not premium player detection
+* Fix ProtocolSupport BungeeCord
+
 ######1.7.1
 
 * Fix BungeeCord autoRegister (Fixes #46)

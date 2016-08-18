@@ -4,6 +4,7 @@ import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Random;
+import java.util.logging.Level;
 
 import me.vik1395.BungeeAuth.ListenerClass;
 import me.vik1395.BungeeAuth.Main;
@@ -41,7 +42,7 @@ public class BungeeAuthHook implements BungeeAuthPlugin {
             //proparly not thread-safe
             ListenerClass.prelogin.get(player.getName()).cancel();
         } catch (Exception ex) {
-            Main.plugin.getLogger().severe("[BungeeAuth] Error force loging in player");
+            Main.plugin.getLogger().log(Level.SEVERE, "Error force loging in player", ex);
             return false;
         }
 
@@ -86,7 +87,7 @@ public class BungeeAuthHook implements BungeeAuthPlugin {
             //proparly not thread-safe
             forceLogin(player);
         } catch (Exception ex) {
-            Main.plugin.getLogger().severe("[BungeeAuth] Error when creating a new player in the Database");
+            Main.plugin.getLogger().log(Level.SEVERE, "[BungeeAuth] Error when creating a new player in the Database", ex);
             return false;
         }
 
