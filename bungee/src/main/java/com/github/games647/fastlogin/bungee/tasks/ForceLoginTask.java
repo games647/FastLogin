@@ -52,10 +52,19 @@ public class ForceLoginTask implements Runnable {
                     if (authPlugin.forceRegister(player, password)) {
                         //save will happen on success message from bukkit
                         sendBukkitLoginNotification(autoRegister);
+                        String message = plugin.getCore().getMessage("auto-register");
+                        if (message != null) {
+                            message = message.replace("%password", password);
+                            player.sendMessage(message);
+                        }
                     }
                 } else if (authPlugin.forceLogin(player)) {
                     //save will happen on success message from bukkit
                     sendBukkitLoginNotification(autoRegister);
+                    String message = plugin.getCore().getMessage("auto-login");
+                    if (message != null) {
+                        player.sendMessage(message);
+                    }
                 }
             } else {
                 //cracked player
