@@ -42,7 +42,7 @@ public class BungeeCordListener implements PluginMessageListener {
     }
 
     @Override
-    public void onPluginMessageReceived(String channel, Player player, byte[] message) {
+    public void onPluginMessageReceived(String channel, final Player player, byte[] message) {
         if (!channel.equals(plugin.getName())) {
             return;
         }
@@ -75,6 +75,7 @@ public class BungeeCordListener implements PluginMessageListener {
                     BukkitLoginSession playerSession = new BukkitLoginSession(playerName, true);
                     playerSession.setVerified(true);
                     plugin.getSessions().put(id, playerSession);
+                    Bukkit.getScheduler().runTaskAsynchronously(plugin, new ForceLoginTask(plugin, player));
                 } else if ("AUTO_REGISTER".equalsIgnoreCase(subchannel)) {
                     Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
                         @Override
@@ -82,10 +83,11 @@ public class BungeeCordListener implements PluginMessageListener {
                             BukkitAuthPlugin authPlugin = plugin.getAuthPlugin();
                             try {
                                 //we need to check if the player is registered on Bukkit too
-                                if (authPlugin != null && !authPlugin.isRegistered(playerName)) {
+                                if (authPlugin == null || !authPlugin.isRegistered(playerName)) {
                                     BukkitLoginSession playerSession = new BukkitLoginSession(playerName, false);
                                     playerSession.setVerified(true);
                                     plugin.getSessions().put(id, playerSession);
+                                    new ForceLoginTask(plugin, player).run();
                                 }
                             } catch (Exception ex) {
                                 plugin.getLogger().log(Level.SEVERE, "Failed to query isRegistered", ex);
@@ -93,8 +95,6 @@ public class BungeeCordListener implements PluginMessageListener {
                         }
                     });
                 }
-
-                Bukkit.getScheduler().runTaskAsynchronously(plugin, new ForceLoginTask(plugin, player));
             }
         }
     }
