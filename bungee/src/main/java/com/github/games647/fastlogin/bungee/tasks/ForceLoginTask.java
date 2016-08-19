@@ -48,8 +48,10 @@ public class ForceLoginTask implements Runnable {
                     //save will happen on success message from bukkit
                     sendBukkitLoginNotification(autoRegister);
                 } else if (session.needsRegistration()) {
+                    session.setAlreadyLogged(true);
                     forceRegister(session, authPlugin);
                 } else if (authPlugin.forceLogin(player)) {
+                    session.setAlreadyLogged(true);
                     forceLogin(session, authPlugin);
                 }
             } else {
@@ -66,8 +68,10 @@ public class ForceLoginTask implements Runnable {
     }
 
     private void forceRegister(BungeeLoginSession session, BungeeAuthPlugin authPlugin) {
+        session.setAlreadyLogged(true);
+
         String password = plugin.generateStringPassword();
-        if (session.isAlreadySaved() || authPlugin.forceRegister(player, password)) {
+        if (session.isAlreadyLogged()|| authPlugin.forceRegister(player, password)) {
             //save will happen on success message from bukkit
             sendBukkitLoginNotification(true);
             String message = plugin.getCore().getMessage("auto-register");
@@ -79,7 +83,9 @@ public class ForceLoginTask implements Runnable {
     }
 
     private void forceLogin(BungeeLoginSession session, BungeeAuthPlugin authPlugin) {
-        if (session.isAlreadySaved() || authPlugin.forceLogin(player)) {
+        session.setAlreadyLogged(true);
+
+        if (session.isAlreadyLogged() || authPlugin.forceLogin(player)) {
             //save will happen on success message from bukkit
             sendBukkitLoginNotification(false);
             String message = plugin.getCore().getMessage("auto-login");
