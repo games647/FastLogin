@@ -28,6 +28,12 @@ public class BungeeAuthHook implements BungeeAuthPlugin {
     @Override
     public boolean forceLogin(ProxiedPlayer player) {
 //https://github.com/MatteCarra/BungeeAuth/blob/master/src/me/vik1395/BungeeAuth/Login.java#L92-95
+        if (Main.plonline.contains(player.getName())) {
+            Main.plugin.getLogger().log(Level.INFO, "Cannot force login player {0}, because he/she is already online"
+                    , player.getName());
+            return true;
+        }
+
         Main.plonline.add(player.getName());
 
         //renamed from ct to databaseConnection
