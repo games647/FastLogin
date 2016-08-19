@@ -48,23 +48,9 @@ public class ForceLoginTask implements Runnable {
                     //save will happen on success message from bukkit
                     sendBukkitLoginNotification(autoRegister);
                 } else if (session.needsRegistration()) {
-                    String password = plugin.generateStringPassword();
-                    if (authPlugin.forceRegister(player, password)) {
-                        //save will happen on success message from bukkit
-                        sendBukkitLoginNotification(autoRegister);
-                        String message = plugin.getCore().getMessage("auto-register");
-                        if (message != null) {
-                            message = message.replace("%password", password);
-                            player.sendMessage(message);
-                        }
-                    }
+                    forceRegister(session, authPlugin);
                 } else if (authPlugin.forceLogin(player)) {
-                    //save will happen on success message from bukkit
-                    sendBukkitLoginNotification(autoRegister);
-                    String message = plugin.getCore().getMessage("auto-login");
-                    if (message != null) {
-                        player.sendMessage(message);
-                    }
+                    forceLogin(session, authPlugin);
                 }
             } else {
                 //cracked player
@@ -77,7 +63,30 @@ public class ForceLoginTask implements Runnable {
         } catch (Exception ex) {
             plugin.getLogger().log(Level.INFO, "ERROR ON FORCE LOGIN", ex);
         }
+    }
 
+    private void forceRegister(BungeeLoginSession session, BungeeAuthPlugin authPlugin) {
+        String password = plugin.generateStringPassword();
+        if (session.isAlreadySaved() || authPlugin.forceRegister(player, password)) {
+            //save will happen on success message from bukkit
+            sendBukkitLoginNotification(true);
+            String message = plugin.getCore().getMessage("auto-register");
+            if (message != null) {
+                message = message.replace("%password", password);
+                player.sendMessage(message);
+            }
+        }
+    }
+
+    private void forceLogin(BungeeLoginSession session, BungeeAuthPlugin authPlugin) {
+        if (session.isAlreadySaved() || authPlugin.forceLogin(player)) {
+            //save will happen on success message from bukkit
+            sendBukkitLoginNotification(false);
+            String message = plugin.getCore().getMessage("auto-login");
+            if (message != null) {
+                player.sendMessage(message);
+            }
+        }
     }
 
     private void sendBukkitLoginNotification(boolean autoRegister) {
