@@ -2,6 +2,7 @@
 
 * Fix third-party not premium player detection
 * Fix ProtocolSupport BungeeCord
+* Fix duplicate logins for BungeeAuth users
 
 ######1.7.1
 

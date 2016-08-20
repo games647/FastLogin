@@ -2,6 +2,7 @@ package com.github.games647.fastlogin.bukkit.commands;
 
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 import com.github.games647.fastlogin.core.PlayerProfile;
+import com.google.common.collect.Iterables;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 
@@ -117,10 +118,13 @@ public class PremiumCommand implements CommandExecutor {
         if (sender instanceof Player) {
             notifiyBungeeCord((Player) sender, target);
         } else {
-            plugin.getLogger().info("No player online to send a plugin message to the proxy");
-            //todo: add console support
-//            Player firstPlayer = Iterables.getFirst(Bukkit.getOnlinePlayers(), null);
-//            notifiyBungeeCord(firstPlayer, target);
+            Player firstPlayer = Iterables.getFirst(Bukkit.getOnlinePlayers(), null);
+            if (firstPlayer == null) {
+                plugin.getLogger().info("No player online to send a plugin message to the proxy");
+                return;
+            }
+
+            notifiyBungeeCord(firstPlayer, target);
         }
     }
 
