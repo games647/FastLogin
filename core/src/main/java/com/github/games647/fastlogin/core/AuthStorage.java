@@ -42,6 +42,10 @@ public class AuthStorage {
         this.dataSource = new HikariDataSource(databaseConfig);
     }
 
+    public HikariDataSource getDataSource() {
+        return dataSource;
+    }
+
     public void createTables() throws SQLException {
         Connection con = null;
         Statement createStmt = null;

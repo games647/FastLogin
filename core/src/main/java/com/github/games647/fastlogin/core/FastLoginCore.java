@@ -1,6 +1,13 @@
 package com.github.games647.fastlogin.core;
 
+import com.github.games647.fastlogin.core.importer.AutoInImporter;
+import com.github.games647.fastlogin.core.importer.ImportPlugin;
+import com.github.games647.fastlogin.core.importer.Importer;
+
 import java.io.File;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -57,6 +64,46 @@ public abstract class FastLoginCore {
             getLogger().log(Level.SEVERE, "Failed to setup database. Disabling plugin...", ex);
             return false;
         }
+    }
+
+    public boolean importDatabase(ImportPlugin plugin, boolean sqlite, AuthStorage storage, String host, String database
+            , String username, String pass) {
+        if (sqlite && (plugin == ImportPlugin.BPA || plugin == ImportPlugin.ELDZI)) {
+            throw new IllegalArgumentException("These plugins doesn't support flat file databases");
+        }
+
+        Importer importer;
+        try {
+            importer = plugin.getImporter().newInstance();
+        } catch (Exception ex) {
+            getLogger().log(Level.SEVERE, "Couldn't not setup importer class", ex);
+            return false;
+        } 
+
+        try {
+            if (sqlite && plugin == ImportPlugin.AUTO_IN) {
+                //load sqlite driver
+                Class.forName("org.sqlite.JDBC");
+
+                String jdbcUrl = "jdbc:sqlite:" + AutoInImporter.getSQLitePath();
+                Connection con = DriverManager.getConnection(jdbcUrl);
+                importer.importData(con, storage.getDataSource(), storage);
+                return true;
+            } else {
+                Class.forName("com.mysql.jdbc.Driver");
+
+                String jdbcUrl = "jdbc:mysql://" + host + "/" + database;
+                Connection con = DriverManager.getConnection(jdbcUrl, username, pass);
+                importer.importData(con, storage.getDataSource(), storage);
+                return true;
+            }
+        } catch (ClassNotFoundException ex) {
+            getLogger().log(Level.SEVERE, "Cannot find SQL driver. Do you removed it?", ex);
+        } catch (SQLException ex) {
+            getLogger().log(Level.SEVERE, "Couldn't import data. Aborting...", ex);
+        }
+
+        return false;
     }
 
     public void close() {

@@ -40,6 +40,11 @@ commands:
         usage: /<command> [player]
         permission: ${project.artifactId}.command.unpremium
 
+    import-auth:
+        description: 'Imports the auth data from another auto login'
+        usage: /<command> [player]
+        permission: ${project.artifactId}.command.import
+
 permissions:
     ${project.artifactId}.command.premium:
         description: 'Label themselves as premium'
@@ -54,7 +59,7 @@ permissions:
         description: 'Label themselves as cracked'
         default: true
 
-    ${project.artifactId}.command..cracked.other:
+    ${project.artifactId}.command.cracked.other:
         description: 'Label others as cracked'
         children:
             ${project.artifactId}.command.cracked: true

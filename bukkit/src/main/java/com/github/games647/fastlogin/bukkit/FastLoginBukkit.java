@@ -4,6 +4,7 @@ import com.avaje.ebeaninternal.api.ClassUtil;
 import com.comphenix.protocol.AsynchronousManager;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.github.games647.fastlogin.bukkit.commands.CrackedCommand;
+import com.github.games647.fastlogin.bukkit.commands.ImportCommand;
 import com.github.games647.fastlogin.bukkit.commands.PremiumCommand;
 import com.github.games647.fastlogin.bukkit.hooks.BukkitAuthPlugin;
 import com.github.games647.fastlogin.bukkit.listener.BukkitJoinListener;
@@ -125,6 +126,7 @@ public class FastLoginBukkit extends JavaPlugin {
         //register commands using a unique name
         getCommand("premium").setExecutor(new PremiumCommand(this));
         getCommand("cracked").setExecutor(new CrackedCommand(this));
+        getCommand("import-auth").setExecutor(new ImportCommand(this));
     }
 
     @Override

@@ -77,6 +77,9 @@ public class FastLoginBungee extends Plugin {
         getProxy().getPluginManager().registerListener(this, new PlayerConnectionListener(this));
         getProxy().getPluginManager().registerListener(this, new PluginMessageListener(this));
 
+        //bungee only commands
+        getProxy().getPluginManager().registerCommand(this, new ImportCommand(this));
+
         //this is required to listen to messages from the server
         getProxy().registerChannel(getDescription().getName());
 

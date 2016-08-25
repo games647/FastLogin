@@ -1,5 +1,8 @@
 ######1.8
 
+* Added autoIn importer
+* Added BFA importer
+* Added ElDziAuth importer
 * Fix third-party not premium player detection
 * Fix ProtocolSupport BungeeCord
 * Fix duplicate logins for BungeeAuth users
