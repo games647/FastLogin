@@ -22,6 +22,7 @@ So they don't need to enter passwords. This is also called auto login (auto-logi
 * No client modifications needed
 * Good performance by using async non blocking operations
 * Locale messages
+* Import the database from similar plugins
 * Free
 * Open source
 
@@ -30,10 +31,14 @@ So they don't need to enter passwords. This is also called auto login (auto-logi
 ###Commands:
     * /premium [player] Label the invoker or the argument as paid account
     * /cracked [player] Label the invoker or the argument as cracked account
+    * /importdb <autoIn/bpa/eldzi> <mysql/sqlite> [host:port] [database] [username] [password] - Imports the database from another plugin
 
 ###Permissions:
     * fastlogin.bukkit.command.premium
     * fastlogin.bukkit.command.cracked
+    * fastlogin.command.premium.other
+    * fastlogin.command.cracked.other
+    * fastlogin.command.import
 
 ###Requirements:
 * Plugin: [ProtocolLib](http://www.spigotmc.org/resources/protocollib.1997/) or [ProtocolSupport](http://www.spigotmc.org/resources/protocolsupport.7201/)
