@@ -116,13 +116,7 @@ public class AuthStorage {
             if (resultSet.next()) {
                 long userId = resultSet.getInt(1);
 
-                String unparsedUUID = resultSet.getString(2);
-                UUID uuid;
-                if (unparsedUUID == null) {
-                    uuid = null;
-                } else {
-                    uuid = FastLoginCore.parseId(unparsedUUID);
-                }
+                UUID uuid = FastLoginCore.parseId(resultSet.getString(2));
 
                 boolean premium = resultSet.getBoolean(4);
                 String lastIp = resultSet.getString(5);
@@ -187,24 +181,6 @@ public class AuthStorage {
             UUID uuid = playerProfile.getUuid();
             
             if (playerProfile.getUserId() == -1) {
-                if (uuid != null) {
-                    //User was authenticated with a premium authentication, so it's possible that the player is premium
-                    updateStmt = con.prepareStatement("UPDATE " + PREMIUM_TABLE
-                            + " SET NAME=?, LastIp=?, LastLogin=CURRENT_TIMESTAMP"
-                            + " WHERE UUID=?");
-
-                    updateStmt.setString(1, playerProfile.getPlayerName());
-                    updateStmt.setString(2, playerProfile.getLastIp());
-                    updateStmt.setString(3, uuid.toString().replace("-", ""));
-
-                    int affectedRows = updateStmt.executeUpdate();
-                    if (affectedRows > 0) {
-                        //username changed and we updated the existing database record
-                        //so we don't need to run an insert
-                        return true;
-                    }
-                }
-
                 saveStmt = con.prepareStatement("INSERT INTO " + PREMIUM_TABLE
                         + " (UUID, Name, Premium, LastIp) VALUES (?, ?, ?, ?) ", Statement.RETURN_GENERATED_KEYS);
 
