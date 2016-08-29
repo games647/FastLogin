@@ -11,6 +11,7 @@ import java.sql.SQLException;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ThreadFactory;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -30,8 +31,15 @@ public abstract class FastLoginCore {
     }
 
     protected final Map<String, String> localeMessages = new ConcurrentHashMap<>();
+
+    private final ConcurrentMap<String, Object> pendingLogins;
+
     private MojangApiConnector mojangApiConnector;
     private AuthStorage storage;
+
+    public FastLoginCore(ConcurrentMap<String, Object> pendingLogins) {
+        this.pendingLogins = pendingLogins;
+    }
 
     public void setMojangApiConnector(MojangApiConnector mojangApiConnector) {
         this.mojangApiConnector = mojangApiConnector;
@@ -108,6 +116,10 @@ public abstract class FastLoginCore {
         }
 
         return false;
+    }
+
+    public ConcurrentMap<String, Object> getPendingLogins() {
+        return pendingLogins;
     }
 
     public void close() {

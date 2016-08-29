@@ -27,13 +27,23 @@ public class AsyncPremiumCheck implements Runnable {
         plugin.getSession().remove(connection);
 
         String username = connection.getName();
-        try {
-            PlayerProfile profile = plugin.getCore().getStorage().loadProfile(username);
-            if (profile == null) {
-                return;
-            }
+        PlayerProfile profile = plugin.getCore().getStorage().loadProfile(username);
+        if (profile == null) {
+            return;
+        }
 
+        try {
             if (profile.getUserId() == -1) {
+                String ip = connection.getAddress().getAddress().getHostAddress();
+                if (plugin.getCore().getPendingLogins().containsKey(ip + username)
+                        && plugin.getConfig().getBoolean("secondAttemptCracked")) {
+                    plugin.getLogger().log(Level.INFO, "Second attempt login -> cracked {0}", username);
+
+                    //first login request failed so make a cracked session
+                    plugin.getSession().put(connection, new BungeeLoginSession(username, false, profile));
+                    return;
+                }
+
                 UUID premiumUUID = null;
                 if (plugin.getConfig().getBoolean("nameChangeCheck") || plugin.getConfig().getBoolean("autoRegister")) {
                     premiumUUID = plugin.getCore().getMojangApiConnector().getPremiumUUID(username);
@@ -89,5 +99,8 @@ public class AsyncPremiumCheck implements Runnable {
     private void requestPremiumLogin(PendingConnection con, PlayerProfile profile, String username, boolean register) {
         con.setOnlineMode(true);
         plugin.getSession().put(con, new BungeeLoginSession(username, register, profile));
+
+        String ip = con.getAddress().getAddress().getHostAddress();
+        plugin.getCore().getPendingLogins().put(ip + username, new Object());
     }
 }

@@ -21,6 +21,14 @@
 # For more information: https://github.com/games647/FastLogin#why-do-players-have-to-invoke-a-command
 autoRegister: false
 
+# This is extra configuration option to the feature above. If we request a premium authentication from a player who
+# isn't actual premium but used a premium username, the player will disconnect with the reason "invalid session" or
+# "bad login".
+#
+# If you activate this, we are remembering this player and do not force another premium authentication if the player
+# tries to join again, so the player could join as cracked player.
+secondAttemptCracked: false
+
 # If this plugin detected that a player has a premium, it can also set the associated
 # uuid from that account. So if the players changes their usernames, they will still have
 # the same playerdata (inventory, permissions, ...)

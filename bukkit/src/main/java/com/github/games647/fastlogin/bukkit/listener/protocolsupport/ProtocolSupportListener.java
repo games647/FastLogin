@@ -31,9 +31,10 @@ public class ProtocolSupportListener implements Listener {
         }
 
         String username = loginStartEvent.getName();
+        InetSocketAddress address = loginStartEvent.getAddress();
 
         //remove old data every time on a new login in order to keep the session only for one person
-        plugin.getSessions().remove(loginStartEvent.getAddress().toString());
+        plugin.getSessions().remove(address.toString());
 
         BukkitAuthPlugin authPlugin = plugin.getAuthPlugin();
         if (authPlugin == null) {
@@ -43,6 +44,18 @@ public class ProtocolSupportListener implements Listener {
         PlayerProfile profile = plugin.getCore().getStorage().loadProfile(username);
         if (profile != null) {
             if (profile.getUserId() == -1) {
+
+                String ip = address.getAddress().getHostAddress();
+                if (plugin.getCore().getPendingLogins().containsKey(ip + username)
+                        && plugin.getConfig().getBoolean("secondAttemptCracked")) {
+                    plugin.getLogger().log(Level.INFO, "Second attempt login -> cracked {0}", username);
+
+                    //first login request failed so make a cracked session
+                    BukkitLoginSession loginSession = new BukkitLoginSession(username, profile);
+                    plugin.getSessions().put(address.toString(), loginSession);
+                    return;
+                }
+
                 UUID premiumUUID = null;
 
                 //user not exists in the db
@@ -70,7 +83,7 @@ public class ProtocolSupportListener implements Listener {
 
                     //no premium check passed so we save it as a cracked player
                     BukkitLoginSession loginSession = new BukkitLoginSession(username, profile);
-                    plugin.getSessions().put(loginStartEvent.getAddress().toString(), loginSession);
+                    plugin.getSessions().put(address.toString(), loginSession);
                 } catch (Exception ex) {
                     plugin.getLogger().log(Level.SEVERE, "Failed to query isRegistered", ex);
                 }
@@ -78,7 +91,7 @@ public class ProtocolSupportListener implements Listener {
                 startPremiumSession(username, loginStartEvent, true, profile);
             } else {
                 BukkitLoginSession loginSession = new BukkitLoginSession(username, profile);
-                plugin.getSessions().put(loginStartEvent.getAddress().toString(), loginSession);
+                plugin.getSessions().put(address.toString(), loginSession);
             }
         }
     }
@@ -90,17 +103,23 @@ public class ProtocolSupportListener implements Listener {
             InetSocketAddress address = propertiesResolveEvent.getAddress();
             BukkitLoginSession session = plugin.getSessions().get(address.toString());
             if (session != null) {
+                String ip = address.getAddress().getHostAddress();
+                plugin.getCore().getPendingLogins().remove(ip + session.getUsername());
+
                 session.setVerified(true);
             }
         }
     }
 
-    private void startPremiumSession(String playerName, PlayerLoginStartEvent loginStartEvent, boolean registered
+    private void startPremiumSession(String username, PlayerLoginStartEvent loginStartEvent, boolean registered
             , PlayerProfile playerProfile) {
         loginStartEvent.setOnlineMode(true);
         InetSocketAddress address = loginStartEvent.getAddress();
 
-        BukkitLoginSession playerSession = new BukkitLoginSession(playerName, null, null, registered, playerProfile);
+        String ip = address.getAddress().getHostAddress();
+        plugin.getCore().getPendingLogins().put(ip + username, new Object());
+
+        BukkitLoginSession playerSession = new BukkitLoginSession(username, null, null, registered, playerProfile);
         plugin.getSessions().put(address.toString(), playerSession);
         if (plugin.getConfig().getBoolean("premiumUuid")) {
             loginStartEvent.setUseOnlineModeUUID(true);

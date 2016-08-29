@@ -15,7 +15,6 @@ import com.github.games647.fastlogin.bukkit.listener.protocollib.StartPacketList
 import com.github.games647.fastlogin.bukkit.listener.protocolsupport.ProtocolSupportListener;
 import com.github.games647.fastlogin.bukkit.tasks.DelayedAuthHook;
 import com.github.games647.fastlogin.core.FastLoginCore;
-import com.google.common.cache.CacheLoader;
 import com.google.common.collect.Sets;
 
 import java.security.KeyPair;
@@ -23,7 +22,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
 import org.bukkit.entity.Player;
@@ -47,7 +45,7 @@ public class FastLoginBukkit extends JavaPlugin {
 
     //this map is thread-safe for async access (Packet Listener)
     //SafeCacheBuilder is used in order to be version independent
-    private final ConcurrentMap<String, BukkitLoginSession> session = buildCache(1, -1);
+    private final ConcurrentMap<String, BukkitLoginSession> session = BukkitCore.buildCache(1, -1);
     //1 minutes should be enough as a timeout for bad internet connection (Server, Client and Mojang)
 
     private BukkitAuthPlugin authPlugin;
@@ -60,7 +58,8 @@ public class FastLoginBukkit extends JavaPlugin {
 
         List<String> ipAddresses = getConfig().getStringList("ip-addresses");
         int requestLimit = getConfig().getInt("mojang-request-limit");
-        MojangApiBukkit mojangApi = new MojangApiBukkit(buildCache(10, -1), getLogger(), ipAddresses, requestLimit);
+        ConcurrentMap<Object, Object> requestCache = BukkitCore.buildCache(10, -1);
+        MojangApiBukkit mojangApi = new MojangApiBukkit(requestCache, getLogger(), ipAddresses, requestLimit);
         core.setMojangApiConnector(mojangApi);
 
         try {
@@ -219,24 +218,5 @@ public class FastLoginBukkit extends JavaPlugin {
         if (!this.serverStarted) {
             this.serverStarted = true;
         }
-    }
-
-    private <K, V> ConcurrentMap<K, V> buildCache(int minutes, int maxSize) {
-        CompatibleCacheBuilder<Object, Object> builder = CompatibleCacheBuilder.newBuilder();
-
-        if (minutes > 0) {
-            builder.expireAfterWrite(minutes, TimeUnit.MINUTES);
-        }
-
-        if (maxSize > 0) {
-            builder.maximumSize(maxSize);
-        }
-
-        return builder.build(new CacheLoader<K, V>() {
-            @Override
-            public V load(K key) throws Exception {
-                throw new UnsupportedOperationException("Not supported yet.");
-            }
-        });
     }
 }

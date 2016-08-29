@@ -1,3 +1,7 @@
+######1.9
+
+* Added second attempt login -> cracked login
+
 ######1.8
 
 * Added autoIn importer

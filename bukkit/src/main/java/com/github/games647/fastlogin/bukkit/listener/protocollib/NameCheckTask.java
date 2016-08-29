@@ -54,7 +54,18 @@ public class NameCheckTask implements Runnable {
 
         if (profile.getUserId() == -1) {
             UUID premiumUUID = null;
-            
+
+            String ip = player.getAddress().getAddress().getHostAddress();
+            if (plugin.getCore().getPendingLogins().containsKey(ip + username)
+                    && plugin.getConfig().getBoolean("secondAttemptCracked")) {
+                plugin.getLogger().log(Level.INFO, "Second attempt login -> cracked {0}", username);
+
+                //first login request failed so make a cracked session
+                BukkitLoginSession loginSession = new BukkitLoginSession(username, profile);
+                plugin.getSessions().put(player.getAddress().toString(), loginSession);
+                return;
+            }
+
             //user not exists in the db
             try {
                 boolean isRegistered = plugin.getAuthPlugin().isRegistered(username);
@@ -105,6 +116,9 @@ public class NameCheckTask implements Runnable {
 
         boolean success = sentEncryptionRequest(player, serverId, verify);
         if (success) {
+            String ip = player.getAddress().getAddress().getHostAddress();
+            plugin.getCore().getPendingLogins().put(ip + username, new Object());
+
             BukkitLoginSession playerSession = new BukkitLoginSession(username, serverId, verify, registered, profile);
             plugin.getSessions().put(player.getAddress().toString(), playerSession);
             //cancel only if the player has a paid account otherwise login as normal offline player

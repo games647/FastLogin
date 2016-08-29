@@ -59,6 +59,9 @@ public class PlayerConnectionListener implements Listener {
         PendingConnection connection = loginEvent.getConnection();
         String username = connection.getName();
         if (connection.isOnlineMode()) {
+            String ip = connection.getAddress().getAddress().getHostAddress();
+            plugin.getCore().getPendingLogins().remove(ip + username);
+
             LoginSession session = plugin.getSession().get(connection);
             PlayerProfile playerProfile = session.getProfile();
             playerProfile.setUuid(connection.getUniqueId());
