@@ -1,6 +1,7 @@
 ######1.9
 
 * Added second attempt login -> cracked login
+* Fix ProtocolSupport autoRegister
 
 ######1.8
 
