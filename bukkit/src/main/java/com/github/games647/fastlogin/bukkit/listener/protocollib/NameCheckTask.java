@@ -78,6 +78,10 @@ public class NameCheckTask implements Runnable {
                     PlayerProfile uuidProfile = plugin.getCore().getStorage().loadProfile(premiumUUID);
                     if (uuidProfile != null) {
                         plugin.getLogger().log(Level.FINER, "Player {0} changed it's username", premiumUUID);
+
+                        //update the username to the new one in the database
+                        uuidProfile.setPlayerName(username);
+
                         enablePremiumLogin(uuidProfile, false);
                         return;
                     }

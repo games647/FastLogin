@@ -88,6 +88,10 @@ public class AsyncPremiumCheck implements Runnable {
             if (profile != null) {
                 //uuid exists in the database
                 plugin.getLogger().log(Level.FINER, "Player {0} changed it's username", premiumUUID);
+
+                //update the username to the new one in the database
+                profile.setPlayerName(username);
+
                 requestPremiumLogin(connection, profile, username, false);
                 return true;
             }

@@ -2,6 +2,7 @@
 
 * Added second attempt login -> cracked login
 * Fix ProtocolSupport autoRegister
+* Fix update username in FastLogin database after nameChange
 
 ######1.8
 

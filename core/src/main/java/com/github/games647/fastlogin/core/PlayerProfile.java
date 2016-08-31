@@ -4,7 +4,7 @@ import java.util.UUID;
 
 public class PlayerProfile {
 
-    private final String playerName;
+    private String playerName;
 
     private long userId;
 
@@ -32,8 +32,12 @@ public class PlayerProfile {
         this.lastIp = lastIp;
     }
 
-    public String getPlayerName() {
+    public synchronized String getPlayerName() {
         return playerName;
+    }
+
+    public synchronized void setPlayerName(String playerName) {
+        this.playerName = playerName;
     }
 
     public synchronized long getUserId() {
