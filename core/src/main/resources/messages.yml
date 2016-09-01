@@ -24,6 +24,9 @@
 # Player activated premium logins in order to skip offline authentication
 add-premium: '&2Added to the list of premium players'
 
+# Player activated premium logins in order to skip offline authentication
+add-premium-other: '&2Player is was added to the premium list'
+
 # Player is already set be a paid account
 already-exists: '&4You are already on the premium list'
 
