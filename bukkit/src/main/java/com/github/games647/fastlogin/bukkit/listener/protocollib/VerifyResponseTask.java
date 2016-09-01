@@ -152,8 +152,9 @@ public class VerifyResponseTask implements Runnable {
             //encrypt/decrypt following packets
             //the client expects this behaviour
             encryptConnectionMethod.invoke(networkManager, loginKey);
-        } catch (ReflectiveOperationException ex) {
-            disconnect(plugin.getCore().getMessage("error-kick"), false, "Couldn't enable encryption", ex);
+        } catch (Exception ex) {
+            plugin.getLogger().log(Level.SEVERE, "Couldn't enable encryption", ex);
+            disconnect(plugin.getCore().getMessage("error-kick"), false, "Couldn't enable encryption");
             return false;
         }
 
