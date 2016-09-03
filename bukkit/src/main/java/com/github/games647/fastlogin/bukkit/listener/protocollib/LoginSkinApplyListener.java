@@ -23,8 +23,7 @@ public class LoginSkinApplyListener implements Listener {
 
     private static final Class<?> GAME_PROFILE = MinecraftReflection.getGameProfileClass();
 
-    private static final MethodAccessor GET_PROPERTIES = Accessors.getMethodAcccessorOrNull(
-            GAME_PROFILE, "getProperties");
+    private static final MethodAccessor GET_PROPERTIES = Accessors.getMethodAccessor(GAME_PROFILE, "getProperties");
 
     private final FastLoginBukkit plugin;
 
