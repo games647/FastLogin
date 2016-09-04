@@ -46,11 +46,6 @@
             <url>http://repo.luricos.de/bukkit-plugins/</url>
         </repository>
 
-        <repository>
-            <id>logit-only-repo</id>
-            <url>http://ci.ac3-servers.eu/job/LogIt-Classic/2/maven-repository/repository/</url>
-        </repository>
-
         <!--Github automatic maven builds-->
         <repository>
             <id>jitpack.io</id>
@@ -129,17 +124,17 @@
             </exclusions>
         </dependency>
 
-        <dependency>
-            <groupId>io.github.lucaseasedup.logit</groupId>
-            <artifactId>LogIt</artifactId>
-            <version>SNAPSHOT</version>
+	<dependency>
+	    <groupId>com.github.games647</groupId>
+	    <artifactId>LogIt</artifactId>
+	    <version>9e3581db27</version>
             <exclusions>
                 <exclusion>
                     <groupId>*</groupId>
                     <artifactId>*</artifactId>
                 </exclusion>
             </exclusions>
-        </dependency>
+	</dependency>
 
         <dependency>
             <groupId>com.github.RoyalDev</groupId>
