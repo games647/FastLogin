@@ -9,6 +9,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Calendar;
+import java.util.Locale;
 import java.util.UUID;
 import java.util.logging.Level;
 
@@ -20,7 +21,7 @@ public class AuthStorage {
     private final HikariDataSource dataSource;
 
     //a try to fix https://www.spigotmc.org/threads/fastlogin.101192/page-26#post-1874647
-    private final Calendar calendar = Calendar.getInstance();
+    private final Calendar calendar = Calendar.getInstance(Locale.US);
 
     public AuthStorage(FastLoginCore core, String driver, String host, int port, String databasePath
             , String user, String pass) {

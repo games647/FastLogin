@@ -128,6 +128,7 @@
 	    <groupId>com.github.games647</groupId>
 	    <artifactId>LogIt</artifactId>
 	    <version>9e3581db27</version>
+            <scope>provided</scope>
             <exclusions>
                 <exclusion>
                     <groupId>*</groupId>
