@@ -38,7 +38,7 @@ commands:
         description: 'Label the invoker or the player specified as cracked if he was marked premium before'
         aliases: [unpremium]
         usage: /<command> [player]
-        permission: ${project.artifactId}.command.unpremium
+        permission: ${project.artifactId}.command.cracked
 
     import-auth:
         description: 'Imports the auth data from another auto login'
