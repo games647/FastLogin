@@ -58,6 +58,11 @@ public class AsyncPremiumCheck implements Runnable {
             } else if (profile.isPremium()) {
                 requestPremiumLogin(connection, profile, username, true);
             } else {
+                if (plugin.getConfig().getBoolean("switchMode")) {
+                    connection.disconnect(plugin.getCore().getMessage("switch-kick-message"));
+                    return;
+                }
+
                 //Cracked session
                 plugin.getSession().put(connection, new BungeeLoginSession(username, false, profile));
             }

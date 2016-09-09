@@ -1,5 +1,6 @@
 package com.github.games647.fastlogin.bungee;
 
+import com.github.games647.fastlogin.bungee.FastLoginBungee;
 import com.github.games647.fastlogin.core.AuthStorage;
 import com.github.games647.fastlogin.core.FastLoginCore;
 import com.github.games647.fastlogin.core.importer.ImportPlugin;
@@ -13,7 +14,7 @@ public class ImportCommand extends Command {
     private final FastLoginBungee plugin;
 
     public ImportCommand(FastLoginBungee plugin) {
-        super("import-db");
+        super("import-db", plugin.getDescription().getName().toLowerCase() + ".import");
 
         this.plugin = plugin;
     }
@@ -79,7 +80,5 @@ public class ImportCommand extends Command {
         } else {
             sender.sendMessage(ChatColor.DARK_RED + "Failed to import the data. Check out the logs");
         }
-
-        return;
     }
 }

@@ -77,11 +77,14 @@ public class CrackedCommand implements CommandExecutor {
             //todo: load async
             final PlayerProfile profile = plugin.getCore().getStorage().loadProfile(args[0]);
             if (profile == null) {
-                sender.sendMessage(plugin.getCore().getMessage("player-unknown"));
+                sender.sendMessage("Error occured");
                 return;
             }
 
-            if (profile.isPremium()) {
+            //existing player is already cracked
+            if (profile.getUserId() == -1 && !profile.isPremium()) {
+                sender.sendMessage(plugin.getCore().getMessage("not-premium-other"));
+            } else {
                 sender.sendMessage(plugin.getCore().getMessage("remove-premium"));
                 profile.setPremium(false);
                 Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
@@ -90,8 +93,6 @@ public class CrackedCommand implements CommandExecutor {
                         plugin.getCore().getStorage().save(profile);
                     }
                 });
-            } else {
-                sender.sendMessage(plugin.getCore().getMessage("not-premium-other"));
             }
         }
     }

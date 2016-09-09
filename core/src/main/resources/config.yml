@@ -29,6 +29,13 @@ autoRegister: false
 # tries to join again, so the player could join as cracked player.
 secondAttemptCracked: false
 
+# New cracked players will be kicked from server. Good if you want switch from offline-mode to online-mode without
+# losing players!
+#
+# Existing cracked and premium players could still join your server. Moreover you could add playernames to a whitelist.
+# So that these cracked players could join too although they are new players.
+switchMode: false
+
 # If this plugin detected that a player has a premium, it can also set the associated
 # uuid from that account. So if the players changes their usernames, they will still have
 # the same playerdata (inventory, permissions, ...)
