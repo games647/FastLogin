@@ -1,12 +1,13 @@
 ######1.9
 
 * Added second attempt login -> cracked login
+* Add cracked whitelist (switch-mode -> switching to online-mode from offlinemode)
+* Added configuration to disable auto logins for 2Factor authentication
+* Add missing add-premium-other message
 * Fix ProtocolSupport autoRegister
 * Fix update username in FastLogin database after nameChange
 * Fix logging exceptions on encryption enabling
-* Add missing add-premium-other message
 * Fix compatibility with older ProtocolLib versions (for 1.7) because of the missing getMethodAcccessorOrNull method
-* Add cracked whitelist (switch-mode -> switching to online-mode from offlinemode)
 * Fix correct cracked permission for bukkit
 * A try to fix SQLite timestamp parsing
 

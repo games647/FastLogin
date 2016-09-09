@@ -52,10 +52,14 @@ public class ForceLoginTask implements Runnable {
             } else {
                 boolean success = false;
                 if (isOnlineThreadSafe()) {
-                    if (session.needsRegistration()) {
-                        success = forceRegister(authPlugin, player);
+                    if (plugin.getConfig().getBoolean("autoLogin")) {
+                        if (session.needsRegistration()) {
+                            success = forceRegister(authPlugin, player);
+                        } else {
+                            success = forceLogin(authPlugin, player);
+                        }
                     } else {
-                        success = forceLogin(authPlugin, player);
+                        success = true;
                     }
                 }
 

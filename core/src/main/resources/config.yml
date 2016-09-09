@@ -144,6 +144,13 @@ ip-addresses: []
 # If you want to join the discussion visit this: https://github.com/games647/FastLogin/issues/27#issuecomment-226954350
 mojang-request-limit: 600
 
+# This disables the auto login from fastlogin. So a premium (like a paid account) authentication is requested, but
+# the player won't be auto logged into the account.
+#
+# This can be used as 2Factor authentication for better security of your accounts. A hacker then needs both passwords.
+# The password of your minecraft and the password to login in with your auth plugin
+autoLogin: true
+
 # Database configuration
 # Recommened is the use of MariaDB (a better version of MySQL)
 

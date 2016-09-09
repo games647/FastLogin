@@ -43,6 +43,14 @@ public class ForceLoginTask implements Runnable {
             if (pendingConnection.isOnlineMode()) {
                 boolean autoRegister = session.needsRegistration();
 
+                //2fa authentication - no need to send bukkit force login notification and so we also don't need
+                // to wait for a response -> save immediatly
+                if (!plugin.getConfig().getBoolean("autoLogin")) {
+                    playerProfile.setPremium(true);
+                    plugin.getCore().getStorage().save(playerProfile);
+                    session.setAlreadySaved(true);
+                }
+
                 BungeeAuthPlugin authPlugin = plugin.getBungeeAuthPlugin();
                 if (authPlugin == null) {
                     //save will happen on success message from bukkit
