@@ -2,7 +2,7 @@ package com.github.games647.fastlogin.bungee;
 
 import com.github.games647.fastlogin.bungee.FastLoginBungee;
 import com.github.games647.fastlogin.core.AuthStorage;
-import com.github.games647.fastlogin.core.FastLoginCore;
+import com.github.games647.fastlogin.core.shared.FastLoginCore;
 import com.github.games647.fastlogin.core.importer.ImportPlugin;
 
 import net.md_5.bungee.api.ChatColor;

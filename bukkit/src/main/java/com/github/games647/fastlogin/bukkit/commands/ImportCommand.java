@@ -2,7 +2,7 @@ package com.github.games647.fastlogin.bukkit.commands;
 
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 import com.github.games647.fastlogin.core.AuthStorage;
-import com.github.games647.fastlogin.core.FastLoginCore;
+import com.github.games647.fastlogin.core.shared.FastLoginCore;
 import com.github.games647.fastlogin.core.importer.ImportPlugin;
 import org.bukkit.ChatColor;
 

@@ -48,6 +48,6 @@ public class BukkitJoinListener implements Listener {
     public void onPlayerQuit(PlayerQuitEvent quitEvent) {
         Player player = quitEvent.getPlayer();
         player.removeMetadata(plugin.getName(), plugin);
-        plugin.getPendingConfirms().remove(player.getUniqueId());
+        plugin.getCore().getPendingConfirms().remove(player.getUniqueId());
     }
 }

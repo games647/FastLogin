@@ -81,7 +81,7 @@ public class ForceLoginTask implements Runnable {
 
         session.setAlreadyLogged(true);
 
-        String password = plugin.generatePassword(player);
+        String password = plugin.getCore().getPasswordGenerator().getRandomPassword(player);
         if (authPlugin.forceRegister(player, password)) {
             //save will happen on success message from bukkit
             sendBukkitLoginNotification(true);

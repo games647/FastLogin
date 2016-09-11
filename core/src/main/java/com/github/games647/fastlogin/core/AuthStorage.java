@@ -1,5 +1,6 @@
 package com.github.games647.fastlogin.core;
 
+import com.github.games647.fastlogin.core.shared.FastLoginCore;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 

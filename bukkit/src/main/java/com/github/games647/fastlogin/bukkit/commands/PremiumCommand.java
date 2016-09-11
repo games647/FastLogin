@@ -44,13 +44,14 @@ public class PremiumCommand implements CommandExecutor {
                 }
             } else {
                 UUID id = ((Player) sender).getUniqueId();
-                if (plugin.getConfig().getBoolean("premium-warning") && !plugin.getPendingConfirms().contains(id)) {
+                if (plugin.getConfig().getBoolean("premium-warning")
+                        && !plugin.getCore().getPendingConfirms().contains(id)) {
                     sender.sendMessage(plugin.getCore().getMessage("premium-warning"));
-                    plugin.getPendingConfirms().add(id);
+                    plugin.getCore().getPendingConfirms().add(id);
                     return true;
                 }
 
-                plugin.getPendingConfirms().remove(id);
+                plugin.getCore().getPendingConfirms().remove(id);
                 //todo: load async
                 final PlayerProfile profile = plugin.getCore().getStorage().loadProfile(sender.getName());
                 if (profile.isPremium()) {

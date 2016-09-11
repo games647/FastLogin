@@ -103,6 +103,6 @@ public class PlayerConnectionListener implements Listener {
     public void onDisconnect(PlayerDisconnectEvent disconnectEvent) {
         ProxiedPlayer player = disconnectEvent.getPlayer();
         plugin.getSession().remove(player.getPendingConnection());
-        plugin.getPendingConfirms().remove(player.getUniqueId());
+        plugin.getCore().getPendingConfirms().remove(player.getUniqueId());
     }
 }

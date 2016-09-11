@@ -14,13 +14,10 @@ import com.github.games647.fastlogin.bukkit.listener.protocollib.LoginSkinApplyL
 import com.github.games647.fastlogin.bukkit.listener.protocollib.StartPacketListener;
 import com.github.games647.fastlogin.bukkit.listener.protocolsupport.ProtocolSupportListener;
 import com.github.games647.fastlogin.bukkit.tasks.DelayedAuthHook;
-import com.github.games647.fastlogin.core.FastLoginCore;
-import com.google.common.collect.Sets;
+import com.github.games647.fastlogin.core.shared.FastLoginCore;
 
 import java.security.KeyPair;
 import java.util.List;
-import java.util.Set;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentMap;
 import java.util.logging.Level;
 
@@ -38,18 +35,13 @@ public class FastLoginBukkit extends JavaPlugin {
     private final KeyPair keyPair = EncryptionUtil.generateKeyPair();
 
     private boolean bungeeCord;
-    private final FastLoginCore core = new BukkitCore(this);
+    private final BukkitCore core = new BukkitCore(this);
     private boolean serverStarted;
 
-    private final Set<UUID> pendingConfirms = Sets.newHashSet();
-
-    //this map is thread-safe for async access (Packet Listener)
-    //SafeCacheBuilder is used in order to be version independent
-    private final ConcurrentMap<String, BukkitLoginSession> session = BukkitCore.buildCache(1, -1);
     //1 minutes should be enough as a timeout for bad internet connection (Server, Client and Mojang)
+    private final ConcurrentMap<String, BukkitLoginSession> session = FastLoginCore.buildCache(1, -1);
 
     private BukkitAuthPlugin authPlugin;
-    private PasswordGenerator passwordGenerator = new DefaultPasswordGenerator();
     
     @Override
     public void onEnable() {
@@ -58,8 +50,7 @@ public class FastLoginBukkit extends JavaPlugin {
 
         List<String> ipAddresses = getConfig().getStringList("ip-addresses");
         int requestLimit = getConfig().getInt("mojang-request-limit");
-        ConcurrentMap<Object, Object> requestCache = BukkitCore.buildCache(10, -1);
-        MojangApiBukkit mojangApi = new MojangApiBukkit(requestCache, getLogger(), ipAddresses, requestLimit);
+        MojangApiBukkit mojangApi = new MojangApiBukkit(getLogger(), ipAddresses, requestLimit);
         core.setMojangApiConnector(mojangApi);
 
         try {
@@ -67,8 +58,7 @@ public class FastLoginBukkit extends JavaPlugin {
                 bungeeCord = Class.forName("org.spigotmc.SpigotConfig").getDeclaredField("bungee").getBoolean(null);
             }
         } catch (Exception | NoSuchMethodError ex) {
-            getLogger().warning("Cannot check bungeecord support. You use a non-spigot build");
-            ex.printStackTrace();
+            getLogger().log(Level.WARNING, "Cannot check bungeecord support. You use a non-spigot build", ex);
         }
 
         if (getServer().getOnlineMode()) {
@@ -86,15 +76,7 @@ public class FastLoginBukkit extends JavaPlugin {
             getServer().getMessenger().registerOutgoingPluginChannel(this, getName());
             //register listeners on success
         } else {
-            String driver = getConfig().getString("driver");
-            String host =  getConfig().getString("host", "");
-            int port = getConfig().getInt("port", 3306);
-            String database = getConfig().getString("database");
-
-            String username = getConfig().getString("username", "");
-            String password = getConfig().getString("password", "");
-
-            if (!core.setupDatabase(driver, host, port, database, username, password)) {
+            if (!core.setupDatabase()) {
                 setEnabled(false);
                 return;
             }
@@ -143,16 +125,13 @@ public class FastLoginBukkit extends JavaPlugin {
         }
     }
 
-    public FastLoginCore getCore() {
+    public BukkitCore getCore() {
         return core;
     }
 
-    public String generateStringPassword(Player player) {
-        return passwordGenerator.getRandomPassword(player);
-    }
-
+    @Deprecated
     public void setPasswordGenerator(PasswordGenerator passwordGenerator) {
-        this.passwordGenerator = passwordGenerator;
+        core.setPasswordGenerator(passwordGenerator);
     }
 
     /**
@@ -208,10 +187,6 @@ public class FastLoginBukkit extends JavaPlugin {
      */
     public boolean isServerFullyStarted() {
         return serverStarted;
-    }
-
-    public Set<UUID> getPendingConfirms() {
-        return pendingConfirms;
     }
 
     public void setServerStarted() {

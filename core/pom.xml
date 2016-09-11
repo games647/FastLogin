@@ -28,5 +28,12 @@
             <artifactId>slf4j-jdk14</artifactId>
             <version>1.7.21</version>
         </dependency>
+        
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>10.0</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 </project>

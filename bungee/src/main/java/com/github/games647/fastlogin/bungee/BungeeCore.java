@@ -1,7 +1,6 @@
 package com.github.games647.fastlogin.bungee;
 
-import com.github.games647.fastlogin.core.FastLoginCore;
-import com.google.common.cache.CacheBuilder;
+import com.github.games647.fastlogin.core.shared.FastLoginCore;
 import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
@@ -12,23 +11,22 @@ import java.nio.file.Files;
 import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.scheduler.GroupedThreadFactory;
 import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.config.ConfigurationProvider;
 import net.md_5.bungee.config.YamlConfiguration;
 
-public class BungeeCore extends FastLoginCore {
+public class BungeeCore extends FastLoginCore<ProxiedPlayer> {
 
     private final FastLoginBungee plugin;
 
     public BungeeCore(FastLoginBungee plugin) {
-        super(CacheBuilder.newBuilder().expireAfterWrite(5, TimeUnit.MINUTES).<String, Object>build().asMap()
-                , generateConfigMap(plugin.getConfig()));
+        super(generateConfigMap(plugin.getConfig()));
 
         this.plugin = plugin;
     }

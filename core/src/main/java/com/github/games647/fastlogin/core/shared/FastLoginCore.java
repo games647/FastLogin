@@ -1,23 +1,51 @@
-package com.github.games647.fastlogin.core;
+package com.github.games647.fastlogin.core.shared;
 
+import com.github.games647.fastlogin.core.AuthStorage;
+import com.github.games647.fastlogin.core.CompatibleCacheBuilder;
+import com.github.games647.fastlogin.core.SharedConfig;
+import com.github.games647.fastlogin.core.hooks.DefaultPasswordGenerator;
+import com.github.games647.fastlogin.core.hooks.PasswordGenerator;
 import com.github.games647.fastlogin.core.importer.AutoInImporter;
 import com.github.games647.fastlogin.core.importer.ImportPlugin;
 import com.github.games647.fastlogin.core.importer.Importer;
+import com.google.common.cache.CacheLoader;
+import com.google.common.collect.Sets;
 
 import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public abstract class FastLoginCore {
-    
+public abstract class FastLoginCore<T> {
+
+    public static <K, V> ConcurrentMap<K, V> buildCache(int expireAfterWrite, int maxSize) {
+        CompatibleCacheBuilder<Object, Object> builder = CompatibleCacheBuilder.newBuilder();
+
+        if (expireAfterWrite > 0) {
+            builder.expireAfterWrite(expireAfterWrite, TimeUnit.MINUTES);
+        }
+
+        if (maxSize > 0) {
+            builder.maximumSize(maxSize);
+        }
+
+        return builder.build(new CacheLoader<K, V>() {
+            @Override
+            public V load(K key) throws Exception {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
+        });
+    }
+
     public static UUID parseId(String withoutDashes) {
         if (withoutDashes == null) {
             return null;
@@ -33,13 +61,15 @@ public abstract class FastLoginCore {
     protected final Map<String, String> localeMessages = new ConcurrentHashMap<>();
 
     private final ConcurrentMap<String, Object> pendingLogins;
+    private final Set<UUID> pendingConfirms = Sets.newHashSet();
     private final SharedConfig sharedConfig;
 
     private MojangApiConnector mojangApiConnector;
+    private PasswordGenerator<T> passwordGenerator = new DefaultPasswordGenerator<>();
     private AuthStorage storage;
 
-    public FastLoginCore(ConcurrentMap<String, Object> pendingLogins, Map<String, Object> config) {
-        this.pendingLogins = pendingLogins;
+    public FastLoginCore(Map<String, Object> config) {
+        this.pendingLogins = FastLoginCore.buildCache(5, 0);
         this.sharedConfig = new SharedConfig(config);
     }
 
@@ -69,7 +99,15 @@ public abstract class FastLoginCore {
 
     public abstract void loadConfig();
 
-    public boolean setupDatabase(String driver, String host, int port, String database, String user, String password) {
+    public boolean setupDatabase() {
+        String driver = sharedConfig.get("driver");
+        String host = sharedConfig.get("host", "");
+        int port = sharedConfig.get("port", 3306);
+        String database = sharedConfig.get("database");
+
+        String user = sharedConfig.get("username", "");
+        String password = sharedConfig.get("password", "");
+
         storage = new AuthStorage(this, driver, host, port, database, user, password);
         try {
             storage.createTables();
@@ -124,8 +162,20 @@ public abstract class FastLoginCore {
         return sharedConfig;
     }
 
+    public PasswordGenerator<T> getPasswordGenerator() {
+        return passwordGenerator;
+    }
+
+    public void setPasswordGenerator(PasswordGenerator<T> passwordGenerator) {
+        this.passwordGenerator = passwordGenerator;
+    }
+
     public ConcurrentMap<String, Object> getPendingLogins() {
         return pendingLogins;
+    }
+
+    public Set<UUID> getPendingConfirms() {
+        return pendingConfirms;
     }
 
     public void close() {

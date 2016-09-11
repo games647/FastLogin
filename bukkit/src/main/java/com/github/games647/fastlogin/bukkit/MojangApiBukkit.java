@@ -1,14 +1,13 @@
 package com.github.games647.fastlogin.bukkit;
 
-import com.github.games647.fastlogin.core.FastLoginCore;
-import com.github.games647.fastlogin.core.MojangApiConnector;
+import com.github.games647.fastlogin.core.shared.FastLoginCore;
+import com.github.games647.fastlogin.core.shared.MojangApiConnector;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -21,9 +20,8 @@ public class MojangApiBukkit extends MojangApiConnector {
     //mojang api check to prove a player is logged in minecraft and made a join server request
     private static final String HAS_JOINED_URL = "https://sessionserver.mojang.com/session/minecraft/hasJoined?";
 
-    public MojangApiBukkit(ConcurrentMap<Object, Object> requests, Logger logger, List<String> localAddresses
-            , int rateLimit) {
-        super(requests, logger, localAddresses, rateLimit);
+    public MojangApiBukkit(Logger logger, List<String> localAddresses, int rateLimit) {
+        super(logger, localAddresses, rateLimit);
     }
 
     @Override

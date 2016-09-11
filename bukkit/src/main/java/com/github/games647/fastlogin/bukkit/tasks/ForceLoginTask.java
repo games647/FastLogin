@@ -88,7 +88,7 @@ public class ForceLoginTask implements Runnable {
     private boolean forceRegister(BukkitAuthPlugin authPlugin, Player player) {
         plugin.getLogger().log(Level.FINE, "Register player {0}", player.getName());
 
-        String generatedPassword = plugin.generateStringPassword(player);
+        String generatedPassword = plugin.getCore().getPasswordGenerator().getRandomPassword(player);
         boolean success = authPlugin.forceRegister(player, generatedPassword);
         String message = plugin.getCore().getMessage("auto-register");
         if (success && message != null) {

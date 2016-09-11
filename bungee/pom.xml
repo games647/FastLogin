@@ -44,13 +44,6 @@
             <version>1.8-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
-        <!--        <dependency>
-            <groupId>io.github.waterfallmc</groupId>
-            <artifactId>waterfall-api</artifactId>
-            <version>1.9-SNAPSHOT</version>
-            <type>jar</type>
-            <scope>provided</scope>
-        </dependency>-->
 
         <dependency>
             <groupId>com.github.MatteCarra</groupId>

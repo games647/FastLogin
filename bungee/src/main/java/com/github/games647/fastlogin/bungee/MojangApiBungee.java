@@ -1,20 +1,18 @@
 package com.github.games647.fastlogin.bungee;
 
-import com.github.games647.fastlogin.core.FastLoginCore;
-import com.github.games647.fastlogin.core.MojangApiConnector;
+import com.github.games647.fastlogin.core.shared.FastLoginCore;
+import com.github.games647.fastlogin.core.shared.MojangApiConnector;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentMap;
 import java.util.logging.Logger;
 
 import net.md_5.bungee.BungeeCord;
 
 public class MojangApiBungee extends MojangApiConnector {
 
-    public MojangApiBungee(ConcurrentMap<Object, Object> requests, Logger logger, List<String> localAddresses
-            , int rateLimit) {
-        super(requests, logger, localAddresses, rateLimit);
+    public MojangApiBungee(Logger logger, List<String> localAddresses, int rateLimit) {
+        super(logger, localAddresses, rateLimit);
     }
 
     @Override

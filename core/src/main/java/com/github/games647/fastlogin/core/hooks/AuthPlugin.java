@@ -1,4 +1,4 @@
-package com.github.games647.fastlogin.core;
+package com.github.games647.fastlogin.core.hooks;
 
 /**
  * Represents a supporting authentication plugin in BungeeCord and Bukkit/Spigot/... servers

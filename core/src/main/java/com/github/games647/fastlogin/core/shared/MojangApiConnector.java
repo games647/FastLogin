@@ -1,5 +1,6 @@
-package com.github.games647.fastlogin.core;
+package com.github.games647.fastlogin.core.shared;
 
+import com.github.games647.fastlogin.core.BalancedSSLFactory;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -36,17 +37,15 @@ public abstract class MojangApiConnector {
     //compile the pattern only on plugin enable -> and this have to be threadsafe
     private final Pattern playernameMatcher = Pattern.compile(VALID_PLAYERNAME);
 
-    private final ConcurrentMap<Object, Object> requests;
+    private final ConcurrentMap<Object, Object> requests = FastLoginCore.buildCache(10, -1);
     private final BalancedSSLFactory sslFactory;
     private final int rateLimit;
     private long lastRateLimit;
 
     protected final Logger logger;
 
-    public MojangApiConnector(ConcurrentMap<Object, Object> requests, Logger logger, List<String> localAddresses
-            , int rateLimit) {
+    public MojangApiConnector(Logger logger, List<String> localAddresses, int rateLimit) {
         this.logger = logger;
-        this.requests = requests;
         
         if (rateLimit > 600) {
             this.rateLimit = 600;

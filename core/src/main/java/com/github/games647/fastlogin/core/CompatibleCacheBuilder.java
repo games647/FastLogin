@@ -1,4 +1,4 @@
-package com.github.games647.fastlogin.bukkit;
+package com.github.games647.fastlogin.core;
 
 import java.lang.reflect.Method;
 import java.util.concurrent.ConcurrentMap;
@@ -10,13 +10,12 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.RemovalListener;
 
 /**
- * Represents a Guava CacheBuilder that is compatible with both Guava 10 and 13
+ * Represents a Guava CacheBuilder that is compatible with both Guava 10 (Minecraft 1.7.X) and 13
  */
 public class CompatibleCacheBuilder<K, V> {
 
     private static Method BUILD_METHOD;
     private static Method AS_MAP_METHOD;
-
 
     /**
      * Construct a new safe cache builder.

@@ -55,14 +55,14 @@ public class PluginMessageListener implements Listener {
                     String playerName = dataInput.readUTF();
 
                     if (playerName.equals(forPlayer.getName()) && plugin.getConfig().getBoolean("premium-warning")
-                            && !plugin.getPendingConfirms().contains(forPlayer.getUniqueId())) {
+                            && !plugin.getCore().getPendingConfirms().contains(forPlayer.getUniqueId())) {
                         String message = plugin.getCore().getMessage("premium-warning");
                         forPlayer.sendMessage(TextComponent.fromLegacyText(message));
-                        plugin.getPendingConfirms().add(forPlayer.getUniqueId());
+                        plugin.getCore().getPendingConfirms().add(forPlayer.getUniqueId());
                         return;
                     }
 
-                    plugin.getPendingConfirms().remove(forPlayer.getUniqueId());
+                    plugin.getCore().getPendingConfirms().remove(forPlayer.getUniqueId());
                     AsyncToggleMessage task = new AsyncToggleMessage(plugin, forPlayer, playerName, true);
                     ProxyServer.getInstance().getScheduler().runAsync(plugin, task);
                 } else if ("OFF".equals(subchannel)) {
