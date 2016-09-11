@@ -5,6 +5,8 @@ import com.github.games647.fastlogin.bungee.hooks.BungeeAuthPlugin;
 import com.github.games647.fastlogin.bungee.listener.PlayerConnectionListener;
 import com.github.games647.fastlogin.bungee.listener.PluginMessageListener;
 import com.github.games647.fastlogin.core.FastLoginCore;
+import com.github.games647.fastlogin.core.shared.DefaultPasswordGenerator;
+import com.github.games647.fastlogin.core.shared.PasswordGenerator;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -12,7 +14,6 @@ import com.google.common.collect.Sets;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentMap;
@@ -20,6 +21,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
 import net.md_5.bungee.api.connection.PendingConnection;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.config.ConfigurationProvider;
@@ -30,14 +32,11 @@ import net.md_5.bungee.config.YamlConfiguration;
  */
 public class FastLoginBungee extends Plugin {
 
-    private static final char[] PASSWORD_CHARACTERS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-            .toCharArray();
-
     private final FastLoginCore loginCore = new BungeeCore(this);
     private BungeeAuthPlugin bungeeAuthPlugin;
     private Configuration config;
 
-    private final Random random = new Random();
+    private final PasswordGenerator<ProxiedPlayer> passwordGenerator = new DefaultPasswordGenerator<>();
     private final Set<UUID> pendingConfirms = Sets.newHashSet();
 
     private final ConcurrentMap<PendingConnection, BungeeLoginSession> session = Maps.newConcurrentMap();
@@ -86,13 +85,8 @@ public class FastLoginBungee extends Plugin {
         registerHook();
     }
 
-    public String generateStringPassword() {
-        StringBuilder generatedPassword = new StringBuilder(8);
-        for (int i = 1; i <= 8; i++) {
-            generatedPassword.append(PASSWORD_CHARACTERS[random.nextInt(PASSWORD_CHARACTERS.length - 1)]);
-        }
-
-        return generatedPassword.toString();
+    public String generatePassword(ProxiedPlayer player) {
+        return passwordGenerator.getRandomPassword(player);
     }
 
     @Override

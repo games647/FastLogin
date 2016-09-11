@@ -2,6 +2,7 @@ package com.github.games647.fastlogin.bukkit.hooks;
 
 import com.avaje.ebeaninternal.api.ClassUtil;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
+import com.github.games647.fastlogin.core.AuthPlugin;
 import com.google.common.base.Charsets;
 import com.lenis0012.bukkit.loginsecurity.LoginSecurity;
 import com.lenis0012.bukkit.loginsecurity.session.AuthService;
@@ -26,7 +27,7 @@ import org.bukkit.entity.Player;
  * Bukkit: http://dev.bukkit.org/bukkit-plugins/loginsecurity/
  * Spigot: https://www.spigotmc.org/resources/loginsecurity.19362/
  */
-public class LoginSecurityHook implements BukkitAuthPlugin {
+public class LoginSecurityHook implements AuthPlugin<Player> {
 
     protected final com.lenis0012.bukkit.ls.LoginSecurity securityPlugin;
     protected final FastLoginBukkit plugin = (FastLoginBukkit) Bukkit.getPluginManager().getPlugin("FastLogin");

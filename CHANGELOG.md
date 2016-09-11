@@ -1,5 +1,7 @@
 ######1.9
 
+* [API] Deprecated platform specific authplugin. Please use AuthPlugin< platform specific player type >
+* [API] Deprecated bukkit's password generator. Please use PasswordGenerator< platform specific player type >
 * Added second attempt login -> cracked login
 * Add cracked whitelist (switch-mode -> switching to online-mode from offlinemode)
 * Added configuration to disable auto logins for 2Factor authentication

@@ -1,6 +1,6 @@
 package com.github.games647.fastlogin.bungee;
 
-import com.github.games647.fastlogin.core.LoginSource;
+import com.github.games647.fastlogin.core.shared.LoginSource;
 
 import java.net.InetSocketAddress;
 

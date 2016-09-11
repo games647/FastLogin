@@ -2,7 +2,7 @@ package com.github.games647.fastlogin.bukkit.listener.protocolsupport;
 
 import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
-import com.github.games647.fastlogin.core.JoinManagement;
+import com.github.games647.fastlogin.core.shared.JoinManagement;
 import com.github.games647.fastlogin.core.PlayerProfile;
 
 import java.net.InetSocketAddress;

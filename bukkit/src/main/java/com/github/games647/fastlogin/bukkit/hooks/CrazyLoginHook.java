@@ -1,5 +1,7 @@
 package com.github.games647.fastlogin.bukkit.hooks;
 
+import com.github.games647.fastlogin.core.AuthPlugin;
+
 import de.st_ddt.crazylogin.CrazyLogin;
 import de.st_ddt.crazylogin.data.LoginPlayerData;
 import de.st_ddt.crazylogin.databases.CrazyLoginDataDatabase;
@@ -22,7 +24,7 @@ import org.bukkit.entity.Player;
  *
  * Bukkit: http://dev.bukkit.org/server-mods/crazylogin/
  */
-public class CrazyLoginHook implements BukkitAuthPlugin {
+public class CrazyLoginHook implements AuthPlugin<Player> {
 
     protected final CrazyLogin crazyLoginPlugin = CrazyLogin.getPlugin();
     private final PlayerListener playerListener = getListener();

@@ -1,5 +1,7 @@
 package com.github.games647.fastlogin.bukkit.hooks;
 
+import com.github.games647.fastlogin.core.AuthPlugin;
+
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -18,7 +20,7 @@ import org.royaldev.royalauth.RoyalAuth;
  *
  * Bukkit: http://dev.bukkit.org/bukkit-plugins/royalauth/
  */
-public class RoyalAuthHook implements BukkitAuthPlugin {
+public class RoyalAuthHook implements AuthPlugin<Player> {
 
     private final RoyalAuth royalAuthPlugin = (RoyalAuth) Bukkit.getPluginManager().getPlugin("RoyalAuth");
 

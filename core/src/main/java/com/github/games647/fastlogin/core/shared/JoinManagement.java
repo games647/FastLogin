@@ -1,5 +1,9 @@
-package com.github.games647.fastlogin.core;
+package com.github.games647.fastlogin.core.shared;
 
+import com.github.games647.fastlogin.core.AuthPlugin;
+import com.github.games647.fastlogin.core.FastLoginCore;
+import com.github.games647.fastlogin.core.PlayerProfile;
+import com.github.games647.fastlogin.core.SharedConfig;
 import java.util.UUID;
 import java.util.logging.Level;
 
