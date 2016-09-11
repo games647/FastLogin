@@ -5,12 +5,11 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
-import com.github.games647.fastlogin.bukkit.hooks.BukkitAuthPlugin;
 
 import java.util.Random;
 import java.util.logging.Level;
-import org.bukkit.Bukkit;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 /**
@@ -52,7 +51,7 @@ public class StartPacketListener extends PacketAdapter {
      */
     @Override
     public void onPacketReceiving(PacketEvent packetEvent) {
-        if (packetEvent.isCancelled()) {
+        if (packetEvent.isCancelled() || plugin.getAuthPlugin() == null) {
             return;
         }
 
@@ -71,11 +70,6 @@ public class StartPacketListener extends PacketAdapter {
 
         String username = packet.getGameProfiles().read(0).getName();
         plugin.getLogger().log(Level.FINER, "Player {0} with {1} connecting", new Object[]{sessionKey, username});
-
-        BukkitAuthPlugin authPlugin = plugin.getAuthPlugin();
-        if (authPlugin == null) {
-            return;
-        }
 
         packetEvent.getAsyncMarker().incrementProcessingDelay();
         NameCheckTask nameCheckTask = new NameCheckTask(plugin, packetEvent, random, player, username);

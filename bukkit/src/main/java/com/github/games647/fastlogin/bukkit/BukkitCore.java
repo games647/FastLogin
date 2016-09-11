@@ -39,7 +39,7 @@ public class BukkitCore extends FastLoginCore {
     private final FastLoginBukkit plugin;
 
     public BukkitCore(FastLoginBukkit plugin) {
-        super(BukkitCore.<String, Object>buildCache(5, 0));
+        super(BukkitCore.<String, Object>buildCache(5, 0), plugin.getConfig().getValues(false));
 
         this.plugin = plugin;
     }

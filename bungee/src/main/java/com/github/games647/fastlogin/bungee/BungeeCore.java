@@ -2,12 +2,15 @@ package com.github.games647.fastlogin.bungee;
 
 import com.github.games647.fastlogin.core.FastLoginCore;
 import com.google.common.cache.CacheBuilder;
+import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.util.Collection;
+import java.util.Map;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
@@ -24,7 +27,8 @@ public class BungeeCore extends FastLoginCore {
     private final FastLoginBungee plugin;
 
     public BungeeCore(FastLoginBungee plugin) {
-        super(CacheBuilder.newBuilder().expireAfterWrite(5, TimeUnit.MINUTES).<String, Object>build().asMap());
+        super(CacheBuilder.newBuilder().expireAfterWrite(5, TimeUnit.MINUTES).<String, Object>build().asMap()
+                , generateConfigMap(plugin.getConfig()));
 
         this.plugin = plugin;
     }
@@ -89,5 +93,15 @@ public class BungeeCore extends FastLoginCore {
                 getLogger().log(Level.SEVERE, "Error saving default " + fileName, ioExc);
             }
         }
+    }
+
+    private static Map<String, Object> generateConfigMap(Configuration config) {
+        Map<String, Object> configMap = Maps.newHashMap();
+        Collection<String> keys = config.getKeys();
+        for (String key : keys) {
+            configMap.put(key, config.get(key));
+        }
+
+        return configMap;
     }
 }

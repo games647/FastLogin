@@ -2,31 +2,32 @@ package com.github.games647.fastlogin.bukkit.listener.protocolsupport;
 
 import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
-import com.github.games647.fastlogin.bukkit.hooks.BukkitAuthPlugin;
+import com.github.games647.fastlogin.core.JoinManagement;
 import com.github.games647.fastlogin.core.PlayerProfile;
 
 import java.net.InetSocketAddress;
-import java.util.UUID;
-import java.util.logging.Level;
 
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
 import protocolsupport.api.events.PlayerLoginStartEvent;
 import protocolsupport.api.events.PlayerPropertiesResolveEvent;
 
-public class ProtocolSupportListener implements Listener {
+public class ProtocolSupportListener extends JoinManagement<Player, ProtocolLoginSource> implements Listener {
 
     protected final FastLoginBukkit plugin;
 
     public ProtocolSupportListener(FastLoginBukkit plugin) {
+        super(plugin.getCore(), plugin.getAuthPlugin());
+
         this.plugin = plugin;
     }
 
     @EventHandler(ignoreCancelled = true)
     public void onLoginStart(PlayerLoginStartEvent loginStartEvent) {
         plugin.setServerStarted();
-        if (loginStartEvent.isLoginDenied()) {
+        if (loginStartEvent.isLoginDenied() || plugin.getAuthPlugin() == null) {
             return;
         }
 
@@ -36,68 +37,7 @@ public class ProtocolSupportListener implements Listener {
         //remove old data every time on a new login in order to keep the session only for one person
         plugin.getSessions().remove(address.toString());
 
-        BukkitAuthPlugin authPlugin = plugin.getAuthPlugin();
-        if (authPlugin == null) {
-            return;
-        }
-
-        PlayerProfile profile = plugin.getCore().getStorage().loadProfile(username);
-        if (profile != null) {
-            if (profile.getUserId() == -1) {
-
-                String ip = address.getAddress().getHostAddress();
-                if (plugin.getCore().getPendingLogins().containsKey(ip + username)
-                        && plugin.getConfig().getBoolean("secondAttemptCracked")) {
-                    plugin.getLogger().log(Level.INFO, "Second attempt login -> cracked {0}", username);
-
-                    //first login request failed so make a cracked session
-                    BukkitLoginSession loginSession = new BukkitLoginSession(username, profile);
-                    plugin.getSessions().put(address.toString(), loginSession);
-                    return;
-                }
-
-                UUID premiumUUID = null;
-
-                //user not exists in the db
-                try {
-                    boolean isRegistered = plugin.getAuthPlugin().isRegistered(username);
-                    if (plugin.getConfig().getBoolean("nameChangeCheck") 
-                            || (plugin.getConfig().getBoolean("autoRegister") && !isRegistered)) {
-                        premiumUUID = plugin.getCore().getMojangApiConnector().getPremiumUUID(username);
-                    }
-
-                    if (premiumUUID != null && plugin.getConfig().getBoolean("nameChangeCheck")) {
-                        PlayerProfile uuidProfile = plugin.getCore().getStorage().loadProfile(premiumUUID);
-                        if (uuidProfile != null) {
-                            plugin.getLogger().log(Level.FINER, "Player {0} changed it's username", premiumUUID);
-
-                            //update the username to the new one in the database
-                            uuidProfile.setPlayerName(username);
-
-                            startPremiumSession(username, loginStartEvent, false, uuidProfile);
-                            return;
-                        }
-                    }
-
-                    if (premiumUUID != null && plugin.getConfig().getBoolean("autoRegister") && !isRegistered) {
-                        plugin.getLogger().log(Level.FINER, "Player {0} uses a premium username", username);
-                        startPremiumSession(username, loginStartEvent, false, profile);
-                        return;
-                    }
-
-                    //no premium check passed so we save it as a cracked player
-                    BukkitLoginSession loginSession = new BukkitLoginSession(username, profile);
-                    plugin.getSessions().put(address.toString(), loginSession);
-                } catch (Exception ex) {
-                    plugin.getLogger().log(Level.SEVERE, "Failed to query isRegistered", ex);
-                }
-            } else if (profile.isPremium()) {
-                startPremiumSession(username, loginStartEvent, true, profile);
-            } else {
-                BukkitLoginSession loginSession = new BukkitLoginSession(username, profile);
-                plugin.getSessions().put(address.toString(), loginSession);
-            }
-        }
+        super.onLogin(username, new ProtocolLoginSource(loginStartEvent));
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -115,18 +55,23 @@ public class ProtocolSupportListener implements Listener {
         }
     }
 
-    private void startPremiumSession(String username, PlayerLoginStartEvent loginStartEvent, boolean registered
-            , PlayerProfile playerProfile) {
-        loginStartEvent.setOnlineMode(true);
-        InetSocketAddress address = loginStartEvent.getAddress();
+    @Override
+    public void requestPremiumLogin(ProtocolLoginSource source, PlayerProfile profile, String username, boolean registered) {
+        source.setOnlineMode();
 
-        String ip = address.getAddress().getHostAddress();
+        String ip = source.getAddress().getAddress().getHostAddress();
         plugin.getCore().getPendingLogins().put(ip + username, new Object());
 
-        BukkitLoginSession playerSession = new BukkitLoginSession(username, null, null, registered, playerProfile);
-        plugin.getSessions().put(address.toString(), playerSession);
+        BukkitLoginSession playerSession = new BukkitLoginSession(username, null, null, registered, profile);
+        plugin.getSessions().put(source.getAddress().toString(), playerSession);
         if (plugin.getConfig().getBoolean("premiumUuid")) {
-            loginStartEvent.setUseOnlineModeUUID(true);
+            source.getLoginStartEvent().setUseOnlineModeUUID(true);
         }
+    }
+
+    @Override
+    public void startCrackedSession(ProtocolLoginSource source, PlayerProfile profile, String username) {
+        BukkitLoginSession loginSession = new BukkitLoginSession(username, profile);
+        plugin.getSessions().put(source.getAddress().toString(), loginSession);
     }
 }

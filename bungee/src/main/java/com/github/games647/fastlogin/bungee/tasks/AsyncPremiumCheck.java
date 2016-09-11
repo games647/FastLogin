@@ -1,22 +1,23 @@
 package com.github.games647.fastlogin.bungee.tasks;
 
 import com.github.games647.fastlogin.bungee.BungeeLoginSession;
+import com.github.games647.fastlogin.bungee.BungeeLoginSource;
 import com.github.games647.fastlogin.bungee.FastLoginBungee;
-import com.github.games647.fastlogin.bungee.hooks.BungeeAuthPlugin;
+import com.github.games647.fastlogin.core.JoinManagement;
 import com.github.games647.fastlogin.core.PlayerProfile;
 
-import java.util.UUID;
-import java.util.logging.Level;
-
 import net.md_5.bungee.api.connection.PendingConnection;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.PreLoginEvent;
 
-public class AsyncPremiumCheck implements Runnable {
+public class AsyncPremiumCheck extends JoinManagement<ProxiedPlayer, BungeeLoginSource> implements Runnable {
 
     private final FastLoginBungee plugin;
     private final PreLoginEvent preLoginEvent;
 
     public AsyncPremiumCheck(FastLoginBungee plugin, PreLoginEvent preLoginEvent) {
+        super(plugin.getCore(), plugin.getBungeeAuthPlugin());
+
         this.plugin = plugin;
         this.preLoginEvent = preLoginEvent;
     }
@@ -27,89 +28,24 @@ public class AsyncPremiumCheck implements Runnable {
         plugin.getSession().remove(connection);
 
         String username = connection.getName();
-        PlayerProfile profile = plugin.getCore().getStorage().loadProfile(username);
-        if (profile == null) {
-            return;
-        }
-
         try {
-            if (profile.getUserId() == -1) {
-                String ip = connection.getAddress().getAddress().getHostAddress();
-                if (plugin.getCore().getPendingLogins().containsKey(ip + username)
-                        && plugin.getConfig().getBoolean("secondAttemptCracked")) {
-                    plugin.getLogger().log(Level.INFO, "Second attempt login -> cracked {0}", username);
-
-                    //first login request failed so make a cracked session
-                    plugin.getSession().put(connection, new BungeeLoginSession(username, false, profile));
-                    return;
-                }
-
-                UUID premiumUUID = null;
-                if (plugin.getConfig().getBoolean("nameChangeCheck") || plugin.getConfig().getBoolean("autoRegister")) {
-                    premiumUUID = plugin.getCore().getMojangApiConnector().getPremiumUUID(username);
-                }
-
-                if (premiumUUID == null
-                        || (!checkNameChange(premiumUUID, connection, username)
-                            && !checkPremiumName(username, connection, profile))) {
-                    //nothing detected the player as premium -> start a cracked session
-                    plugin.getSession().put(connection, new BungeeLoginSession(username, false, profile));
-                }
-            } else if (profile.isPremium()) {
-                requestPremiumLogin(connection, profile, username, true);
-            } else {
-                if (plugin.getConfig().getBoolean("switchMode")) {
-                    connection.disconnect(plugin.getCore().getMessage("switch-kick-message"));
-                    return;
-                }
-
-                //Cracked session
-                plugin.getSession().put(connection, new BungeeLoginSession(username, false, profile));
-            }
-        } catch (Exception ex) {
-            plugin.getLogger().log(Level.SEVERE, "Failed to check premium state", ex);
+            super.onLogin(username, new BungeeLoginSource(connection));
         } finally {
             preLoginEvent.completeIntent(plugin);
         }
     }
 
-    private boolean checkPremiumName(String username, PendingConnection connection, PlayerProfile profile)
-            throws Exception {
-        BungeeAuthPlugin authPlugin = plugin.getBungeeAuthPlugin();
-        if (plugin.getConfig().getBoolean("autoRegister")
-                && (authPlugin == null || !authPlugin.isRegistered(username))) {
-            plugin.getLogger().log(Level.FINER, "Player {0} uses a premium username", username);
-            requestPremiumLogin(connection, profile, username, false);
-            return true;
-        }
+    @Override
+    public void requestPremiumLogin(BungeeLoginSource source, PlayerProfile profile, String username, boolean registered) {
+        source.setOnlineMode();
+        plugin.getSession().put(source.getConnection(), new BungeeLoginSession(username, registered, profile));
 
-        return false;
-    }
-
-    private boolean checkNameChange(UUID premiumUUID, PendingConnection connection, String username) {
-        //user not exists in the db
-        if (plugin.getConfig().getBoolean("nameChangeCheck")) {
-            PlayerProfile profile = plugin.getCore().getStorage().loadProfile(premiumUUID);
-            if (profile != null) {
-                //uuid exists in the database
-                plugin.getLogger().log(Level.FINER, "Player {0} changed it's username", premiumUUID);
-
-                //update the username to the new one in the database
-                profile.setPlayerName(username);
-
-                requestPremiumLogin(connection, profile, username, false);
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    private void requestPremiumLogin(PendingConnection con, PlayerProfile profile, String username, boolean register) {
-        con.setOnlineMode(true);
-        plugin.getSession().put(con, new BungeeLoginSession(username, register, profile));
-
-        String ip = con.getAddress().getAddress().getHostAddress();
+        String ip = source.getAddress().getAddress().getHostAddress();
         plugin.getCore().getPendingLogins().put(ip + username, new Object());
+    }
+
+    @Override
+    public void startCrackedSession(BungeeLoginSource source, PlayerProfile profile, String username) {
+        plugin.getSession().put(source.getConnection(), new BungeeLoginSession(username, false, profile));
     }
 }

@@ -33,12 +33,14 @@ public abstract class FastLoginCore {
     protected final Map<String, String> localeMessages = new ConcurrentHashMap<>();
 
     private final ConcurrentMap<String, Object> pendingLogins;
+    private final SharedConfig sharedConfig;
 
     private MojangApiConnector mojangApiConnector;
     private AuthStorage storage;
 
-    public FastLoginCore(ConcurrentMap<String, Object> pendingLogins) {
+    public FastLoginCore(ConcurrentMap<String, Object> pendingLogins, Map<String, Object> config) {
         this.pendingLogins = pendingLogins;
+        this.sharedConfig = new SharedConfig(config);
     }
 
     public void setMojangApiConnector(MojangApiConnector mojangApiConnector) {
@@ -116,6 +118,10 @@ public abstract class FastLoginCore {
         }
 
         return false;
+    }
+
+    public SharedConfig getSharedConfig() {
+        return sharedConfig;
     }
 
     public ConcurrentMap<String, Object> getPendingLogins() {

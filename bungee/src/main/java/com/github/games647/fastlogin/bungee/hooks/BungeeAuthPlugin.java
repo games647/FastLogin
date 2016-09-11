@@ -1,11 +1,12 @@
 package com.github.games647.fastlogin.bungee.hooks;
 
+import com.github.games647.fastlogin.core.AuthPlugin;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 /**
  * Represents a supporting authentication plugin in BungeeCord/Waterfall/... servers
  */
-public interface BungeeAuthPlugin {
+public interface BungeeAuthPlugin extends AuthPlugin<ProxiedPlayer> {
 
     /**
      * Login the premium (paid account) player after
