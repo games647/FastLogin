@@ -1,6 +1,5 @@
 package com.github.games647.fastlogin.bukkit.hooks;
 
-import com.github.games647.fastlogin.core.AuthPlugin;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -21,7 +20,7 @@ import ultraauth.managers.PlayerManager;
  * Bukkit: http://dev.bukkit.org/bukkit-plugins/ultraauth-aa/
  * Spigot: https://www.spigotmc.org/resources/ultraauth.17044/
  */
-public class UltraAuthHook implements AuthPlugin<Player> {
+public class UltraAuthHook implements BukkitAuthPlugin {
 
     protected final Plugin ultraAuthPlugin = Main.main;
 

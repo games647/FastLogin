@@ -1,7 +1,6 @@
 package com.github.games647.fastlogin.bukkit.hooks;
 
 import com.avaje.ebeaninternal.api.ClassUtil;
-import com.github.games647.fastlogin.core.AuthPlugin;
 
 import fr.xephi.authme.api.API;
 import fr.xephi.authme.api.NewAPI;
@@ -15,7 +14,7 @@ import org.bukkit.entity.Player;
  * Bukkit: http://dev.bukkit.org/bukkit-plugins/authme-reloaded/
  * Spigot: https://www.spigotmc.org/resources/authme-reloaded.6269/
  */
-public class AuthMeHook implements AuthPlugin<Player> {
+public class AuthMeHook implements BukkitAuthPlugin {
 
     private final boolean isNewAPIAvailable;
 

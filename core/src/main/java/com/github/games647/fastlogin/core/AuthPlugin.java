@@ -39,7 +39,7 @@ public interface AuthPlugin<T> {
      * @param password a strong random generated password
      * @return if the operation was successful
      */
-    boolean forceRegister(T player, String password) throws Exception;
+    boolean forceRegister(T player, String password);
 
     /**
      * Checks whether an account exists for this player name.
