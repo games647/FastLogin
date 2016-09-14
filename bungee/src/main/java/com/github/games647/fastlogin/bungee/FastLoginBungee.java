@@ -5,13 +5,10 @@ import com.github.games647.fastlogin.bungee.hooks.BungeeAuthPlugin;
 import com.github.games647.fastlogin.bungee.listener.PlayerConnectionListener;
 import com.github.games647.fastlogin.bungee.listener.PluginMessageListener;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.Set;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentMap;
 import java.util.logging.Level;
 
@@ -29,8 +26,6 @@ public class FastLoginBungee extends Plugin {
     private final BungeeCore loginCore = new BungeeCore(this);
     private BungeeAuthPlugin bungeeAuthPlugin;
     private Configuration config;
-
-    private final Set<UUID> pendingConfirms = Sets.newHashSet();
 
     private final ConcurrentMap<PendingConnection, BungeeLoginSession> session = Maps.newConcurrentMap();
 

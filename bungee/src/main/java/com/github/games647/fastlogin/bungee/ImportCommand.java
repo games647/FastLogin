@@ -2,7 +2,6 @@ package com.github.games647.fastlogin.bungee;
 
 import com.github.games647.fastlogin.bungee.FastLoginBungee;
 import com.github.games647.fastlogin.core.AuthStorage;
-import com.github.games647.fastlogin.core.shared.FastLoginCore;
 import com.github.games647.fastlogin.core.importer.ImportPlugin;
 
 import net.md_5.bungee.api.ChatColor;
@@ -72,7 +71,7 @@ public class ImportCommand extends Command {
             password = args[5];
         }
 
-        FastLoginCore core = plugin.getCore();
+        BungeeCore core = plugin.getCore();
         AuthStorage storage = core.getStorage();
         boolean success = core.importDatabase(importPlugin, true, storage, host, database, username, password);
         if (success) {
