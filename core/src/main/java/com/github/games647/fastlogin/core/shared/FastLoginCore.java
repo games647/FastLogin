@@ -26,7 +26,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public abstract class FastLoginCore<T> {
+/**
+ * @param <P> Player class
+ */
+public abstract class FastLoginCore<P> {
 
     public static <K, V> ConcurrentMap<K, V> buildCache(int expireAfterWrite, int maxSize) {
         CompatibleCacheBuilder<Object, Object> builder = CompatibleCacheBuilder.newBuilder();
@@ -67,8 +70,8 @@ public abstract class FastLoginCore<T> {
 
     private MojangApiConnector mojangApiConnector;
     private AuthStorage storage;
-    private PasswordGenerator<T> passwordGenerator = new DefaultPasswordGenerator<>();
-    private AuthPlugin<T> authPlugin;
+    private PasswordGenerator<P> passwordGenerator = new DefaultPasswordGenerator<>();
+    private AuthPlugin<P> authPlugin;
 
     public FastLoginCore(Map<String, Object> config) {
         this.pendingLogins = FastLoginCore.buildCache(5, 0);
@@ -164,11 +167,11 @@ public abstract class FastLoginCore<T> {
         return sharedConfig;
     }
 
-    public PasswordGenerator<T> getPasswordGenerator() {
+    public PasswordGenerator<P> getPasswordGenerator() {
         return passwordGenerator;
     }
 
-    public void setPasswordGenerator(PasswordGenerator<T> passwordGenerator) {
+    public void setPasswordGenerator(PasswordGenerator<P> passwordGenerator) {
         this.passwordGenerator = passwordGenerator;
     }
 
@@ -180,11 +183,11 @@ public abstract class FastLoginCore<T> {
         return pendingConfirms;
     }
 
-    public AuthPlugin<T> getAuthPlugin() {
+    public AuthPlugin<P> getAuthPluginHook() {
         return authPlugin;
     }
 
-    public void setAuthPlugin(AuthPlugin<T> authPlugin) {
+    public void setAuthPluginHook(AuthPlugin<P> authPlugin) {
         this.authPlugin = authPlugin;
     }
 

@@ -63,8 +63,8 @@ public class DelayedAuthHook implements Runnable {
             return false;
         }
 
-        if (plugin.getAuthPlugin() == null) {
-            plugin.getCore().setAuthPlugin(authPluginHook);
+        if (plugin.getCore().getAuthPluginHook() == null) {
+            plugin.getCore().setAuthPluginHook(authPluginHook);
         }
         
         return true;

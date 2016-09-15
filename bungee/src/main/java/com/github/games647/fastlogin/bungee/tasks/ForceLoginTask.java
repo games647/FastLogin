@@ -2,13 +2,14 @@ package com.github.games647.fastlogin.bungee.tasks;
 
 import com.github.games647.fastlogin.bungee.BungeeLoginSession;
 import com.github.games647.fastlogin.bungee.FastLoginBungee;
-import com.github.games647.fastlogin.bungee.hooks.BungeeAuthPlugin;
 import com.github.games647.fastlogin.core.PlayerProfile;
+import com.github.games647.fastlogin.core.hooks.AuthPlugin;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 
 import java.util.UUID;
 import java.util.logging.Level;
+import net.md_5.bungee.api.chat.TextComponent;
 
 import net.md_5.bungee.api.connection.PendingConnection;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -51,7 +52,7 @@ public class ForceLoginTask implements Runnable {
                     session.setAlreadySaved(true);
                 }
 
-                BungeeAuthPlugin authPlugin = plugin.getBungeeAuthPlugin();
+                AuthPlugin<ProxiedPlayer> authPlugin = plugin.getCore().getAuthPluginHook();
                 if (authPlugin == null) {
                     //save will happen on success message from bukkit
                     sendBukkitLoginNotification(autoRegister);
@@ -73,7 +74,7 @@ public class ForceLoginTask implements Runnable {
         }
     }
 
-    private void forceRegister(BungeeLoginSession session, BungeeAuthPlugin authPlugin) {
+    private void forceRegister(BungeeLoginSession session, AuthPlugin<ProxiedPlayer> authPlugin) {
         if (session.isAlreadyLogged()) {
             sendBukkitLoginNotification(true);
             return;
@@ -88,12 +89,12 @@ public class ForceLoginTask implements Runnable {
             String message = plugin.getCore().getMessage("auto-register");
             if (message != null) {
                 message = message.replace("%password", password);
-                player.sendMessage(message);
+                player.sendMessage(TextComponent.fromLegacyText(message));
             }
         }
     }
 
-    private void forceLogin(BungeeLoginSession session, BungeeAuthPlugin authPlugin) {
+    private void forceLogin(BungeeLoginSession session, AuthPlugin<ProxiedPlayer> authPlugin) {
         if (session.isAlreadyLogged()) {
             sendBukkitLoginNotification(false);
             return;
@@ -105,7 +106,7 @@ public class ForceLoginTask implements Runnable {
             sendBukkitLoginNotification(false);
             String message = plugin.getCore().getMessage("auto-login");
             if (message != null) {
-                player.sendMessage(message);
+                player.sendMessage(TextComponent.fromLegacyText(message));
             }
         }
     }

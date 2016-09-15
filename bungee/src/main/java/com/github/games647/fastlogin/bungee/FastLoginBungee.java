@@ -74,8 +74,9 @@ public class FastLoginBungee extends Plugin {
         return core;
     }
 
+    @Deprecated
     public void setAuthPluginHook(BungeeAuthPlugin authPlugin) {
-        core.setAuthPlugin(authPlugin);
+        core.setAuthPluginHook(authPlugin);
     }
 
     public Configuration getConfig() {
@@ -91,14 +92,15 @@ public class FastLoginBungee extends Plugin {
      *
      * @return the auth hook for BungeeCord. null if none found
      */
+    @Deprecated
     public BungeeAuthPlugin getBungeeAuthPlugin() {
-        return (BungeeAuthPlugin) core.getAuthPlugin();
+        return (BungeeAuthPlugin) core.getAuthPluginHook();
     }
 
     private void registerHook() {
         Plugin plugin = getProxy().getPluginManager().getPlugin("BungeeAuth");
         if (plugin != null) {
-            core.setAuthPlugin(new BungeeAuthHook());
+            core.setAuthPluginHook(new BungeeAuthHook());
             getLogger().info("Hooked into BungeeAuth");
         }
     }

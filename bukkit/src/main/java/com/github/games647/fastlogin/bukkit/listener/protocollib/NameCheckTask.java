@@ -4,8 +4,8 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketEvent;
 import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
-import com.github.games647.fastlogin.core.shared.JoinManagement;
 import com.github.games647.fastlogin.core.PlayerProfile;
+import com.github.games647.fastlogin.core.shared.JoinManagement;
 
 import java.util.Random;
 import java.util.logging.Level;
@@ -23,7 +23,7 @@ public class NameCheckTask extends JoinManagement<Player, ProtocolLibLoginSource
     private final String username;
 
     public NameCheckTask(FastLoginBukkit plugin, PacketEvent packetEvent, Random random, Player player, String username) {
-        super(plugin.getCore(), plugin.getAuthPlugin());
+        super(plugin.getCore(), plugin.getCore().getAuthPluginHook());
 
         this.plugin = plugin;
         this.packetEvent = packetEvent;

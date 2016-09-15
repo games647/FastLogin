@@ -161,6 +161,7 @@ public class FakePlayer implements Player {
     }
 
     @Override
+    @Deprecated
     public void playNote(Location loc, byte instrument, byte note) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
@@ -181,6 +182,7 @@ public class FakePlayer implements Player {
     }
 
     @Override
+    @Deprecated
     public void playEffect(Location loc, Effect effect, int data) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
@@ -191,16 +193,19 @@ public class FakePlayer implements Player {
     }
 
     @Override
+    @Deprecated
     public void sendBlockChange(Location loc, Material material, byte data) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
+    @Deprecated
     public boolean sendChunkChange(Location loc, int sx, int sy, int sz, byte[] data) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
+    @Deprecated
     public void sendBlockChange(Location loc, int material, byte data) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
@@ -476,6 +481,7 @@ public class FakePlayer implements Player {
     }
 
     @Override
+    @Deprecated
     public boolean isOnGround() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
@@ -511,6 +517,7 @@ public class FakePlayer implements Player {
     }
 
     @Override
+    @Deprecated
     public void setTexturePack(String url) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
@@ -561,11 +568,13 @@ public class FakePlayer implements Player {
     }
 
     @Override
+    @Deprecated
     public void sendTitle(String title, String subtitle) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
+    @Deprecated
     public void resetTitle() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
@@ -686,11 +695,13 @@ public class FakePlayer implements Player {
     }
 
     @Override
+    @Deprecated
     public ItemStack getItemInHand() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
+    @Deprecated
     public void setItemInHand(ItemStack item) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
@@ -751,6 +762,7 @@ public class FakePlayer implements Player {
     }
 
     @Override
+    @Deprecated
     public List<Block> getLineOfSight(HashSet<Byte> transparent, int maxDistance) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
@@ -761,6 +773,7 @@ public class FakePlayer implements Player {
     }
 
     @Override
+    @Deprecated
     public Block getTargetBlock(HashSet<Byte> transparent, int maxDistance) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
@@ -771,6 +784,7 @@ public class FakePlayer implements Player {
     }
 
     @Override
+    @Deprecated
     public List<Block> getLastTwoTargetBlocks(HashSet<Byte> transparent, int maxDistance) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
@@ -816,6 +830,7 @@ public class FakePlayer implements Player {
     }
 
     @Override
+    @Deprecated
     public int _INVALID_getLastDamage() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
@@ -826,6 +841,7 @@ public class FakePlayer implements Player {
     }
 
     @Override
+    @Deprecated
     public void _INVALID_setLastDamage(int damage) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
@@ -1226,6 +1242,7 @@ public class FakePlayer implements Player {
     }
 
     @Override
+    @Deprecated
     public void _INVALID_damage(int amount) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
@@ -1236,6 +1253,7 @@ public class FakePlayer implements Player {
     }
 
     @Override
+    @Deprecated
     public void _INVALID_damage(int amount, Entity source) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
@@ -1246,6 +1264,7 @@ public class FakePlayer implements Player {
     }
 
     @Override
+    @Deprecated
     public int _INVALID_getHealth() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
@@ -1256,6 +1275,7 @@ public class FakePlayer implements Player {
     }
 
     @Override
+    @Deprecated
     public void _INVALID_setHealth(int health) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
@@ -1266,6 +1286,7 @@ public class FakePlayer implements Player {
     }
 
     @Override
+    @Deprecated
     public int _INVALID_getMaxHealth() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
@@ -1276,6 +1297,7 @@ public class FakePlayer implements Player {
     }
 
     @Override
+    @Deprecated
     public void _INVALID_setMaxHealth(int health) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
@@ -1331,6 +1353,7 @@ public class FakePlayer implements Player {
     }
 
     @Override
+    @Deprecated
     public void setBanned(boolean banned) {
         throw new UnsupportedOperationException("Not supported yet.");
     }

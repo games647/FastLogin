@@ -2,9 +2,9 @@ package com.github.games647.fastlogin.bukkit.tasks;
 
 import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
-import com.github.games647.fastlogin.bukkit.hooks.BukkitAuthPlugin;
 import com.github.games647.fastlogin.core.AuthStorage;
 import com.github.games647.fastlogin.core.PlayerProfile;
+import com.github.games647.fastlogin.core.hooks.AuthPlugin;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 
@@ -45,7 +45,7 @@ public class ForceLoginTask implements Runnable {
         //check if it's the same player as we checked before
         if (session.isVerified() && player.getName().equals(session.getUsername())) {
             //premium player
-            BukkitAuthPlugin authPlugin = plugin.getAuthPlugin();
+            AuthPlugin<Player> authPlugin = plugin.getCore().getAuthPluginHook();
             if (authPlugin == null) {
                 //maybe only bungeecord plugin
                 sendSuccessNotification();
@@ -85,7 +85,7 @@ public class ForceLoginTask implements Runnable {
         }
     }
 
-    private boolean forceRegister(BukkitAuthPlugin authPlugin, Player player) {
+    private boolean forceRegister(AuthPlugin<Player> authPlugin, Player player) {
         plugin.getLogger().log(Level.FINE, "Register player {0}", player.getName());
 
         String generatedPassword = plugin.getCore().getPasswordGenerator().getRandomPassword(player);
@@ -99,7 +99,7 @@ public class ForceLoginTask implements Runnable {
         return success;
     }
 
-    private boolean forceLogin(BukkitAuthPlugin authPlugin, Player player) {
+    private boolean forceLogin(AuthPlugin<Player> authPlugin, Player player) {
         plugin.getLogger().log(Level.FINE, "Logging player {0} in", player.getName());
         boolean success = authPlugin.forceLogin(player);
 

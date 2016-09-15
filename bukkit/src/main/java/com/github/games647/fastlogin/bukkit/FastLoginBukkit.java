@@ -159,8 +159,9 @@ public class FastLoginBukkit extends JavaPlugin {
      *
      * @return interface to any supported auth plugin
      */
+    @Deprecated
     public BukkitAuthPlugin getAuthPlugin() {
-        AuthPlugin<Player> authPlugin = core.getAuthPlugin();
+        AuthPlugin<Player> authPlugin = core.getAuthPluginHook();
         if (authPlugin == null) {
             try {
                 Thread.sleep(1000);
@@ -172,8 +173,9 @@ public class FastLoginBukkit extends JavaPlugin {
         return (BukkitAuthPlugin) authPlugin;
     }
 
+    @Deprecated
     public void setAuthPluginHook(BukkitAuthPlugin authPlugin) {
-        core.setAuthPlugin(authPlugin);
+        core.setAuthPluginHook(authPlugin);
     }
 
     public boolean isBungeeCord() {

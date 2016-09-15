@@ -6,6 +6,8 @@ import com.github.games647.fastlogin.core.importer.ImportPlugin;
 
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.plugin.Command;
 
 public class ImportCommand extends Command {
@@ -21,7 +23,8 @@ public class ImportCommand extends Command {
     @Override
     public void execute(CommandSender sender, String[] args) {
         if (args.length < 2) {
-            sender.sendMessage(ChatColor.DARK_RED + "You need to specify the import plugin and database type");
+            String message = ChatColor.DARK_RED + "You need to specify the import plugin and database type";
+            sender.sendMessage(convertFromLegacy(message));
             return;
         }
 
@@ -37,7 +40,8 @@ public class ImportCommand extends Command {
                 importPlugin = ImportPlugin.ELDZI;
                 break;
             default:
-                sender.sendMessage(ChatColor.DARK_RED + "Unknown auto login plugin");
+                String message = ChatColor.DARK_RED + "Unknown auto login plugin";
+                sender.sendMessage(convertFromLegacy(message));
                 return;
         }
 
@@ -50,7 +54,8 @@ public class ImportCommand extends Command {
                 sqlite = false;
                 break;
             default:
-                sender.sendMessage(ChatColor.DARK_RED + "Unknown storage type to import from. Either SQLite or MySQL");
+                String message = ChatColor.DARK_RED + "Unknown storage type to import from. Either SQLite or MySQL";
+                sender.sendMessage(convertFromLegacy(message));
                 return;
         }
 
@@ -60,8 +65,9 @@ public class ImportCommand extends Command {
         String password = "";
         if (!sqlite) {
             if (args.length <= 5) {
-                sender.sendMessage(ChatColor.DARK_RED + "If importing from MySQL, you need to specify host database "
-                        + "and username passowrd too");
+                String message = ChatColor.DARK_RED + "If importing from MySQL, you need to specify host database "
+                        + "and username passowrd too";
+                sender.sendMessage(convertFromLegacy(message));
                 return;
             }
 
@@ -75,9 +81,13 @@ public class ImportCommand extends Command {
         AuthStorage storage = core.getStorage();
         boolean success = core.importDatabase(importPlugin, true, storage, host, database, username, password);
         if (success) {
-            sender.sendMessage(ChatColor.DARK_GREEN + "Successful imported the data");
+            sender.sendMessage(convertFromLegacy(ChatColor.DARK_GREEN + "Successful imported the data"));
         } else {
-            sender.sendMessage(ChatColor.DARK_RED + "Failed to import the data. Check out the logs");
+            sender.sendMessage(convertFromLegacy(ChatColor.DARK_RED + "Failed to import the data. Check out the logs"));
         }
+    }
+
+    private BaseComponent[] convertFromLegacy(String message) {
+        return TextComponent.fromLegacyText(message);
     }
 }

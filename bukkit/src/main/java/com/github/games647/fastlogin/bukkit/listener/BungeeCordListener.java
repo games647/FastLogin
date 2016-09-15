@@ -1,9 +1,9 @@
 package com.github.games647.fastlogin.bukkit.listener;
 
+import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 import com.github.games647.fastlogin.bukkit.tasks.ForceLoginTask;
-import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
-import com.github.games647.fastlogin.bukkit.hooks.BukkitAuthPlugin;
+import com.github.games647.fastlogin.core.hooks.AuthPlugin;
 import com.google.common.base.Charsets;
 import com.google.common.collect.Sets;
 import com.google.common.io.ByteArrayDataInput;
@@ -80,7 +80,7 @@ public class BungeeCordListener implements PluginMessageListener {
                     Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
                         @Override
                         public void run() {
-                            BukkitAuthPlugin authPlugin = plugin.getAuthPlugin();
+                            AuthPlugin<Player> authPlugin = plugin.getCore().getAuthPluginHook();
                             try {
                                 //we need to check if the player is registered on Bukkit too
                                 if (authPlugin == null || !authPlugin.isRegistered(playerName)) {

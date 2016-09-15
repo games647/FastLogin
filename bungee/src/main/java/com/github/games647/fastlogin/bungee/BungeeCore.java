@@ -23,6 +23,16 @@ import net.md_5.bungee.config.YamlConfiguration;
 
 public class BungeeCore extends FastLoginCore<ProxiedPlayer> {
 
+    private static Map<String, Object> generateConfigMap(Configuration config) {
+        Map<String, Object> configMap = Maps.newHashMap();
+        Collection<String> keys = config.getKeys();
+        for (String key : keys) {
+            configMap.put(key, config.get(key));
+        }
+
+        return configMap;
+    }
+
     private final FastLoginBungee plugin;
 
     public BungeeCore(FastLoginBungee plugin) {
@@ -93,13 +103,4 @@ public class BungeeCore extends FastLoginCore<ProxiedPlayer> {
         }
     }
 
-    private static Map<String, Object> generateConfigMap(Configuration config) {
-        Map<String, Object> configMap = Maps.newHashMap();
-        Collection<String> keys = config.getKeys();
-        for (String key : keys) {
-            configMap.put(key, config.get(key));
-        }
-
-        return configMap;
-    }
 }

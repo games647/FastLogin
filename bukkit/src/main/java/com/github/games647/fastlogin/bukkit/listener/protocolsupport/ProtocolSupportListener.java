@@ -19,7 +19,7 @@ public class ProtocolSupportListener extends JoinManagement<Player, ProtocolLogi
     protected final FastLoginBukkit plugin;
 
     public ProtocolSupportListener(FastLoginBukkit plugin) {
-        super(plugin.getCore(), plugin.getAuthPlugin());
+        super(plugin.getCore(), plugin.getCore().getAuthPluginHook());
 
         this.plugin = plugin;
     }
@@ -27,7 +27,7 @@ public class ProtocolSupportListener extends JoinManagement<Player, ProtocolLogi
     @EventHandler(ignoreCancelled = true)
     public void onLoginStart(PlayerLoginStartEvent loginStartEvent) {
         plugin.setServerStarted();
-        if (loginStartEvent.isLoginDenied() || plugin.getAuthPlugin() == null) {
+        if (loginStartEvent.isLoginDenied() || plugin.getCore().getAuthPluginHook() == null) {
             return;
         }
 

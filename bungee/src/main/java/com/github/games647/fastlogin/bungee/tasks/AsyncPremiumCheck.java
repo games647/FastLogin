@@ -16,7 +16,7 @@ public class AsyncPremiumCheck extends JoinManagement<ProxiedPlayer, BungeeLogin
     private final PreLoginEvent preLoginEvent;
 
     public AsyncPremiumCheck(FastLoginBungee plugin, PreLoginEvent preLoginEvent) {
-        super(plugin.getCore(), plugin.getBungeeAuthPlugin());
+        super(plugin.getCore(), plugin.getCore().getAuthPluginHook());
 
         this.plugin = plugin;
         this.preLoginEvent = preLoginEvent;

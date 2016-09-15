@@ -15,17 +15,9 @@ dev-url: ${project.url}
 load: STARTUP
 
 softdepend:
-    # We require either ProtocolLib or ProtocolSupport
+    # We depend either ProtocolLib or ProtocolSupport
     - ProtocolSupport
     - ProtocolLib
-    # Auth plugins - we delay the hook
-#    - xAuth
-#    - AuthMe
-#    - LogIt
-#    - CrazyLogin
-#    - LoginSecurity
-#    - RoyalAuth
-#    - UltraAuth
 
 commands:
     ${project.parent.name}:

@@ -4,6 +4,7 @@ import com.github.games647.fastlogin.core.shared.LoginSource;
 
 import java.net.InetSocketAddress;
 
+import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.PendingConnection;
 
 public class BungeeLoginSource implements LoginSource {
@@ -21,7 +22,7 @@ public class BungeeLoginSource implements LoginSource {
 
     @Override
     public void kick(String message) {
-        connection.disconnect(message);
+        connection.disconnect(TextComponent.fromLegacyText(message));
     }
 
     @Override
