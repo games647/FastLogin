@@ -1,5 +1,6 @@
 package com.github.games647.fastlogin.bukkit.hooks;
 
+import com.github.games647.fastlogin.core.hooks.AuthPlugin;
 
 import io.github.lucaseasedup.logit.CancelledState;
 import io.github.lucaseasedup.logit.LogItCore;
@@ -14,7 +15,7 @@ import org.bukkit.entity.Player;
  * Bukkit: Unknown
  * Spigot: Unknown
  */
-public class LogItHook implements BukkitAuthPlugin {
+public class LogItHook implements AuthPlugin<Player> {
 
     @Override
     public boolean forceLogin(Player player) {

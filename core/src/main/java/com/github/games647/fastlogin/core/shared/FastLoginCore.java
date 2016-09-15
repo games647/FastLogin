@@ -3,6 +3,7 @@ package com.github.games647.fastlogin.core.shared;
 import com.github.games647.fastlogin.core.AuthStorage;
 import com.github.games647.fastlogin.core.CompatibleCacheBuilder;
 import com.github.games647.fastlogin.core.SharedConfig;
+import com.github.games647.fastlogin.core.hooks.AuthPlugin;
 import com.github.games647.fastlogin.core.hooks.DefaultPasswordGenerator;
 import com.github.games647.fastlogin.core.hooks.PasswordGenerator;
 import com.github.games647.fastlogin.core.importer.AutoInImporter;
@@ -65,8 +66,9 @@ public abstract class FastLoginCore<T> {
     private final SharedConfig sharedConfig;
 
     private MojangApiConnector mojangApiConnector;
-    private PasswordGenerator<T> passwordGenerator = new DefaultPasswordGenerator<>();
     private AuthStorage storage;
+    private PasswordGenerator<T> passwordGenerator = new DefaultPasswordGenerator<>();
+    private AuthPlugin<T> authPlugin;
 
     public FastLoginCore(Map<String, Object> config) {
         this.pendingLogins = FastLoginCore.buildCache(5, 0);
@@ -176,6 +178,14 @@ public abstract class FastLoginCore<T> {
 
     public Set<UUID> getPendingConfirms() {
         return pendingConfirms;
+    }
+
+    public AuthPlugin<T> getAuthPlugin() {
+        return authPlugin;
+    }
+
+    public void setAuthPlugin(AuthPlugin<T> authPlugin) {
+        this.authPlugin = authPlugin;
     }
 
     public void close() {

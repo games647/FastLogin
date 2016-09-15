@@ -1,5 +1,6 @@
 package com.github.games647.fastlogin.bukkit.hooks;
 
+import com.github.games647.fastlogin.core.hooks.AuthPlugin;
 
 import de.luricos.bukkit.xAuth.xAuth;
 import de.luricos.bukkit.xAuth.xAuthPlayer;
@@ -20,7 +21,7 @@ import org.bukkit.entity.Player;
  *
  * Bukkit: http://dev.bukkit.org/bukkit-plugins/xauth/
  */
-public class xAuthHook implements BukkitAuthPlugin {
+public class xAuthHook implements AuthPlugin<Player> {
 
     protected final xAuth xAuthPlugin = xAuth.getPlugin();
 

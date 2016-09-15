@@ -1,5 +1,7 @@
 package com.github.games647.fastlogin.bungee.hooks;
 
+import com.github.games647.fastlogin.core.hooks.AuthPlugin;
+
 import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -20,7 +22,7 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
  *
  * Spigot: https://www.spigotmc.org/resources/bungeeauth.493/
  */
-public class BungeeAuthHook implements BungeeAuthPlugin {
+public class BungeeAuthHook implements AuthPlugin<ProxiedPlayer> {
 
     //https://github.com/MatteCarra/BungeeAuth/blob/master/src/me/vik1395/BungeeAuth/Login.java#L32
     private final Tables databaseConnection = new Tables();

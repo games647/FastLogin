@@ -1,6 +1,7 @@
 package com.github.games647.fastlogin.bukkit.hooks;
 
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
+import com.github.games647.fastlogin.core.hooks.AuthPlugin;
 import com.lenis0012.bukkit.loginsecurity.LoginSecurity;
 import com.lenis0012.bukkit.loginsecurity.session.AuthService;
 import com.lenis0012.bukkit.loginsecurity.session.PlayerSession;
@@ -16,7 +17,7 @@ import org.bukkit.entity.Player;
  * Bukkit: http://dev.bukkit.org/bukkit-plugins/loginsecurity/
  * Spigot: https://www.spigotmc.org/resources/loginsecurity.19362/
  */
-public class LoginSecurityHook implements BukkitAuthPlugin {
+public class LoginSecurityHook implements AuthPlugin<Player> {
 
     private final FastLoginBukkit plugin = (FastLoginBukkit) Bukkit.getPluginManager().getPlugin("FastLogin");
 

@@ -2,18 +2,19 @@ package com.github.games647.fastlogin.bukkit.tasks;
 
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 import com.github.games647.fastlogin.bukkit.hooks.AuthMeHook;
-import com.github.games647.fastlogin.bukkit.hooks.BukkitAuthPlugin;
 import com.github.games647.fastlogin.bukkit.hooks.CrazyLoginHook;
 import com.github.games647.fastlogin.bukkit.hooks.LogItHook;
 import com.github.games647.fastlogin.bukkit.hooks.LoginSecurityHook;
 import com.github.games647.fastlogin.bukkit.hooks.UltraAuthHook;
 import com.github.games647.fastlogin.bukkit.hooks.xAuthHook;
+import com.github.games647.fastlogin.core.hooks.AuthPlugin;
 import com.google.common.collect.Lists;
 
-import java.util.List;
+import java.util.ArrayList;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 
 public class DelayedAuthHook implements Runnable {
 
@@ -37,12 +38,12 @@ public class DelayedAuthHook implements Runnable {
     }
 
     private boolean registerHooks() {
-        BukkitAuthPlugin authPluginHook = null;
+        AuthPlugin<Player> authPluginHook = null;
         try {
-            List<Class<? extends BukkitAuthPlugin>> supportedHooks = Lists.newArrayList(AuthMeHook.class
+            ArrayList<Class<? extends AuthPlugin<Player>>> supportedHooks = Lists.newArrayList(AuthMeHook.class
                     , CrazyLoginHook.class, LogItHook.class, LoginSecurityHook.class, UltraAuthHook.class
                     , xAuthHook.class);
-            for (Class<? extends BukkitAuthPlugin> clazz : supportedHooks) {
+            for (Class<? extends AuthPlugin<Player>> clazz : supportedHooks) {
                 String pluginName = clazz.getSimpleName().replace("Hook", "");
                 //uses only member classes which uses AuthPlugin interface (skip interfaces)
                 if (Bukkit.getServer().getPluginManager().getPlugin(pluginName) != null) {
@@ -63,7 +64,7 @@ public class DelayedAuthHook implements Runnable {
         }
 
         if (plugin.getAuthPlugin() == null) {
-            plugin.setAuthPluginHook(authPluginHook);
+            plugin.getCore().setAuthPlugin(authPluginHook);
         }
         
         return true;

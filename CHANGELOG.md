@@ -1,5 +1,6 @@
 ######1.9
 
+* Drop support for LoginSecurity 1.X since 2.X seems to be stable
 * Refactored/Cleaned up a lot of code
 * [API] Deprecated platform specific authplugin. Please use AuthPlugin< platform specific player type >
 * [API] Deprecated bukkit's password generator. Please use PasswordGenerator< platform specific player type >

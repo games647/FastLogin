@@ -14,6 +14,7 @@ import com.github.games647.fastlogin.bukkit.listener.protocollib.LoginSkinApplyL
 import com.github.games647.fastlogin.bukkit.listener.protocollib.StartPacketListener;
 import com.github.games647.fastlogin.bukkit.listener.protocolsupport.ProtocolSupportListener;
 import com.github.games647.fastlogin.bukkit.tasks.DelayedAuthHook;
+import com.github.games647.fastlogin.core.hooks.AuthPlugin;
 import com.github.games647.fastlogin.core.shared.FastLoginCore;
 
 import java.security.KeyPair;
@@ -35,16 +36,16 @@ public class FastLoginBukkit extends JavaPlugin {
     private final KeyPair keyPair = EncryptionUtil.generateKeyPair();
 
     private boolean bungeeCord;
-    private final BukkitCore core = new BukkitCore(this);
+    private BukkitCore core;
     private boolean serverStarted;
 
     //1 minutes should be enough as a timeout for bad internet connection (Server, Client and Mojang)
     private final ConcurrentMap<String, BukkitLoginSession> session = FastLoginCore.buildCache(1, -1);
-
-    private BukkitAuthPlugin authPlugin;
     
     @Override
     public void onEnable() {
+        core = new BukkitCore(this);
+
         core.loadConfig();
         core.loadMessages();
 
@@ -112,7 +113,6 @@ public class FastLoginBukkit extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        //clean up
         session.clear();
 
         if (core != null) {
@@ -160,6 +160,7 @@ public class FastLoginBukkit extends JavaPlugin {
      * @return interface to any supported auth plugin
      */
     public BukkitAuthPlugin getAuthPlugin() {
+        AuthPlugin<Player> authPlugin = core.getAuthPlugin();
         if (authPlugin == null) {
             try {
                 Thread.sleep(1000);
@@ -168,11 +169,11 @@ public class FastLoginBukkit extends JavaPlugin {
             }
         }
 
-        return authPlugin;
+        return (BukkitAuthPlugin) authPlugin;
     }
 
     public void setAuthPluginHook(BukkitAuthPlugin authPlugin) {
-        this.authPlugin = authPlugin;
+        core.setAuthPlugin(authPlugin);
     }
 
     public boolean isBungeeCord() {

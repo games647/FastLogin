@@ -23,33 +23,34 @@ import net.md_5.bungee.config.YamlConfiguration;
  */
 public class FastLoginBungee extends Plugin {
 
-    private final BungeeCore loginCore = new BungeeCore(this);
-    private BungeeAuthPlugin bungeeAuthPlugin;
-    private Configuration config;
-
     private final ConcurrentMap<PendingConnection, BungeeLoginSession> session = Maps.newConcurrentMap();
+
+    private BungeeCore core;
+    private Configuration config;
 
     @Override
     public void onEnable() {
-        loginCore.loadConfig();
-        loginCore.loadMessages();
-
         try {
             File configFile = new File(getDataFolder(), "config.yml");
             config = ConfigurationProvider.getProvider(YamlConfiguration.class).load(configFile);
 
+            core = new BungeeCore(this);
+
             List<String> ipAddresses = getConfig().getStringList("ip-addresses");
             int requestLimit = getConfig().getInt("mojang-request-limit");
             MojangApiBungee mojangApi = new MojangApiBungee(getLogger(), ipAddresses, requestLimit);
-            loginCore.setMojangApiConnector(mojangApi);
+            core.setMojangApiConnector(mojangApi);
 
-            if (!loginCore.setupDatabase()) {
+            if (!core.setupDatabase()) {
                 return;
             }
         } catch (IOException ioExc) {
             getLogger().log(Level.SEVERE, "Error loading config. Disabling plugin...", ioExc);
             return;
         }
+
+        core.loadConfig();
+        core.loadMessages();
 
         //events
         getProxy().getPluginManager().registerListener(this, new PlayerConnectionListener(this));
@@ -66,15 +67,15 @@ public class FastLoginBungee extends Plugin {
 
     @Override
     public void onDisable() {
-        loginCore.close();
+        core.close();
     }
 
     public BungeeCore getCore() {
-        return loginCore;
+        return core;
     }
 
     public void setAuthPluginHook(BungeeAuthPlugin authPlugin) {
-        this.bungeeAuthPlugin = authPlugin;
+        core.setAuthPlugin(authPlugin);
     }
 
     public Configuration getConfig() {
@@ -91,13 +92,13 @@ public class FastLoginBungee extends Plugin {
      * @return the auth hook for BungeeCord. null if none found
      */
     public BungeeAuthPlugin getBungeeAuthPlugin() {
-        return bungeeAuthPlugin;
+        return (BungeeAuthPlugin) core.getAuthPlugin();
     }
 
     private void registerHook() {
         Plugin plugin = getProxy().getPluginManager().getPlugin("BungeeAuth");
         if (plugin != null) {
-            bungeeAuthPlugin = new BungeeAuthHook();
+            core.setAuthPlugin(new BungeeAuthHook());
             getLogger().info("Hooked into BungeeAuth");
         }
     }
