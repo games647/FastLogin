@@ -52,10 +52,10 @@ public class BungeeCordListener implements PluginMessageListener {
         plugin.getLogger().log(Level.FINEST, "Received plugin message for subchannel {0} from {1}"
                 , new Object[]{subchannel, player});
 
-        final String playerName = dataInput.readUTF();
+        String playerName = dataInput.readUTF();
 
         //check if the player is still online or disconnected
-        final Player checkedPlayer = plugin.getServer().getPlayerExact(playerName);
+        Player checkedPlayer = plugin.getServer().getPlayerExact(playerName);
         //fail if target player is blacklisted because already authed or wrong bungeecord id
         if (checkedPlayer != null && !checkedPlayer.hasMetadata(plugin.getName())) {
             //blacklist this target player for BungeeCord Id brute force attacks
@@ -77,21 +77,18 @@ public class BungeeCordListener implements PluginMessageListener {
                     plugin.getSessions().put(id, playerSession);
                     Bukkit.getScheduler().runTaskAsynchronously(plugin, new ForceLoginTask(plugin, player));
                 } else if ("AUTO_REGISTER".equalsIgnoreCase(subchannel)) {
-                    Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
-                        @Override
-                        public void run() {
-                            AuthPlugin<Player> authPlugin = plugin.getCore().getAuthPluginHook();
-                            try {
-                                //we need to check if the player is registered on Bukkit too
-                                if (authPlugin == null || !authPlugin.isRegistered(playerName)) {
-                                    BukkitLoginSession playerSession = new BukkitLoginSession(playerName, false);
-                                    playerSession.setVerified(true);
-                                    plugin.getSessions().put(id, playerSession);
-                                    new ForceLoginTask(plugin, player).run();
-                                }
-                            } catch (Exception ex) {
-                                plugin.getLogger().log(Level.SEVERE, "Failed to query isRegistered", ex);
+                    Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+                        AuthPlugin<Player> authPlugin = plugin.getCore().getAuthPluginHook();
+                        try {
+                            //we need to check if the player is registered on Bukkit too
+                            if (authPlugin == null || !authPlugin.isRegistered(playerName)) {
+                                BukkitLoginSession playerSession = new BukkitLoginSession(playerName, false);
+                                playerSession.setVerified(true);
+                                plugin.getSessions().put(id, playerSession);
+                                new ForceLoginTask(plugin, player).run();
                             }
+                        } catch (Exception ex) {
+                            plugin.getLogger().log(Level.SEVERE, "Failed to query isRegistered", ex);
                         }
                     });
                 }

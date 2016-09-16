@@ -59,11 +59,8 @@ public class PremiumCommand implements CommandExecutor {
                 } else {
                     //todo: resolve uuid
                     profile.setPremium(true);
-                    Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
-                        @Override
-                        public void run() {
-                            plugin.getCore().getStorage().save(profile);
-                        }
+                    Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+                        plugin.getCore().getStorage().save(profile);
                     });
 
                     sender.sendMessage(plugin.getCore().getMessage("add-premium"));
@@ -103,11 +100,8 @@ public class PremiumCommand implements CommandExecutor {
             } else {
                 //todo: resolve uuid
                 profile.setPremium(true);
-                Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
-                    @Override
-                    public void run() {
-                        plugin.getCore().getStorage().save(profile);
-                    }
+                Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+                    plugin.getCore().getStorage().save(profile);
                 });
 
                 sender.sendMessage(plugin.getCore().getMessage("add-premium-other"));

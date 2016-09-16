@@ -4,9 +4,9 @@ import java.util.Random;
 
 public class DefaultPasswordGenerator<T> implements PasswordGenerator<T> {
 
-    private final Random random = new Random();
     private static final char[] PASSWORD_CHARACTERS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
             .toCharArray();
+    private final Random random = new Random();
 
     @Override
     public String getRandomPassword(T player) {

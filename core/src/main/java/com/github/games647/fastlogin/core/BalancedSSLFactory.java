@@ -7,6 +7,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.net.ssl.SSLSocketFactory;
 
@@ -17,9 +18,7 @@ public class BalancedSSLFactory extends SSLSocketFactory {
     //in order to be thread-safe
     private final List<InetAddress> localAddresses;
 
-    private final Object lock = new Object();
-
-    private int id;
+    private AtomicInteger id;
 
     public BalancedSSLFactory(SSLSocketFactory oldFactory, Set<InetAddress> localAddresses) {
         this.oldFactory = oldFactory;
@@ -65,16 +64,7 @@ public class BalancedSSLFactory extends SSLSocketFactory {
     }
 
     private InetAddress getNextLocalAddress() {
-        int next;
-        synchronized (lock) {
-            next = id;
-            id++;
-            if (next == Integer.MAX_VALUE) {
-                id = 0;
-            }
-        }
-
-        int index = next % localAddresses.size();
+        int index = id.incrementAndGet() % localAddresses.size();
         return localAddresses.get(index);
     }
 }

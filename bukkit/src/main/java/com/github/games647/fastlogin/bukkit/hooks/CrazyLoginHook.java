@@ -8,7 +8,6 @@ import de.st_ddt.crazylogin.databases.CrazyLoginDataDatabase;
 import de.st_ddt.crazylogin.listener.PlayerListener;
 import de.st_ddt.crazylogin.metadata.Authenticated;
 
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.logging.Level;
@@ -32,39 +31,35 @@ public class CrazyLoginHook implements AuthPlugin<Player> {
     @Override
     public boolean forceLogin(final Player player) {
         //not thread-safe operation
-        Future<LoginPlayerData> future = Bukkit.getScheduler().callSyncMethod(crazyLoginPlugin
-                , new Callable<LoginPlayerData>() {
-            @Override
-            public LoginPlayerData call() throws Exception {
-                LoginPlayerData playerData = crazyLoginPlugin.getPlayerData(player.getName());
-                if (playerData != null) {
-                    //mark the account as logged in
-                    playerData.setLoggedIn(true);
+        Future<LoginPlayerData> future = Bukkit.getScheduler().callSyncMethod(crazyLoginPlugin, () -> {
+            LoginPlayerData playerData = crazyLoginPlugin.getPlayerData(player.getName());
+            if (playerData != null) {
+                //mark the account as logged in
+                playerData.setLoggedIn(true);
 
-                    String ip = player.getAddress().getAddress().getHostAddress();
+                String ip = player.getAddress().getAddress().getHostAddress();
 //this should be done after login to restore the inventory, unhide players, prevent potential memory leaks...
 //from: https://github.com/ST-DDT/CrazyLogin/blob/master/src/main/java/de/st_ddt/crazylogin/CrazyLogin.java#L1948
-                    playerData.resetLoginFails();
-                    player.setFireTicks(0);
+                playerData.resetLoginFails();
+                player.setFireTicks(0);
 
-                    if (playerListener != null) {
-                        playerListener.removeMovementBlocker(player);
-                        playerListener.disableHidenInventory(player);
-                        playerListener.disableSaveLogin(player);
-                        playerListener.unhidePlayer(player);
-                    }
-
-                    //loginFailuresPerIP.remove(IP);
-                    //illegalCommandUsesPerIP.remove(IP);
-                    //tempBans.remove(IP);
-                    playerData.addIP(ip);
-                    player.setMetadata("Authenticated", new Authenticated(crazyLoginPlugin, player));
-                    crazyLoginPlugin.unregisterDynamicHooks();
-                    return playerData;
+                if (playerListener != null) {
+                    playerListener.removeMovementBlocker(player);
+                    playerListener.disableHidenInventory(player);
+                    playerListener.disableSaveLogin(player);
+                    playerListener.unhidePlayer(player);
                 }
 
-                return null;
+//loginFailuresPerIP.remove(IP);
+//illegalCommandUsesPerIP.remove(IP);
+//tempBans.remove(IP);
+                playerData.addIP(ip);
+                player.setMetadata("Authenticated", new Authenticated(crazyLoginPlugin, player));
+                crazyLoginPlugin.unregisterDynamicHooks();
+                return playerData;
             }
+
+            return null;
         });
 
         try {
@@ -110,7 +105,7 @@ public class CrazyLoginHook implements AuthPlugin<Player> {
         PlayerListener listener;
         try {
             listener = (PlayerListener) FieldUtils.readField(crazyLoginPlugin, "playerListener", true);
-        } catch (Exception ex) {
+        } catch (IllegalAccessException ex) {
             crazyLoginPlugin.getLogger().log(Level.SEVERE, "Failed to get the listener instance for auto login", ex);
             listener = null;
         }

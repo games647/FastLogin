@@ -8,23 +8,25 @@ import com.github.games647.fastlogin.core.shared.JoinManagement;
 
 import net.md_5.bungee.api.connection.PendingConnection;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
-import net.md_5.bungee.api.event.PreLoginEvent;
+import net.md_5.bungee.api.event.AsyncEvent;
 
 public class AsyncPremiumCheck extends JoinManagement<ProxiedPlayer, BungeeLoginSource> implements Runnable {
 
     private final FastLoginBungee plugin;
-    private final PreLoginEvent preLoginEvent;
+    private final AsyncEvent<?> preLoginEvent;
 
-    public AsyncPremiumCheck(FastLoginBungee plugin, PreLoginEvent preLoginEvent) {
+    private final PendingConnection connection;
+
+    public AsyncPremiumCheck(FastLoginBungee plugin, AsyncEvent<?> preLoginEvent, PendingConnection connection) {
         super(plugin.getCore(), plugin.getCore().getAuthPluginHook());
 
         this.plugin = plugin;
         this.preLoginEvent = preLoginEvent;
+        this.connection = connection;
     }
 
     @Override
     public void run() {
-        PendingConnection connection = preLoginEvent.getConnection();
         plugin.getSession().remove(connection);
 
         String username = connection.getName();

@@ -1,6 +1,8 @@
 package com.github.games647.fastlogin.core.shared;
 
 import com.github.games647.fastlogin.core.BalancedSSLFactory;
+import com.google.common.collect.Sets;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -8,7 +10,6 @@ import java.net.HttpURLConnection;
 import java.net.InetAddress;
 import java.net.URL;
 import java.net.UnknownHostException;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -56,7 +57,7 @@ public abstract class MojangApiConnector {
         if (localAddresses.isEmpty()) {
             this.sslFactory = null;
         } else {
-            Set<InetAddress> addresses = new HashSet<>();
+            Set<InetAddress> addresses = Sets.newHashSet();
             for (String localAddress : localAddresses) {
                 try {
                     InetAddress address = InetAddress.getByName(localAddress);

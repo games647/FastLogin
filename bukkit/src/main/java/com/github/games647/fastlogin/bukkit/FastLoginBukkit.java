@@ -120,9 +120,9 @@ public class FastLoginBukkit extends JavaPlugin {
         }
 
         //remove old blacklists
-        for (Player player : getServer().getOnlinePlayers()) {
+        getServer().getOnlinePlayers().forEach(player -> {
             player.removeMetadata(getName(), this);
-        }
+        });
     }
 
     public BukkitCore getCore() {

@@ -18,13 +18,13 @@ public class AuthStorage {
 
     private static final String PREMIUM_TABLE = "premium";
 
-    private final FastLoginCore core;
+    private final FastLoginCore<?> core;
     private final HikariDataSource dataSource;
 
     //a try to fix https://www.spigotmc.org/threads/fastlogin.101192/page-26#post-1874647
     private final Calendar calendar = Calendar.getInstance(Locale.US);
 
-    public AuthStorage(FastLoginCore core, String driver, String host, int port, String databasePath
+    public AuthStorage(FastLoginCore<?> core, String driver, String host, int port, String databasePath
             , String user, String pass) {
         this.core = core;
 

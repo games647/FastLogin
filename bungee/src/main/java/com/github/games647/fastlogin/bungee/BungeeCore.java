@@ -26,9 +26,9 @@ public class BungeeCore extends FastLoginCore<ProxiedPlayer> {
     private static Map<String, Object> generateConfigMap(Configuration config) {
         Map<String, Object> configMap = Maps.newHashMap();
         Collection<String> keys = config.getKeys();
-        for (String key : keys) {
+        keys.forEach(key -> {
             configMap.put(key, config.get(key));
-        }
+        });
 
         return configMap;
     }
@@ -72,12 +72,12 @@ public class BungeeCore extends FastLoginCore<ProxiedPlayer> {
             File messageFile = new File(getDataFolder(), "messages.yml");
             Configuration messageConfig = ConfigurationProvider.getProvider(YamlConfiguration.class)
                     .load(messageFile, defaults);
-            for (String key : messageConfig.getKeys()) {
+            messageConfig.getKeys().forEach((key) -> {
                 String message = ChatColor.translateAlternateColorCodes('&', messageConfig.getString(key));
                 if (!message.isEmpty()) {
                     localeMessages.put(key, message);
                 }
-            }
+            });
         } catch (IOException ex) {
             getLogger().log(Level.SEVERE, "Failed to load messages", ex);
         }

@@ -26,10 +26,10 @@ public class CompatibleCacheBuilder<K, V> {
      * @return A new cache builder.
      */
     public static <K, V> CompatibleCacheBuilder<K, V> newBuilder() {
-        return new CompatibleCacheBuilder<K, V>();
+        return new CompatibleCacheBuilder<>();
     }
 
-    private CacheBuilder<K, V> builder;
+    private final CacheBuilder<K, V> builder;
     
     @SuppressWarnings("unchecked")
     private CompatibleCacheBuilder() {

@@ -21,7 +21,7 @@ public class BukkitJoinListener implements Listener {
 
     private static final long DELAY_LOGIN = 20L / 2;
 
-    protected final FastLoginBukkit plugin;
+    private final FastLoginBukkit plugin;
 
     public BukkitJoinListener(FastLoginBukkit plugin) {
         this.plugin = plugin;

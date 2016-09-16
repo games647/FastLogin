@@ -9,8 +9,8 @@ import com.github.games647.fastlogin.bukkit.hooks.UltraAuthHook;
 import com.github.games647.fastlogin.bukkit.hooks.xAuthHook;
 import com.github.games647.fastlogin.core.hooks.AuthPlugin;
 import com.google.common.collect.Lists;
+import java.util.List;
 
-import java.util.ArrayList;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
@@ -40,7 +40,7 @@ public class DelayedAuthHook implements Runnable {
     private boolean registerHooks() {
         AuthPlugin<Player> authPluginHook = null;
         try {
-            ArrayList<Class<? extends AuthPlugin<Player>>> supportedHooks = Lists.newArrayList(AuthMeHook.class
+            List<Class<? extends AuthPlugin<Player>>> supportedHooks = Lists.newArrayList(AuthMeHook.class
                     , CrazyLoginHook.class, LogItHook.class, LoginSecurityHook.class, UltraAuthHook.class
                     , xAuthHook.class);
             for (Class<? extends AuthPlugin<Player>> clazz : supportedHooks) {

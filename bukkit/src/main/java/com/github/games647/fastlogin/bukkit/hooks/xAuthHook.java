@@ -5,7 +5,6 @@ import com.github.games647.fastlogin.core.hooks.AuthPlugin;
 import de.luricos.bukkit.xAuth.xAuth;
 import de.luricos.bukkit.xAuth.xAuthPlayer;
 
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.logging.Level;
@@ -28,20 +27,17 @@ public class xAuthHook implements AuthPlugin<Player> {
     @Override
     public boolean forceLogin(final Player player) {
         //not thread-safe
-        Future<Boolean> future = Bukkit.getScheduler().callSyncMethod(xAuthPlugin, new Callable<Boolean>() {
-            @Override
-            public Boolean call() throws Exception {
-                xAuthPlayer xAuthPlayer = xAuthPlugin.getPlayerManager().getPlayer(player);
-                if (xAuthPlayer != null) {
-                    //we checked that the player is premium (paid account)
-                    xAuthPlayer.setPremium(true);
+        Future<Boolean> future = Bukkit.getScheduler().callSyncMethod(xAuthPlugin, () -> {
+            xAuthPlayer xAuthPlayer = xAuthPlugin.getPlayerManager().getPlayer(player);
+            if (xAuthPlayer != null) {
+                //we checked that the player is premium (paid account)
+                xAuthPlayer.setPremium(true);
 
-                    //unprotect the inventory, op status...
-                    return xAuthPlugin.getPlayerManager().doLogin(xAuthPlayer);
-                }
-
-                return false;
+                //unprotect the inventory, op status...
+                return xAuthPlugin.getPlayerManager().doLogin(xAuthPlayer);
             }
+
+            return false;
         });
 
         try {
@@ -62,21 +58,18 @@ public class xAuthHook implements AuthPlugin<Player> {
     @Override
     public boolean forceRegister(final Player player, final String password) {
         //not thread-safe
-        Future<Boolean> future = Bukkit.getScheduler().callSyncMethod(xAuthPlugin, new Callable<Boolean>() {
-            @Override
-            public Boolean call() throws Exception {
-                xAuthPlayer xAuthPlayer = xAuthPlugin.getPlayerManager().getPlayer(player);
-                if (xAuthPlayer != null) {
-                    //this should run async because the plugin executes a sql query, but the method
-                    //accesses non thread-safe collections :(
-                    boolean registerSuccess = xAuthPlugin.getAuthClass(xAuthPlayer)
-                            .adminRegister(player.getName(), password, null);
+        Future<Boolean> future = Bukkit.getScheduler().callSyncMethod(xAuthPlugin, () -> {
+            xAuthPlayer xAuthPlayer = xAuthPlugin.getPlayerManager().getPlayer(player);
+            if (xAuthPlayer != null) {
+                //this should run async because the plugin executes a sql query, but the method
+                //accesses non thread-safe collections :(
+                boolean registerSuccess = xAuthPlugin.getAuthClass(xAuthPlayer)
+                        .adminRegister(player.getName(), password, null);
 
-                    return registerSuccess;
-                }
-
-                return false;
+                return registerSuccess;
             }
+
+            return false;
         });
 
         try {

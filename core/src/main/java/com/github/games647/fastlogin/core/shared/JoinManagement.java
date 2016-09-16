@@ -8,10 +8,10 @@ import java.util.logging.Level;
 
 public abstract class JoinManagement<T, S extends LoginSource> {
 
-    protected final FastLoginCore core;
+    protected final FastLoginCore<T> core;
     protected final AuthPlugin<T> authHook;
 
-    public JoinManagement(FastLoginCore core, AuthPlugin<T> authHook) {
+    public JoinManagement(FastLoginCore<T> core, AuthPlugin<T> authHook) {
         this.core = core;
         this.authHook = authHook;
     }
@@ -62,8 +62,7 @@ public abstract class JoinManagement<T, S extends LoginSource> {
         }
     }
 
-    private boolean checkPremiumName(String username, S source, PlayerProfile profile)
-            throws Exception {
+    private boolean checkPremiumName(String username, S source, PlayerProfile profile) throws Exception {
         if (core.getSharedConfig().get("autoRegister", false)
                 && (authHook == null || !authHook.isRegistered(username))) {
             core.getLogger().log(Level.FINER, "Player {0} uses a premium username", username);

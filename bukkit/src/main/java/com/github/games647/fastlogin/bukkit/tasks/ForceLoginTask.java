@@ -122,12 +122,7 @@ public class ForceLoginTask implements Runnable {
 
     private boolean isOnlineThreadSafe() {
         //the playerlist isn't thread-safe
-        Future<Boolean> onlineFuture = Bukkit.getScheduler().callSyncMethod(plugin, new Callable<Boolean>() {
-            @Override
-            public Boolean call() throws Exception {
-                return player.isOnline();
-            }
-        });
+        Future<Boolean> onlineFuture = Bukkit.getScheduler().callSyncMethod(plugin, player::isOnline);
 
         try {
             return onlineFuture.get();

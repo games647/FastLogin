@@ -28,7 +28,7 @@ public class ProtocolLibLoginSource implements LoginSource {
     private final Random random;
 
     private String serverId;
-    private byte[] verifyToken = new byte[VERIFY_TOKEN_LENGTH];
+    private final byte[] verifyToken = new byte[VERIFY_TOKEN_LENGTH];
 
     public ProtocolLibLoginSource(FastLoginBukkit plugin, PacketEvent packetEvent, Player player, Random random) {
         this.plugin = plugin;

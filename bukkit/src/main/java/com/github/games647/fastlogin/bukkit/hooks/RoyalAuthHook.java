@@ -2,7 +2,6 @@ package com.github.games647.fastlogin.bukkit.hooks;
 
 import com.github.games647.fastlogin.core.hooks.AuthPlugin;
 
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.logging.Level;
@@ -27,17 +26,14 @@ public class RoyalAuthHook implements AuthPlugin<Player> {
     @Override
     public boolean forceLogin(final Player player) {
         //not thread-safe
-        Future<Boolean> future = Bukkit.getScheduler().callSyncMethod(royalAuthPlugin, new Callable<Boolean>() {
-            @Override
-            public Boolean call() throws Exception {
-                AuthPlayer authPlayer = AuthPlayer.getAuthPlayer(player);
+        Future<Boolean> future = Bukkit.getScheduler().callSyncMethod(royalAuthPlugin, () -> {
+            AuthPlayer authPlayer = AuthPlayer.getAuthPlayer(player);
 
 //https://github.com/RoyalDev/RoyalAuth/blob/master/src/main/java/org/royaldev/royalauth/commands/CmdLogin.java#L62
-                //not thread-safe
-                authPlayer.login();
+//not thread-safe
+            authPlayer.login();
 
-                return authPlayer.isLoggedIn();
-            }
+            return authPlayer.isLoggedIn();
         });
 
         try {

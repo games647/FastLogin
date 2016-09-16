@@ -42,11 +42,8 @@ public class CrackedCommand implements CommandExecutor {
                     sender.sendMessage(plugin.getCore().getMessage("remove-premium"));
                     profile.setPremium(false);
                     profile.setUuid(null);
-                    Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
-                        @Override
-                        public void run() {
-                            plugin.getCore().getStorage().save(profile);
-                        }
+                    Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+                        plugin.getCore().getStorage().save(profile);
                     });
                 } else {
                     sender.sendMessage(plugin.getCore().getMessage("not-premium"));
@@ -87,11 +84,8 @@ public class CrackedCommand implements CommandExecutor {
             } else {
                 sender.sendMessage(plugin.getCore().getMessage("remove-premium"));
                 profile.setPremium(false);
-                Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
-                    @Override
-                    public void run() {
-                        plugin.getCore().getStorage().save(profile);
-                    }
+                Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+                    plugin.getCore().getStorage().save(profile);
                 });
             }
         }
