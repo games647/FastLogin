@@ -5,7 +5,6 @@ import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 import com.github.games647.fastlogin.bukkit.tasks.ForceLoginTask;
 import com.github.games647.fastlogin.core.hooks.AuthPlugin;
 import com.google.common.base.Charsets;
-import com.google.common.collect.Sets;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteStreams;
 import com.google.common.io.Files;
@@ -16,6 +15,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -42,7 +42,7 @@ public class BungeeCordListener implements PluginMessageListener {
     }
 
     @Override
-    public void onPluginMessageReceived(String channel, final Player player, byte[] message) {
+    public void onPluginMessageReceived(String channel, Player player, byte[] message) {
         if (!channel.equals(plugin.getName())) {
             return;
         }
@@ -69,7 +69,7 @@ public class BungeeCordListener implements PluginMessageListener {
 
             //fail if BungeeCord support is disabled (id = null)
             if (proxyIds.contains(sourceId)) {
-                final String id = '/' + checkedPlayer.getAddress().getAddress().getHostAddress() + ':'
+                String id = '/' + checkedPlayer.getAddress().getAddress().getHostAddress() + ':'
                         + checkedPlayer.getAddress().getPort();
                 if ("AUTO_LOGIN".equalsIgnoreCase(subchannel)) {
                     BukkitLoginSession playerSession = new BukkitLoginSession(playerName, true);
@@ -105,19 +105,8 @@ public class BungeeCordListener implements PluginMessageListener {
                 whitelistFile.createNewFile();
             }
 
-            Set<UUID> ids = Sets.newHashSet();
-
             List<String> lines = Files.readLines(whitelistFile, Charsets.UTF_8);
-            for (String line : lines) {
-                if (line == null || line.trim().isEmpty()) {
-                    continue;
-                }
-
-                UUID uuid = UUID.fromString(line.trim());
-                ids.add(uuid);
-            }
-
-            return ids;
+            return lines.stream().map(String::trim).map(UUID::fromString).collect(Collectors.toSet());
         } catch (IOException ex) {
             plugin.getLogger().log(Level.SEVERE, "Failed to create file for Proxy whitelist", ex);
         } catch (Exception ex) {

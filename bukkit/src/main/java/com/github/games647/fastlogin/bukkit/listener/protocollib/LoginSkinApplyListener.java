@@ -42,17 +42,18 @@ public class LoginSkinApplyListener implements Listener {
             Collection<BukkitLoginSession> sessions = plugin.getSessions().values();
             for (BukkitLoginSession session : sessions) {
                 if (session.getUsername().equals(player.getName())) {
-                    applySkin(player, session);
+                    String signature = session.getSkinSignature();
+                    String skinData = session.getEncodedSkinData();
+
+                    applySkin(player, skinData, signature);
                     break;
                 }
             }
         }
     }
 
-    private void applySkin(Player player, BukkitLoginSession session) {
+    private void applySkin(Player player, String skinData, String signature) {
         WrappedGameProfile gameProfile = WrappedGameProfile.fromPlayer(player);
-        String skinData = session.getEncodedSkinData();
-        String signature = session.getSkinSignature();
         if (skinData != null && signature != null) {
             WrappedSignedProperty skin = WrappedSignedProperty.fromValues("textures", skinData, signature);
             try {

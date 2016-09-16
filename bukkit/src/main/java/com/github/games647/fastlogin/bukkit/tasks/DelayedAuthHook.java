@@ -43,6 +43,7 @@ public class DelayedAuthHook implements Runnable {
             List<Class<? extends AuthPlugin<Player>>> supportedHooks = Lists.newArrayList(AuthMeHook.class
                     , CrazyLoginHook.class, LogItHook.class, LoginSecurityHook.class, UltraAuthHook.class
                     , xAuthHook.class);
+
             for (Class<? extends AuthPlugin<Player>> clazz : supportedHooks) {
                 String pluginName = clazz.getSimpleName().replace("Hook", "");
                 //uses only member classes which uses AuthPlugin interface (skip interfaces)

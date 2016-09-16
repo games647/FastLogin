@@ -37,9 +37,10 @@ public class CrackedCommand implements CommandExecutor {
                 }
             } else {
                 //todo: load async if
-                final PlayerProfile profile = plugin.getCore().getStorage().loadProfile(sender.getName());
+                PlayerProfile profile = plugin.getCore().getStorage().loadProfile(sender.getName());
                 if (profile.isPremium()) {
                     sender.sendMessage(plugin.getCore().getMessage("remove-premium"));
+
                     profile.setPremium(false);
                     profile.setUuid(null);
                     Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
@@ -72,7 +73,7 @@ public class CrackedCommand implements CommandExecutor {
             }
         } else {
             //todo: load async
-            final PlayerProfile profile = plugin.getCore().getStorage().loadProfile(args[0]);
+            PlayerProfile profile = plugin.getCore().getStorage().loadProfile(args[0]);
             if (profile == null) {
                 sender.sendMessage("Error occured");
                 return;

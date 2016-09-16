@@ -1,6 +1,5 @@
 package com.github.games647.fastlogin.bungee;
 
-import com.github.games647.fastlogin.bungee.FastLoginBungee;
 import com.github.games647.fastlogin.core.AuthStorage;
 import com.github.games647.fastlogin.core.importer.ImportPlugin;
 

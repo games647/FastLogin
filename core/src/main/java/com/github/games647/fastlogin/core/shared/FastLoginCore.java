@@ -42,12 +42,9 @@ public abstract class FastLoginCore<P> {
             builder.maximumSize(maxSize);
         }
 
-        return builder.build(new CacheLoader<K, V>() {
-            @Override
-            public V load(K key) throws Exception {
-                throw new UnsupportedOperationException("Not supported yet.");
-            }
-        });
+        return builder.build(CacheLoader.from(() -> {
+            throw new UnsupportedOperationException();
+        }));
     }
 
     public static UUID parseId(String withoutDashes) {

@@ -25,7 +25,7 @@ public class xAuthHook implements AuthPlugin<Player> {
     protected final xAuth xAuthPlugin = xAuth.getPlugin();
 
     @Override
-    public boolean forceLogin(final Player player) {
+    public boolean forceLogin(Player player) {
         //not thread-safe
         Future<Boolean> future = Bukkit.getScheduler().callSyncMethod(xAuthPlugin, () -> {
             xAuthPlayer xAuthPlayer = xAuthPlugin.getPlayerManager().getPlayer(player);
@@ -56,7 +56,7 @@ public class xAuthHook implements AuthPlugin<Player> {
     }
 
     @Override
-    public boolean forceRegister(final Player player, final String password) {
+    public boolean forceRegister(Player player, final String password) {
         //not thread-safe
         Future<Boolean> future = Bukkit.getScheduler().callSyncMethod(xAuthPlugin, () -> {
             xAuthPlayer xAuthPlayer = xAuthPlugin.getPlayerManager().getPlayer(player);
@@ -73,13 +73,8 @@ public class xAuthHook implements AuthPlugin<Player> {
         });
 
         try {
-            boolean success = future.get();
-            if (success) {
-                //login in the player after registration
-                return forceLogin(player);
-            }
-
-            return false;
+            //login in the player after registration
+            return future.get() && forceLogin(player);
         } catch (InterruptedException | ExecutionException ex) {
             xAuthPlugin.getLogger().log(Level.SEVERE, "Failed to forceLogin", ex);
             return false;

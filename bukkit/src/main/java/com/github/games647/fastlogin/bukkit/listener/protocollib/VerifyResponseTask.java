@@ -56,6 +56,11 @@ public class VerifyResponseTask implements Runnable {
                 verifyResponse(session);
             }
         } finally {
+            //this is a fake packet; it shouldn't be send to the server
+            synchronized (packetEvent.getAsyncMarker().getProcessingLock()) {
+                packetEvent.setCancelled(true);
+            }
+
             ProtocolLibrary.getProtocolManager().getAsynchronousManager().signalPacketTransmission(packetEvent);
         }
     }
@@ -89,11 +94,6 @@ public class VerifyResponseTask implements Runnable {
             disconnect(plugin.getCore().getMessage("invalid-session"), true
                     , "Player {0} ({1}) tried to log in with an invalid session ServerId: {2}"
                     , session.getUsername(), fromPlayer.getAddress(), serverId);
-        }
-
-        //this is a fake packet; it shouldn't be send to the server
-        synchronized (packetEvent.getAsyncMarker().getProcessingLock()) {
-            packetEvent.setCancelled(true);
         }
     }
 
@@ -169,10 +169,6 @@ public class VerifyResponseTask implements Runnable {
         }
 
         kickPlayer(packetEvent.getPlayer(), kickReason);
-        //cancel the event in order to prevent the server receiving an invalid packet
-        synchronized (packetEvent.getAsyncMarker().getProcessingLock()) {
-            packetEvent.setCancelled(true);
-        }
     }
 
     private void kickPlayer(Player player, String reason) {

@@ -1,18 +1,17 @@
 package com.github.games647.fastlogin.bungee;
 
 import com.github.games647.fastlogin.core.shared.FastLoginCore;
-import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
-import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ThreadFactory;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -24,13 +23,7 @@ import net.md_5.bungee.config.YamlConfiguration;
 public class BungeeCore extends FastLoginCore<ProxiedPlayer> {
 
     private static Map<String, Object> generateConfigMap(Configuration config) {
-        Map<String, Object> configMap = Maps.newHashMap();
-        Collection<String> keys = config.getKeys();
-        keys.forEach(key -> {
-            configMap.put(key, config.get(key));
-        });
-
-        return configMap;
+        return config.getKeys().stream().collect(Collectors.toMap(key -> key, key -> config.get(key)));
     }
 
     private final FastLoginBungee plugin;

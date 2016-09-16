@@ -53,7 +53,7 @@ public class PremiumCommand implements CommandExecutor {
 
                 plugin.getCore().getPendingConfirms().remove(id);
                 //todo: load async
-                final PlayerProfile profile = plugin.getCore().getStorage().loadProfile(sender.getName());
+                PlayerProfile profile = plugin.getCore().getStorage().loadProfile(sender.getName());
                 if (profile.isPremium()) {
                     sender.sendMessage(plugin.getCore().getMessage("already-exists"));
                 } else {
@@ -89,7 +89,7 @@ public class PremiumCommand implements CommandExecutor {
             }
         } else {
             //todo: load async
-            final PlayerProfile profile = plugin.getCore().getStorage().loadProfile(args[0]);
+            PlayerProfile profile = plugin.getCore().getStorage().loadProfile(args[0]);
             if (profile == null) {
                 sender.sendMessage(plugin.getCore().getMessage("player-unknown"));
                 return;

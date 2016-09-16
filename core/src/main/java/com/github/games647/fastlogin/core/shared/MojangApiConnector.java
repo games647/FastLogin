@@ -62,7 +62,7 @@ public abstract class MojangApiConnector {
                 try {
                     InetAddress address = InetAddress.getByName(localAddress);
                     if (!address.isAnyLocalAddress()) {
-                        logger.log(Level.WARNING, "Submitted IP-Address is not local", address);
+                        logger.log(Level.WARNING, "Submitted IP-Address is not local {0}", address);
                         continue;
                     }
 

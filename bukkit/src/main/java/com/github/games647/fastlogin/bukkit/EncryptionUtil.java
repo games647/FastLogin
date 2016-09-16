@@ -10,6 +10,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.util.stream.Stream;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -48,9 +49,7 @@ public class EncryptionUtil {
     private static byte[] digestOperation(String algo, byte[]... content) {
         try {
             MessageDigest messagedigest = MessageDigest.getInstance(algo);
-            for (byte[] data : content) {
-                messagedigest.update(data);
-            }
+            Stream.of(content).forEach(messagedigest::update);
 
             return messagedigest.digest();
         } catch (NoSuchAlgorithmException nosuchalgorithmexception) {

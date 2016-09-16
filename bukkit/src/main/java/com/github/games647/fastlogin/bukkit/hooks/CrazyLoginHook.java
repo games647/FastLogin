@@ -29,10 +29,10 @@ public class CrazyLoginHook implements AuthPlugin<Player> {
     private final PlayerListener playerListener = getListener();
 
     @Override
-    public boolean forceLogin(final Player player) {
+    public boolean forceLogin(Player player) {
         //not thread-safe operation
         Future<LoginPlayerData> future = Bukkit.getScheduler().callSyncMethod(crazyLoginPlugin, () -> {
-            LoginPlayerData playerData = crazyLoginPlugin.getPlayerData(player.getName());
+            LoginPlayerData playerData = crazyLoginPlugin.getPlayerData(player);
             if (playerData != null) {
                 //mark the account as logged in
                 playerData.setLoggedIn(true);

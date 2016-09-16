@@ -24,11 +24,10 @@ public class RoyalAuthHook implements AuthPlugin<Player> {
     private final RoyalAuth royalAuthPlugin = (RoyalAuth) Bukkit.getPluginManager().getPlugin("RoyalAuth");
 
     @Override
-    public boolean forceLogin(final Player player) {
-        //not thread-safe
-        Future<Boolean> future = Bukkit.getScheduler().callSyncMethod(royalAuthPlugin, () -> {
-            AuthPlayer authPlayer = AuthPlayer.getAuthPlayer(player);
+    public boolean forceLogin(Player player) {
+        AuthPlayer authPlayer = AuthPlayer.getAuthPlayer(player);
 
+        Future<Boolean> future = Bukkit.getScheduler().callSyncMethod(royalAuthPlugin, () -> {
 //https://github.com/RoyalDev/RoyalAuth/blob/master/src/main/java/org/royaldev/royalauth/commands/CmdLogin.java#L62
 //not thread-safe
             authPlayer.login();
@@ -56,11 +55,8 @@ public class RoyalAuthHook implements AuthPlugin<Player> {
         AuthPlayer authPlayer = AuthPlayer.getAuthPlayer(player);
 
         boolean registerSuccess = authPlayer.setPassword(password, Config.passwordHashType);
-        if (registerSuccess) {
-            //login in the player after registration
-            return forceLogin(player);
-        }
 
-        return false;
+        //login in the player after registration
+        return registerSuccess && forceLogin(player);
     }
 }
