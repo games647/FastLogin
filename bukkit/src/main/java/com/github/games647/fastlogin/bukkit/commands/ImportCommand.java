@@ -1,8 +1,8 @@
 package com.github.games647.fastlogin.bukkit.commands;
 
+import com.github.games647.fastlogin.bukkit.BukkitCore;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 import com.github.games647.fastlogin.core.AuthStorage;
-import com.github.games647.fastlogin.core.shared.FastLoginCore;
 import com.github.games647.fastlogin.core.importer.ImportPlugin;
 import org.bukkit.ChatColor;
 
@@ -71,7 +71,7 @@ public class ImportCommand implements CommandExecutor {
             password = args[5];
         }
 
-        FastLoginCore core = plugin.getCore();
+        BukkitCore core = plugin.getCore();
         AuthStorage storage = core.getStorage();
         boolean success = core.importDatabase(importPlugin, true, storage, host, database, username, password);
         if (success) {

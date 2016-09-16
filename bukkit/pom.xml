@@ -76,13 +76,12 @@
             <version>3.6.5</version>
         </dependency>
 
-        <dependency>
-            <groupId>protcolsupport</groupId>
-            <artifactId>ProtocolSupport</artifactId>
-            <version>Build-337</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/lib/ProtocolSupport b337.jar</systemPath>
-        </dependency>
+	<dependency>
+	    <groupId>com.github.ProtocolSupport</groupId>
+	    <artifactId>ProtocolSupport</artifactId>
+            <!--4.25.dev-->
+	    <version>5554413b51</version>
+	</dependency>
 
         <!--Login Plugins-->
         <dependency>

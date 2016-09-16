@@ -10,9 +10,12 @@ import org.bukkit.entity.Player;
 @Deprecated
 public interface BukkitAuthPlugin extends AuthPlugin<Player> {
 
+    @Override
     boolean forceLogin(Player player);
 
+    @Override
     boolean isRegistered(String playerName) throws Exception;
 
+    @Override
     boolean forceRegister(Player player, String password);
 }
