@@ -28,7 +28,7 @@ switch-kick-message: '&4Only paid minecraft whitelisted accounts are allowed to 
 add-premium: '&2Added to the list of premium players'
 
 # Player activated premium logins in order to skip offline authentication
-add-premium-other: '&2Player is was added to the premium list'
+add-premium-other: '&2Player has been added to the premium list'
 
 # Player is already set be a paid account
 already-exists: '&4You are already on the premium list'
