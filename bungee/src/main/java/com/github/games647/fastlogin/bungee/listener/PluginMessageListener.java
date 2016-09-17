@@ -42,9 +42,7 @@ public class PluginMessageListener implements Listener {
             byte[] data = Arrays.copyOf(pluginMessageEvent.getData(), pluginMessageEvent.getData().length);
             ProxiedPlayer forPlayer = (ProxiedPlayer) pluginMessageEvent.getReceiver();
             
-            ProxyServer.getInstance().getScheduler().runAsync(plugin, () -> {
-                readMessage(forPlayer, data);
-            });
+            ProxyServer.getInstance().getScheduler().runAsync(plugin, () -> readMessage(forPlayer, data));
         }
     }
 
@@ -63,12 +61,12 @@ public class PluginMessageListener implements Listener {
             }
 
             plugin.getCore().getPendingConfirms().remove(forPlayer.getUniqueId());
-            AsyncToggleMessage task = new AsyncToggleMessage(plugin, forPlayer, playerName, true);
+            AsyncToggleMessage task = new AsyncToggleMessage(plugin.getCore(), forPlayer, playerName, true);
             ProxyServer.getInstance().getScheduler().runAsync(plugin, task);
         } else if ("OFF".equals(subchannel)) {
             String playerName = dataInput.readUTF();
 
-            AsyncToggleMessage task = new AsyncToggleMessage(plugin, forPlayer, playerName, false);
+            AsyncToggleMessage task = new AsyncToggleMessage(plugin.getCore(), forPlayer, playerName, false);
             ProxyServer.getInstance().getScheduler().runAsync(plugin, task);
         } else if ("SUCCESS".equals(subchannel)) {
             onSuccessMessage(forPlayer);

@@ -2,6 +2,7 @@ package com.github.games647.fastlogin.core.shared;
 
 import com.github.games647.fastlogin.core.BalancedSSLFactory;
 import com.google.common.collect.Sets;
+import com.google.common.io.CharStreams;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -98,8 +99,8 @@ public abstract class MojangApiConnector {
                 if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
                     BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
                     String line = reader.readLine();
-                    if (line != null && !line.equals("null")) {
-                        return getUUIDFromJson(line);
+                    if (!line.equals("null")) {
+                        return FastLoginCore.parseId(getUUIDFromJson(line));
                     }
                 } else if (connection.getResponseCode() == RATE_LIMIT_CODE) {
                     logger.info("RATE_LIMIT REACHED - TRYING THIRD-PARTY API");
@@ -118,9 +119,7 @@ public abstract class MojangApiConnector {
 
     public UUID getUUIDFromAPI(String playerName) {
         try {
-            HttpURLConnection httpConnection = (HttpURLConnection) new URL(MCAPI_UUID_URL + playerName).openConnection();
-            httpConnection.addRequestProperty("Content-Type", "application/json");
-            httpConnection.setRequestProperty("User-Agent", USER_AGENT);
+            HttpURLConnection httpConnection = getConnection(MCAPI_UUID_URL + playerName);
 
             if (httpConnection.getResponseCode() == HttpURLConnection.HTTP_NOT_FOUND) {
                 //cracked
@@ -128,14 +127,8 @@ public abstract class MojangApiConnector {
             }
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(httpConnection.getInputStream()));
-            StringBuilder inputBuilder = new StringBuilder();
-            String line;
-            while ((line = reader.readLine()) != null) {
-                inputBuilder.append(line);
-            }
-
-            String input = inputBuilder.toString();
-            return getUUIDFromJson(input);
+            String input = CharStreams.toString(reader);
+            return FastLoginCore.parseId(getUUIDFromJson(input));
         } catch (IOException iOException) {
             logger.log(Level.SEVERE, "Tried converting name->uuid from third-party api", iOException);
         }
@@ -145,7 +138,7 @@ public abstract class MojangApiConnector {
 
     public abstract boolean hasJoinedServer(Object session, String serverId);
 
-    protected abstract UUID getUUIDFromJson(String json);
+    protected abstract String getUUIDFromJson(String json);
 
     protected HttpsURLConnection getConnection(String url) throws IOException {
         HttpsURLConnection connection = (HttpsURLConnection) new URL(url).openConnection();

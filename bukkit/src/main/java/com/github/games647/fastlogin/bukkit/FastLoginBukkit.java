@@ -14,13 +14,16 @@ import com.github.games647.fastlogin.bukkit.listener.protocollib.LoginSkinApplyL
 import com.github.games647.fastlogin.bukkit.listener.protocollib.StartPacketListener;
 import com.github.games647.fastlogin.bukkit.listener.protocolsupport.ProtocolSupportListener;
 import com.github.games647.fastlogin.bukkit.tasks.DelayedAuthHook;
-import com.github.games647.fastlogin.core.hooks.AuthPlugin;
 import com.github.games647.fastlogin.core.shared.FastLoginCore;
+import com.google.common.collect.Iterables;
+import com.google.common.io.ByteArrayDataOutput;
+import com.google.common.io.ByteStreams;
 
 import java.security.KeyPair;
 import java.util.concurrent.ConcurrentMap;
 import java.util.logging.Level;
 
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -40,7 +43,7 @@ public class FastLoginBukkit extends JavaPlugin {
 
     //1 minutes should be enough as a timeout for bad internet connection (Server, Client and Mojang)
     private final ConcurrentMap<String, BukkitLoginSession> session = FastLoginCore.buildCache(1, -1);
-    
+
     @Override
     public void onEnable() {
         core = new BukkitCore(this);
@@ -51,7 +54,7 @@ public class FastLoginBukkit extends JavaPlugin {
             if (ClassUtil.isPresent("org.spigotmc.SpigotConfig")) {
                 bungeeCord = Class.forName("org.spigotmc.SpigotConfig").getDeclaredField("bungee").getBoolean(null);
             }
-        } catch (Exception | NoSuchMethodError ex) {
+        } catch (Exception ex) {
             getLogger().log(Level.WARNING, "Cannot check bungeecord support. You use a non-spigot build", ex);
         }
 
@@ -64,7 +67,7 @@ public class FastLoginBukkit extends JavaPlugin {
 
         if (bungeeCord) {
             setServerStarted();
-            
+
             //check for incoming messages from the bungeecord version of this plugin
             getServer().getMessenger().registerIncomingPluginChannel(this, getName(), new BungeeCordListener(this));
             getServer().getMessenger().registerOutgoingPluginChannel(this, getName());
@@ -101,7 +104,7 @@ public class FastLoginBukkit extends JavaPlugin {
         //register commands using a unique name
         getCommand("premium").setExecutor(new PremiumCommand(this));
         getCommand("cracked").setExecutor(new CrackedCommand(this));
-        getCommand("import-auth").setExecutor(new ImportCommand(this));
+        getCommand("import-auth").setExecutor(new ImportCommand(core));
     }
 
     @Override
@@ -113,13 +116,25 @@ public class FastLoginBukkit extends JavaPlugin {
         }
 
         //remove old blacklists
-        getServer().getOnlinePlayers().forEach(player -> {
-            player.removeMetadata(getName(), this);
-        });
+        getServer().getOnlinePlayers().forEach(player -> player.removeMetadata(getName(), this));
     }
 
     public BukkitCore getCore() {
         return core;
+    }
+
+    public void sendBungeeActivateMessage(CommandSender sender, String target, boolean activate) {
+        if (sender instanceof Player) {
+            notifiyBungeeCord((Player) sender, target, activate);
+        } else {
+            Player firstPlayer = Iterables.getFirst(getServer().getOnlinePlayers(), null);
+            if (firstPlayer == null) {
+                getLogger().info("No player online to send a plugin message to the proxy");
+                return;
+            }
+
+            notifiyBungeeCord(firstPlayer, target, activate);
+        }
     }
 
     @Deprecated
@@ -154,16 +169,7 @@ public class FastLoginBukkit extends JavaPlugin {
      */
     @Deprecated
     public BukkitAuthPlugin getAuthPlugin() {
-        AuthPlugin<Player> authPlugin = core.getAuthPluginHook();
-        if (authPlugin == null) {
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException ex) {
-                getLogger().log(Level.SEVERE, null, ex);
-            }
-        }
-
-        return (BukkitAuthPlugin) authPlugin;
+        return (BukkitAuthPlugin) core.getAuthPluginHook();
     }
 
     @Deprecated
@@ -189,5 +195,17 @@ public class FastLoginBukkit extends JavaPlugin {
         if (!this.serverStarted) {
             this.serverStarted = true;
         }
+    }
+
+    private void notifiyBungeeCord(Player sender, String target, boolean activate) {
+        ByteArrayDataOutput dataOutput = ByteStreams.newDataOutput();
+        if (activate) {
+            dataOutput.writeUTF("ON");
+        } else {
+            dataOutput.writeUTF("OFF");
+        }
+
+        dataOutput.writeUTF(target);
+        sender.sendPluginMessage(this, getName(), dataOutput.toByteArray());
     }
 }

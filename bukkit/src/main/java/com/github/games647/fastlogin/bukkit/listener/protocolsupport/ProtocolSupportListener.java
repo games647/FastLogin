@@ -42,16 +42,15 @@ public class ProtocolSupportListener extends JoinManagement<Player, ProtocolLogi
 
     @EventHandler(ignoreCancelled = true)
     public void onPropertiesResolve(PlayerPropertiesResolveEvent propertiesResolveEvent) {
-        //skin was resolved -> premium player
-        if (propertiesResolveEvent.hasProperty("textures")) {
-            InetSocketAddress address = propertiesResolveEvent.getAddress();
-            BukkitLoginSession session = plugin.getSessions().get(address.toString());
-            if (session != null) {
-                String ip = address.getAddress().getHostAddress();
-                plugin.getCore().getPendingLogins().remove(ip + session.getUsername());
+        InetSocketAddress address = propertiesResolveEvent.getAddress();
+        BukkitLoginSession session = plugin.getSessions().get(address.toString());
 
-                session.setVerified(true);
-            }
+        //skin was resolved -> premium player
+        if (propertiesResolveEvent.hasProperty("textures") && session != null) {
+            String ip = address.getAddress().getHostAddress();
+            plugin.getCore().getPendingLogins().remove(ip + session.getUsername());
+
+            session.setVerified(true);
         }
     }
 

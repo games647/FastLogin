@@ -1,12 +1,12 @@
 package com.github.games647.fastlogin.core;
 
+import com.google.common.collect.ImmutableList;
+
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.net.ssl.SSLSocketFactory;
@@ -20,9 +20,9 @@ public class BalancedSSLFactory extends SSLSocketFactory {
 
     private AtomicInteger id;
 
-    public BalancedSSLFactory(SSLSocketFactory oldFactory, Set<InetAddress> localAddresses) {
+    public BalancedSSLFactory(SSLSocketFactory oldFactory, Iterable<InetAddress> localAddresses) {
         this.oldFactory = oldFactory;
-        this.localAddresses = new ArrayList<>(localAddresses);
+        this.localAddresses = ImmutableList.copyOf(localAddresses);
     }
 
     @Override

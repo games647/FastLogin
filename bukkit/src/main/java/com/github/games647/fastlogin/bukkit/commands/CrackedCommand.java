@@ -2,9 +2,6 @@ package com.github.games647.fastlogin.bukkit.commands;
 
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 import com.github.games647.fastlogin.core.PlayerProfile;
-import com.google.common.collect.Iterables;
-import com.google.common.io.ByteArrayDataOutput;
-import com.google.common.io.ByteStreams;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -14,7 +11,7 @@ import org.bukkit.entity.Player;
 
 public class CrackedCommand implements CommandExecutor {
 
-    protected final FastLoginBukkit plugin;
+    private final FastLoginBukkit plugin;
 
     public CrackedCommand(FastLoginBukkit plugin) {
         this.plugin = plugin;
@@ -30,7 +27,7 @@ public class CrackedCommand implements CommandExecutor {
             }
 
             if (plugin.isBungeeCord()) {
-                notifiyBungeeCord(sender, sender.getName());
+                plugin.sendBungeeActivateMessage(sender, sender.getName(), false);
                 String message = plugin.getCore().getMessage("wait-on-proxy");
                 if (message != null) {
                     sender.sendMessage(message);
@@ -66,7 +63,7 @@ public class CrackedCommand implements CommandExecutor {
         }
         
         if (plugin.isBungeeCord()) {
-            notifiyBungeeCord(sender, args[0]);
+            plugin.sendBungeeActivateMessage(sender, args[0], false);
             String message = plugin.getCore().getMessage("wait-on-proxy");
             if (message != null) {
                 sender.sendMessage(message);
@@ -89,30 +86,6 @@ public class CrackedCommand implements CommandExecutor {
                     plugin.getCore().getStorage().save(profile);
                 });
             }
-        }
-    }
-
-    private void notifiyBungeeCord(CommandSender sender, String target) {
-        if (sender instanceof Player) {
-            notifiyBungeeCord((Player) sender, target);
-        } else {
-            Player firstPlayer = Iterables.getFirst(Bukkit.getOnlinePlayers(), null);
-            if (firstPlayer == null) {
-                plugin.getLogger().info("No player online to send a plugin message to the proxy");
-                return;
-            }
-
-            notifiyBungeeCord(firstPlayer, target);
-        }
-    }
-
-    private void notifiyBungeeCord(Player sender, String target) {
-        if (plugin.isBungeeCord()) {
-            ByteArrayDataOutput dataOutput = ByteStreams.newDataOutput();
-            dataOutput.writeUTF("OFF");
-            dataOutput.writeUTF(target);
-
-            sender.sendPluginMessage(plugin, plugin.getName(), dataOutput.toByteArray());
         }
     }
 }

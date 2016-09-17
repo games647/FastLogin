@@ -1,7 +1,7 @@
 package com.github.games647.fastlogin.bukkit;
 
-import com.github.games647.fastlogin.core.LoginSession;
 import com.github.games647.fastlogin.core.PlayerProfile;
+import com.github.games647.fastlogin.core.shared.LoginSession;
 
 import java.util.UUID;
 

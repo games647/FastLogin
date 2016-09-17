@@ -1,10 +1,8 @@
 package com.github.games647.fastlogin.bungee;
 
-import com.github.games647.fastlogin.core.shared.FastLoginCore;
 import com.github.games647.fastlogin.core.shared.MojangApiConnector;
 
 import java.util.List;
-import java.util.UUID;
 import java.util.logging.Logger;
 
 import net.md_5.bungee.BungeeCord;
@@ -16,7 +14,7 @@ public class MojangApiBungee extends MojangApiConnector {
     }
 
     @Override
-    protected UUID getUUIDFromJson(String json) {
+    protected String getUUIDFromJson(String json) {
         boolean isArray = json.startsWith("[");
 
         MojangPlayer mojangPlayer;
@@ -30,7 +28,7 @@ public class MojangApiBungee extends MojangApiConnector {
             return null;
         }
         
-        return FastLoginCore.parseId(mojangPlayer.getId());
+        return mojangPlayer.getId();
     }
 
     @Override

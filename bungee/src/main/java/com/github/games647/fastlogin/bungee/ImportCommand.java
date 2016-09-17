@@ -11,12 +11,12 @@ import net.md_5.bungee.api.plugin.Command;
 
 public class ImportCommand extends Command {
 
-    private final FastLoginBungee plugin;
+    private final BungeeCore core;
 
     public ImportCommand(FastLoginBungee plugin) {
         super("import-db", plugin.getDescription().getName().toLowerCase() + ".import");
 
-        this.plugin = plugin;
+        this.core = plugin.getCore();
     }
 
     @Override
@@ -76,7 +76,6 @@ public class ImportCommand extends Command {
             password = args[5];
         }
 
-        BungeeCore core = plugin.getCore();
         AuthStorage storage = core.getStorage();
         boolean success = core.importDatabase(importPlugin, true, storage, host, database, username, password);
         if (success) {

@@ -23,7 +23,7 @@ import net.md_5.bungee.config.YamlConfiguration;
 public class BungeeCore extends FastLoginCore<ProxiedPlayer> {
 
     private static Map<String, Object> generateConfigMap(Configuration config) {
-        return config.getKeys().stream().collect(Collectors.toMap(key -> key, key -> config.get(key)));
+        return config.getKeys().stream().collect(Collectors.toMap(key -> key, config::get));
     }
 
     private final FastLoginBungee plugin;
@@ -58,14 +58,14 @@ public class BungeeCore extends FastLoginCore<ProxiedPlayer> {
     public void loadMessages() {
         try {
             plugin.saveDefaultFile("messages.yml");
+            ConfigurationProvider configProvider = ConfigurationProvider.getProvider(YamlConfiguration.class);
 
-            Configuration defaults = ConfigurationProvider.getProvider(YamlConfiguration.class)
-                    .load(getClass().getResourceAsStream("/messages.yml"));
+            Configuration defaults = configProvider.load(getClass().getResourceAsStream("/messages.yml"));
 
             File messageFile = new File(getDataFolder(), "messages.yml");
-            Configuration messageConfig = ConfigurationProvider.getProvider(YamlConfiguration.class)
-                    .load(messageFile, defaults);
-            messageConfig.getKeys().forEach((key) -> {
+            Configuration messageConfig = configProvider.load(messageFile, defaults);
+
+            messageConfig.getKeys().forEach(key -> {
                 String message = ChatColor.translateAlternateColorCodes('&', messageConfig.getString(key));
                 if (!message.isEmpty()) {
                     localeMessages.put(key, message);

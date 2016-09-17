@@ -4,13 +4,13 @@ import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 import com.github.games647.fastlogin.bukkit.tasks.ForceLoginTask;
 import com.github.games647.fastlogin.core.hooks.AuthPlugin;
-import com.google.common.base.Charsets;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteStreams;
-import com.google.common.io.Files;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.nio.file.Files;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -69,30 +69,34 @@ public class BungeeCordListener implements PluginMessageListener {
 
             //fail if BungeeCord support is disabled (id = null)
             if (proxyIds.contains(sourceId)) {
-                String id = '/' + checkedPlayer.getAddress().getAddress().getHostAddress() + ':'
-                        + checkedPlayer.getAddress().getPort();
-                if ("AUTO_LOGIN".equalsIgnoreCase(subchannel)) {
-                    BukkitLoginSession playerSession = new BukkitLoginSession(playerName, true);
-                    playerSession.setVerified(true);
-                    plugin.getSessions().put(id, playerSession);
-                    Bukkit.getScheduler().runTaskAsynchronously(plugin, new ForceLoginTask(plugin, player));
-                } else if ("AUTO_REGISTER".equalsIgnoreCase(subchannel)) {
-                    Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-                        AuthPlugin<Player> authPlugin = plugin.getCore().getAuthPluginHook();
-                        try {
-                            //we need to check if the player is registered on Bukkit too
-                            if (authPlugin == null || !authPlugin.isRegistered(playerName)) {
-                                BukkitLoginSession playerSession = new BukkitLoginSession(playerName, false);
-                                playerSession.setVerified(true);
-                                plugin.getSessions().put(id, playerSession);
-                                new ForceLoginTask(plugin, player).run();
-                            }
-                        } catch (Exception ex) {
-                            plugin.getLogger().log(Level.SEVERE, "Failed to query isRegistered", ex);
-                        }
-                    });
-                }
+                readMessage(checkedPlayer, subchannel, playerName, player);
             }
+        }
+    }
+
+    private void readMessage(Player checkedPlayer, String subchannel, String playerName, Player player) {
+        InetSocketAddress address = checkedPlayer.getAddress();
+        String id = '/' + address.getAddress().getHostAddress() + ':' + address.getPort();
+        if ("AUTO_LOGIN".equalsIgnoreCase(subchannel)) {
+            BukkitLoginSession playerSession = new BukkitLoginSession(playerName, true);
+            playerSession.setVerified(true);
+            plugin.getSessions().put(id, playerSession);
+            Bukkit.getScheduler().runTaskAsynchronously(plugin, new ForceLoginTask(plugin, player));
+        } else if ("AUTO_REGISTER".equalsIgnoreCase(subchannel)) {
+            Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+                AuthPlugin<Player> authPlugin = plugin.getCore().getAuthPluginHook();
+                try {
+                    //we need to check if the player is registered on Bukkit too
+                    if (authPlugin == null || !authPlugin.isRegistered(playerName)) {
+                        BukkitLoginSession playerSession = new BukkitLoginSession(playerName, false);
+                        playerSession.setVerified(true);
+                        plugin.getSessions().put(id, playerSession);
+                        new ForceLoginTask(plugin, player).run();
+                    }
+                } catch (Exception ex) {
+                    plugin.getLogger().log(Level.SEVERE, "Failed to query isRegistered", ex);
+                }
+            });
         }
     }
 
@@ -105,7 +109,7 @@ public class BungeeCordListener implements PluginMessageListener {
                 whitelistFile.createNewFile();
             }
 
-            List<String> lines = Files.readLines(whitelistFile, Charsets.UTF_8);
+            List<String> lines = Files.readAllLines(whitelistFile.toPath());
             return lines.stream().map(String::trim).map(UUID::fromString).collect(Collectors.toSet());
         } catch (IOException ex) {
             plugin.getLogger().log(Level.SEVERE, "Failed to create file for Proxy whitelist", ex);

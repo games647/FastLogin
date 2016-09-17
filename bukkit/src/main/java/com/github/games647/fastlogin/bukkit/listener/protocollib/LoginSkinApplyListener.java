@@ -10,7 +10,6 @@ import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Collection;
 import java.util.logging.Level;
 
 import org.bukkit.entity.Player;
@@ -39,8 +38,7 @@ public class LoginSkinApplyListener implements Listener {
         if (plugin.getConfig().getBoolean("forwardSkin")) {
             //go through every session, because player.getAddress is null 
             //loginEvent.getAddress is just a InetAddress not InetSocketAddres, so not unique enough
-            Collection<BukkitLoginSession> sessions = plugin.getSessions().values();
-            for (BukkitLoginSession session : sessions) {
+            for (BukkitLoginSession session : plugin.getSessions().values()) {
                 if (session.getUsername().equals(player.getName())) {
                     String signature = session.getSkinSignature();
                     String skinData = session.getEncodedSkinData();

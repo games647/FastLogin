@@ -1,6 +1,8 @@
-package com.github.games647.fastlogin.core;
+package com.github.games647.fastlogin.core.shared;
 
-public class LoginSession {
+import com.github.games647.fastlogin.core.PlayerProfile;
+
+public abstract class LoginSession {
 
     private final String username;
     private final PlayerProfile profile;
