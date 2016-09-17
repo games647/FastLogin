@@ -1,12 +1,12 @@
 package com.github.games647.fastlogin.bungee;
 
 import com.github.games647.fastlogin.core.shared.FastLoginCore;
+import com.github.games647.fastlogin.core.shared.MojangApiConnector;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ThreadFactory;
 import java.util.logging.Level;
@@ -28,8 +28,8 @@ public class BungeeCore extends FastLoginCore<ProxiedPlayer> {
 
     private final FastLoginBungee plugin;
 
-    public BungeeCore(FastLoginBungee plugin) {
-        super(generateConfigMap(plugin.getConfig()));
+    public BungeeCore(FastLoginBungee plugin, Configuration config) {
+        super(generateConfigMap(config));
 
         this.plugin = plugin;
     }
@@ -57,7 +57,7 @@ public class BungeeCore extends FastLoginCore<ProxiedPlayer> {
     @Override
     public void loadMessages() {
         try {
-            saveDefaultFile("messages.yml");
+            plugin.saveDefaultFile("messages.yml");
 
             Configuration defaults = ConfigurationProvider.getProvider(YamlConfiguration.class)
                     .load(getClass().getResourceAsStream("/messages.yml"));
@@ -82,18 +82,11 @@ public class BungeeCore extends FastLoginCore<ProxiedPlayer> {
             getDataFolder().mkdir();
         }
 
-        saveDefaultFile("config.yml");
+        plugin.saveDefaultFile("config.yml");
     }
 
-    private void saveDefaultFile(String fileName) {
-        File configFile = new File(getDataFolder(), fileName);
-        if (!configFile.exists()) {
-            try (InputStream in = plugin.getResourceAsStream(fileName)) {
-                Files.copy(in, configFile.toPath());
-            } catch (IOException ioExc) {
-                getLogger().log(Level.SEVERE, "Error saving default " + fileName, ioExc);
-            }
-        }
+    @Override
+    public MojangApiConnector makeApiConnector(Logger logger, List<String> addresses, int requests) {
+        return new MojangApiBungee(logger, addresses, requests);
     }
-
 }

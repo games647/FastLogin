@@ -16,6 +16,7 @@ import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -65,7 +66,8 @@ public abstract class FastLoginCore<P> {
     private final Set<UUID> pendingConfirms = Sets.newHashSet();
     private final SharedConfig sharedConfig;
 
-    private MojangApiConnector mojangApiConnector;
+    private final MojangApiConnector apiConnector;
+
     private AuthStorage storage;
     private PasswordGenerator<P> passwordGenerator = new DefaultPasswordGenerator<>();
     private AuthPlugin<P> authPlugin;
@@ -73,14 +75,14 @@ public abstract class FastLoginCore<P> {
     public FastLoginCore(Map<String, Object> config) {
         this.pendingLogins = FastLoginCore.buildCache(5, 0);
         this.sharedConfig = new SharedConfig(config);
+
+        List<String> ipAddresses = sharedConfig.get("ip-addresses");
+        int requestLimit = sharedConfig.get("mojang-request-limit");
+        this.apiConnector = makeApiConnector(getLogger(), ipAddresses, requestLimit);
     }
 
-    public void setMojangApiConnector(MojangApiConnector mojangApiConnector) {
-        this.mojangApiConnector = mojangApiConnector;
-    }
-
-    public MojangApiConnector getMojangApiConnector() {
-        return mojangApiConnector;
+    public MojangApiConnector getApiConnector() {
+        return apiConnector;
     }
 
     public AuthStorage getStorage() {
@@ -100,6 +102,8 @@ public abstract class FastLoginCore<P> {
     public abstract void loadMessages();
 
     public abstract void loadConfig();
+
+    public abstract MojangApiConnector makeApiConnector(Logger logger, List<String> addresses, int requests);
 
     public boolean setupDatabase() {
         String driver = sharedConfig.get("driver");

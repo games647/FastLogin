@@ -1,11 +1,13 @@
 package com.github.games647.fastlogin.bukkit;
 
 import com.github.games647.fastlogin.core.shared.FastLoginCore;
+import com.github.games647.fastlogin.core.shared.MojangApiConnector;
 import com.google.common.base.Charsets;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 import java.io.File;
 import java.io.InputStreamReader;
+import java.util.List;
 import java.util.concurrent.ThreadFactory;
 import java.util.logging.Logger;
 
@@ -72,5 +74,10 @@ public class BukkitCore extends FastLoginCore<Player> {
     @Override
     public void loadConfig() {
         plugin.saveDefaultConfig();
+    }
+
+    @Override
+    public MojangApiConnector makeApiConnector(Logger logger, List<String> addresses, int requests) {
+        return new MojangApiBukkit(logger, addresses, requests);
     }
 }

@@ -8,7 +8,8 @@ import com.google.common.collect.Maps;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
+import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.concurrent.ConcurrentMap;
 import java.util.logging.Level;
 
@@ -30,17 +31,13 @@ public class FastLoginBungee extends Plugin {
 
     @Override
     public void onEnable() {
+        saveDefaultFile("config.yml");
+
         try {
             File configFile = new File(getDataFolder(), "config.yml");
             config = ConfigurationProvider.getProvider(YamlConfiguration.class).load(configFile);
 
-            core = new BungeeCore(this);
-
-            List<String> ipAddresses = getConfig().getStringList("ip-addresses");
-            int requestLimit = getConfig().getInt("mojang-request-limit");
-            MojangApiBungee mojangApi = new MojangApiBungee(getLogger(), ipAddresses, requestLimit);
-            core.setMojangApiConnector(mojangApi);
-
+            core = new BungeeCore(this, config);
             if (!core.setupDatabase()) {
                 return;
             }
@@ -68,6 +65,17 @@ public class FastLoginBungee extends Plugin {
     @Override
     public void onDisable() {
         core.close();
+    }
+
+    public void saveDefaultFile(String fileName) {
+        File configFile = new File(getDataFolder(), fileName);
+        if (!configFile.exists()) {
+            try (InputStream in = getResourceAsStream(fileName)) {
+                Files.copy(in, configFile.toPath());
+            } catch (IOException ioExc) {
+                getLogger().log(Level.SEVERE, "Error saving default " + fileName, ioExc);
+            }
+        }
     }
 
     public BungeeCore getCore() {

@@ -83,7 +83,7 @@ public class VerifyResponseTask implements Runnable {
         String serverId = (new BigInteger(serverIdHash)).toString(16);
 
         String username = session.getUsername();
-        if (plugin.getCore().getMojangApiConnector().hasJoinedServer(session, serverId)) {
+        if (plugin.getCore().getApiConnector().hasJoinedServer(session, serverId)) {
             plugin.getLogger().log(Level.FINE, "Player {0} has a verified premium account", username);
 
             session.setVerified(true);

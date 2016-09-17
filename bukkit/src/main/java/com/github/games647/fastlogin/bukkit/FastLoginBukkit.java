@@ -18,7 +18,6 @@ import com.github.games647.fastlogin.core.hooks.AuthPlugin;
 import com.github.games647.fastlogin.core.shared.FastLoginCore;
 
 import java.security.KeyPair;
-import java.util.List;
 import java.util.concurrent.ConcurrentMap;
 import java.util.logging.Level;
 
@@ -48,12 +47,6 @@ public class FastLoginBukkit extends JavaPlugin {
 
         core.loadConfig();
         core.loadMessages();
-
-        List<String> ipAddresses = getConfig().getStringList("ip-addresses");
-        int requestLimit = getConfig().getInt("mojang-request-limit");
-        MojangApiBukkit mojangApi = new MojangApiBukkit(getLogger(), ipAddresses, requestLimit);
-        core.setMojangApiConnector(mojangApi);
-
         try {
             if (ClassUtil.isPresent("org.spigotmc.SpigotConfig")) {
                 bungeeCord = Class.forName("org.spigotmc.SpigotConfig").getDeclaredField("bungee").getBoolean(null);

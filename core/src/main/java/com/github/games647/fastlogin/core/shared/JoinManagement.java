@@ -38,7 +38,7 @@ public abstract class JoinManagement<T, S extends LoginSource> {
 
                 UUID premiumUUID = null;
                 if (sharedConfig.get("nameChangeCheck", false) || sharedConfig.get("autoRegister", false)) {
-                    premiumUUID = core.getMojangApiConnector().getPremiumUUID(username);
+                    premiumUUID = core.getApiConnector().getPremiumUUID(username);
                 }
 
                 if (premiumUUID == null
