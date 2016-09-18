@@ -70,10 +70,17 @@ public class FastLoginBungee extends Plugin {
     public void saveDefaultFile(String fileName) {
         File configFile = new File(getDataFolder(), fileName);
         if (!configFile.exists()) {
-            try (InputStream in = getResourceAsStream(fileName)) {
+            InputStream in = getResourceAsStream(fileName);
+            try {
                 Files.copy(in, configFile.toPath());
             } catch (IOException ioExc) {
                 getLogger().log(Level.SEVERE, "Error saving default " + fileName, ioExc);
+            } finally {
+                try {
+                    in.close();
+                } catch (IOException ex) {
+                    getLogger().log(Level.SEVERE, null, ex);
+                }
             }
         }
     }

@@ -13,8 +13,7 @@ public class PlayerProfile {
     private String lastIp;
     private long lastLogin;
 
-    public PlayerProfile(long userId, UUID uuid, String playerName, boolean premium
-            , String lastIp, long lastLogin) {
+    public PlayerProfile(long userId, UUID uuid, String playerName, boolean premium, String lastIp, long lastLogin) {
         this.userId = userId;
         this.uuid = uuid;
         this.playerName = playerName;
