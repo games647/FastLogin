@@ -25,7 +25,7 @@ import org.bukkit.entity.Player;
  */
 public class CrazyLoginHook implements AuthPlugin<Player> {
 
-    protected final CrazyLogin crazyLoginPlugin = CrazyLogin.getPlugin();
+    private final CrazyLogin crazyLoginPlugin = CrazyLogin.getPlugin();
     private final PlayerListener playerListener = getListener();
 
     @Override
@@ -83,7 +83,7 @@ public class CrazyLoginHook implements AuthPlugin<Player> {
     }
 
     @Override
-    public boolean forceRegister(final Player player, String password) {
+    public boolean forceRegister(Player player, String password) {
         CrazyLoginDataDatabase crazyDatabase = crazyLoginPlugin.getCrazyDatabase();
 
         //this executes a sql query and accesses only thread safe collections so we can run it async

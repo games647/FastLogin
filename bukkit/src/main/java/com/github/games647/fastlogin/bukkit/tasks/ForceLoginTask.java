@@ -18,7 +18,7 @@ import org.bukkit.entity.Player;
 public class ForceLoginTask implements Runnable {
 
     private final FastLoginBukkit plugin;
-    protected final Player player;
+    private final Player player;
 
     public ForceLoginTask(FastLoginBukkit plugin, Player player) {
         this.plugin = plugin;

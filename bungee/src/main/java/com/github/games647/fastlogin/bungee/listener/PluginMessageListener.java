@@ -19,7 +19,7 @@ import net.md_5.bungee.event.EventHandler;
 
 public class PluginMessageListener implements Listener {
 
-    protected final FastLoginBungee plugin;
+    private final FastLoginBungee plugin;
 
     public PluginMessageListener(FastLoginBungee plugin) {
         this.plugin = plugin;

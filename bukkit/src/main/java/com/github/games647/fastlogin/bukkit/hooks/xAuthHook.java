@@ -22,7 +22,7 @@ import org.bukkit.entity.Player;
  */
 public class xAuthHook implements AuthPlugin<Player> {
 
-    protected final xAuth xAuthPlugin = xAuth.getPlugin();
+    private final xAuth xAuthPlugin = xAuth.getPlugin();
 
     @Override
     public boolean forceLogin(Player player) {

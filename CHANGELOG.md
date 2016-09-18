@@ -1,5 +1,6 @@
 ######1.9
 
+* Remove the nasty UltraAuth fakeplayer workaround by using a new api method. You should UltraAuth if you have it
 * Upgrade to Java 8
 * Drop support for LoginSecurity 1.X since 2.X seems to be stable
 * Refactored/Cleaned up a lot of code

@@ -16,7 +16,7 @@ import protocolsupport.api.events.PlayerPropertiesResolveEvent;
 
 public class ProtocolSupportListener extends JoinManagement<Player, ProtocolLoginSource> implements Listener {
 
-    protected final FastLoginBukkit plugin;
+    private final FastLoginBukkit plugin;
 
     public ProtocolSupportListener(FastLoginBukkit plugin) {
         super(plugin.getCore(), plugin.getCore().getAuthPluginHook());

@@ -32,7 +32,7 @@ public class BungeeCordListener implements PluginMessageListener {
 
     private static final String FILE_NAME = "proxy-whitelist.txt";
 
-    protected final FastLoginBukkit plugin;
+    private final FastLoginBukkit plugin;
     //null if whitelist is empty so bungeecord support is disabled
     private final Set<UUID> proxyIds;
 

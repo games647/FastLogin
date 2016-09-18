@@ -22,10 +22,10 @@ import ultraauth.managers.PlayerManager;
  */
 public class UltraAuthHook implements AuthPlugin<Player> {
 
-    protected final Plugin ultraAuthPlugin = Main.main;
+    private final Plugin ultraAuthPlugin = Main.main;
 
     @Override
-    public boolean forceLogin(final Player player) {
+    public boolean forceLogin(Player player) {
         //not thread-safe
         Future<Boolean> future = Bukkit.getScheduler().callSyncMethod(ultraAuthPlugin, () -> {
             UltraAuthAPI.authenticatedPlayer(player);
@@ -42,7 +42,7 @@ public class UltraAuthHook implements AuthPlugin<Player> {
 
     @Override
     public boolean isRegistered(String playerName) throws Exception {
-        return UltraAuthAPI.isRegisterd(new FakePlayer(playerName));
+        return UltraAuthAPI.isRegisterd(playerName);
     }
 
     @Override

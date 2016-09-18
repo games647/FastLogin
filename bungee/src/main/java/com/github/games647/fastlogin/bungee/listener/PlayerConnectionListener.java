@@ -32,7 +32,7 @@ import net.md_5.bungee.event.EventPriority;
  */
 public class PlayerConnectionListener implements Listener {
 
-    protected final FastLoginBungee plugin;
+    private final FastLoginBungee plugin;
 
     public PlayerConnectionListener(FastLoginBungee plugin) {
         this.plugin = plugin;
