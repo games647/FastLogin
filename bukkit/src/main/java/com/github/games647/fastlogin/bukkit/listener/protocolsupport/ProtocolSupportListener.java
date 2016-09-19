@@ -24,7 +24,7 @@ public class ProtocolSupportListener extends JoinManagement<Player, ProtocolLogi
         this.plugin = plugin;
     }
 
-    @EventHandler(ignoreCancelled = true)
+    @EventHandler
     public void onLoginStart(PlayerLoginStartEvent loginStartEvent) {
         plugin.setServerStarted();
         if (loginStartEvent.isLoginDenied() || plugin.getCore().getAuthPluginHook() == null) {
@@ -40,7 +40,7 @@ public class ProtocolSupportListener extends JoinManagement<Player, ProtocolLogi
         super.onLogin(username, new ProtocolLoginSource(loginStartEvent));
     }
 
-    @EventHandler(ignoreCancelled = true)
+    @EventHandler
     public void onPropertiesResolve(PlayerPropertiesResolveEvent propertiesResolveEvent) {
         InetSocketAddress address = propertiesResolveEvent.getAddress();
         BukkitLoginSession session = plugin.getSessions().get(address.toString());

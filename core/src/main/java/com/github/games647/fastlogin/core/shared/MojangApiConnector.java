@@ -7,6 +7,7 @@ import com.google.common.io.CharStreams;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.Reader;
 import java.net.HttpURLConnection;
 import java.net.InetAddress;
 import java.net.URL;
@@ -126,9 +127,9 @@ public abstract class MojangApiConnector {
                 return null;
             }
 
-            BufferedReader reader = new BufferedReader(new InputStreamReader(httpConnection.getInputStream()));
-            String input = CharStreams.toString(reader);
-            return FastLoginCore.parseId(getUUIDFromJson(input));
+            Reader reader = new InputStreamReader(httpConnection.getInputStream());
+            String json = CharStreams.toString(reader);
+            return FastLoginCore.parseId(getUUIDFromJson(json));
         } catch (IOException iOException) {
             logger.log(Level.SEVERE, "Tried converting name->uuid from third-party api", iOException);
         }

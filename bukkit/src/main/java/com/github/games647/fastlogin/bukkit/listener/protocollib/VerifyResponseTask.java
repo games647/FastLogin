@@ -5,7 +5,9 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
+import com.comphenix.protocol.injector.netty.Injector;
 import com.comphenix.protocol.injector.server.TemporaryPlayerFactory;
+import com.comphenix.protocol.reflect.FieldUtils;
 import com.comphenix.protocol.reflect.FuzzyReflection;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
@@ -13,7 +15,6 @@ import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
 import com.github.games647.fastlogin.bukkit.EncryptionUtil;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigInteger;
@@ -102,10 +103,9 @@ public class VerifyResponseTask implements Runnable {
             try {
                 Object networkManager = getNetworkManager();
                 //https://github.com/bergerkiller/CraftSource/blob/master/net.minecraft.server/NetworkManager.java#L69
-                Field spoofField = FuzzyReflection.fromObject(networkManager).getFieldByType("spoofedUUID", UUID.class);
-                spoofField.set(networkManager, premiumUUID);
-            } catch (ReflectiveOperationException reflectiveOperationException) {
-                plugin.getLogger().log(Level.SEVERE, "Error setting premium uuid", reflectiveOperationException);
+                FieldUtils.writeField(networkManager, "spoofedUUID", premiumUUID, true);
+            } catch (Exception exc) {
+                plugin.getLogger().log(Level.SEVERE, "Error setting premium uuid", exc);
             }
         }
     }
@@ -129,15 +129,11 @@ public class VerifyResponseTask implements Runnable {
 
     //try to get the networkManager from ProtocolLib
     private Object getNetworkManager() throws IllegalAccessException, NoSuchFieldException {
-        Object socketInjector = TemporaryPlayerFactory.getInjectorFromPlayer(fromPlayer);
-        Field injectorField = socketInjector.getClass().getDeclaredField("injector");
-        injectorField.setAccessible(true);
+        Object injectorContainer = TemporaryPlayerFactory.getInjectorFromPlayer(fromPlayer);
 
-        Object rawInjector = injectorField.get(socketInjector);
-
-        injectorField = rawInjector.getClass().getDeclaredField("networkManager");
-        injectorField.setAccessible(true);
-        return injectorField.get(rawInjector);
+        //ChannelInjector
+        Injector rawInjector = FuzzyReflection.getFieldValue(injectorContainer, Injector.class, true);
+        return FieldUtils.readField(rawInjector, "networkManager", true);
     }
 
     private boolean encryptConnection(SecretKey loginKey) throws IllegalArgumentException {
@@ -146,12 +142,12 @@ public class VerifyResponseTask implements Runnable {
             Object networkManager = getNetworkManager();
 
             //try to detect the method by parameters
-            Method encryptConnectionMethod = FuzzyReflection
+            Method encryptMethod = FuzzyReflection
                     .fromObject(networkManager).getMethodByParameters("a", SecretKey.class);
 
             //encrypt/decrypt following packets
             //the client expects this behaviour
-            encryptConnectionMethod.invoke(networkManager, loginKey);
+            encryptMethod.invoke(networkManager, loginKey);
         } catch (Exception ex) {
             plugin.getLogger().log(Level.SEVERE, "Couldn't enable encryption", ex);
             disconnect(plugin.getCore().getMessage("error-kick"), false, "Couldn't enable encryption");

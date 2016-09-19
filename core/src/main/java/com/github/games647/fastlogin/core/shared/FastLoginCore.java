@@ -66,8 +66,7 @@ public abstract class FastLoginCore<P> {
     private final Set<UUID> pendingConfirms = Sets.newHashSet();
     private final SharedConfig sharedConfig;
 
-    private final MojangApiConnector apiConnector;
-
+    private MojangApiConnector apiConnector;
     private AuthStorage storage;
     private PasswordGenerator<P> passwordGenerator = new DefaultPasswordGenerator<>();
     private AuthPlugin<P> authPlugin;
@@ -75,7 +74,9 @@ public abstract class FastLoginCore<P> {
     public FastLoginCore(Map<String, Object> config) {
         this.pendingLogins = FastLoginCore.buildCache(5, 0);
         this.sharedConfig = new SharedConfig(config);
-
+    }
+    
+    public void setApiConnector() {
         List<String> ipAddresses = sharedConfig.get("ip-addresses");
         int requestLimit = sharedConfig.get("mojang-request-limit");
         this.apiConnector = makeApiConnector(getLogger(), ipAddresses, requestLimit);

@@ -3,8 +3,8 @@ package com.github.games647.fastlogin.bungee.listener;
 import com.github.games647.fastlogin.bungee.FastLoginBungee;
 import com.github.games647.fastlogin.bungee.tasks.AsyncPremiumCheck;
 import com.github.games647.fastlogin.bungee.tasks.ForceLoginTask;
-import com.github.games647.fastlogin.core.shared.LoginSession;
 import com.github.games647.fastlogin.core.PlayerProfile;
+import com.github.games647.fastlogin.core.shared.LoginSession;
 import com.google.common.base.Charsets;
 
 import java.lang.reflect.Field;

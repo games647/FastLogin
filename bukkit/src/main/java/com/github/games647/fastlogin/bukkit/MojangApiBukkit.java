@@ -77,7 +77,7 @@ public class MojangApiBukkit extends MojangApiConnector {
         }
 
         String uuid = (String) mojangPlayer.get("id");
-        if (uuid == null || uuid.equals("null")) {
+        if ("null".equals(uuid)) {
             return null;
         }
         

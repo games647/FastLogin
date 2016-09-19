@@ -35,7 +35,9 @@ public class FastLoginBungee extends Plugin {
 
         try {
             File configFile = new File(getDataFolder(), "config.yml");
-            config = ConfigurationProvider.getProvider(YamlConfiguration.class).load(configFile);
+            ConfigurationProvider provider = ConfigurationProvider.getProvider(YamlConfiguration.class);
+            Configuration defaults = provider.load(getResourceAsStream("config.yml"));
+            config = provider.load(configFile, defaults);
 
             core = new BungeeCore(this, config);
             if (!core.setupDatabase()) {
@@ -47,6 +49,7 @@ public class FastLoginBungee extends Plugin {
         }
 
         core.loadConfig();
+        core.setApiConnector();
         core.loadMessages();
 
         //events
@@ -64,7 +67,9 @@ public class FastLoginBungee extends Plugin {
 
     @Override
     public void onDisable() {
-        core.close();
+        if (core != null) {
+            core.close();
+        }
     }
 
     public void saveDefaultFile(String fileName) {

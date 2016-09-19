@@ -46,10 +46,11 @@ public class FastLoginBukkit extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        saveDefaultConfig();
         core = new BukkitCore(this);
 
-        core.loadConfig();
         core.loadMessages();
+        core.setApiConnector();
         try {
             if (ClassUtil.isPresent("org.spigotmc.SpigotConfig")) {
                 bungeeCord = Class.forName("org.spigotmc.SpigotConfig").getDeclaredField("bungee").getBoolean(null);

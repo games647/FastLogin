@@ -29,26 +29,25 @@ public class BungeeAuthHook implements AuthPlugin<ProxiedPlayer> {
 
     @Override
     public boolean forceLogin(ProxiedPlayer player) {
+        String playerName = player.getName();
 //https://github.com/MatteCarra/BungeeAuth/blob/master/src/me/vik1395/BungeeAuth/Login.java#L92-95
-        if (Main.plonline.contains(player.getName())) {
-            Main.plugin.getLogger().log(Level.INFO, "Cannot force login player {0}, because he/she is already online"
-                    , player.getName());
+        if (Main.plonline.contains(playerName)) {
             return true;
         }
 
-        Main.plonline.add(player.getName());
+        Main.plonline.add(playerName);
 
         //renamed from ct to databaseConnection
 //            databaseConnection.setStatus(player.getName(), "online");
         Class<?>[] parameterTypes = new Class<?>[]{String.class, String.class};
-        Object[] arguments = new Object[]{player.getName(), "online"};
+        Object[] arguments = new Object[]{playerName, "online"};
 
         try {
             callProtected("setStatus", parameterTypes, arguments);
             ListenerClass.movePlayer(player, false);
 
             //proparly not thread-safe
-            ListenerClass.prelogin.get(player.getName()).cancel();
+            ListenerClass.prelogin.get(playerName).cancel();
         } catch (Exception ex) {
             Main.plugin.getLogger().log(Level.SEVERE, "Error force loging in player", ex);
             return false;
@@ -82,15 +81,12 @@ public class BungeeAuthHook implements AuthPlugin<ProxiedPlayer> {
         String hash = ph.newHash(Pw, pType);
 
         //creates a new SQL entry with the player's details.
-
-        //renamed t to databaseConnection
-//            databaseConnection.newPlayerEntry(player.getName(), hash, pType, "", lastip, regdate, lastip, lastseen);
-
         Class<?>[] parameterTypes = new Class<?>[] {String.class, String.class, String.class, String.class
                 , String.class, String.class, String.class, String.class};
         Object[] arguments = new Object[] {player.getName(), hash, pType, "", lastip, regdate, lastip, lastseen};
 
         try {
+
             callProtected("newPlayerEntry", parameterTypes, arguments);
             //proparly not thread-safe
             forceLogin(player);
@@ -108,6 +104,8 @@ public class BungeeAuthHook implements AuthPlugin<ProxiedPlayer> {
 
         Method method = tableClass.getDeclaredMethod(methodName, parameterTypes);
         method.setAccessible(true);
+        //renamed t to databaseConnection
+        //databaseConnection.newPlayerEntry(player.getName(), hash, pType, "", lastip, regdate, lastip, lastseen);
         method.invoke(databaseConnection, arguments);
     }
 }

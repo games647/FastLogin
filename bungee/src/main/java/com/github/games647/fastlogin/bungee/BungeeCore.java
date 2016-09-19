@@ -23,7 +23,8 @@ import net.md_5.bungee.config.YamlConfiguration;
 public class BungeeCore extends FastLoginCore<ProxiedPlayer> {
 
     private static Map<String, Object> generateConfigMap(Configuration config) {
-        return config.getKeys().stream().collect(Collectors.toMap(key -> key, config::get));
+        return config.getKeys().stream().filter(key -> config.get(key) != null)
+                .collect(Collectors.toMap(key -> key, config::get));
     }
 
     private final FastLoginBungee plugin;
