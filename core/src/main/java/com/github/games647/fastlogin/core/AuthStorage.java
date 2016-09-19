@@ -95,13 +95,13 @@ public class AuthStorage {
                     createStmt.executeUpdate("ALTER TABLE premium DROP INDEX UUID");
                 }
             } catch (SQLException sqlEx) {
-                core.getLogger().log(Level.FINE, "Error dropping unique uuid index", sqlEx);
+                //silent - we already migrated
             }
 
             try {
                 createStmt.executeUpdate("CREATE INDEX uuid_idx on premium (UUID)");
             } catch (SQLException sqlEx) {
-                core.getLogger().log(Level.FINE, "Error creating uuid index", sqlEx);
+                //silent - we already migrated
             }
         } finally {
             closeQuietly(con);
