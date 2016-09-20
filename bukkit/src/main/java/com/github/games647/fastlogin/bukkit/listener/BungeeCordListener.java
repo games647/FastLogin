@@ -102,8 +102,6 @@ public class BungeeCordListener implements PluginMessageListener {
 
     public Set<UUID> loadBungeeCordIds() {
         File whitelistFile = new File(plugin.getDataFolder(), FILE_NAME);
-        //create a new folder if it doesn't exist. Fail silently otherwise
-        whitelistFile.getParentFile().mkdir();
         try {
             if (!whitelistFile.exists()) {
                 whitelistFile.createNewFile();

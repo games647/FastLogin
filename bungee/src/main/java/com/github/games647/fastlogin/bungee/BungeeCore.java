@@ -23,7 +23,8 @@ import net.md_5.bungee.config.YamlConfiguration;
 public class BungeeCore extends FastLoginCore<ProxiedPlayer> {
 
     private static Map<String, Object> generateConfigMap(Configuration config) {
-        return config.getKeys().stream().filter(key -> config.get(key) != null)
+        return config.getKeys().stream()
+                .filter(key -> config.get(key) != null)
                 .collect(Collectors.toMap(key -> key, config::get));
     }
 
@@ -46,13 +47,15 @@ public class BungeeCore extends FastLoginCore<ProxiedPlayer> {
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public ThreadFactory getThreadFactory() {
         String pluginName = plugin.getDescription().getName();
         return new ThreadFactoryBuilder()
                 .setNameFormat(pluginName + " Database Pool Thread #%1$d")
                 //Hikari create daemons by default
                 .setDaemon(true)
-                .setThreadFactory(new GroupedThreadFactory(plugin, pluginName)).build();
+                .setThreadFactory(new GroupedThreadFactory(plugin, pluginName))
+                .build();
     }
 
     @Override
@@ -75,15 +78,6 @@ public class BungeeCore extends FastLoginCore<ProxiedPlayer> {
         } catch (IOException ex) {
             getLogger().log(Level.SEVERE, "Failed to load messages", ex);
         }
-    }
-
-    @Override
-    public void loadConfig() {
-        if (!getDataFolder().exists()) {
-            getDataFolder().mkdir();
-        }
-
-        plugin.saveDefaultFile("config.yml");
     }
 
     @Override

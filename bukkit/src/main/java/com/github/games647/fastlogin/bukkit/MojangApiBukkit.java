@@ -1,6 +1,7 @@
 package com.github.games647.fastlogin.bukkit;
 
 import com.github.games647.fastlogin.core.shared.FastLoginCore;
+import com.github.games647.fastlogin.core.shared.LoginSession;
 import com.github.games647.fastlogin.core.shared.MojangApiConnector;
 
 import java.io.BufferedReader;
@@ -24,11 +25,7 @@ public class MojangApiBukkit extends MojangApiConnector {
     }
 
     @Override
-    public boolean hasJoinedServer(Object session, String serverId) {
-        if (!(session instanceof BukkitLoginSession)) {
-            return false;
-        }
-
+    public boolean hasJoinedServer(LoginSession session, String serverId) {
         BukkitLoginSession playerSession = (BukkitLoginSession) session;
         try {
             String url = HAS_JOINED_URL + "username=" + playerSession.getUsername() + "&serverId=" + serverId;

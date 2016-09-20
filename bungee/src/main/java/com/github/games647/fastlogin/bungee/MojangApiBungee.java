@@ -1,5 +1,6 @@
 package com.github.games647.fastlogin.bungee;
 
+import com.github.games647.fastlogin.core.shared.LoginSession;
 import com.github.games647.fastlogin.core.shared.MojangApiConnector;
 
 import java.util.List;
@@ -33,7 +34,7 @@ public class MojangApiBungee extends MojangApiConnector {
     }
 
     @Override
-    public boolean hasJoinedServer(Object session, String serverId) {
+    public boolean hasJoinedServer(LoginSession session, String serverId) {
         //this is not needed in Bungee
         throw new UnsupportedOperationException("Not supported");
     }

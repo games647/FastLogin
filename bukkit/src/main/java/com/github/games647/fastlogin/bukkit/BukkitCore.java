@@ -66,11 +66,6 @@ public class BukkitCore extends FastLoginCore<Player> {
     }
 
     @Override
-    public void loadConfig() {
-        plugin.saveDefaultConfig();
-    }
-
-    @Override
     public MojangApiConnector makeApiConnector(Logger logger, List<String> addresses, int requests) {
         return new MojangApiBukkit(logger, addresses, requests);
     }

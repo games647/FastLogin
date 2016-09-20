@@ -23,12 +23,7 @@ public class PlayerProfile {
     }
 
     public PlayerProfile(UUID uuid, String playerName, boolean premium, String lastIp) {
-        this.userId = -1;
-
-        this.uuid = uuid;
-        this.playerName = playerName;
-        this.premium = premium;
-        this.lastIp = lastIp;
+        this(-1, uuid, playerName, premium, lastIp, System.currentTimeMillis());
     }
 
     public synchronized String getPlayerName() {

@@ -24,6 +24,7 @@ public class AuthMeHook implements AuthPlugin<Player> {
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public boolean forceLogin(Player player) {
         //skips registration and login
         if (isNewAPIAvailable) {
@@ -36,6 +37,7 @@ public class AuthMeHook implements AuthPlugin<Player> {
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public boolean isRegistered(String playerName) throws Exception {
         if (isNewAPIAvailable) {
             return NewAPI.getInstance().isRegistered(playerName);
@@ -45,6 +47,7 @@ public class AuthMeHook implements AuthPlugin<Player> {
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public boolean forceRegister(Player player, String password) {
         if (isNewAPIAvailable) {
             NewAPI.getInstance().forceRegister(player, password);

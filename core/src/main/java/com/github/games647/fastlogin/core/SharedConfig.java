@@ -19,4 +19,8 @@ public class SharedConfig {
     public <T> T get(String path) {
         return get(path, null);
     }
+
+    public Map<String, Object> getConfigValues() {
+        return configValues;
+    }
 }

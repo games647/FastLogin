@@ -48,7 +48,6 @@ public class FastLoginBungee extends Plugin {
             return;
         }
 
-        core.loadConfig();
         core.setApiConnector();
         core.loadMessages();
 
@@ -73,6 +72,10 @@ public class FastLoginBungee extends Plugin {
     }
 
     public void saveDefaultFile(String fileName) {
+        if (!getDataFolder().exists()) {
+            getDataFolder().mkdir();
+        }
+
         File configFile = new File(getDataFolder(), fileName);
         if (!configFile.exists()) {
             InputStream in = getResourceAsStream(fileName);

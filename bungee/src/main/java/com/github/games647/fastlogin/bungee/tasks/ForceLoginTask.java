@@ -34,7 +34,7 @@ public class ForceLoginTask implements Runnable {
             BungeeLoginSession session = plugin.getSession().get(pendingConnection);
 
             if (session == null || !player.isConnected()) {
-                plugin.getLogger().log(Level.FINE, "Invalid session player {0} proparly left the server", player);
+                plugin.getLogger().log(Level.FINE, "Invalid session player {0} propaly left the server", player);
                 return;
             }
 

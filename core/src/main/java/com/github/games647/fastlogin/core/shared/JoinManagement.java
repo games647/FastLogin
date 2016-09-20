@@ -23,13 +23,12 @@ public abstract class JoinManagement<T, S extends LoginSource> {
             return;
         }
 
-        SharedConfig sharedConfig = core.getSharedConfig();
+        SharedConfig config = core.getConfig();
 
         String ip = source.getAddress().getAddress().getHostAddress();
         try {
             if (profile.getUserId() == -1) {
-                if (core.getPendingLogins().containsKey(ip + username)
-                        && sharedConfig.get("secondAttemptCracked", false)) {
+                if (core.getPendingLogins().containsKey(ip + username) && config.get("secondAttemptCracked", false)) {
                     core.getLogger().log(Level.INFO, "Second attempt login -> cracked {0}", username);
 
                     //first login request failed so make a cracked session
@@ -38,20 +37,21 @@ public abstract class JoinManagement<T, S extends LoginSource> {
                 }
 
                 UUID premiumUUID = null;
-                if (sharedConfig.get("nameChangeCheck", false) || sharedConfig.get("autoRegister", false)) {
+                if (config.get("nameChangeCheck", false) || config.get("autoRegister", false)) {
+                    core.getLogger().log(Level.FINER, "Player {0} uses a premium username", username);
                     premiumUUID = core.getApiConnector().getPremiumUUID(username);
                 }
 
                 if (premiumUUID == null
-                        || (!checkNameChange(premiumUUID, source, username)
-                        && !checkPremiumName(username, source, profile))) {
+                        || (!checkNameChange(source, username, premiumUUID)
+                        && !checkPremiumName(source, username, profile))) {
                     //nothing detected the player as premium -> start a cracked session
                     startCrackedSession(source, profile, username);
                 }
             } else if (profile.isPremium()) {
                 requestPremiumLogin(source, profile, username, true);
             } else {
-                if (core.getSharedConfig().get("switchMode", false)) {
+                if (core.getConfig().get("switchMode", false)) {
                     source.kick(core.getMessage("switch-kick-message"));
                     return;
                 }
@@ -63,10 +63,8 @@ public abstract class JoinManagement<T, S extends LoginSource> {
         }
     }
 
-    private boolean checkPremiumName(String username, S source, PlayerProfile profile) throws Exception {
-        if (core.getSharedConfig().get("autoRegister", false)
-                && (authHook == null || !authHook.isRegistered(username))) {
-            core.getLogger().log(Level.FINER, "Player {0} uses a premium username", username);
+    private boolean checkPremiumName(S source, String username, PlayerProfile profile) throws Exception {
+        if (core.getConfig().get("autoRegister", false) && (authHook == null || !authHook.isRegistered(username))) {
             requestPremiumLogin(source, profile, username, false);
             return true;
         }
@@ -74,9 +72,9 @@ public abstract class JoinManagement<T, S extends LoginSource> {
         return false;
     }
 
-    private boolean checkNameChange(UUID premiumUUID, S source, String username) {
+    private boolean checkNameChange(S source, String username, UUID premiumUUID) {
         //user not exists in the db
-        if (core.getSharedConfig().get("nameChangeCheck", false)) {
+        if (core.getConfig().get("nameChangeCheck", false)) {
             PlayerProfile profile = core.getStorage().loadProfile(premiumUUID);
             if (profile != null) {
                 //uuid exists in the database

@@ -1,6 +1,6 @@
 package com.github.games647.fastlogin.core.hooks;
 
-public interface PasswordGenerator<T> {
+public interface PasswordGenerator<P> {
 
-    String getRandomPassword(T player);
+    String getRandomPassword(P player);
 }

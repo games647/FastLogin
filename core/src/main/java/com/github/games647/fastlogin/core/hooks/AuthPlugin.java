@@ -3,9 +3,9 @@ package com.github.games647.fastlogin.core.hooks;
 /**
  * Represents a supporting authentication plugin in BungeeCord and Bukkit/Spigot/... servers
  *
- * @param <T> either org.bukkit.entity.Player for Bukkit or net.md_5.bungee.api.connection.ProxiedPlayer for BungeeCord
+ * @param <P> either org.bukkit.entity.Player for Bukkit or net.md_5.bungee.api.connection.ProxiedPlayer for BungeeCord
  */
-public interface AuthPlugin<T> {
+public interface AuthPlugin<P> {
 
     /**
      * Login the premium (paid account) player after the player joined successfully the server.
@@ -16,7 +16,7 @@ public interface AuthPlugin<T> {
      * @param player the player that needs to be logged in
      * @return if the operation was successful
      */
-    boolean forceLogin(T player);
+    boolean forceLogin(P player);
 
     /**
      * Forces a register in order to protect the paid account.
@@ -39,7 +39,7 @@ public interface AuthPlugin<T> {
      * @param password a strong random generated password
      * @return if the operation was successful
      */
-    boolean forceRegister(T player, String password);
+    boolean forceRegister(P player, String password);
 
     /**
      * Checks whether an account exists for this player name.
