@@ -77,7 +77,7 @@ public class CrackedCommand implements CommandExecutor {
             }
 
             //existing player is already cracked
-            if (profile.getUserId() == -1 && !profile.isPremium()) {
+            if (profile.getUserId() != -1 && !profile.isPremium()) {
                 sender.sendMessage(plugin.getCore().getMessage("not-premium-other"));
             } else {
                 sender.sendMessage(plugin.getCore().getMessage("remove-premium"));
