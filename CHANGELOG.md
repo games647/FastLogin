@@ -1,6 +1,7 @@
 ######1.10
 
 * Remove deprecated API methods from the last version
+* Finally set a value to the API column
 
 ######1.9
 

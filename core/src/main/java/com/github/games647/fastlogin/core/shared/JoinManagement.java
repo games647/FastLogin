@@ -26,6 +26,7 @@ public abstract class JoinManagement<T, S extends LoginSource> {
         SharedConfig config = core.getConfig();
 
         String ip = source.getAddress().getAddress().getHostAddress();
+        profile.setLastIp(ip);
         try {
             if (profile.getUserId() == -1) {
                 if (core.getPendingLogins().remove(ip + username) != null && config.get("secondAttemptCracked", false)) {
