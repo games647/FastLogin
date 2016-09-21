@@ -6,7 +6,6 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.github.games647.fastlogin.bukkit.commands.CrackedCommand;
 import com.github.games647.fastlogin.bukkit.commands.ImportCommand;
 import com.github.games647.fastlogin.bukkit.commands.PremiumCommand;
-import com.github.games647.fastlogin.bukkit.hooks.BukkitAuthPlugin;
 import com.github.games647.fastlogin.bukkit.listener.BukkitJoinListener;
 import com.github.games647.fastlogin.bukkit.listener.BungeeCordListener;
 import com.github.games647.fastlogin.bukkit.listener.protocollib.EncryptionPacketListener;
@@ -138,11 +137,6 @@ public class FastLoginBukkit extends JavaPlugin {
         }
     }
 
-    @Deprecated
-    public void setPasswordGenerator(PasswordGenerator passwordGenerator) {
-        core.setPasswordGenerator(passwordGenerator);
-    }
-
     /**
      * Gets a thread-safe map about players which are connecting to the server are being checked to be premium (paid
      * account)
@@ -160,22 +154,6 @@ public class FastLoginBukkit extends JavaPlugin {
      */
     public KeyPair getServerKey() {
         return keyPair;
-    }
-
-    /**
-     * Gets the auth plugin hook in order to interact with the plugins. This can be null if no supporting auth plugin
-     * was found.
-     *
-     * @return interface to any supported auth plugin
-     */
-    @Deprecated
-    public BukkitAuthPlugin getAuthPlugin() {
-        return (BukkitAuthPlugin) core.getAuthPluginHook();
-    }
-
-    @Deprecated
-    public void setAuthPluginHook(BukkitAuthPlugin authPlugin) {
-        core.setAuthPluginHook(authPlugin);
     }
 
     public boolean isBungeeCord() {

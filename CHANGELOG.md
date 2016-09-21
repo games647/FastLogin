@@ -1,3 +1,7 @@
+######1.10
+
+* Remove deprecated API methods from the last version
+
 ######1.9
 
 * Added second attempt login -> cracked login

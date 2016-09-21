@@ -9,7 +9,6 @@ import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
@@ -120,11 +119,9 @@ public class ForceLoginTask implements Runnable {
     }
 
     private boolean isOnlineThreadSafe() {
-        //the playerlist isn't thread-safe
-        Future<Boolean> onlineFuture = Bukkit.getScheduler().callSyncMethod(plugin, player::isOnline);
-
         try {
-            return onlineFuture.get();
+            //the playerlist isn't thread-safe
+            return Bukkit.getScheduler().callSyncMethod(plugin, player::isOnline).get();
         } catch (InterruptedException | ExecutionException ex) {
             plugin.getLogger().log(Level.SEVERE, "Failed to perform thread-safe online check", ex);
             return false;

@@ -1,7 +1,6 @@
 package com.github.games647.fastlogin.bungee;
 
 import com.github.games647.fastlogin.bungee.hooks.BungeeAuthHook;
-import com.github.games647.fastlogin.bungee.hooks.BungeeAuthPlugin;
 import com.github.games647.fastlogin.bungee.listener.PlayerConnectionListener;
 import com.github.games647.fastlogin.bungee.listener.PluginMessageListener;
 import com.google.common.collect.Maps;
@@ -97,27 +96,12 @@ public class FastLoginBungee extends Plugin {
         return core;
     }
 
-    @Deprecated
-    public void setAuthPluginHook(BungeeAuthPlugin authPlugin) {
-        core.setAuthPluginHook(authPlugin);
-    }
-
     public Configuration getConfig() {
         return config;
     }
 
     public ConcurrentMap<PendingConnection, BungeeLoginSession> getSession() {
         return session;
-    }
-
-    /**
-     * Get the auth plugin hook for BungeeCord
-     *
-     * @return the auth hook for BungeeCord. null if none found
-     */
-    @Deprecated
-    public BungeeAuthPlugin getBungeeAuthPlugin() {
-        return (BungeeAuthPlugin) core.getAuthPluginHook();
     }
 
     private void registerHook() {

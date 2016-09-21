@@ -28,7 +28,7 @@ public abstract class JoinManagement<T, S extends LoginSource> {
         String ip = source.getAddress().getAddress().getHostAddress();
         try {
             if (profile.getUserId() == -1) {
-                if (core.getPendingLogins().containsKey(ip + username) && config.get("secondAttemptCracked", false)) {
+                if (core.getPendingLogins().remove(ip + username) != null && config.get("secondAttemptCracked", false)) {
                     core.getLogger().log(Level.INFO, "Second attempt login -> cracked {0}", username);
 
                     //first login request failed so make a cracked session
