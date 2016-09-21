@@ -46,15 +46,16 @@ public abstract class JoinManagement<T, S extends LoginSource> {
                         || (!checkNameChange(source, username, premiumUUID)
                         && !checkPremiumName(source, username, profile))) {
                     //nothing detected the player as premium -> start a cracked session
+                    if (core.getConfig().get("switchMode", false)) {
+                        source.kick(core.getMessage("switch-kick-message"));
+                        return;
+                    }
+
                     startCrackedSession(source, profile, username);
                 }
             } else if (profile.isPremium()) {
                 requestPremiumLogin(source, profile, username, true);
             } else {
-                if (core.getConfig().get("switchMode", false)) {
-                    source.kick(core.getMessage("switch-kick-message"));
-                    return;
-                }
 
                 startCrackedSession(source, profile, username);
             }

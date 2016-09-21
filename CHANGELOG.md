@@ -1,21 +1,21 @@
 ######1.9
 
-* Remove the nasty UltraAuth fakeplayer workaround by using a new api method. You should UltraAuth if you have it
-* Upgrade to Java 8
-* Drop support for LoginSecurity 1.X since 2.X seems to be stable
-* Refactored/Cleaned up a lot of code
-* [API] Deprecated platform specific authplugin. Please use AuthPlugin< platform specific player type >
-* [API] Deprecated bukkit's password generator. Please use PasswordGenerator< platform specific player type >
 * Added second attempt login -> cracked login
 * Added cracked whitelist (switch-mode -> switching to online-mode from offlinemode)
 * Added configuration to disable auto logins for 2Factor authentication
-* Add missing add-premium-other message
+* Added missing add-premium-other message
+* Upgrade to Java 8 -> Minimize file size
+* Refactored/Cleaned up a lot of code
+* [API] Deprecated platform specific authplugin. Please use AuthPlugin< platform specific player type >
+* [API] Deprecated bukkit's password generator. Please use PasswordGenerator< platform specific player type >
 * Fix ProtocolSupport autoRegister
 * Fix update username in FastLogin database after nameChange
 * Fix logging exceptions on encryption enabling
 * Fix compatibility with older ProtocolLib versions (for 1.7) because of the missing getMethodAcccessorOrNull method
 * Fix correct cracked permission for bukkit
 * A try to fix SQLite timestamp parsing
+* Drop support for LoginSecurity 1.X since 2.X seems to be stable
+* Remove the nasty UltraAuth fakeplayer workaround by using a new api method. You should UltraAuth if you have it
 
 ######1.8
 

@@ -3,8 +3,6 @@ package com.github.games647.fastlogin.bukkit;
 import com.github.games647.fastlogin.core.PlayerProfile;
 import com.github.games647.fastlogin.core.shared.LoginSession;
 
-import java.util.UUID;
-
 import org.apache.commons.lang.ArrayUtils;
 
 /**
@@ -17,7 +15,6 @@ public class BukkitLoginSession extends LoginSession {
     private final String serverId;
     private final byte[] verifyToken;
 
-    private UUID uuid;
     private boolean verified;
 
     private String encodedSkinData;
@@ -91,24 +88,6 @@ public class BukkitLoginSession extends LoginSession {
      */
     public synchronized void setVerified(boolean verified) {
         this.verified = verified;
-    }
-
-    /**
-     * Get the premium UUID of this player
-     *
-     * @return the premium UUID or null if not fetched
-     */
-    public synchronized UUID getUuid() {
-        return uuid;
-    }
-
-    /**
-     * Set the online UUID if it's fetched
-     *
-     * @param uuid premium UUID
-     */
-    public synchronized void setUuid(UUID uuid) {
-        this.uuid = uuid;
     }
 
     /**

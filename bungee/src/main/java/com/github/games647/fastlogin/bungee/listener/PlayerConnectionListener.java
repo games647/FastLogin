@@ -66,6 +66,8 @@ public class PlayerConnectionListener implements Listener {
             plugin.getCore().getPendingLogins().remove(ip + username);
 
             LoginSession session = plugin.getSession().get(connection);
+            session.setUuid(connection.getUniqueId());
+
             PlayerProfile playerProfile = session.getProfile();
             playerProfile.setUuid(connection.getUniqueId());
 
