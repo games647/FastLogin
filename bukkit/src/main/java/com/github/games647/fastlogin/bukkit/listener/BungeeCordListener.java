@@ -81,7 +81,7 @@ public class BungeeCordListener implements PluginMessageListener {
             BukkitLoginSession playerSession = new BukkitLoginSession(playerName, true);
             playerSession.setVerified(true);
             plugin.getSessions().put(id, playerSession);
-            Bukkit.getScheduler().runTaskAsynchronously(plugin, new ForceLoginTask(plugin, player));
+            Bukkit.getScheduler().runTaskAsynchronously(plugin, new ForceLoginTask(plugin.getCore(), player));
         } else if ("AUTO_REGISTER".equalsIgnoreCase(subchannel)) {
             Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
                 AuthPlugin<Player> authPlugin = plugin.getCore().getAuthPluginHook();
@@ -91,7 +91,7 @@ public class BungeeCordListener implements PluginMessageListener {
                         BukkitLoginSession playerSession = new BukkitLoginSession(playerName, false);
                         playerSession.setVerified(true);
                         plugin.getSessions().put(id, playerSession);
-                        new ForceLoginTask(plugin, player).run();
+                        new ForceLoginTask(plugin.getCore(), player).run();
                     }
                 } catch (Exception ex) {
                     plugin.getLogger().log(Level.SEVERE, "Failed to query isRegistered", ex);

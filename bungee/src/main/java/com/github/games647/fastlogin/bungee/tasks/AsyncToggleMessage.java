@@ -1,19 +1,22 @@
 package com.github.games647.fastlogin.bungee.tasks;
 
-import com.github.games647.fastlogin.bungee.BungeeCore;
+import com.github.games647.fastlogin.bungee.FastLoginBungee;
 import com.github.games647.fastlogin.core.PlayerProfile;
+import com.github.games647.fastlogin.core.shared.FastLoginCore;
+import net.md_5.bungee.api.CommandSender;
 
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 public class AsyncToggleMessage implements Runnable {
 
-    private final BungeeCore core;
+    private final FastLoginCore<ProxiedPlayer, CommandSender, FastLoginBungee> core;
     private final ProxiedPlayer fromPlayer;
     private final String targetPlayer;
     private final boolean toPremium;
 
-    public AsyncToggleMessage(BungeeCore core, ProxiedPlayer fromPlayer, String targetPlayer, boolean toPremium) {
+    public AsyncToggleMessage(FastLoginCore<ProxiedPlayer, CommandSender, FastLoginBungee> core
+            , ProxiedPlayer fromPlayer, String targetPlayer, boolean toPremium) {
         this.core = core;
         this.fromPlayer = fromPlayer;
         this.targetPlayer = targetPlayer;

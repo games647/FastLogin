@@ -14,22 +14,32 @@ import com.github.games647.fastlogin.bukkit.listener.protocollib.StartPacketList
 import com.github.games647.fastlogin.bukkit.listener.protocolsupport.ProtocolSupportListener;
 import com.github.games647.fastlogin.bukkit.tasks.DelayedAuthHook;
 import com.github.games647.fastlogin.core.shared.FastLoginCore;
+import com.github.games647.fastlogin.core.shared.MojangApiConnector;
+import com.github.games647.fastlogin.core.shared.PlatformPlugin;
 import com.google.common.collect.Iterables;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 
+import java.io.Reader;
 import java.security.KeyPair;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ThreadFactory;
 import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import net.md_5.bungee.api.ChatColor;
 
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 /**
  * This plugin checks if a player has a paid account and if so tries to skip offline mode authentication.
  */
-public class FastLoginBukkit extends JavaPlugin {
+public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<CommandSender> {
 
     private static final int WORKER_THREADS = 3;
 
@@ -37,7 +47,7 @@ public class FastLoginBukkit extends JavaPlugin {
     private final KeyPair keyPair = EncryptionUtil.generateKeyPair();
 
     private boolean bungeeCord;
-    private BukkitCore core;
+    private FastLoginCore<Player, CommandSender, FastLoginBukkit> core;
     private boolean serverStarted;
 
     //1 minutes should be enough as a timeout for bad internet connection (Server, Client and Mojang)
@@ -45,11 +55,8 @@ public class FastLoginBukkit extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        saveDefaultConfig();
-        core = new BukkitCore(this);
-
-        core.loadMessages();
-        core.setApiConnector();
+        core = new FastLoginCore<>(this);
+        core.load();
         try {
             if (ClassUtil.isPresent("org.spigotmc.SpigotConfig")) {
                 bungeeCord = Class.forName("org.spigotmc.SpigotConfig").getDeclaredField("bungee").getBoolean(null);
@@ -119,7 +126,7 @@ public class FastLoginBukkit extends JavaPlugin {
         getServer().getOnlinePlayers().forEach(player -> player.removeMetadata(getName(), this));
     }
 
-    public BukkitCore getCore() {
+    public FastLoginCore<Player, CommandSender, FastLoginBukkit> getCore() {
         return core;
     }
 
@@ -186,5 +193,32 @@ public class FastLoginBukkit extends JavaPlugin {
 
         dataOutput.writeUTF(target);
         sender.sendPluginMessage(this, getName(), dataOutput.toByteArray());
+    }
+
+    @Override
+    public Map<String, Object> loadYamlFile(Reader reader) {
+        YamlConfiguration config = YamlConfiguration.loadConfiguration(reader);
+        return config.getValues(false);
+    }
+
+    @Override
+    public void sendMessage(CommandSender receiver, String message) {
+        receiver.sendMessage(message);
+    }
+
+    @Override
+    public String translateColorCodes(char colorChar, String rawMessage) {
+        return ChatColor.translateAlternateColorCodes(colorChar, rawMessage);
+    }
+
+    @Override
+    public ThreadFactory getThreadFactory() {
+        //not required here to make a custom thread factory
+        return null;
+    }
+
+    @Override
+    public MojangApiConnector makeApiConnector(Logger logger, List<String> addresses, int requests) {
+        return new MojangApiBukkit(logger, addresses, requests);
     }
 }

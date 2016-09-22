@@ -28,15 +28,12 @@ public class CrackedCommand implements CommandExecutor {
 
             if (plugin.isBungeeCord()) {
                 plugin.sendBungeeActivateMessage(sender, sender.getName(), false);
-                String message = plugin.getCore().getMessage("wait-on-proxy");
-                if (message != null) {
-                    sender.sendMessage(message);
-                }
+                plugin.getCore().sendLocaleMessage("wait-on-proxy", sender);
             } else {
                 //todo: load async if
                 PlayerProfile profile = plugin.getCore().getStorage().loadProfile(sender.getName());
                 if (profile.isPremium()) {
-                    sender.sendMessage(plugin.getCore().getMessage("remove-premium"));
+                    plugin.getCore().sendLocaleMessage("remove-premium", sender);
 
                     profile.setPremium(false);
                     profile.setUuid(null);
@@ -44,7 +41,7 @@ public class CrackedCommand implements CommandExecutor {
                         plugin.getCore().getStorage().save(profile);
                     });
                 } else {
-                    sender.sendMessage(plugin.getCore().getMessage("not-premium"));
+                    plugin.getCore().sendLocaleMessage("not-premium", sender);
                 }
             }
 
@@ -58,16 +55,13 @@ public class CrackedCommand implements CommandExecutor {
 
     private void onCrackedOther(CommandSender sender, Command command, String[] args) {
         if (!sender.hasPermission(command.getPermission() + ".other")) {
-            sender.sendMessage(plugin.getCore().getMessage("no-permission"));
+            plugin.getCore().sendLocaleMessage("no-permission", sender);
             return;
         }
         
         if (plugin.isBungeeCord()) {
             plugin.sendBungeeActivateMessage(sender, args[0], false);
-            String message = plugin.getCore().getMessage("wait-on-proxy");
-            if (message != null) {
-                sender.sendMessage(message);
-            }
+            plugin.getCore().sendLocaleMessage("wait-on-proxy", sender);
         } else {
             //todo: load async
             PlayerProfile profile = plugin.getCore().getStorage().loadProfile(args[0]);
@@ -78,9 +72,10 @@ public class CrackedCommand implements CommandExecutor {
 
             //existing player is already cracked
             if (profile.getUserId() != -1 && !profile.isPremium()) {
-                sender.sendMessage(plugin.getCore().getMessage("not-premium-other"));
+                plugin.getCore().sendLocaleMessage("not-premium-other", sender);
             } else {
-                sender.sendMessage(plugin.getCore().getMessage("remove-premium"));
+                plugin.getCore().sendLocaleMessage("remove-premium", sender);
+
                 profile.setPremium(false);
                 Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
                     plugin.getCore().getStorage().save(profile);

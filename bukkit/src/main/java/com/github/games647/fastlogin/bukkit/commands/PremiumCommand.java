@@ -29,16 +29,13 @@ public class PremiumCommand implements CommandExecutor {
         if (args.length == 0) {
             if (!(sender instanceof Player)) {
                 //console or command block
-                sender.sendMessage(plugin.getCore().getMessage("no-console"));
+                plugin.getCore().sendLocaleMessage("no-console", sender);
                 return true;
             }
 
             if (plugin.isBungeeCord()) {
                 plugin.sendBungeeActivateMessage(sender, sender.getName(), true);
-                String message = plugin.getCore().getMessage("wait-on-proxy");
-                if (message != null) {
-                    sender.sendMessage(message);
-                }
+                plugin.getCore().sendLocaleMessage("wait-on-proxy", sender);
             } else {
                 UUID id = ((Player) sender).getUniqueId();
                 if (plugin.getConfig().getBoolean("premium-warning")
@@ -52,7 +49,7 @@ public class PremiumCommand implements CommandExecutor {
                 //todo: load async
                 PlayerProfile profile = plugin.getCore().getStorage().loadProfile(sender.getName());
                 if (profile.isPremium()) {
-                    sender.sendMessage(plugin.getCore().getMessage("already-exists"));
+                    plugin.getCore().sendLocaleMessage("already-exists", sender);
                 } else {
                     //todo: resolve uuid
                     profile.setPremium(true);
@@ -60,7 +57,7 @@ public class PremiumCommand implements CommandExecutor {
                         plugin.getCore().getStorage().save(profile);
                     });
 
-                    sender.sendMessage(plugin.getCore().getMessage("add-premium"));
+                    plugin.getCore().sendLocaleMessage("add-premium", sender);
                 }
             }
 
@@ -74,26 +71,23 @@ public class PremiumCommand implements CommandExecutor {
 
     private void onPremiumOther(CommandSender sender, Command command, String[] args) {
         if (!sender.hasPermission(command.getPermission() + ".other")) {
-            sender.sendMessage(plugin.getCore().getMessage("no-permission"));
+            plugin.getCore().sendLocaleMessage("no-permission", sender);
             return ;
         }
 
         if (plugin.isBungeeCord()) {
             plugin.sendBungeeActivateMessage(sender, args[0], true);
-            String message = plugin.getCore().getMessage("wait-on-proxy");
-            if (message != null) {
-                sender.sendMessage(message);
-            }
+            plugin.getCore().sendLocaleMessage("wait-on-proxy", sender);
         } else {
             //todo: load async
             PlayerProfile profile = plugin.getCore().getStorage().loadProfile(args[0]);
             if (profile == null) {
-                sender.sendMessage(plugin.getCore().getMessage("player-unknown"));
+                plugin.getCore().sendLocaleMessage("player-unknown", sender);
                 return;
             }
             
             if (profile.isPremium()) {
-                sender.sendMessage(plugin.getCore().getMessage("already-exists-other"));
+                plugin.getCore().sendLocaleMessage("already-exists-other", sender);
             } else {
                 //todo: resolve uuid
                 profile.setPremium(true);
@@ -101,7 +95,7 @@ public class PremiumCommand implements CommandExecutor {
                     plugin.getCore().getStorage().save(profile);
                 });
 
-                sender.sendMessage(plugin.getCore().getMessage("add-premium-other"));
+                plugin.getCore().sendLocaleMessage("add-premium-other", sender);
             }
         }
     }

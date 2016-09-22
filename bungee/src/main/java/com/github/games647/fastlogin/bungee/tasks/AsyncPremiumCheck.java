@@ -6,11 +6,13 @@ import com.github.games647.fastlogin.bungee.FastLoginBungee;
 import com.github.games647.fastlogin.core.PlayerProfile;
 import com.github.games647.fastlogin.core.shared.JoinManagement;
 
+import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.PendingConnection;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.AsyncEvent;
 
-public class AsyncPremiumCheck extends JoinManagement<ProxiedPlayer, BungeeLoginSource> implements Runnable {
+public class AsyncPremiumCheck extends JoinManagement<ProxiedPlayer, CommandSender, BungeeLoginSource>
+        implements Runnable {
 
     private final FastLoginBungee plugin;
     private final AsyncEvent<?> preLoginEvent;

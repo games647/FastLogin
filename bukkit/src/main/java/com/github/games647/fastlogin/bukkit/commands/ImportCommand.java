@@ -1,19 +1,21 @@
 package com.github.games647.fastlogin.bukkit.commands;
 
-import com.github.games647.fastlogin.bukkit.BukkitCore;
+import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 import com.github.games647.fastlogin.core.AuthStorage;
 import com.github.games647.fastlogin.core.importer.ImportPlugin;
+import com.github.games647.fastlogin.core.shared.FastLoginCore;
 import org.bukkit.ChatColor;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 public class ImportCommand implements CommandExecutor {
 
-    private final BukkitCore core;
+    private final FastLoginCore<Player, CommandSender, FastLoginBukkit> core;
 
-    public ImportCommand(BukkitCore core) {
+    public ImportCommand(FastLoginCore<Player, CommandSender, FastLoginBukkit> core) {
         this.core = core;
     }
 

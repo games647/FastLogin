@@ -2,11 +2,12 @@ package com.github.games647.fastlogin.bukkit.listener.protocolsupport;
 
 import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
-import com.github.games647.fastlogin.core.shared.JoinManagement;
 import com.github.games647.fastlogin.core.PlayerProfile;
+import com.github.games647.fastlogin.core.shared.JoinManagement;
 
 import java.net.InetSocketAddress;
 
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -14,7 +15,8 @@ import org.bukkit.event.Listener;
 import protocolsupport.api.events.PlayerLoginStartEvent;
 import protocolsupport.api.events.PlayerPropertiesResolveEvent;
 
-public class ProtocolSupportListener extends JoinManagement<Player, ProtocolLoginSource> implements Listener {
+public class ProtocolSupportListener extends JoinManagement<Player, CommandSender, ProtocolLoginSource>
+        implements Listener {
 
     private final FastLoginBukkit plugin;
 
@@ -26,7 +28,6 @@ public class ProtocolSupportListener extends JoinManagement<Player, ProtocolLogi
 
     @EventHandler
     public void onLoginStart(PlayerLoginStartEvent loginStartEvent) {
-        plugin.setServerStarted();
         if (loginStartEvent.isLoginDenied() || plugin.getCore().getAuthPluginHook() == null) {
             return;
         }
@@ -47,9 +48,6 @@ public class ProtocolSupportListener extends JoinManagement<Player, ProtocolLogi
 
         //skin was resolved -> premium player
         if (propertiesResolveEvent.hasProperty("textures") && session != null) {
-            String ip = address.getAddress().getHostAddress();
-            plugin.getCore().getPendingLogins().remove(ip + session.getUsername());
-
             session.setVerified(true);
         }
     }

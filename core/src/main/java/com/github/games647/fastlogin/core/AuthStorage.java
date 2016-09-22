@@ -1,6 +1,7 @@
 package com.github.games647.fastlogin.core;
 
 import com.github.games647.fastlogin.core.shared.FastLoginCore;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
@@ -12,19 +13,20 @@ import java.sql.Statement;
 import java.util.Calendar;
 import java.util.Locale;
 import java.util.UUID;
+import java.util.concurrent.ThreadFactory;
 import java.util.logging.Level;
 
 public class AuthStorage {
 
     private static final String PREMIUM_TABLE = "premium";
 
-    private final FastLoginCore<?> core;
+    private final FastLoginCore<?, ?, ?> core;
     private final HikariDataSource dataSource;
 
     //a try to fix https://www.spigotmc.org/threads/fastlogin.101192/page-26#post-1874647
     private final Calendar calendar = Calendar.getInstance(Locale.US);
 
-    public AuthStorage(FastLoginCore<?> core, String driver, String host, int port, String databasePath
+    public AuthStorage(FastLoginCore<?, ?, ?> core, String driver, String host, int port, String databasePath
             , String user, String pass) {
         this.core = core;
 
@@ -32,9 +34,20 @@ public class AuthStorage {
         databaseConfig.setUsername(user);
         databaseConfig.setPassword(pass);
         databaseConfig.setDriverClassName(driver);
-        databaseConfig.setThreadFactory(core.getThreadFactory());
 
-        databasePath = databasePath.replace("{pluginDir}", core.getDataFolder().getAbsolutePath());
+        ThreadFactoryBuilder threadFactoryBuilder =  new ThreadFactoryBuilder()
+                .setNameFormat(core.getPlugin().getName() + " Database Pool Thread #%1$d")
+                //Hikari create daemons by default
+                .setDaemon(true);
+
+        ThreadFactory platformThreadFactory = core.getPlugin().getThreadFactory();
+        if (platformThreadFactory != null) {
+            threadFactoryBuilder.setThreadFactory(platformThreadFactory);
+        }
+
+        databaseConfig.setThreadFactory(threadFactoryBuilder.build());
+
+        databasePath = databasePath.replace("{pluginDir}", core.getPlugin().getDataFolder().getAbsolutePath());
 
         String jdbcUrl = "jdbc:";
         if (driver.contains("sqlite")) {
@@ -134,7 +147,7 @@ public class AuthStorage {
                 return crackedProfile;
             }
         } catch (SQLException sqlEx) {
-            core.getLogger().log(Level.SEVERE, "Failed to query profile", sqlEx);
+            core.getPlugin().getLogger().log(Level.SEVERE, "Failed to query profile", sqlEx);
         } finally {
             closeQuietly(con);
             closeQuietly(loadStmt);
@@ -165,7 +178,7 @@ public class AuthStorage {
                 return playerProfile;
             }
         } catch (SQLException sqlEx) {
-            core.getLogger().log(Level.SEVERE, "Failed to query profile", sqlEx);
+            core.getPlugin().getLogger().log(Level.SEVERE, "Failed to query profile", sqlEx);
         } finally {
             closeQuietly(con);
             closeQuietly(loadStmt);
@@ -226,7 +239,7 @@ public class AuthStorage {
 
             return true;
         } catch (SQLException ex) {
-            core.getLogger().log(Level.SEVERE, "Failed to save playerProfile", ex);
+            core.getPlugin().getLogger().log(Level.SEVERE, "Failed to save playerProfile", ex);
         } finally {
             closeQuietly(con);
             closeQuietly(updateStmt);
@@ -246,7 +259,7 @@ public class AuthStorage {
             try {
                 closeable.close();
             } catch (Exception closeEx) {
-                core.getLogger().log(Level.SEVERE, "Failed to close connection", closeEx);
+                core.getPlugin().getLogger().log(Level.SEVERE, "Failed to close connection", closeEx);
             }
         }
     }

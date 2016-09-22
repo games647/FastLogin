@@ -7,12 +7,12 @@ import com.github.games647.fastlogin.core.hooks.AuthPlugin;
 import java.util.UUID;
 import java.util.logging.Level;
 
-public abstract class JoinManagement<T, S extends LoginSource> {
+public abstract class JoinManagement<P extends C, C, S extends LoginSource> {
 
-    protected final FastLoginCore<T> core;
-    protected final AuthPlugin<T> authHook;
+    protected final FastLoginCore<P, C, ?> core;
+    protected final AuthPlugin<P> authHook;
 
-    public JoinManagement(FastLoginCore<T> core, AuthPlugin<T> authHook) {
+    public JoinManagement(FastLoginCore<P, C, ?> core, AuthPlugin<P> authHook) {
         this.core = core;
         this.authHook = authHook;
     }
@@ -30,7 +30,7 @@ public abstract class JoinManagement<T, S extends LoginSource> {
         try {
             if (profile.getUserId() == -1) {
                 if (core.getPendingLogins().remove(ip + username) != null && config.get("secondAttemptCracked", false)) {
-                    core.getLogger().log(Level.INFO, "Second attempt login -> cracked {0}", username);
+                    core.getPlugin().getLogger().log(Level.INFO, "Second attempt login -> cracked {0}", username);
 
                     //first login request failed so make a cracked session
                     startCrackedSession(source, profile, username);
@@ -39,7 +39,7 @@ public abstract class JoinManagement<T, S extends LoginSource> {
 
                 UUID premiumUUID = null;
                 if (config.get("nameChangeCheck", false) || config.get("autoRegister", false)) {
-                    core.getLogger().log(Level.FINER, "Player {0} uses a premium username", username);
+                    core.getPlugin().getLogger().log(Level.FINER, "Player {0} uses a premium username", username);
                     premiumUUID = core.getApiConnector().getPremiumUUID(username);
                 }
 
@@ -61,7 +61,7 @@ public abstract class JoinManagement<T, S extends LoginSource> {
                 startCrackedSession(source, profile, username);
             }
         } catch (Exception ex) {
-            core.getLogger().log(Level.SEVERE, "Failed to check premium state", ex);
+            core.getPlugin().getLogger().log(Level.SEVERE, "Failed to check premium state", ex);
         }
     }
 
@@ -80,7 +80,7 @@ public abstract class JoinManagement<T, S extends LoginSource> {
             PlayerProfile profile = core.getStorage().loadProfile(premiumUUID);
             if (profile != null) {
                 //uuid exists in the database
-                core.getLogger().log(Level.FINER, "Player {0} changed it's username", premiumUUID);
+                core.getPlugin().getLogger().log(Level.FINER, "Player {0} changed it's username", premiumUUID);
 
                 //update the username to the new one in the database
                 profile.setPlayerName(username);

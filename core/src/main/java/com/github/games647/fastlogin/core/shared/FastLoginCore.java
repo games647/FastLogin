@@ -12,25 +12,31 @@ import com.github.games647.fastlogin.core.importer.Importer;
 import com.google.common.cache.CacheLoader;
 import com.google.common.collect.Sets;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.file.Files;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * @param <P> Player class
+ * @param <C> CommandSender
+ * @param <T> Plugin class
  */
-public abstract class FastLoginCore<P> {
+public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
 
     public static <K, V> ConcurrentMap<K, V> buildCache(int expireAfterWrite, int maxSize) {
         CompatibleCacheBuilder<Object, Object> builder = CompatibleCacheBuilder.newBuilder();
@@ -64,21 +70,62 @@ public abstract class FastLoginCore<P> {
 
     private final ConcurrentMap<String, Object> pendingLogins = FastLoginCore.buildCache(5, 0);
     private final Set<UUID> pendingConfirms = Sets.newHashSet();
-    private final SharedConfig sharedConfig;
+    private final T plugin;
 
+    private SharedConfig sharedConfig;
     private MojangApiConnector apiConnector;
     private AuthStorage storage;
     private PasswordGenerator<P> passwordGenerator = new DefaultPasswordGenerator<>();
     private AuthPlugin<P> authPlugin;
 
-    public FastLoginCore(Map<String, Object> config) {
-        this.sharedConfig = new SharedConfig(config);
+    public FastLoginCore(T plugin) {
+        this.plugin = plugin;
     }
-    
-    public void setApiConnector() {
+
+    public void load() {
+        saveDefaultFile("messages.yml");
+        saveDefaultFile("config.yml");
+
+        BufferedReader reader = null;
+        try {
+            reader = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("config.yml")));
+            sharedConfig = new SharedConfig(plugin.loadYamlFile(reader));
+            reader.close();
+
+            reader = Files.newBufferedReader(new File(plugin.getDataFolder(), "config.yml").toPath());
+            sharedConfig.getConfigValues().putAll(plugin.loadYamlFile(reader));
+            reader.close();
+
+            reader = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("messages.yml")));
+            reader = Files.newBufferedReader(new File(plugin.getDataFolder(), "messages.yml").toPath());
+            Map<String, Object> messageConfig = plugin.loadYamlFile(reader);
+            reader.close();
+
+            reader = Files.newBufferedReader(new File(plugin.getDataFolder(), "messages.yml").toPath());
+            messageConfig.putAll(plugin.loadYamlFile(reader));
+            for (Entry<String, Object> entry : messageConfig.entrySet()) {
+                String message = plugin.translateColorCodes('&', (String) entry.getValue());
+                if (!message.isEmpty()) {
+                    localeMessages.put(entry.getKey(), message);
+                }
+            }
+
+            reader.close();
+        } catch (IOException ioEx) {
+            plugin.getLogger().log(Level.INFO, "Failed to load yaml files", ioEx);
+        } finally {
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException ex) {
+                    plugin.getLogger().log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+
         List<String> ipAddresses = sharedConfig.get("ip-addresses");
         int requestLimit = sharedConfig.get("mojang-request-limit");
-        this.apiConnector = makeApiConnector(getLogger(), ipAddresses, requestLimit);
+        this.apiConnector = plugin.makeApiConnector(plugin.getLogger(), ipAddresses, requestLimit);
     }
 
     public MojangApiConnector getApiConnector() {
@@ -89,19 +136,20 @@ public abstract class FastLoginCore<P> {
         return storage;
     }
 
-    public abstract File getDataFolder();
+    public T getPlugin() {
+        return plugin;
+    }
 
-    public abstract Logger getLogger();
-
-    public abstract ThreadFactory getThreadFactory();
+    public void sendLocaleMessage(String key, C receiver) {
+        String message = localeMessages.get(key);
+        if (message != null) {
+            plugin.sendMessage(receiver, message);
+        }
+    }
 
     public String getMessage(String key) {
         return localeMessages.get(key);
     }
-
-    public abstract void loadMessages();
-
-    public abstract MojangApiConnector makeApiConnector(Logger logger, List<String> addresses, int requests);
 
     public boolean setupDatabase() {
         String driver = sharedConfig.get("driver");
@@ -117,27 +165,27 @@ public abstract class FastLoginCore<P> {
             storage.createTables();
             return true;
         } catch (Exception ex) {
-            getLogger().log(Level.SEVERE, "Failed to setup database. Disabling plugin...", ex);
+            plugin.getLogger().log(Level.SEVERE, "Failed to setup database. Disabling plugin...", ex);
             return false;
         }
     }
 
-    public boolean importDatabase(ImportPlugin plugin, boolean sqlite, AuthStorage storage, String host, String database
+    public boolean importDatabase(ImportPlugin importPlugin, boolean sqlite, AuthStorage storage, String host, String database
             , String username, String pass) {
-        if (sqlite && (plugin == ImportPlugin.BPA || plugin == ImportPlugin.ELDZI)) {
+        if (sqlite && (importPlugin == ImportPlugin.BPA || importPlugin == ImportPlugin.ELDZI)) {
             throw new IllegalArgumentException("These plugins doesn't support flat file databases");
         }
 
         Importer importer;
         try {
-            importer = plugin.getImporter().newInstance();
+            importer = importPlugin.getImporter().newInstance();
         } catch (Exception ex) {
-            getLogger().log(Level.SEVERE, "Couldn't not setup importer class", ex);
+            plugin.getLogger().log(Level.SEVERE, "Couldn't not setup importer class", ex);
             return false;
         } 
 
         try {
-            if (sqlite && plugin == ImportPlugin.AUTO_IN) {
+            if (sqlite && importPlugin == ImportPlugin.AUTO_IN) {
                 //load sqlite driver
                 Class.forName("org.sqlite.JDBC");
 
@@ -154,9 +202,9 @@ public abstract class FastLoginCore<P> {
                 return true;
             }
         } catch (ClassNotFoundException ex) {
-            getLogger().log(Level.SEVERE, "Cannot find SQL driver. Do you removed it?", ex);
+            plugin.getLogger().log(Level.SEVERE, "Cannot find SQL driver. Do you removed it?", ex);
         } catch (SQLException ex) {
-            getLogger().log(Level.SEVERE, "Couldn't import data. Aborting...", ex);
+            plugin.getLogger().log(Level.SEVERE, "Couldn't import data. Aborting...", ex);
         }
 
         return false;
@@ -188,6 +236,28 @@ public abstract class FastLoginCore<P> {
 
     public void setAuthPluginHook(AuthPlugin<P> authPlugin) {
         this.authPlugin = authPlugin;
+    }
+
+    public void saveDefaultFile(String fileName) {
+        if (!plugin.getDataFolder().exists()) {
+            plugin.getDataFolder().mkdir();
+        }
+
+        File configFile = new File(plugin.getDataFolder(), fileName);
+        if (!configFile.exists()) {
+            InputStream in = getClass().getClassLoader().getResourceAsStream(fileName);
+            try {
+                Files.copy(in, configFile.toPath());
+            } catch (IOException ioExc) {
+                plugin.getLogger().log(Level.SEVERE, "Error saving default " + fileName, ioExc);
+            } finally {
+                try {
+                    in.close();
+                } catch (IOException ex) {
+                    plugin.getLogger().log(Level.SEVERE, null, ex);
+                }
+            }
+        }
     }
 
     public void close() {

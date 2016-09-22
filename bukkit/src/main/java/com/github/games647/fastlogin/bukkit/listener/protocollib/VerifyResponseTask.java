@@ -51,9 +51,6 @@ public class VerifyResponseTask implements Runnable {
                 disconnect(plugin.getCore().getMessage("invalid-requst"), true
                         , "Player {0} tried to send encryption response at invalid state", fromPlayer.getAddress());
             } else {
-                String ip = fromPlayer.getAddress().getAddress().getHostAddress();
-                plugin.getCore().getPendingLogins().remove(ip + session.getUsername());
-
                 verifyResponse(session);
             }
         } finally {
