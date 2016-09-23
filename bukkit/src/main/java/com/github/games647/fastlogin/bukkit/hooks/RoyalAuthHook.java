@@ -28,6 +28,10 @@ public class RoyalAuthHook implements AuthPlugin<Player> {
         AuthPlayer authPlayer = AuthPlayer.getAuthPlayer(player);
 
         Future<Boolean> future = Bukkit.getScheduler().callSyncMethod(royalAuthPlugin, () -> {
+            if (authPlayer.isLoggedIn()) {
+                return true;
+            }
+
 //https://github.com/RoyalDev/RoyalAuth/blob/master/src/main/java/org/royaldev/royalauth/commands/CmdLogin.java#L62
 //not thread-safe
             authPlayer.login();

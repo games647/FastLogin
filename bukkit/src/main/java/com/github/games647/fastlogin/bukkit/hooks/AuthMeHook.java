@@ -28,8 +28,10 @@ public class AuthMeHook implements AuthPlugin<Player> {
     public boolean forceLogin(Player player) {
         //skips registration and login
         if (isNewAPIAvailable) {
-            NewAPI.getInstance().forceLogin(player);
-        } else {
+            if (!NewAPI.getInstance().isAuthenticated(player)) {
+                NewAPI.getInstance().forceLogin(player);
+            }
+        } else if (!API.isAuthenticated(player)) {
             API.forceLogin(player);
         }
         
@@ -50,6 +52,7 @@ public class AuthMeHook implements AuthPlugin<Player> {
     @SuppressWarnings("deprecation")
     public boolean forceRegister(Player player, String password) {
         if (isNewAPIAvailable) {
+            //this automatically registers the player too
             NewAPI.getInstance().forceRegister(player, password);
         } else {
             API.registerPlayer(player.getName(), password);

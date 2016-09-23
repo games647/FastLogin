@@ -30,6 +30,10 @@ public class xAuthHook implements AuthPlugin<Player> {
         Future<Boolean> future = Bukkit.getScheduler().callSyncMethod(xAuthPlugin, () -> {
             xAuthPlayer xAuthPlayer = xAuthPlugin.getPlayerManager().getPlayer(player);
             if (xAuthPlayer != null) {
+                if (xAuthPlayer.isAuthenticated()) {
+                    return true;
+                }
+
                 //we checked that the player is premium (paid account)
                 xAuthPlayer.setPremium(true);
 

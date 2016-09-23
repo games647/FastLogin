@@ -28,6 +28,10 @@ public class UltraAuthHook implements AuthPlugin<Player> {
     public boolean forceLogin(Player player) {
         //not thread-safe
         Future<Boolean> future = Bukkit.getScheduler().callSyncMethod(ultraAuthPlugin, () -> {
+            if (UltraAuthAPI.isAuthenticated(player)) {
+                return true;
+            }
+
             UltraAuthAPI.authenticatedPlayer(player);
             return UltraAuthAPI.isAuthenticated(player);
         });
