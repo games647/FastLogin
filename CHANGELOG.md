@@ -3,6 +3,7 @@
 * Remove deprecated API methods from the last version
 * Finally set a value to the API column
 * No duplicate session login
+* Fix timestamp parsing in newer versions of SQLite
 
 ######1.9
 

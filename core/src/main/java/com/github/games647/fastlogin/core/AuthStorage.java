@@ -10,8 +10,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Calendar;
-import java.util.Locale;
+import java.util.Properties;
 import java.util.UUID;
 import java.util.concurrent.ThreadFactory;
 import java.util.logging.Level;
@@ -23,9 +22,6 @@ public class AuthStorage {
     private final FastLoginCore<?, ?, ?> core;
     private final HikariDataSource dataSource;
 
-    //a try to fix https://www.spigotmc.org/threads/fastlogin.101192/page-26#post-1874647
-    private final Calendar calendar = Calendar.getInstance(Locale.US);
-
     public AuthStorage(FastLoginCore<?, ?, ?> core, String driver, String host, int port, String databasePath
             , String user, String pass) {
         this.core = core;
@@ -34,6 +30,11 @@ public class AuthStorage {
         databaseConfig.setUsername(user);
         databaseConfig.setPassword(pass);
         databaseConfig.setDriverClassName(driver);
+
+        //a try to fix https://www.spigotmc.org/threads/fastlogin.101192/page-26#post-1874647
+        Properties properties = new Properties();
+        properties.setProperty("date_string_format", "yyyy-MM-dd HH:mm:ss");
+        databaseConfig.setDataSourceProperties(properties);
 
         ThreadFactoryBuilder threadFactoryBuilder =  new ThreadFactoryBuilder()
                 .setNameFormat(core.getPlugin().getName() + " Database Pool Thread #%1$d")
@@ -139,7 +140,7 @@ public class AuthStorage {
 
                 boolean premium = resultSet.getBoolean(4);
                 String lastIp = resultSet.getString(5);
-                long lastLogin = resultSet.getTimestamp(6, calendar).getTime();
+                long lastLogin = resultSet.getTimestamp(6).getTime();
                 PlayerProfile playerProfile = new PlayerProfile(userId, uuid, name, premium, lastIp, lastLogin);
                 return playerProfile;
             } else {
@@ -173,7 +174,7 @@ public class AuthStorage {
                 String name = resultSet.getString(3);
                 boolean premium = resultSet.getBoolean(4);
                 String lastIp = resultSet.getString(5);
-                long lastLogin = resultSet.getTimestamp(6, calendar).getTime();
+                long lastLogin = resultSet.getTimestamp(6).getTime();
                 PlayerProfile playerProfile = new PlayerProfile(userId, uuid, name, premium, lastIp, lastLogin);
                 return playerProfile;
             }

@@ -16,7 +16,7 @@ import me.vik1395.BungeeAuth.Tables;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 /**
- * Github: https://github.com/MatteCarra/BungeeAuth
+ * Github: https://github.com/vik1395/BungeeAuth-Minecraft
  *
  * Project page:
  *
@@ -24,13 +24,13 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
  */
 public class BungeeAuthHook implements AuthPlugin<ProxiedPlayer> {
 
-    //https://github.com/MatteCarra/BungeeAuth/blob/master/src/me/vik1395/BungeeAuth/Login.java#L32
+    //https://github.com/vik1395/BungeeAuth-Minecraft/blob/master/src/me/vik1395/BungeeAuth/Login.java#L32
     private final Tables databaseConnection = new Tables();
 
     @Override
     public boolean forceLogin(ProxiedPlayer player) {
         String playerName = player.getName();
-//https://github.com/MatteCarra/BungeeAuth/blob/master/src/me/vik1395/BungeeAuth/Login.java#L92-95
+//https://github.com/vik1395/BungeeAuth-Minecraft/blob/master/src/me/vik1395/BungeeAuth/Login.java#L92-95
         if (Main.plonline.contains(playerName)) {
             return true;
         }
@@ -58,14 +58,14 @@ public class BungeeAuthHook implements AuthPlugin<ProxiedPlayer> {
 
     @Override
     public boolean isRegistered(String playerName) throws Exception {
-        //https://github.com/MatteCarra/BungeeAuth/blob/master/src/me/vik1395/BungeeAuth/Register.java#L46
+        //https://github.com/vik1395/BungeeAuth-Minecraft/blob/master/src/me/vik1395/BungeeAuth/Register.java#L46
         //renamed t to databaseConnection
         return databaseConnection.checkPlayerEntry(playerName);
     }
 
     @Override
     public boolean forceRegister(ProxiedPlayer player, String password) {
-        //https://github.com/MatteCarra/BungeeAuth/blob/master/src/me/vik1395/BungeeAuth/Register.java#L102
+        //https://github.com/vik1395/BungeeAuth-Minecraft/blob/master/src/me/vik1395/BungeeAuth/Register.java#L102
         PasswordHandler ph = new PasswordHandler();
         Random rand = new Random();
         int maxp = 7; //Total Password Hashing methods.
@@ -75,7 +75,7 @@ public class BungeeAuthHook implements AuthPlugin<ProxiedPlayer> {
         String Pw = password;
         String pType = "" + rand.nextInt(maxp + 1);
         String regdate = ft.format(dNow);
-        //https://github.com/MatteCarra/BungeeAuth/blob/master/src/me/vik1395/BungeeAuth/Register.java#L60
+        //https://github.com/vik1395/BungeeAuth-Minecraft/blob/master/src/me/vik1395/BungeeAuth/Register.java#L60
         String lastip = player.getAddress().getAddress().getHostAddress();
         String lastseen = regdate;
         String hash = ph.newHash(Pw, pType);
@@ -86,7 +86,6 @@ public class BungeeAuthHook implements AuthPlugin<ProxiedPlayer> {
         Object[] arguments = new Object[] {player.getName(), hash, pType, "", lastip, regdate, lastip, lastseen};
 
         try {
-
             callProtected("newPlayerEntry", parameterTypes, arguments);
             //proparly not thread-safe
             forceLogin(player);

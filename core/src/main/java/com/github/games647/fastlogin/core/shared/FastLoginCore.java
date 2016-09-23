@@ -88,7 +88,7 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
 
         BufferedReader reader = null;
         try {
-            reader = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("config.yml")));
+            reader = new BufferedReader(new InputStreamReader(getClass().getClassLoader().getResourceAsStream("config.yml")));
             sharedConfig = new SharedConfig(plugin.loadYamlFile(reader));
             reader.close();
 
@@ -96,7 +96,7 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
             sharedConfig.getConfigValues().putAll(plugin.loadYamlFile(reader));
             reader.close();
 
-            reader = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("messages.yml")));
+            reader = new BufferedReader(new InputStreamReader(getClass().getClassLoader().getResourceAsStream("messages.yml")));
             reader = Files.newBufferedReader(new File(plugin.getDataFolder(), "messages.yml").toPath());
             Map<String, Object> messageConfig = plugin.loadYamlFile(reader);
             reader.close();
