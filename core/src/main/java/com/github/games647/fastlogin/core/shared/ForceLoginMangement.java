@@ -36,16 +36,15 @@ public abstract class ForceLoginMangement<P extends C, C, L extends LoginSession
                     //maybe only bungeecord plugin
                     onForceActionSuccess(session);
                 } else {
-                    boolean success = false;
-                    if (isOnline(player)) {
-                        if (core.getConfig().get("autoLogin", true)) {
-                            if (session.needsRegistration()) {
-                                success = forceRegister(player);
-                            } else {
-                                success = forceLogin(player);
-                            }
+                    boolean success = true;
+                    String playerName = getName(player);
+                    if (core.getConfig().get("autoLogin", true)) {
+                        if (session.needsRegistration()
+                                || (core.getConfig().get("auto-register-unknown", false)
+                                && !authPlugin.isRegistered(playerName))) {
+                            success = forceRegister(player);
                         } else {
-                            success = true;
+                            success = forceLogin(player);
                         }
                     }
 
@@ -61,13 +60,11 @@ public abstract class ForceLoginMangement<P extends C, C, L extends LoginSession
                         onForceActionSuccess(session);
                     }
                 }
-            } else {
+            } else if (playerProfile != null) {
                 //cracked player
-                if (playerProfile != null) {
-                    playerProfile.setUuid(null);
-                    playerProfile.setPremium(false);
-                    storage.save(playerProfile);
-                }
+                playerProfile.setUuid(null);
+                playerProfile.setPremium(false);
+                storage.save(playerProfile);
             }
         } catch (Exception ex) {
             core.getPlugin().getLogger().log(Level.INFO, "ERROR ON FORCE LOGIN", ex);

@@ -144,6 +144,11 @@ ip-addresses: []
 # If you want to join the discussion visit this: https://github.com/games647/FastLogin/issues/27#issuecomment-226954350
 mojang-request-limit: 600
 
+# This option automatically registers players which are in the FastLogin database, but not in the auth plugin database.
+# This can happen if you switch your auth plugin or cleared the database of the auth plugin.
+# https://github.com/games647/FastLogin/issues/85
+auto-register-unknown: false
+
 # This disables the auto login from fastlogin. So a premium (like a paid account) authentication is requested, but
 # the player won't be auto logged into the account.
 #
