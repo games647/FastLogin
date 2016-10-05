@@ -1,5 +1,7 @@
 ######1.10
 
+* Automatically register accounts if they are not in the auth plugin database but in the FastLogin database
+* Update BungeeAuth dependency and use the new API. Please update your plugin if you still use the old one.
 * Remove deprecated API methods from the last version
 * Finally set a value to the API column
 * No duplicate session login
