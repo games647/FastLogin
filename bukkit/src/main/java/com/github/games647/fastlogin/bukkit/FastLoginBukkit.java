@@ -132,7 +132,7 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
 
     public void sendBungeeActivateMessage(CommandSender sender, String target, boolean activate) {
         if (sender instanceof Player) {
-            notifiyBungeeCord((Player) sender, target, activate);
+            notifiyBungeeCord((Player) sender, target, activate, sender instanceof Player);
         } else {
             Player firstPlayer = Iterables.getFirst(getServer().getOnlinePlayers(), null);
             if (firstPlayer == null) {
@@ -140,7 +140,7 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
                 return;
             }
 
-            notifiyBungeeCord(firstPlayer, target, activate);
+            notifiyBungeeCord(firstPlayer, target, activate, sender instanceof Player);
         }
     }
 
@@ -183,7 +183,7 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
         }
     }
 
-    private void notifiyBungeeCord(Player sender, String target, boolean activate) {
+    private void notifiyBungeeCord(Player sender, String target, boolean activate, boolean isPlayer) {
         ByteArrayDataOutput dataOutput = ByteStreams.newDataOutput();
         if (activate) {
             dataOutput.writeUTF("ON");
@@ -192,6 +192,7 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
         }
 
         dataOutput.writeUTF(target);
+        dataOutput.writeBoolean(isPlayer);
         sender.sendPluginMessage(this, getName(), dataOutput.toByteArray());
     }
 

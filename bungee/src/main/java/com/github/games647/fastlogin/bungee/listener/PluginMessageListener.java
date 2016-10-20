@@ -4,10 +4,12 @@ import com.github.games647.fastlogin.bungee.BungeeLoginSession;
 import com.github.games647.fastlogin.bungee.FastLoginBungee;
 import com.github.games647.fastlogin.bungee.tasks.AsyncToggleMessage;
 import com.github.games647.fastlogin.core.PlayerProfile;
+import com.github.games647.fastlogin.core.shared.FastLoginCore;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteStreams;
 
 import java.util.Arrays;
+import net.md_5.bungee.api.CommandSender;
 
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -47,30 +49,34 @@ public class PluginMessageListener implements Listener {
     }
 
     private void readMessage(ProxiedPlayer forPlayer, byte[] data) {
+        FastLoginCore<ProxiedPlayer, CommandSender, FastLoginBungee> core = plugin.getCore();
+
         ByteArrayDataInput dataInput = ByteStreams.newDataInput(data);
         String subchannel = dataInput.readUTF();
-        if ("ON".equals(subchannel)) {
+        if ("SUCCESS".equals(subchannel)) {
+            onSuccessMessage(forPlayer);
+        } else if ("ON".equals(subchannel)) {
             String playerName = dataInput.readUTF();
+            boolean isPlayerSender = dataInput.readBoolean();
 
             if (playerName.equals(forPlayer.getName()) && plugin.getConfig().getBoolean("premium-warning")
-                    && !plugin.getCore().getPendingConfirms().contains(forPlayer.getUniqueId())) {
-                String message = plugin.getCore().getMessage("premium-warning");
+                    && !core.getPendingConfirms().contains(forPlayer.getUniqueId())) {
+                String message = core.getMessage("premium-warning");
                 forPlayer.sendMessage(TextComponent.fromLegacyText(message));
-                plugin.getCore().getPendingConfirms().add(forPlayer.getUniqueId());
+                core.getPendingConfirms().add(forPlayer.getUniqueId());
                 return;
             }
 
-            plugin.getCore().getPendingConfirms().remove(forPlayer.getUniqueId());
-            AsyncToggleMessage task = new AsyncToggleMessage(plugin.getCore(), forPlayer, playerName, true);
+            core.getPendingConfirms().remove(forPlayer.getUniqueId());
+            AsyncToggleMessage task = new AsyncToggleMessage(core, forPlayer, playerName, true, isPlayerSender);
             ProxyServer.getInstance().getScheduler().runAsync(plugin, task);
         } else if ("OFF".equals(subchannel)) {
             String playerName = dataInput.readUTF();
+            boolean isPlayerSender = dataInput.readBoolean();
 
-            AsyncToggleMessage task = new AsyncToggleMessage(plugin.getCore(), forPlayer, playerName, false);
+            AsyncToggleMessage task = new AsyncToggleMessage(core, forPlayer, playerName, false, isPlayerSender);
             ProxyServer.getInstance().getScheduler().runAsync(plugin, task);
-        } else if ("SUCCESS".equals(subchannel)) {
-            onSuccessMessage(forPlayer);
-        }
+        } 
     }
 
     private void onSuccessMessage(ProxiedPlayer forPlayer) {
