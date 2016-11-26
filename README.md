@@ -41,7 +41,7 @@ So they don't need to enter passwords. This is also called auto login (auto-logi
     * fastlogin.command.import
 
 ###Requirements:
-* Plugin: [ProtocolLib](http://www.spigotmc.org/resources/protocollib.1997/) or [ProtocolSupport](http://www.spigotmc.org/resources/protocolsupport.7201/)
+* Plugin: [ProtocolLib](https://www.spigotmc.org/resources/protocollib.1997/) or [ProtocolSupport](https://www.spigotmc.org/resources/protocolsupport.7201/)
 * Tested Bukkit/[Spigot](https://www.spigotmc.org) 1.9 (could also work with other versions)
 * Java 7+
 * Run Spigot and/or BungeeCord/Waterfall in offline mode (see server.properties or config.yml)
@@ -49,14 +49,14 @@ So they don't need to enter passwords. This is also called auto login (auto-logi
 
 ####Bukkit/Spigot/PaperSpigot
 
-* [AuthMe (both 5.X and 3.X)](http://dev.bukkit.org/bukkit-plugins/authme-reloaded/)
-* [xAuth](http://dev.bukkit.org/bukkit-plugins/xauth/)
+* [AuthMe (both 5.X and 3.X)](https://dev.bukkit.org/bukkit-plugins/authme-reloaded/)
+* [xAuth](https://dev.bukkit.org/bukkit-plugins/xauth/)
 * [LogIt](https://github.com/XziomekX/LogIt)
 * [AdvancedLogin (Paid)](https://www.spigotmc.org/resources/advancedlogin.10510/)
-* [CrazyLogin](http://dev.bukkit.org/bukkit-plugins/crazylogin/)
-* [LoginSecurity](http://dev.bukkit.org/bukkit-plugins/loginsecurity/)
-* [RoyalAuth](http://dev.bukkit.org/bukkit-plugins/royalauth/)
-* [UltraAuth](http://dev.bukkit.org/bukkit-plugins/ultraauth-aa/)
+* [CrazyLogin](https://dev.bukkit.org/bukkit-plugins/crazylogin/)
+* [LoginSecurity](https://dev.bukkit.org/bukkit-plugins/loginsecurity/)
+* [RoyalAuth](https://dev.bukkit.org/bukkit-plugins/royalauth/)
+* [UltraAuth](https://dev.bukkit.org/bukkit-plugins/ultraauth-aa/)
 
 ####BungeeCord/Waterfall
 

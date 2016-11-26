@@ -31,6 +31,10 @@ public class ForceLoginTask extends ForceLoginMangement<ProxiedPlayer, CommandSe
         PendingConnection pendingConnection = player.getPendingConnection();
         session = core.getPlugin().getSession().get(pendingConnection);
 
+        if (session == null) {
+            return;
+        }
+
         super.run();
 
         if (!isOnlineMode()) {

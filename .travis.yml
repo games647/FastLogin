@@ -1,6 +1,6 @@
 # Use https://travis-ci.org/ for automatic tests
 
-# speed up testing http://blog.travis-ci.com/2014-12-17-faster-builds-with-container-based-infrastructure/
+# speed up testing https://blog.travis-ci.com/2014-12-17-faster-builds-with-container-based-infrastructure/
 sudo: false
 
 # This is a java project
