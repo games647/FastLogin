@@ -13,6 +13,11 @@ public class SharedConfig {
     @SuppressWarnings("unchecked")
     public <T> T get(String path, T def) {
         Object val = configValues.get(path);
+
+        if (def instanceof String) {
+            return (T) String.valueOf(val);
+        }
+
         return ( val != null ) ? (T) val : def;
     }
 
