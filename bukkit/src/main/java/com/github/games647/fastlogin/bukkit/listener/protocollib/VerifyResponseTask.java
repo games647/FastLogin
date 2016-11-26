@@ -5,7 +5,6 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
-import com.comphenix.protocol.injector.netty.Injector;
 import com.comphenix.protocol.injector.server.TemporaryPlayerFactory;
 import com.comphenix.protocol.reflect.FieldUtils;
 import com.comphenix.protocol.reflect.FuzzyReflection;
@@ -125,11 +124,12 @@ public class VerifyResponseTask implements Runnable {
     }
 
     //try to get the networkManager from ProtocolLib
-    private Object getNetworkManager() throws IllegalAccessException, NoSuchFieldException {
+    private Object getNetworkManager() throws IllegalAccessException, NoSuchFieldException, ClassNotFoundException {
         Object injectorContainer = TemporaryPlayerFactory.getInjectorFromPlayer(fromPlayer);
 
         //ChannelInjector
-        Injector rawInjector = FuzzyReflection.getFieldValue(injectorContainer, Injector.class, true);
+        Class<?> injectorClass = Class.forName("com.comphenix.protocol.injector.netty.Injector");
+        Object rawInjector = FuzzyReflection.getFieldValue(injectorContainer, injectorClass, true);
         return FieldUtils.readField(rawInjector, "networkManager", true);
     }
 
