@@ -1,8 +1,6 @@
 package com.github.games647.fastlogin.bukkit;
 
 import com.avaje.ebeaninternal.api.ClassUtil;
-import com.comphenix.protocol.AsynchronousManager;
-import com.comphenix.protocol.ProtocolLibrary;
 import com.github.games647.fastlogin.bukkit.commands.CrackedCommand;
 import com.github.games647.fastlogin.bukkit.commands.ImportCommand;
 import com.github.games647.fastlogin.bukkit.commands.PremiumCommand;
@@ -89,13 +87,13 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
                 getServer().getPluginManager().registerEvents(new ProtocolSupportListener(this), this);
             } else if (getServer().getPluginManager().isPluginEnabled("ProtocolLib")) {
                 //we are performing HTTP request on these so run it async (seperate from the Netty IO threads)
-                AsynchronousManager asynchronousManager = ProtocolLibrary.getProtocolManager().getAsynchronousManager();
 
-                StartPacketListener startPacketListener = new StartPacketListener(this);
-                EncryptionPacketListener encryptionPacketListener = new EncryptionPacketListener(this);
+                //they will be created with a static builder, because otherwise it will throw a
+                //java.lang.NoClassDefFoundError: com/comphenix/protocol/events/PacketListener if ProtocolSupport was
+                //only found
+                StartPacketListener.register(this, WORKER_THREADS);
+                EncryptionPacketListener.register(this, WORKER_THREADS);
 
-                asynchronousManager.registerAsyncHandler(startPacketListener).start(WORKER_THREADS);
-                asynchronousManager.registerAsyncHandler(encryptionPacketListener).start(WORKER_THREADS);
                 getServer().getPluginManager().registerEvents(new LoginSkinApplyListener(this), this);
             } else {
                 getLogger().warning("Either ProtocolLib or ProtocolSupport have to be installed "

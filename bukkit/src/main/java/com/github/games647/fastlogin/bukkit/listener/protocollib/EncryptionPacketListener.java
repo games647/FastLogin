@@ -1,6 +1,7 @@
 package com.github.games647.fastlogin.bukkit.listener.protocollib;
 
 import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
@@ -33,6 +34,11 @@ public class EncryptionPacketListener extends PacketAdapter {
         super(params(plugin, PacketType.Login.Client.ENCRYPTION_BEGIN).optionAsync());
 
         this.plugin = plugin;
+    }
+
+    public static void register(FastLoginBukkit plugin, int workerThreads) {
+        ProtocolLibrary.getProtocolManager().getAsynchronousManager()
+                .registerAsyncHandler(new EncryptionPacketListener(plugin)).start(workerThreads);
     }
 
     /**

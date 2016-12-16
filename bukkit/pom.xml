@@ -65,7 +65,7 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.10.2-R0.1-SNAPSHOT</version>
+            <version>1.11-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
 
@@ -80,7 +80,7 @@
 	    <groupId>com.github.ProtocolSupport</groupId>
 	    <artifactId>ProtocolSupport</artifactId>
             <!--4.25.dev-->
-	    <version>5554413b51</version>
+	    <version>a4f060dc46</version>
 	</dependency>
 
         <!--Login Plugins-->

@@ -1,6 +1,7 @@
 package com.github.games647.fastlogin.bukkit.listener.protocollib;
 
 import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
@@ -36,6 +37,11 @@ public class StartPacketListener extends PacketAdapter {
         super(params(plugin, PacketType.Login.Client.START).optionAsync());
 
         this.plugin = plugin;
+    }
+
+    public static void register(FastLoginBukkit plugin, int workerThreads) {
+        ProtocolLibrary.getProtocolManager().getAsynchronousManager()
+                .registerAsyncHandler(new StartPacketListener(plugin)).start(workerThreads);
     }
 
     /**
