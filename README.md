@@ -86,7 +86,8 @@ Put your stats id from the BungeeCord config into this file
 5. Download and Install FastLogin on BungeeCord AND Spigot
 6. Check your database settings in the config of FastLogin on BungeeCord
 7. Set your proxy (BungeeCord) in offline mode by setting the value onlinemode in your config.yml to false
-8. (BungeeCord doesn't support SQLite per default, so you should change the configuration to MySQL or MariaDB)
+8. You should *always* firewall your spigot server that it's only accessible through BungeeCord https://www.spigotmc.org/wiki/bungeecord-installation/#post-installation
+9. (BungeeCord doesn't support SQLite per default, so you should change the configuration to MySQL or MariaDB)
 
 ***
 
