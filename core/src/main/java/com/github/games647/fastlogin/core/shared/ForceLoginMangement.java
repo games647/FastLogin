@@ -52,7 +52,6 @@ public abstract class ForceLoginMangement<P extends C, C, L extends LoginSession
                         //update only on success to prevent corrupt data
                         if (playerProfile != null) {
                             playerProfile.setUuid(session.getUuid());
-                            //save cracked players too
                             playerProfile.setPremium(true);
                             storage.save(playerProfile);
                         }
@@ -67,7 +66,7 @@ public abstract class ForceLoginMangement<P extends C, C, L extends LoginSession
                 storage.save(playerProfile);
             }
         } catch (Exception ex) {
-            core.getPlugin().getLogger().log(Level.INFO, "ERROR ON FORCE LOGIN", ex);
+            core.getPlugin().getLogger().log(Level.WARNING, "ERROR ON FORCE LOGIN", ex);
         }
     }
 
