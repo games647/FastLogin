@@ -19,8 +19,8 @@ public class ForceLoginTask extends ForceLoginMangement<ProxiedPlayer, CommandSe
 
     private final Server server;
 
-    public ForceLoginTask(FastLoginCore<ProxiedPlayer, CommandSender, FastLoginBungee> core
-            , ProxiedPlayer player, Server server) {
+    public ForceLoginTask(FastLoginCore<ProxiedPlayer, CommandSender, FastLoginBungee> core,
+             ProxiedPlayer player, Server server) {
         super(core, player);
 
         this.server = server;
@@ -91,7 +91,7 @@ public class ForceLoginTask extends ForceLoginMangement<ProxiedPlayer, CommandSe
 
     @Override
     public boolean isOnline(ProxiedPlayer player) {
-        return !player.isConnected();
+        return player.isConnected();
     }
 
     @Override
