@@ -19,8 +19,8 @@
     <repositories>
         <!--BungeeCord with also the part outside the API-->
         <repository>
-            <id>myplayplanet-REPO</id>
-            <url>http://maven.myplayplanet.net/</url>
+            <id>bungee-repo</id>
+            <url>http://maven.addstar.com.au/artifactory/ext-snapshot-local/</url>
         </repository>
 
         <repository>
@@ -40,7 +40,7 @@
         <dependency>
             <groupId>net.md-5</groupId>
             <artifactId>bungeecord-proxy</artifactId>
-            <version>1.8-SNAPSHOT</version>
+            <version>1.11-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
 
