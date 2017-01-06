@@ -36,7 +36,7 @@ public class ProtocolSupportListener extends JoinManagement<Player, CommandSende
         InetSocketAddress address = loginStartEvent.getAddress();
 
         //remove old data every time on a new login in order to keep the session only for one person
-        plugin.getSessions().remove(address.toString());
+        plugin.getLoginSessions().remove(address.toString());
 
         super.onLogin(username, new ProtocolLoginSource(loginStartEvent));
     }
@@ -44,7 +44,7 @@ public class ProtocolSupportListener extends JoinManagement<Player, CommandSende
     @EventHandler
     public void onPropertiesResolve(PlayerPropertiesResolveEvent propertiesResolveEvent) {
         InetSocketAddress address = propertiesResolveEvent.getAddress();
-        BukkitLoginSession session = plugin.getSessions().get(address.toString());
+        BukkitLoginSession session = plugin.getLoginSessions().get(address.toString());
 
         //skin was resolved -> premium player
         if (propertiesResolveEvent.hasProperty("textures") && session != null) {
@@ -60,7 +60,7 @@ public class ProtocolSupportListener extends JoinManagement<Player, CommandSende
         plugin.getCore().getPendingLogins().put(ip + username, new Object());
 
         BukkitLoginSession playerSession = new BukkitLoginSession(username, null, null, registered, profile);
-        plugin.getSessions().put(source.getAddress().toString(), playerSession);
+        plugin.getLoginSessions().put(source.getAddress().toString(), playerSession);
         if (plugin.getConfig().getBoolean("premiumUuid")) {
             source.getLoginStartEvent().setUseOnlineModeUUID(true);
         }
@@ -69,6 +69,6 @@ public class ProtocolSupportListener extends JoinManagement<Player, CommandSende
     @Override
     public void startCrackedSession(ProtocolLoginSource source, PlayerProfile profile, String username) {
         BukkitLoginSession loginSession = new BukkitLoginSession(username, profile);
-        plugin.getSessions().put(source.getAddress().toString(), loginSession);
+        plugin.getLoginSessions().put(source.getAddress().toString(), loginSession);
     }
 }

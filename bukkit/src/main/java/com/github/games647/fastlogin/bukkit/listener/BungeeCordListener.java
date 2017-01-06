@@ -58,9 +58,6 @@ public class BungeeCordListener implements PluginMessageListener {
         Player checkedPlayer = plugin.getServer().getPlayerExact(playerName);
         //fail if target player is blacklisted because already authed or wrong bungeecord id
         if (checkedPlayer != null && !checkedPlayer.hasMetadata(plugin.getName())) {
-            //blacklist this target player for BungeeCord Id brute force attacks
-            player.setMetadata(plugin.getName(), new FixedMetadataValue(plugin, true));
-
             //bungeecord UUID
             long mostSignificantBits = dataInput.readLong();
             long leastSignificantBits = dataInput.readLong();
@@ -80,7 +77,7 @@ public class BungeeCordListener implements PluginMessageListener {
         if ("AUTO_LOGIN".equalsIgnoreCase(subchannel)) {
             BukkitLoginSession playerSession = new BukkitLoginSession(playerName, true);
             playerSession.setVerified(true);
-            plugin.getSessions().put(id, playerSession);
+            plugin.getLoginSessions().put(id, playerSession);
             Bukkit.getScheduler().runTaskAsynchronously(plugin, new ForceLoginTask(plugin.getCore(), player));
         } else if ("AUTO_REGISTER".equalsIgnoreCase(subchannel)) {
             Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
@@ -90,7 +87,7 @@ public class BungeeCordListener implements PluginMessageListener {
                     if (authPlugin == null || !authPlugin.isRegistered(playerName)) {
                         BukkitLoginSession playerSession = new BukkitLoginSession(playerName, false);
                         playerSession.setVerified(true);
-                        plugin.getSessions().put(id, playerSession);
+                        plugin.getLoginSessions().put(id, playerSession);
                         new ForceLoginTask(plugin.getCore(), player).run();
                     }
                 } catch (Exception ex) {

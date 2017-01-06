@@ -18,6 +18,7 @@ softdepend:
     # We depend either ProtocolLib or ProtocolSupport
     - ProtocolSupport
     - ProtocolLib
+    - PlaceholderAPI
 
 commands:
     ${project.parent.name}:

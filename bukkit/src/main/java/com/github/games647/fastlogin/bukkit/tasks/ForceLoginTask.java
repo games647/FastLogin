@@ -14,6 +14,7 @@ import java.util.logging.Level;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.metadata.FixedMetadataValue;
 
 public class ForceLoginTask extends ForceLoginMangement<Player, CommandSender, BukkitLoginSession, FastLoginBukkit> {
 
@@ -25,7 +26,11 @@ public class ForceLoginTask extends ForceLoginMangement<Player, CommandSender, B
     public void run() {
         //remove the bungeecord identifier if there is ones
         String id = '/' + player.getAddress().getAddress().getHostAddress() + ':' + player.getAddress().getPort();
-        session = core.getPlugin().getSessions().remove(id);
+        session = core.getPlugin().getLoginSessions().remove(id);
+
+        //blacklist this target player for BungeeCord Id brute force attacks
+        FastLoginBukkit plugin = core.getPlugin();
+        player.setMetadata(core.getPlugin().getName(), new FixedMetadataValue(plugin, true));
 
         super.run();
     }

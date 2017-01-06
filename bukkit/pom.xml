@@ -51,6 +51,12 @@
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>
         </repository>
+        
+        <!--PlaceholerAPI -->
+        <repository>
+            <id>placeholderapi</id>
+            <url>http://repo.extendedclip.com/content/repositories/placeholderapi/</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -76,12 +82,26 @@
             <version>3.6.5</version>
         </dependency>
 
-	<dependency>
-	    <groupId>com.github.ProtocolSupport</groupId>
-	    <artifactId>ProtocolSupport</artifactId>
+        <dependency>
+            <groupId>com.github.ProtocolSupport</groupId>
+            <artifactId>ProtocolSupport</artifactId>
             <!--4.25.dev-->
-	    <version>a4f060dc46</version>
-	</dependency>
+            <version>a4f060dc46</version>
+        </dependency>
+
+        <dependency>
+            <groupId>me.clip</groupId>
+            <artifactId>placeholderapi</artifactId>
+            <version>2.6.0</version>
+            <scope>provided</scope>
+            <optional>true</optional>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
 
         <!--Login Plugins-->
         <dependency>
@@ -110,10 +130,10 @@
             </exclusions>
         </dependency>
 
-	<dependency>
-	    <groupId>com.github.games647</groupId>
-	    <artifactId>LogIt</artifactId>
-	    <version>9e3581db27</version>
+        <dependency>
+            <groupId>com.github.games647</groupId>
+            <artifactId>LogIt</artifactId>
+            <version>9e3581db27</version>
             <optional>true</optional>
             <scope>provided</scope>
             <exclusions>
@@ -122,7 +142,7 @@
                     <artifactId>*</artifactId>
                 </exclusion>
             </exclusions>
-	</dependency>
+        </dependency>
 
         <dependency>
             <groupId>com.github.RoyalDev</groupId>

@@ -27,6 +27,8 @@ import java.util.concurrent.ThreadFactory;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import me.clip.placeholderapi.PlaceholderAPI;
+
 import net.md_5.bungee.api.ChatColor;
 
 import org.bukkit.command.CommandSender;
@@ -49,7 +51,7 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
     private boolean serverStarted;
 
     //1 minutes should be enough as a timeout for bad internet connection (Server, Client and Mojang)
-    private final ConcurrentMap<String, BukkitLoginSession> session = FastLoginCore.buildCache(1, -1);
+    private final ConcurrentMap<String, BukkitLoginSession> loginSession = FastLoginCore.buildCache(1, -1);
 
     @Override
     public void onEnable() {
@@ -64,7 +66,7 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
         }
 
         if (getServer().getOnlineMode()) {
-            //we need to require offline to prevent a session request for a offline player
+            //we need to require offline to prevent a loginSession request for a offline player
             getLogger().severe("Server have to be in offline mode");
             setEnabled(false);
             return;
@@ -110,11 +112,15 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
         getCommand("premium").setExecutor(new PremiumCommand(this));
         getCommand("cracked").setExecutor(new CrackedCommand(this));
         getCommand("import-auth").setExecutor(new ImportCommand(core));
+
+        if (getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
+            PlaceholderAPI.registerPlaceholderHook(this, new PremiumPlaceholder(this));
+        }
     }
 
     @Override
     public void onDisable() {
-        session.clear();
+        loginSession.clear();
 
         if (core != null) {
             core.close();
@@ -146,10 +152,10 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
      * Gets a thread-safe map about players which are connecting to the server are being checked to be premium (paid
      * account)
      *
-     * @return a thread-safe session map
+     * @return a thread-safe loginSession map
      */
-    public ConcurrentMap<String, BukkitLoginSession> getSessions() {
-        return session;
+    public ConcurrentMap<String, BukkitLoginSession> getLoginSessions() {
+        return loginSession;
     }
 
     /**
