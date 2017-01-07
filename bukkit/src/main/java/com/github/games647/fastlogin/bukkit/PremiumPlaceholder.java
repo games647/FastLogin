@@ -7,14 +7,16 @@ import org.bukkit.metadata.MetadataValue;
 
 import java.util.List;
 
+import me.clip.placeholderapi.PlaceholderAPI;
+
 public class PremiumPlaceholder extends PlaceholderHook {
 
     private final FastLoginBukkit plugin;
 
     public PremiumPlaceholder(FastLoginBukkit plugin) {
         this.plugin = plugin;
-    }    
-    
+    }
+
     @Override
     public String onPlaceholderRequest(Player player, String variable) {
         if (player != null && "fastlogin_status".contains(variable)) {
@@ -31,5 +33,9 @@ public class PremiumPlaceholder extends PlaceholderHook {
         }
 
         return null;
+    }
+
+    public static boolean register(FastLoginBukkit plugin) {
+        return PlaceholderAPI.registerPlaceholderHook(plugin, new PremiumPlaceholder(plugin));
     }
 }

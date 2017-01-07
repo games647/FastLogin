@@ -27,8 +27,6 @@ import java.util.concurrent.ThreadFactory;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import me.clip.placeholderapi.PlaceholderAPI;
-
 import net.md_5.bungee.api.ChatColor;
 
 import org.bukkit.command.CommandSender;
@@ -114,7 +112,8 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
         getCommand("import-auth").setExecutor(new ImportCommand(core));
 
         if (getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
-            PlaceholderAPI.registerPlaceholderHook(this, new PremiumPlaceholder(this));
+            //prevents NoClassDef errors if it's not available
+            PremiumPlaceholder.register(this);
         }
     }
 
