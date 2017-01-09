@@ -57,7 +57,6 @@ public abstract class JoinManagement<P extends C, C, S extends LoginSource> {
             } else if (profile.isPremium()) {
                 requestPremiumLogin(source, profile, username, true);
             } else {
-
                 startCrackedSession(source, profile, username);
             }
         } catch (Exception ex) {
@@ -66,6 +65,7 @@ public abstract class JoinManagement<P extends C, C, S extends LoginSource> {
     }
 
     private boolean checkPremiumName(S source, String username, PlayerProfile profile) throws Exception {
+        core.getPlugin().getLogger().log(Level.FINER, "Player {0} uses a premium username", username);
         if (core.getConfig().get("autoRegister", false) && (authHook == null || !authHook.isRegistered(username))) {
             requestPremiumLogin(source, profile, username, false);
             return true;
