@@ -39,7 +39,6 @@ public abstract class JoinManagement<P extends C, C, S extends LoginSource> {
 
                 UUID premiumUUID = null;
                 if (config.get("nameChangeCheck", false) || config.get("autoRegister", false)) {
-                    core.getPlugin().getLogger().log(Level.FINER, "Player {0} uses a premium username", username);
                     premiumUUID = core.getApiConnector().getPremiumUUID(username);
                 }
 
