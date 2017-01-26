@@ -13,11 +13,11 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.collect.Sets;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -92,16 +92,16 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
             sharedConfig = new SharedConfig(plugin.loadYamlFile(reader));
             reader.close();
 
-            reader = Files.newBufferedReader(new File(plugin.getDataFolder(), "config.yml").toPath());
+            reader = Files.newBufferedReader(plugin.getDataFolder().toPath().resolve("config.yml"));
             sharedConfig.getConfigValues().putAll(plugin.loadYamlFile(reader));
             reader.close();
 
             reader = new BufferedReader(new InputStreamReader(getClass().getClassLoader().getResourceAsStream("messages.yml")));
-            reader = Files.newBufferedReader(new File(plugin.getDataFolder(), "messages.yml").toPath());
+            reader = Files.newBufferedReader(plugin.getDataFolder().toPath().resolve("messages.yml"));
             Map<String, Object> messageConfig = plugin.loadYamlFile(reader);
             reader.close();
 
-            reader = Files.newBufferedReader(new File(plugin.getDataFolder(), "messages.yml").toPath());
+            reader = Files.newBufferedReader(plugin.getDataFolder().toPath().resolve("messages.yml"));
             messageConfig.putAll(plugin.loadYamlFile(reader));
             for (Entry<String, Object> entry : messageConfig.entrySet()) {
                 String message = plugin.translateColorCodes('&', (String) entry.getValue());
@@ -243,11 +243,11 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
             plugin.getDataFolder().mkdir();
         }
 
-        File configFile = new File(plugin.getDataFolder(), fileName);
-        if (!configFile.exists()) {
+        Path configFile = plugin.getDataFolder().toPath().resolve(fileName);
+        if (!Files.exists(configFile)) {
             InputStream in = getClass().getClassLoader().getResourceAsStream(fileName);
             try {
-                Files.copy(in, configFile.toPath());
+                Files.copy(in, configFile);
             } catch (IOException ioExc) {
                 plugin.getLogger().log(Level.SEVERE, "Error saving default " + fileName, ioExc);
             } finally {

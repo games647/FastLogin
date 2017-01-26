@@ -6,21 +6,19 @@ import com.github.games647.fastlogin.bukkit.tasks.ForceLoginTask;
 import com.github.games647.fastlogin.core.hooks.AuthPlugin;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteStreams;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.messaging.PluginMessageListener;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
-
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
-import org.bukkit.metadata.FixedMetadataValue;
-import org.bukkit.plugin.messaging.PluginMessageListener;
 
 /**
  * Responsible for receiving messages from a BungeeCord instance.
@@ -98,13 +96,13 @@ public class BungeeCordListener implements PluginMessageListener {
     }
 
     public Set<UUID> loadBungeeCordIds() {
-        File whitelistFile = new File(plugin.getDataFolder(), FILE_NAME);
+        Path whitelistFile = plugin.getDataFolder().toPath().resolve(FILE_NAME);
         try {
-            if (!whitelistFile.exists()) {
-                whitelistFile.createNewFile();
+            if (!Files.exists(whitelistFile)) {
+                Files.createFile(whitelistFile);
             }
 
-            List<String> lines = Files.readAllLines(whitelistFile.toPath());
+            List<String> lines = Files.readAllLines(whitelistFile);
             return lines.stream().map(String::trim).map(UUID::fromString).collect(Collectors.toSet());
         } catch (IOException ex) {
             plugin.getLogger().log(Level.SEVERE, "Failed to create file for Proxy whitelist", ex);
