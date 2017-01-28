@@ -40,23 +40,12 @@ public class FastLoginBungee extends Plugin implements PlatformPlugin<CommandSen
     private final ConcurrentMap<PendingConnection, BungeeLoginSession> session = Maps.newConcurrentMap();
 
     private FastLoginCore<ProxiedPlayer, CommandSender, FastLoginBungee> core;
-    private Configuration config;
 
     @Override
     public void onEnable() {
-        try {
-            File configFile = new File(getDataFolder(), "config.yml");
-            ConfigurationProvider provider = ConfigurationProvider.getProvider(YamlConfiguration.class);
-            Configuration defaults = provider.load(getResourceAsStream("config.yml"));
-            config = provider.load(configFile, defaults);
-
-            core = new FastLoginCore<>(this);
-            core.load();
-            if (!core.setupDatabase()) {
-                return;
-            }
-        } catch (IOException ioExc) {
-            getLogger().log(Level.SEVERE, "Error loading config. Disabling plugin...", ioExc);
+        core = new FastLoginCore<>(this);
+        core.load();
+        if (!core.setupDatabase()) {
             return;
         }
 
@@ -104,10 +93,6 @@ public class FastLoginBungee extends Plugin implements PlatformPlugin<CommandSen
 
     public FastLoginCore<ProxiedPlayer, CommandSender, FastLoginBungee> getCore() {
         return core;
-    }
-
-    public Configuration getConfig() {
-        return config;
     }
 
     public ConcurrentMap<PendingConnection, BungeeLoginSession> getSession() {

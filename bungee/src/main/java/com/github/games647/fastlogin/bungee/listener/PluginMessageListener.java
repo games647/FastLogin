@@ -59,7 +59,7 @@ public class PluginMessageListener implements Listener {
             String playerName = dataInput.readUTF();
             boolean isPlayerSender = dataInput.readBoolean();
 
-            if (playerName.equals(forPlayer.getName()) && plugin.getConfig().getBoolean("premium-warning")
+            if (playerName.equals(forPlayer.getName()) && plugin.getCore().getConfig().get("premium-warning", true)
                     && !core.getPendingConfirms().contains(forPlayer.getUniqueId())) {
                 String message = core.getMessage("premium-warning");
                 forPlayer.sendMessage(TextComponent.fromLegacyText(message));
