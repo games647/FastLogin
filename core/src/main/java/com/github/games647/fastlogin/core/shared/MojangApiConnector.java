@@ -28,8 +28,6 @@ public abstract class MojangApiConnector {
     private static final int TIMEOUT = 3 * 1_000;
     private static final String USER_AGENT = "Premium-Checker";
 
-    private static final String MCAPI_UUID_URL = "https://mcapi.ca/uuid/player/";
-
     //only premium (paid account) users have a uuid from here
     private static final String UUID_LINK = "https://api.mojang.com/users/profiles/minecraft/";
     //this includes a-zA-Z1-9_
@@ -89,8 +87,7 @@ public abstract class MojangApiConnector {
 //            only make a API call if the name is valid existing mojang account
 
             if (requests.size() >= rateLimit || System.currentTimeMillis() - lastRateLimit < 1_000 * 60 * 10) {
-//                plugin.getLogger().fine("STILL WAITING FOR RATE_LIMIT - TRYING Third-party API");
-                return getUUIDFromAPI(playerName);
+                return null;
             }
 
             requests.put(new Object(), new Object());
@@ -104,34 +101,15 @@ public abstract class MojangApiConnector {
                         return FastLoginCore.parseId(getUUIDFromJson(line));
                     }
                 } else if (connection.getResponseCode() == RATE_LIMIT_CODE) {
-                    logger.info("RATE_LIMIT REACHED - TRYING THIRD-PARTY API");
+                    logger.info("RATE_LIMIT REACHED");
                     lastRateLimit = System.currentTimeMillis();
-                    return getUUIDFromAPI(playerName);
+                    return null;
                 }
                 //204 - no content for not found
             } catch (Exception ex) {
                 logger.log(Level.SEVERE, "Failed to check if player has a paid account", ex);
             }
             //this connection doesn't need to be closed. So can make use of keep alive in java
-        }
-
-        return null;
-    }
-
-    public UUID getUUIDFromAPI(String playerName) {
-        try {
-            HttpURLConnection httpConnection = getConnection(MCAPI_UUID_URL + playerName);
-
-            if (httpConnection.getResponseCode() == HttpURLConnection.HTTP_NOT_FOUND) {
-                //cracked
-                return null;
-            }
-
-            Reader reader = new InputStreamReader(httpConnection.getInputStream());
-            String json = CharStreams.toString(reader);
-            return FastLoginCore.parseId(getUUIDFromJson(json));
-        } catch (IOException iOException) {
-            logger.log(Level.SEVERE, "Tried converting name->uuid from third-party api", iOException);
         }
 
         return null;
