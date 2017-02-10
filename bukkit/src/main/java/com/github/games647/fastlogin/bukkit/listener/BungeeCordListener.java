@@ -6,6 +6,7 @@ import com.github.games647.fastlogin.bukkit.tasks.ForceLoginTask;
 import com.github.games647.fastlogin.core.hooks.AuthPlugin;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteStreams;
+
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
@@ -98,12 +99,14 @@ public class BungeeCordListener implements PluginMessageListener {
     public Set<UUID> loadBungeeCordIds() {
         Path whitelistFile = plugin.getDataFolder().toPath().resolve(FILE_NAME);
         try {
-            if (!Files.exists(whitelistFile)) {
+            if (Files.notExists(whitelistFile)) {
                 Files.createFile(whitelistFile);
             }
 
-            List<String> lines = Files.readAllLines(whitelistFile);
-            return lines.stream().map(String::trim).map(UUID::fromString).collect(Collectors.toSet());
+            return Files.readAllLines(whitelistFile).stream()
+                    .map(String::trim)
+                    .map(UUID::fromString)
+                    .collect(Collectors.toSet());
         } catch (IOException ex) {
             plugin.getLogger().log(Level.SEVERE, "Failed to create file for Proxy whitelist", ex);
         } catch (Exception ex) {

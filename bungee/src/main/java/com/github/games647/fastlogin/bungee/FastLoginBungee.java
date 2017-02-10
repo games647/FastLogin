@@ -43,6 +43,8 @@ public class FastLoginBungee extends Plugin implements PlatformPlugin<CommandSen
 
     @Override
     public void onEnable() {
+        System.out.println(this.getDescription());
+
         core = new FastLoginCore<>(this);
         core.load();
         if (!core.setupDatabase()) {

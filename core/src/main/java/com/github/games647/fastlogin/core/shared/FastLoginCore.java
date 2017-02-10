@@ -13,9 +13,11 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.collect.Sets;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.file.CopyOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.Connection;
@@ -244,7 +246,7 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
         }
 
         Path configFile = plugin.getDataFolder().toPath().resolve(fileName);
-        if (!Files.exists(configFile)) {
+        if (Files.notExists(configFile)) {
             InputStream in = getClass().getClassLoader().getResourceAsStream(fileName);
             try {
                 Files.copy(in, configFile);

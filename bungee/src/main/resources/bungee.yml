@@ -8,7 +8,7 @@ main: ${project.groupId}.${project.artifactId}.${project.name}
 version: ${project.version}
 author: games647, http://github.com/games647/FastLogin/graphs/contributors
 
-softdepend:
+softDepends:
     # BungeeCord auth plugins
     - BungeeAuth
 
