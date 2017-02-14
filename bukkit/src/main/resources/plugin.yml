@@ -1,7 +1,7 @@
 # project informations for Bukkit in order to register our plugin with all it components
 # ${-} are variables from Maven (pom.xml) which will be replaced after the build
 name: ${project.parent.name}
-version: ${project.version}
+version: ${project.version}-git${git.commit.id}
 main: ${project.groupId}.${project.artifactId}.${project.name}
 
 # meta informations for plugin managers

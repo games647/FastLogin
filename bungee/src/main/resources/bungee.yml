@@ -5,7 +5,7 @@ name: ${project.parent.name}
 # ${-} will be automatically replaced by Maven
 main: ${project.groupId}.${project.artifactId}.${project.name}
 
-version: ${project.version}
+version: ${project.version}-git${git.commit.id}
 author: games647, http://github.com/games647/FastLogin/graphs/contributors
 
 softDepends:
