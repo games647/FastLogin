@@ -164,10 +164,14 @@ driver: org.sqlite.JDBC
 # File location
 database: '{pluginDir}/FastLogin.db'
 
-# MySQL
+# MySQL/MariaDB
 #driver: com.mysql.jdbc.Driver
 #host: localhost
 #port: 3306
 #database: fastlogin
 #username: myUser
 #password: myPassword
+
+# It's strongly recommended to enable SSL and setup a SSL certificate if the MySQL server isn't running on the same
+# machine
+#useSSL: false

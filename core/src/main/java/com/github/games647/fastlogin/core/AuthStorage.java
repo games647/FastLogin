@@ -23,7 +23,7 @@ public class AuthStorage {
     private final HikariDataSource dataSource;
 
     public AuthStorage(FastLoginCore<?, ?, ?> core, String driver, String host, int port, String databasePath
-            , String user, String pass) {
+            , String user, String pass, boolean useSSL) {
         this.core = core;
 
         HikariConfig databaseConfig = new HikariConfig();
@@ -34,6 +34,7 @@ public class AuthStorage {
         //a try to fix https://www.spigotmc.org/threads/fastlogin.101192/page-26#post-1874647
         Properties properties = new Properties();
         properties.setProperty("date_string_format", "yyyy-MM-dd HH:mm:ss");
+        properties.setProperty("useSSL", String.valueOf(useSSL));
         databaseConfig.setDataSourceProperties(properties);
 
         ThreadFactoryBuilder threadFactoryBuilder =  new ThreadFactoryBuilder()

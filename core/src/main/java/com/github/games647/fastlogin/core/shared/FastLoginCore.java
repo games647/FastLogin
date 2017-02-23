@@ -162,7 +162,9 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
         String user = sharedConfig.get("username", "");
         String password = sharedConfig.get("password", "");
 
-        storage = new AuthStorage(this, driver, host, port, database, user, password);
+        boolean useSSL = sharedConfig.get("useSSL", false);
+
+        storage = new AuthStorage(this, driver, host, port, database, user, password, useSSL);
         try {
             storage.createTables();
             return true;
