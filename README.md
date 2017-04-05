@@ -6,7 +6,7 @@
 Checks if a Minecraft player has a paid account (premium). If so, they can skip offline authentication (auth plugins).
 So they don't need to enter passwords. This is also called auto login (auto-login).
 
-###Features:
+### Features:
 
 * Detect paid accounts from others
 * Automatically login paid accounts (premium)
@@ -28,26 +28,26 @@ So they don't need to enter passwords. This is also called auto login (auto-logi
 
 ***
 
-###Commands:
+### Commands:
     * /premium [player] Label the invoker or the argument as paid account
     * /cracked [player] Label the invoker or the argument as cracked account
     * /importdb <autoIn/bpa/eldzi> <mysql/sqlite> [host:port] [database] [username] [password] - Imports the database from another plugin
 
-###Permissions:
+### Permissions:
     * fastlogin.bukkit.command.premium
     * fastlogin.bukkit.command.cracked
     * fastlogin.command.premium.other
     * fastlogin.command.cracked.other
     * fastlogin.command.import
 
-###Requirements:
+### Requirements:
 * Plugin: [ProtocolLib](https://www.spigotmc.org/resources/protocollib.1997/) or [ProtocolSupport](https://www.spigotmc.org/resources/protocolsupport.7201/)
 * Tested Bukkit/[Spigot](https://www.spigotmc.org) 1.9 (could also work with other versions)
 * Java 7+
 * Run Spigot and/or BungeeCord/Waterfall in offline mode (see server.properties or config.yml)
 * An auth plugin. Supported plugins
 
-####Bukkit/Spigot/PaperSpigot
+#### Bukkit/Spigot/PaperSpigot
 
 * [AuthMe (both 5.X and 3.X)](https://dev.bukkit.org/bukkit-plugins/authme-reloaded/)
 * [xAuth](https://dev.bukkit.org/bukkit-plugins/xauth/)
@@ -58,25 +58,25 @@ So they don't need to enter passwords. This is also called auto login (auto-logi
 * [RoyalAuth](https://dev.bukkit.org/bukkit-plugins/royalauth/)
 * [UltraAuth](https://dev.bukkit.org/bukkit-plugins/ultraauth-aa/)
 
-####BungeeCord/Waterfall
+#### BungeeCord/Waterfall
 
 * [BungeeAuth](https://www.spigotmc.org/resources/bungeeauth.493/)
 
-###Downloads
+### Downloads
 
 https://www.spigotmc.org/resources/fastlogin.14153/history
 
 ***
 
-###How to install
+### How to install
 
-####Bukkit/Spigot/PaperSpigot
+#### Bukkit/Spigot/PaperSpigot
 
 1. Download and install ProtocolLib
 2. Download and install FastLogin
 3. Set your server in offline mode by setting the value onlinemode in your server.properties to false
 
-####BungeeCord/Waterfall
+#### BungeeCord/Waterfall
 
 1. Activate BungeeCord in the Spigot configuration
 2. Restart your server
@@ -91,9 +91,9 @@ Put your stats id from the BungeeCord config into this file
 
 ***
 
-###FAQ
+### FAQ
 
-####Index
+#### Index
 1. [How does Minecraft logins work?](#how-does-minecraft-logins-work)
 2. [How does this plugin work?](#how-does-this-plugin-work)
 3. [Why does the plugin require offline mode?](#why-does-the-plugin-require-offline-mode)
@@ -104,8 +104,8 @@ Put your stats id from the BungeeCord config into this file
 8. [Could premium players have a premium UUID and Skin?](#could-premium-players-have-a-premium-uuid-and-skin)
 9. [Is this plugin compatible with Cauldron?](#is-this-plugin-compatible-with-cauldron)
 
-####How does minecraft logins work?
-######Online Mode
+#### How does minecraft logins work?
+###### Online Mode
 1. Client -> Server: I want to login, here is my username
 2. Server -> Client: Okay. I'm in online mode so here is my public key for encryption and my serverid
 3. Client -> Mojang: I'm player "xyz". I want to join a server with that serverid
@@ -117,13 +117,13 @@ Put your stats id from the BungeeCord config into this file
 9. Server -> Client: Everything checked you can play now
 
 
-######Offline Mode
+###### Offline Mode
 In offline mode step 2-7 is skipped. So a login request is directly followed by 8.
 
-######More details
+###### More details
 http://wiki.vg/Protocol#Login
 
-####How does this plugin work?
+#### How does this plugin work?
 By using ProtocolLib, this plugin works as a proxy between the client and server. This plugin will fake that the server
 runs in online mode. It does everything an online mode server would do. This will be for example, generating keys or
 checking for valid sessions. Because everything is the same compared to an offline mode login after an encrypted
@@ -138,7 +138,7 @@ connection, we will intercept only **login** packets of **premium** players.
 6. Encrypt the connection
 7. On success intercept all related login packets and fake a new login packet as a normal offline login
 
-####Why does the plugin require offline mode?
+#### Why does the plugin require offline mode?
 1. As you can see in the question "how does minecraft login works", offline mode is equivalent to online mode except of
 the encryption and session checks on login. So we can intercept and cancel the first packets for premium players and
 enable an encrypted connection. Then we send a new fake packet in order to pretend that this a new login request from
@@ -148,10 +148,10 @@ incorrectly. For example, a plugin tries to fetch the UUID from Mojang, but the 
 a paid account.
 3. Servers, who allow cracked players and just speed up logins for premium players, are **already** in offline mode.
 
-####Can cracked player join with premium usernames?
+#### Can cracked player join with premium usernames?
 Yes, indeed. Therefore the command for toggling the fast login method exists.
 
-####Why do players have to invoke a command?
+#### Why do players have to invoke a command?
 1. It's a secure way to make sure a person with a paid account cannot steal the account
 of a cracked player that has the same username. The player have to proof first that it's his own account.
 2. We only receive the username from the player on login. We could check if that username is associated
@@ -163,23 +163,23 @@ Sessionserver.
 account and would claim and steal the account from the premium player. Because commands cannot be invoked unless the
 player has a account or is logged in, protects this method also premium players
 
-###What happens if a paid account joins with a used username?
+### What happens if a paid account joins with a used username?
 The player on the server have to activate the feature of this plugin by command. If a person buys the username
 of his own account, it's still secured. A normal offline mode login makes sure he's the owner of the server account
 and Mojang account. Then the command can be executed. So someone different cannot steal the account of cracked player
 by buying the username.
 
-####Does the plugin have BungeeCord support?
+#### Does the plugin have BungeeCord support?
 Yes it has. See the how to install above.
 
-####Could premium players have a premium UUID and Skin?
+#### Could premium players have a premium UUID and Skin?
 Since 0.7 both features are implemented. You can check the config.yml in order to activate it.
 
-####Is this plugin compatible with Cauldron?
+#### Is this plugin compatible with Cauldron?
 It's not tested yet, but all needed methods also exists in Cauldron so it could work together.
 
 ***
 
-###Useful Links:
+### Useful Links:
 * [Login Protocol](http://wiki.vg/Protocol#Login)
 * [Protocol Encryption](http://wiki.vg/Protocol_Encryption)
