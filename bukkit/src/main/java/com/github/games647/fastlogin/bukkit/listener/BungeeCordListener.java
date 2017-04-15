@@ -6,7 +6,6 @@ import com.github.games647.fastlogin.bukkit.tasks.ForceLoginTask;
 import com.github.games647.fastlogin.core.hooks.AuthPlugin;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteStreams;
-
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
@@ -15,7 +14,6 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -103,7 +101,7 @@ public class BungeeCordListener implements PluginMessageListener {
                 Files.createFile(whitelistFile);
             }
 
-            return Files.readAllLines(whitelistFile).stream()
+            return Files.lines(whitelistFile)
                     .map(String::trim)
                     .map(UUID::fromString)
                     .collect(Collectors.toSet());
