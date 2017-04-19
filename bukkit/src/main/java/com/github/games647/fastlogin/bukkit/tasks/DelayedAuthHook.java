@@ -1,20 +1,14 @@
 package com.github.games647.fastlogin.bukkit.tasks;
 
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
-import com.github.games647.fastlogin.bukkit.hooks.AuthMeHook;
-import com.github.games647.fastlogin.bukkit.hooks.CrazyLoginHook;
-import com.github.games647.fastlogin.bukkit.hooks.LogItHook;
-import com.github.games647.fastlogin.bukkit.hooks.LoginSecurityHook;
-import com.github.games647.fastlogin.bukkit.hooks.UltraAuthHook;
-import com.github.games647.fastlogin.bukkit.hooks.xAuthHook;
+import com.github.games647.fastlogin.bukkit.hooks.*;
 import com.github.games647.fastlogin.core.hooks.AuthPlugin;
 import com.google.common.collect.Lists;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 
 import java.util.List;
 import java.util.logging.Level;
-
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 
 public class DelayedAuthHook implements Runnable {
 
@@ -35,10 +29,14 @@ public class DelayedAuthHook implements Runnable {
                     + "and bungeecord is deactivated. "
                     + "Either one or both of the checks have to pass in order to use this plugin");
         }
+
+        if(hookFound)
+            plugin.setServerStarted();
     }
 
     private boolean registerHooks() {
         AuthPlugin<Player> authPluginHook = null;
+
         try {
             @SuppressWarnings("unchecked")
             List<Class<? extends AuthPlugin<Player>>> supportedHooks = Lists.newArrayList(AuthMeHook.class
@@ -67,7 +65,6 @@ public class DelayedAuthHook implements Runnable {
 
         if (plugin.getCore().getAuthPluginHook() == null) {
             plugin.getCore().setAuthPluginHook(authPluginHook);
-            plugin.setServerStarted();
         }
 
         return true;
