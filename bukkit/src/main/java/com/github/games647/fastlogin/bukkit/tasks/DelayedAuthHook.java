@@ -30,7 +30,7 @@ public class DelayedAuthHook implements Runnable {
                     + "Either one or both of the checks have to pass in order to use this plugin");
         }
 
-        if(hookFound && !plugin.isServerFullyStarted())
+        if(hookFound)
             plugin.setServerStarted();
     }
 
