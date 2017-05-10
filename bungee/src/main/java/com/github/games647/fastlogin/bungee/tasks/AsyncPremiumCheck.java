@@ -31,7 +31,7 @@ public class AsyncPremiumCheck extends JoinManagement<ProxiedPlayer, CommandSend
     public void run() {
         plugin.getSession().remove(connection);
 
-        String username = connection.getName();
+        String username = connection.getName().toLowerCase();
         try {
             super.onLogin(username, new BungeeLoginSource(connection));
         } finally {
