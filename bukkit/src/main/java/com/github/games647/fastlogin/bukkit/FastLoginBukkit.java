@@ -1,6 +1,5 @@
 package com.github.games647.fastlogin.bukkit;
 
-import com.avaje.ebeaninternal.api.ClassUtil;
 import com.github.games647.fastlogin.bukkit.commands.CrackedCommand;
 import com.github.games647.fastlogin.bukkit.commands.ImportCommand;
 import com.github.games647.fastlogin.bukkit.commands.PremiumCommand;
@@ -17,7 +16,6 @@ import com.github.games647.fastlogin.core.shared.PlatformPlugin;
 import com.google.common.collect.Iterables;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
-
 import java.io.Reader;
 import java.security.KeyPair;
 import java.util.List;
@@ -26,9 +24,7 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ThreadFactory;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import net.md_5.bungee.api.ChatColor;
-
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -56,9 +52,9 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
         core = new FastLoginCore<>(this);
         core.load();
         try {
-            if (ClassUtil.isPresent("org.spigotmc.SpigotConfig")) {
-                bungeeCord = Class.forName("org.spigotmc.SpigotConfig").getDeclaredField("bungee").getBoolean(null);
-            }
+            bungeeCord = Class.forName("org.spigotmc.SpigotConfig").getDeclaredField("bungee").getBoolean(null);
+        } catch (ClassNotFoundException notFoundEx) {
+            //ignore server has no bungee support
         } catch (Exception ex) {
             getLogger().log(Level.WARNING, "Cannot check bungeecord support. You use a non-spigot build", ex);
         }
