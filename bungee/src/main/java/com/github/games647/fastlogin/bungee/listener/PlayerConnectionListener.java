@@ -61,7 +61,9 @@ public class PlayerConnectionListener implements Listener {
         //use the loginevent instead of the postlogin event in order to send the loginsuccess packet to the client
         //with the offline uuid this makes it possible to set the skin then
         PendingConnection connection = loginEvent.getConnection();
-        String username = connection.getName().toLowerCase();
+        InitialHandler initialHandler = (InitialHandler) connection;
+
+        String username = initialHandler.getLoginRequest().getData();
         if (connection.isOnlineMode()) {
             LoginSession session = plugin.getSession().get(connection);
             session.setUuid(connection.getUniqueId());
@@ -70,7 +72,6 @@ public class PlayerConnectionListener implements Listener {
             playerProfile.setUuid(connection.getUniqueId());
 
             //bungeecord will do this automatically so override it on disabled option
-            InitialHandler initialHandler = (InitialHandler) connection;
             if (!plugin.getCore().getConfig().get("premiumUuid", true)) {
                 try {
                     UUID offlineUUID = UUID.nameUUIDFromBytes(("OfflinePlayer:" + username).getBytes(Charsets.UTF_8));

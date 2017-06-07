@@ -10,6 +10,7 @@ import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.PendingConnection;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.AsyncEvent;
+import net.md_5.bungee.connection.InitialHandler;
 
 public class AsyncPremiumCheck extends JoinManagement<ProxiedPlayer, CommandSender, BungeeLoginSource>
         implements Runnable {
@@ -31,7 +32,8 @@ public class AsyncPremiumCheck extends JoinManagement<ProxiedPlayer, CommandSend
     public void run() {
         plugin.getSession().remove(connection);
 
-        String username = connection.getName().toLowerCase();
+        InitialHandler initialHandler = (InitialHandler) connection;
+        String username = initialHandler.getLoginRequest().getData();
         try {
             super.onLogin(username, new BungeeLoginSource(connection));
         } finally {
