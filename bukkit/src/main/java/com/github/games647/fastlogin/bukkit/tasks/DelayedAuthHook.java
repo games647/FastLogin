@@ -31,13 +31,14 @@ public class DelayedAuthHook implements Runnable {
             plugin.getLogger().info("BungeeCord setting detected. No auth plugin is required");
         } else if (!hookFound) {
             plugin.getLogger().warning("No auth plugin were found by this plugin "
-                    + "(other plugins could hook into this after the intialization of this plugin)"
-                    + "and bungeecord is deactivated. "
+                    + "(other plugins could hook into this after the initialization of this plugin)"
+                    + "and BungeeCord is deactivated. "
                     + "Either one or both of the checks have to pass in order to use this plugin");
         }
 
-        if(hookFound)
+        if (hookFound) {
             plugin.setServerStarted();
+        }
     }
 
     private boolean registerHooks() {

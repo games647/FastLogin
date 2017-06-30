@@ -66,7 +66,7 @@ public class CrackedCommand implements CommandExecutor {
             //todo: load async
             PlayerProfile profile = plugin.getCore().getStorage().loadProfile(args[0]);
             if (profile == null) {
-                sender.sendMessage("Error occured");
+                sender.sendMessage("Error occurred");
                 return;
             }
 

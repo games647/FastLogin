@@ -101,7 +101,7 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
         }
 
         //delay dependency setup because we load the plugin very early where plugins are initialized yet
-        getServer().getScheduler().runTask(this, new DelayedAuthHook(this));
+        getServer().getScheduler().runTaskLater(this, new DelayedAuthHook(this), 5L);
 
         getServer().getPluginManager().registerEvents(new BukkitJoinListener(this), this);
 
