@@ -9,8 +9,8 @@ import com.github.games647.fastlogin.core.shared.JoinManagement;
 
 import java.util.Random;
 import java.util.logging.Level;
-import org.bukkit.command.CommandSender;
 
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class NameCheckTask extends JoinManagement<Player, CommandSender, ProtocolLibLoginSource>

@@ -1,13 +1,13 @@
 package com.github.games647.fastlogin.core;
 
-import java.lang.reflect.Method;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.TimeUnit;
-
 import com.google.common.base.Ticker;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.RemovalListener;
+
+import java.lang.reflect.Method;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Represents a Guava CacheBuilder that is compatible with both Guava 10 (Minecraft 1.7.X) and 13

@@ -4,7 +4,6 @@ import com.github.games647.fastlogin.core.hooks.AuthPlugin;
 
 import fr.xephi.authme.api.NewAPI;
 import fr.xephi.authme.api.v3.AuthMeApi;
-
 import org.bukkit.entity.Player;
 
 /**

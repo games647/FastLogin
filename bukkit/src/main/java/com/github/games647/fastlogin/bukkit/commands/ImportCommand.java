@@ -4,8 +4,8 @@ import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 import com.github.games647.fastlogin.core.AuthStorage;
 import com.github.games647.fastlogin.core.importer.ImportPlugin;
 import com.github.games647.fastlogin.core.shared.FastLoginCore;
-import org.bukkit.ChatColor;
 
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;

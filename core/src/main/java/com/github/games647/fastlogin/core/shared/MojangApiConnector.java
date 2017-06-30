@@ -2,12 +2,10 @@ package com.github.games647.fastlogin.core.shared;
 
 import com.github.games647.fastlogin.core.BalancedSSLFactory;
 import com.google.common.collect.Sets;
-import com.google.common.io.CharStreams;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.Reader;
 import java.net.HttpURLConnection;
 import java.net.InetAddress;
 import java.net.URL;

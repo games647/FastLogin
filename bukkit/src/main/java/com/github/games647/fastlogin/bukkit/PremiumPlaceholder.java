@@ -1,13 +1,12 @@
 package com.github.games647.fastlogin.bukkit;
 
+import java.util.List;
+
+import me.clip.placeholderapi.PlaceholderAPI;
 import me.clip.placeholderapi.PlaceholderHook;
 
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.MetadataValue;
-
-import java.util.List;
-
-import me.clip.placeholderapi.PlaceholderAPI;
 
 public class PremiumPlaceholder extends PlaceholderHook {
 

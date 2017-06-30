@@ -1,8 +1,10 @@
 package com.github.games647.fastlogin.core.importer;
 
 import com.github.games647.fastlogin.core.AuthStorage;
+
 import java.sql.Connection;
 import java.sql.SQLException;
+
 import javax.sql.DataSource;
 
 public abstract class Importer {

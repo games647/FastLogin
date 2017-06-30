@@ -6,7 +6,6 @@ import io.github.lucaseasedup.logit.CancelledState;
 import io.github.lucaseasedup.logit.LogItCore;
 import io.github.lucaseasedup.logit.account.Account;
 import io.github.lucaseasedup.logit.session.SessionManager;
-
 import org.bukkit.entity.Player;
 
 /**
