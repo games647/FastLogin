@@ -54,7 +54,7 @@ public class CompatibleCacheBuilder<K, V> {
      * @param concurrencyLevel New concurrency level
      * @return This for chaining
      *
-     * @throws IllegalArgumentException if {@code concurrencyLevel} is nonpositive
+     * @throws IllegalArgumentException if {@code concurrencyLevel} is non-positive
      * @throws IllegalStateException if a concurrency level was already set
      */
     public CompatibleCacheBuilder<K, V> concurrencyLevel(int concurrencyLevel) {
@@ -76,7 +76,7 @@ public class CompatibleCacheBuilder<K, V> {
      * <p>
      * Expired entries may be counted by {@link com.google.common.cache.Cache#size Cache.size()}, but will never be
      * visible to read or write operations. Expired entries are currently cleaned up during write operations, or during
-     * occasional read operations in the absense of writes; though this behavior may change in the future.
+     * occasional read operations in the absence of writes; though this behavior may change in the future.
      *
      * @param duration the length of time after an entry is last accessed that it should be automatically removed
      * @param unit the unit that {@code duration} is expressed in
@@ -102,7 +102,7 @@ public class CompatibleCacheBuilder<K, V> {
      * <p>
      * Expired entries may be counted by {@link com.google.common.cache.Cache#size Cache.size()}, but will never be
      * visible to read or write operations. Expired entries are currently cleaned up during write operations, or during
-     * occasional read operations in the absense of writes; though this behavior may change in the future.
+     * occasional read operations in the absence of writes; though this behavior may change in the future.
      *
      * @param duration the length of time after an entry is created that it should be automatically removed
      * @param unit the unit that {@code duration} is expressed in
@@ -284,7 +284,7 @@ public class CompatibleCacheBuilder<K, V> {
      */
     @SuppressWarnings("unchecked")
     public <K1 extends K, V1 extends V> ConcurrentMap<K1, V1> build(CacheLoader<? super K1, V1> loader) {
-        Object cache = null;
+        Object cache;
 
         if (BUILD_METHOD == null) {
             try {

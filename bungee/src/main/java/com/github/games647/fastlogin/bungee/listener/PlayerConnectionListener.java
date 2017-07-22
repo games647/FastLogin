@@ -48,7 +48,7 @@ public class PlayerConnectionListener implements Listener {
         preLoginEvent.registerIntent(plugin);
         
         PendingConnection connection = preLoginEvent.getConnection();
-        AsyncPremiumCheck asyncPremiumCheck = new AsyncPremiumCheck(plugin, preLoginEvent, connection);
+        Runnable asyncPremiumCheck = new AsyncPremiumCheck(plugin, preLoginEvent, connection);
         ProxyServer.getInstance().getScheduler().runAsync(plugin, asyncPremiumCheck);
     }
 
@@ -101,7 +101,7 @@ public class PlayerConnectionListener implements Listener {
         ProxiedPlayer player = serverConnectedEvent.getPlayer();
         Server server = serverConnectedEvent.getServer();
 
-        ForceLoginTask loginTask = new ForceLoginTask(plugin.getCore(), player, server);
+        Runnable loginTask = new ForceLoginTask(plugin.getCore(), player, server);
         ProxyServer.getInstance().getScheduler().runAsync(plugin, loginTask);
     }
 

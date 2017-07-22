@@ -24,7 +24,7 @@ public class PremiumPlaceholder extends PlaceholderHook {
                 return "unknown";
             }
 
-            if (metadata.size() > 0) {
+            if (!metadata.isEmpty()) {
                 return "premium";
             } else {
                 return "cracked";

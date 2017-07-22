@@ -68,13 +68,13 @@ public class PluginMessageListener implements Listener {
             }
 
             core.getPendingConfirms().remove(forPlayer.getUniqueId());
-            AsyncToggleMessage task = new AsyncToggleMessage(core, forPlayer, playerName, true, isPlayerSender);
+            Runnable task = new AsyncToggleMessage(core, forPlayer, playerName, true, isPlayerSender);
             ProxyServer.getInstance().getScheduler().runAsync(plugin, task);
         } else if ("OFF".equals(subchannel)) {
             String playerName = dataInput.readUTF();
             boolean isPlayerSender = dataInput.readBoolean();
 
-            AsyncToggleMessage task = new AsyncToggleMessage(core, forPlayer, playerName, false, isPlayerSender);
+            Runnable task = new AsyncToggleMessage(core, forPlayer, playerName, false, isPlayerSender);
             ProxyServer.getInstance().getScheduler().runAsync(plugin, task);
         } 
     }

@@ -21,6 +21,7 @@ import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -60,10 +61,10 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
         }
 
         return UUID.fromString(withoutDashes.substring(0, 8)
-                + "-" + withoutDashes.substring(8, 12)
-                + "-" + withoutDashes.substring(12, 16)
-                + "-" + withoutDashes.substring(16, 20)
-                + "-" + withoutDashes.substring(20, 32));
+                + '-' + withoutDashes.substring(8, 12)
+                + '-' + withoutDashes.substring(12, 16)
+                + '-' + withoutDashes.substring(16, 20)
+                + '-' + withoutDashes.substring(20, 32));
     }
 
     protected final Map<String, String> localeMessages = new ConcurrentHashMap<>();
@@ -198,7 +199,7 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
             } else {
                 Class.forName("com.mysql.jdbc.Driver");
 
-                String jdbcUrl = "jdbc:mysql://" + host + "/" + database;
+                String jdbcUrl = "jdbc:mysql://" + host + '/' + database;
                 Connection con = DriverManager.getConnection(jdbcUrl, username, pass);
                 importer.importData(con, storage.getDataSource(), storage);
                 return true;
@@ -228,7 +229,7 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
         return pendingLogins;
     }
 
-    public Set<UUID> getPendingConfirms() {
+    public Collection<UUID> getPendingConfirms() {
         return pendingConfirms;
     }
 

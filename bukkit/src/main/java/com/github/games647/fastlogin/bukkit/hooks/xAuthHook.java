@@ -66,10 +66,9 @@ public class xAuthHook implements AuthPlugin<Player> {
             if (xAuthPlayer != null) {
                 //this should run async because the plugin executes a sql query, but the method
                 //accesses non thread-safe collections :(
-                boolean registerSuccess = xAuthPlugin.getAuthClass(xAuthPlayer)
-                        .adminRegister(player.getName(), password, null);
 
-                return registerSuccess;
+                return xAuthPlugin.getAuthClass(xAuthPlayer)
+                        .adminRegister(player.getName(), password, null);
             }
 
             return false;

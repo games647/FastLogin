@@ -110,7 +110,7 @@ Put your stats id from the BungeeCord config into this file
 2. Server -> Client: Okay. I'm in online mode so here is my public key for encryption and my serverid
 3. Client -> Mojang: I'm player "xyz". I want to join a server with that serverid
 4. Mojang -> Client: Session data checked. You can continue
-5. Client -> Server: I received a successful response from Mojang. Heres our shared secret key
+5. Client -> Server: I received a successful response from Mojang. Here our shared secret key
 6. Server -> Mojang: Does the player "xyz" with this shared secret key has a valid account to join me?
 7. Mojang -> Server: Yes, the player has the following additionally properties (UUID, Skin)
 8. Client and Server: encrypt all following communication packet
@@ -158,7 +158,7 @@ of a cracked player that has the same username. The player have to proof first t
 to a paid account but if we request a online mode login from a cracked player (who uses a username from
 a paid account), the player will disconnect with the reason "bad login" or "Invalid session". There is no way to change
 that message on the server side (without client modifications), because it's a connection between the Client and the
-Sessionserver.
+sessionserver.
 3. If a premium player would skip registration too, a player of a cracked account could later still register the
 account and would claim and steal the account from the premium player. Because commands cannot be invoked unless the
 player has a account or is logged in, protects this method also premium players

@@ -29,7 +29,7 @@ public class MojangApiBungee extends MojangApiConnector {
         if ("null".equals(id)) {
             return null;
         }
-        
+
         return id;
     }
 

@@ -17,6 +17,7 @@ import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigInteger;
+import java.security.Key;
 import java.security.PrivateKey;
 import java.util.Arrays;
 import java.util.UUID;
@@ -47,7 +48,7 @@ public class VerifyResponseTask implements Runnable {
         try {
             BukkitLoginSession session = plugin.getLoginSessions().get(fromPlayer.getAddress().toString());
             if (session == null) {
-                disconnect(plugin.getCore().getMessage("invalid-requst"), true
+                disconnect(plugin.getCore().getMessage("invalid-request"), true
                         , "Player {0} tried to send encryption response at invalid state", fromPlayer.getAddress());
             } else {
                 verifyResponse(session);
@@ -106,7 +107,7 @@ public class VerifyResponseTask implements Runnable {
         }
     }
 
-    private boolean checkVerifyToken(BukkitLoginSession session, PrivateKey privateKey) {
+    private boolean checkVerifyToken(BukkitLoginSession session, Key privateKey) {
         byte[] requestVerify = session.getVerifyToken();
         //encrypted verify token
         byte[] responseVerify = packetEvent.getPacket().getByteArrays().read(1);

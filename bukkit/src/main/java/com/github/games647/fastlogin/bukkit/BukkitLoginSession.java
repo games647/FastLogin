@@ -28,7 +28,7 @@ public class BukkitLoginSession extends LoginSession {
         this.verifyToken = ArrayUtils.clone(verifyToken);
     }
 
-    //available for bungeecord
+    //available for BungeeCord
     public BukkitLoginSession(String username, boolean registered) {
         this(username, "", ArrayUtils.EMPTY_BYTE_ARRAY, registered, null);
     }
@@ -41,7 +41,7 @@ public class BukkitLoginSession extends LoginSession {
     /**
      * Gets the random generated server id. This makes sure the request sent from the client is just for this server.
      *
-     * See this for details http://www.sk89q.com/2011/09/minecraft-name-spoofing-exploit/
+     * See this for details http://www.sk89q.com/2011/09/Minecraft-name-spoofing-exploit/
      *
      * Empty if it's a BungeeCord connection
      *

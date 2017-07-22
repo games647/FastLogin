@@ -10,7 +10,7 @@ import java.net.HttpURLConnection;
 import java.net.InetAddress;
 import java.net.URL;
 import java.net.UnknownHostException;
-import java.util.List;
+import java.util.Collection;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentMap;
@@ -43,7 +43,7 @@ public abstract class MojangApiConnector {
 
     protected final Logger logger;
 
-    public MojangApiConnector(Logger logger, List<String> localAddresses, int rateLimit) {
+    public MojangApiConnector(Logger logger, Collection<String> localAddresses, int rateLimit) {
         this.logger = logger;
         
         if (rateLimit > 600) {
@@ -95,7 +95,7 @@ public abstract class MojangApiConnector {
                 if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
                     BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
                     String line = reader.readLine();
-                    if (!line.equals("null")) {
+                    if (!"null".equals(line)) {
                         return FastLoginCore.parseId(getUUIDFromJson(line));
                     }
                 } else if (connection.getResponseCode() == RATE_LIMIT_CODE) {

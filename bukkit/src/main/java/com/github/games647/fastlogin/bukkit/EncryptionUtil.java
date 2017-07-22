@@ -8,8 +8,6 @@ import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.security.PrivateKey;
-import java.security.PublicKey;
 import java.util.stream.Stream;
 
 import javax.crypto.BadPaddingException;
@@ -41,7 +39,7 @@ public class EncryptionUtil {
         }
     }
 
-    public static byte[] getServerIdHash(String serverId, PublicKey publicKey, SecretKey secretKey) {
+    public static byte[] getServerIdHash(String serverId, Key publicKey, Key secretKey) {
         return digestOperation("SHA-1"
                 , new byte[][]{serverId.getBytes(Charsets.ISO_8859_1), secretKey.getEncoded(), publicKey.getEncoded()});
     }
@@ -72,7 +70,7 @@ public class EncryptionUtil {
 //        return null;
 //    }
 
-    public static SecretKey decryptSharedKey(PrivateKey privateKey, byte[] encryptedSharedKey) {
+    public static SecretKey decryptSharedKey(Key privateKey, byte[] encryptedSharedKey) {
         return new SecretKeySpec(decryptData(privateKey, encryptedSharedKey), "AES");
     }
 

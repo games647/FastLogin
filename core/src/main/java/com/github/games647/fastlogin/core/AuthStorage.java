@@ -15,6 +15,8 @@ import java.util.UUID;
 import java.util.concurrent.ThreadFactory;
 import java.util.logging.Level;
 
+import javax.sql.DataSource;
+
 public class AuthStorage {
 
     private static final String PREMIUM_TABLE = "premium";
@@ -63,7 +65,7 @@ public class AuthStorage {
         this.dataSource = new HikariDataSource(databaseConfig);
     }
 
-    public HikariDataSource getDataSource() {
+    public DataSource getDataSource() {
         return dataSource;
     }
 
@@ -83,7 +85,7 @@ public class AuthStorage {
                     + "LastLogin TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
                     //the premium shouldn't steal the cracked account by changing the name
                     + "UNIQUE (Name) "
-                    + ")";
+                    + ')';
 
             if (dataSource.getJdbcUrl().contains("sqlite")) {
                 createDataStmt = createDataStmt.replace("AUTO_INCREMENT", "AUTOINCREMENT");
@@ -142,11 +144,9 @@ public class AuthStorage {
                 boolean premium = resultSet.getBoolean(4);
                 String lastIp = resultSet.getString(5);
                 long lastLogin = resultSet.getTimestamp(6).getTime();
-                PlayerProfile playerProfile = new PlayerProfile(userId, uuid, name, premium, lastIp, lastLogin);
-                return playerProfile;
+                return new PlayerProfile(userId, uuid, name, premium, lastIp, lastLogin);
             } else {
-                PlayerProfile crackedProfile = new PlayerProfile(null, name, false, "");
-                return crackedProfile;
+                return new PlayerProfile(null, name, false, "");
             }
         } catch (SQLException sqlEx) {
             core.getPlugin().getLogger().log(Level.SEVERE, "Failed to query profile", sqlEx);
@@ -176,8 +176,7 @@ public class AuthStorage {
                 boolean premium = resultSet.getBoolean(4);
                 String lastIp = resultSet.getString(5);
                 long lastLogin = resultSet.getTimestamp(6).getTime();
-                PlayerProfile playerProfile = new PlayerProfile(userId, uuid, name, premium, lastIp, lastLogin);
-                return playerProfile;
+                return new PlayerProfile(userId, uuid, name, premium, lastIp, lastLogin);
             }
         } catch (SQLException sqlEx) {
             core.getPlugin().getLogger().log(Level.SEVERE, "Failed to query profile", sqlEx);

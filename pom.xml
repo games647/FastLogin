@@ -29,17 +29,6 @@
         <module>universal</module>
     </modules>
 
-    <issueManagement>
-        <system>GitHub</system>
-        <url>https://github.com/games647/FastLogin/issues</url>
-    </issueManagement>
-
-    <scm>
-        <url>https://github.com/games647/FastLogin</url>
-        <connection>scm:git:git://github.com/games647/FastLogin.git</connection>
-        <developerConnection>scm:git:ssh://git@github.com:games647/FastLogin.git</developerConnection>
-    </scm>
-
     <build>
         <defaultGoal>install</defaultGoal>
         <!--Just use the project name to replace an old version of the plugin if the user does only copy-paste-->
@@ -53,15 +42,13 @@
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>
-                    <showWarnings>true</showWarnings>
-                    <showDeprecation>true</showDeprecation>
                 </configuration>
             </plugin>
 
             <plugin>
                 <groupId>pl.project13.maven</groupId>
                 <artifactId>git-commit-id-plugin</artifactId>
-                <version>2.2.1</version>
+                <version>2.2.2</version>
                 <configuration>
                     <failOnNoGitDirectory>false</failOnNoGitDirectory>
                 </configuration>
@@ -81,15 +68,6 @@
                 <directory>src/main/resources</directory>
                 <!--Replace variables-->
                 <filtering>true</filtering>
-            </resource>
-
-            <!--Add the license to jar in order to see it in the final jar-->
-            <resource>
-                <!--Parent folder-->
-                <directory>${basedir}/..</directory>
-                <includes>
-                    <include>LICENSE</include>
-                </includes>
             </resource>
         </resources>
     </build>

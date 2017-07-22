@@ -53,7 +53,7 @@ public class UltraAuthHook implements AuthPlugin<Player> {
     public boolean forceRegister(Player player, String password) {
         UltraAuthAPI.setPlayerPasswordOnline(player, password);
         if (PlayerManager.getInstance().checkPlayerPassword(player, password)) {
-            //the register method silents any excpetion so check if our entry was saved
+            //the register method silents any exception so check if our entry was saved
             return forceLogin(player);
         }
 

@@ -5,9 +5,8 @@ import com.github.games647.fastlogin.bukkit.commands.ImportCommand;
 import com.github.games647.fastlogin.bukkit.commands.PremiumCommand;
 import com.github.games647.fastlogin.bukkit.listener.BukkitJoinListener;
 import com.github.games647.fastlogin.bukkit.listener.BungeeCordListener;
-import com.github.games647.fastlogin.bukkit.listener.protocollib.EncryptionPacketListener;
 import com.github.games647.fastlogin.bukkit.listener.protocollib.LoginSkinApplyListener;
-import com.github.games647.fastlogin.bukkit.listener.protocollib.StartPacketListener;
+import com.github.games647.fastlogin.bukkit.listener.protocollib.ProtocolLibListener;
 import com.github.games647.fastlogin.bukkit.listener.protocolsupport.ProtocolSupportListener;
 import com.github.games647.fastlogin.bukkit.tasks.DelayedAuthHook;
 import com.github.games647.fastlogin.core.shared.FastLoginCore;
@@ -32,13 +31,12 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.plugin.messaging.PluginMessageRecipient;
 
 /**
  * This plugin checks if a player has a paid account and if so tries to skip offline mode authentication.
  */
 public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<CommandSender> {
-
-    private static final int WORKER_THREADS = 3;
 
     //provide a immutable key pair to be thread safe | used for encrypting and decrypting traffic
     private final KeyPair keyPair = EncryptionUtil.generateKeyPair();
@@ -90,8 +88,7 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
                 //they will be created with a static builder, because otherwise it will throw a
                 //java.lang.NoClassDefFoundError: com/comphenix/protocol/events/PacketListener if ProtocolSupport was
                 //only found
-                StartPacketListener.register(this, WORKER_THREADS);
-                EncryptionPacketListener.register(this, WORKER_THREADS);
+                ProtocolLibListener.register(this);
 
                 getServer().getPluginManager().registerEvents(new LoginSkinApplyListener(this), this);
             } else {
@@ -185,7 +182,7 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
         }
     }
 
-    private void notifiyBungeeCord(Player sender, String target, boolean activate, boolean isPlayer) {
+    private void notifiyBungeeCord(PluginMessageRecipient sender, String target, boolean activate, boolean isPlayer) {
         ByteArrayDataOutput dataOutput = ByteStreams.newDataOutput();
         if (activate) {
             dataOutput.writeUTF("ON");

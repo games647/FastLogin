@@ -8,6 +8,7 @@ import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import org.royaldev.royalauth.AuthPlayer;
 import org.royaldev.royalauth.Config;
 import org.royaldev.royalauth.RoyalAuth;
@@ -21,7 +22,7 @@ import org.royaldev.royalauth.RoyalAuth;
  */
 public class RoyalAuthHook implements AuthPlugin<Player> {
 
-    private final RoyalAuth royalAuthPlugin = (RoyalAuth) Bukkit.getPluginManager().getPlugin("RoyalAuth");
+    private final Plugin royalAuthPlugin = (RoyalAuth) Bukkit.getPluginManager().getPlugin("RoyalAuth");
 
     @Override
     public boolean forceLogin(Player player) {

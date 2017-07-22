@@ -33,7 +33,7 @@ public class MojangApiBukkit extends MojangApiConnector {
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
             String line = reader.readLine();
-            if (line != null && !line.equals("null")) {
+            if (line != null && !"null".equals(line)) {
                 //validate parsing
                 //http://wiki.vg/Protocol_Encryption#Server
                 JSONObject userData = (JSONObject) JSONValue.parseWithException(line);
@@ -44,7 +44,7 @@ public class MojangApiBukkit extends MojangApiConnector {
                 JSONObject skinProperty = (JSONObject) properties.get(0);
 
                 String propertyName = (String) skinProperty.get("name");
-                if (propertyName.equals("textures")) {
+                if ("textures".equals(propertyName)) {
                     String skinValue = (String) skinProperty.get("value");
                     String signature = (String) skinProperty.get("signature");
                     playerSession.setSkin(skinValue, signature);

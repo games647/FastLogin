@@ -1,4 +1,4 @@
-# project informations for BungeeCord
+# project data for BungeeCord
 # This file will be prioritised over plugin.yml which can be also used for Bungee
 # This make it easy to combine BungeeCord and Bukkit support in one plugin
 name: ${project.parent.name}
