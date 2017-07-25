@@ -82,8 +82,6 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
             if (getServer().getPluginManager().isPluginEnabled("ProtocolSupport")) {
                 getServer().getPluginManager().registerEvents(new ProtocolSupportListener(this), this);
             } else if (getServer().getPluginManager().isPluginEnabled("ProtocolLib")) {
-                //we are performing HTTP request on these so run it async (seperate from the Netty IO threads)
-
                 //they will be created with a static builder, because otherwise it will throw a
                 //java.lang.NoClassDefFoundError: com/comphenix/protocol/events/PacketListener if ProtocolSupport was
                 //only found

@@ -25,15 +25,15 @@ public class ProtocolLibListener extends PacketAdapter {
     public ProtocolLibListener(FastLoginBukkit plugin) {
         //run async in order to not block the server, because we are making api calls to Mojang
         super(params().plugin(plugin)
-                .types(PacketType.Login.Client.START)
-                .types(PacketType.Login.Client.ENCRYPTION_BEGIN)
+                .types(PacketType.Login.Client.START, PacketType.Login.Client.ENCRYPTION_BEGIN)
                 .optionAsync());
 
         this.plugin = plugin;
     }
 
     public static void register(FastLoginBukkit plugin) {
-        ProtocolLibrary.getProtocolManager().getAsynchronousManager()
+        ProtocolLibrary.getProtocolManager()
+                .getAsynchronousManager()
                 .registerAsyncHandler(new ProtocolLibListener(plugin))
                 .start(WORKER_THREADS);
     }
