@@ -52,7 +52,7 @@ public class PlayerConnectionListener implements Listener {
         ProxyServer.getInstance().getScheduler().runAsync(plugin, asyncPremiumCheck);
     }
 
-    @EventHandler(priority = EventPriority.LOW)
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onLogin(LoginEvent loginEvent) {
         if (loginEvent.isCancelled()) {
             return;
