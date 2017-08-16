@@ -1,5 +1,12 @@
 ### 1.10
 
+* Set the fake offline UUID on lowest priority (-> as soon as possible)
+* Remove bungee chatcolor for Bukkit to support KCauldron
+* Minor cleanup using inspections + Https
+* Increase hook delay to let ProtocolLib inject the listener
+* Drop support for old authme API + Add support for new authme API
+* Remove ebean util usage to make it compatible with 1.12
+* Do not try to hook into a plugin if auth plugin hook is already set using the FastLogin API
 * Automatically register accounts if they are not in the auth plugin database but in the FastLogin database
 * Update BungeeAuth dependency and use the new API. Please update your plugin if you still use the old one.
 * Remove deprecated API methods from the last version

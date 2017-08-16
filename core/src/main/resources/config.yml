@@ -38,7 +38,7 @@ switchMode: false
 
 # If this plugin detected that a player has a premium, it can also set the associated
 # uuid from that account. So if the players changes their usernames, they will still have
-# the same playerdata (inventory, permissions, ...)
+# the same player data (inventory, permissions, ...)
 #
 # Warning: This also means that the UUID will be different if the player is connecting
 # through a offline mode connection. This **could** cause plugin compatibility issues.
@@ -50,7 +50,7 @@ switchMode: false
 #
 # Moreover you may want to convert the offline UUID to a premium UUID. This will ensure that the player
 # will have the same inventory, permissions, ... if they switched to premium authentification from offline/cracked
-# authentification.
+# authentication.
 #
 # This feature requires Cauldron, Spigot or a fork of Spigot (PaperSpigot, TacoSpigot)
 premiumUuid: false
@@ -104,7 +104,7 @@ nameChangeCheck: false
 #
 # Keep in mind that this will only works if the player:
 # * is the owner of the premium account
-# * the serverconnection is established through a premium connection (paid account authentification)
+# * the server connection is established through a premium connection (paid account authentication)
 # * has a skin
 #
 # This means this plugin doesn't need to create a new connection to the Mojang servers, because
@@ -112,7 +112,7 @@ nameChangeCheck: false
 # players like cracked player, you have to use other plugins.
 #
 # If you want to use skins for your cracked player, you need an additional plugin like
-# ChangeSkin, SkinRestoer, ...
+# ChangeSkin, SkinRestorer, ...
 forwardSkin: true
 
 # Displays a warning message that this message SHOULD only be invoked by
@@ -128,8 +128,8 @@ premium-warning: true
 # Once the limit is reached, new players are always logged in as cracked until the rate-limit is expired.
 # (to the next ten minutes)
 #
-# The limit is IP-wide. If you have multiple IPv4-Addreses you specify them here. FastLogin will then use it in rotating
-# order --> 5 different IP-addreses 5 * 600 per 10 minutes
+# The limit is IP-wide. If you have multiple IPv4-addresses you specify them here. FastLogin will then use it in rotating
+# order --> 5 different IP-addresses 5 * 600 per 10 minutes
 # If this list is empty only the default one will be used
 #
 # Lists are created like this:
@@ -137,11 +137,12 @@ premium-warning: true
 #    - 192-168-0-2
 ip-addresses: []
 
-# How many requests should be established until the plugin uses the third-party API https://mcapi.ca/
-# Once this number is reached in a range of ten minutes it will start connecting to https://mcapi.ca/ for the next ten minutes
-# This option exists in order to workaround the rate-limiting. Name -> UUID are fetched in the same way like heads
+# How many requests should be established to the Mojang API for Name -> UUID requests. Some other plugins as well
+# as the head minecraft block make such requests as well. Using this option you can limit the amount requests this
+# plugin should make.
 #
-# If you want to join the discussion visit this: https://github.com/games647/FastLogin/issues/27#issuecomment-226954350
+# If you lower this value, other plugins could still make requests while FastLogin cannot.
+# Mojang limits the amount of request to 600 per 10 minutes per IPv4-address.
 mojang-request-limit: 600
 
 # This option automatically registers players which are in the FastLogin database, but not in the auth plugin database.
@@ -157,7 +158,7 @@ auto-register-unknown: false
 autoLogin: true
 
 # Database configuration
-# Recommened is the use of MariaDB (a better version of MySQL)
+# Recommended is the use of MariaDB (a better version of MySQL)
 
 # Single file SQLite database
 driver: org.sqlite.JDBC
