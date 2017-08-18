@@ -1,5 +1,6 @@
 ### 1.10
 
+* Add support for HTTP proxies
 * Set the fake offline UUID on lowest priority (-> as soon as possible)
 * Remove bungee chatcolor for Bukkit to support KCauldron
 * Minor cleanup using inspections + Https

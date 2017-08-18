@@ -28,41 +28,39 @@ public class AuthStorage {
             , String user, String pass, boolean useSSL) {
         this.core = core;
 
-        HikariConfig databaseConfig = new HikariConfig();
-        databaseConfig.setUsername(user);
-        databaseConfig.setPassword(pass);
-        databaseConfig.setDriverClassName(driver);
+        HikariConfig config = new HikariConfig();
+        config.setUsername(user);
+        config.setPassword(pass);
+        config.setDriverClassName(driver);
 
         //a try to fix https://www.spigotmc.org/threads/fastlogin.101192/page-26#post-1874647
         Properties properties = new Properties();
         properties.setProperty("date_string_format", "yyyy-MM-dd HH:mm:ss");
         properties.setProperty("useSSL", String.valueOf(useSSL));
-        databaseConfig.setDataSourceProperties(properties);
-
-        ThreadFactoryBuilder threadFactoryBuilder =  new ThreadFactoryBuilder()
-                .setNameFormat(core.getPlugin().getName() + " Database Pool Thread #%1$d")
-                //Hikari create daemons by default
-                .setDaemon(true);
+        config.setDataSourceProperties(properties);
 
         ThreadFactory platformThreadFactory = core.getPlugin().getThreadFactory();
         if (platformThreadFactory != null) {
-            threadFactoryBuilder.setThreadFactory(platformThreadFactory);
+            config.setThreadFactory(new ThreadFactoryBuilder()
+                    .setNameFormat(core.getPlugin().getName() + " Database Pool Thread #%1$d")
+                    //Hikari create daemons by default
+                    .setDaemon(true)
+                    .setThreadFactory(platformThreadFactory)
+                    .build());
         }
-
-        databaseConfig.setThreadFactory(threadFactoryBuilder.build());
 
         databasePath = databasePath.replace("{pluginDir}", core.getPlugin().getDataFolder().getAbsolutePath());
 
         String jdbcUrl = "jdbc:";
         if (driver.contains("sqlite")) {
             jdbcUrl += "sqlite" + "://" + databasePath;
-            databaseConfig.setConnectionTestQuery("SELECT 1");
+            config.setConnectionTestQuery("SELECT 1");
         } else {
             jdbcUrl += "mysql" + "://" + host + ':' + port + '/' + databasePath;
         }
 
-        databaseConfig.setJdbcUrl(jdbcUrl);
-        this.dataSource = new HikariDataSource(databaseConfig);
+        config.setJdbcUrl(jdbcUrl);
+        this.dataSource = new HikariDataSource(config);
     }
 
     public DataSource getDataSource() {

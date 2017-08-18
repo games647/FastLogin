@@ -41,13 +41,13 @@ public class BalancedSSLFactory extends SSLSocketFactory {
     }
 
     @Override
-    public Socket createSocket(String host, int port) throws IOException, UnknownHostException {
+    public Socket createSocket(String host, int port) throws IOException {
         return oldFactory.createSocket(host, port, getNextLocalAddress(), 0);
     }
 
     @Override
     public Socket createSocket(String host, int port, InetAddress localAddress, int localPort)
-            throws IOException, UnknownHostException {
+            throws IOException {
         //default
         return oldFactory.createSocket(host, port, localAddress, localPort);
     }

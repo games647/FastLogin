@@ -176,3 +176,12 @@ database: '{pluginDir}/FastLogin.db'
 # It's strongly recommended to enable SSL and setup a SSL certificate if the MySQL server isn't running on the same
 # machine
 #useSSL: false
+
+# HTTP proxies for connecting to the Mojang servers in order to check if the username of a player is premium.
+# This is a workaround to prevent rate-limiting by Mojang. These proxies will only be used once your server hit
+# the rate-limit or the custom value above.
+# Please make sure you use reliable proxies.
+proxies:
+  # 'IP:Port' or 'Domain:Port'
+  # - 'xyz.com:1337'
+  # - 'test.com:5131'

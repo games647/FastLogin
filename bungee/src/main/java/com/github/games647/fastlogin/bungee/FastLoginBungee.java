@@ -8,17 +8,12 @@ import com.github.games647.fastlogin.core.shared.MojangApiConnector;
 import com.github.games647.fastlogin.core.shared.PlatformPlugin;
 import com.google.common.collect.Maps;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.Reader;
-import java.nio.file.Files;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ThreadFactory;
 import java.util.function.Function;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -70,28 +65,6 @@ public class FastLoginBungee extends Plugin implements PlatformPlugin<CommandSen
         }
     }
 
-    public void saveDefaultFile(String fileName) {
-        if (!getDataFolder().exists()) {
-            getDataFolder().mkdir();
-        }
-
-        File configFile = new File(getDataFolder(), fileName);
-        if (!configFile.exists()) {
-            InputStream in = getResourceAsStream(fileName);
-            try {
-                Files.copy(in, configFile.toPath());
-            } catch (IOException ioExc) {
-                getLogger().log(Level.SEVERE, "Error saving default " + fileName, ioExc);
-            } finally {
-                try {
-                    in.close();
-                } catch (IOException ex) {
-                    getLogger().log(Level.SEVERE, null, ex);
-                }
-            }
-        }
-    }
-
     public FastLoginCore<ProxiedPlayer, CommandSender, FastLoginBungee> getCore() {
         return core;
     }
@@ -139,7 +112,8 @@ public class FastLoginBungee extends Plugin implements PlatformPlugin<CommandSen
     }
 
     @Override
-    public MojangApiConnector makeApiConnector(Logger logger, List<String> addresses, int requests) {
-        return new MojangApiBungee(logger, addresses, requests);
+    public MojangApiConnector makeApiConnector(Logger logger, List<String> addresses, int requests
+            , Map<String, Integer> proxies) {
+        return new MojangApiBungee(logger, addresses, requests, proxies);
     }
 }

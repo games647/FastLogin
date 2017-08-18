@@ -8,6 +8,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -20,8 +21,8 @@ public class MojangApiBukkit extends MojangApiConnector {
     //mojang api check to prove a player is logged in minecraft and made a join server request
     private static final String HAS_JOINED_URL = "https://sessionserver.mojang.com/session/minecraft/hasJoined?";
 
-    public MojangApiBukkit(Logger logger, List<String> localAddresses, int rateLimit) {
-        super(logger, localAddresses, rateLimit);
+    public MojangApiBukkit(Logger logger, List<String> localAddresses, int rateLimit, Map<String, Integer> proxies) {
+        super(logger, localAddresses, rateLimit, proxies);
     }
 
     @Override

@@ -23,5 +23,6 @@ public interface PlatformPlugin<C> {
 
     String translateColorCodes(char colorChar, String rawMessage);
 
-    MojangApiConnector makeApiConnector(Logger logger, List<String> addresses, int requests);
+    MojangApiConnector makeApiConnector(Logger logger, List<String> addresses, int requests
+            , Map<String, Integer> proxies);
 }

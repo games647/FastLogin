@@ -195,7 +195,7 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
     @Override
     public Map<String, Object> loadYamlFile(Reader reader) {
         YamlConfiguration config = YamlConfiguration.loadConfiguration(reader);
-        return config.getValues(false);
+        return config.getValues(true);
     }
 
     @Override
@@ -215,7 +215,8 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
     }
 
     @Override
-    public MojangApiConnector makeApiConnector(Logger logger, List<String> addresses, int requests) {
-        return new MojangApiBukkit(logger, addresses, requests);
+    public MojangApiConnector makeApiConnector(Logger logger, List<String> addresses, int requests
+            , Map<String, Integer> proxies) {
+        return new MojangApiBukkit(logger, addresses, requests, proxies);
     }
 }

@@ -31,6 +31,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 /**
  * @param <P> Player class
@@ -126,7 +127,12 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
 
         List<String> ipAddresses = sharedConfig.get("ip-addresses");
         int requestLimit = sharedConfig.get("mojang-request-limit");
-        this.apiConnector = plugin.makeApiConnector(plugin.getLogger(), ipAddresses, requestLimit);
+        List<String> proxyList = sharedConfig.get("proxies");
+        Map<String, Integer> proxies = proxyList.stream()
+                .collect(Collectors
+                        .toMap(line -> line.split(":")[0], line -> Integer.parseInt(line.split(":")[1])));
+
+        this.apiConnector = plugin.makeApiConnector(plugin.getLogger(), ipAddresses, requestLimit, proxies);
     }
 
     public MojangApiConnector getApiConnector() {
@@ -189,7 +195,7 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
 
         try {
             if (sqlite && importPlugin == ImportPlugin.AUTO_IN) {
-                //load sqlite driver
+                //load SQLite driver
                 Class.forName("org.sqlite.JDBC");
 
                 String jdbcUrl = "jdbc:sqlite:" + AutoInImporter.getSQLitePath();

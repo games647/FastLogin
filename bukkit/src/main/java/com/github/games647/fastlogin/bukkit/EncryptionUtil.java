@@ -41,7 +41,7 @@ public class EncryptionUtil {
 
     public static byte[] getServerIdHash(String serverId, Key publicKey, Key secretKey) {
         return digestOperation("SHA-1"
-                , new byte[][]{serverId.getBytes(Charsets.ISO_8859_1), secretKey.getEncoded(), publicKey.getEncoded()});
+                , serverId.getBytes(Charsets.ISO_8859_1), secretKey.getEncoded(), publicKey.getEncoded());
     }
 
     private static byte[] digestOperation(String algo, byte[]... content) {
