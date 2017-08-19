@@ -82,7 +82,7 @@ public class VerifyResponseTask implements Runnable {
 
         String username = session.getUsername();
         if (plugin.getCore().getApiConnector().hasJoinedServer(session, serverId)) {
-            plugin.getLogger().log(Level.FINE, "Player {0} has a verified premium account", username);
+            plugin.getLogger().log(Level.INFO, "Player {0} has a verified premium account", username);
 
             session.setVerified(true);
             setPremiumUUID(session.getUuid());

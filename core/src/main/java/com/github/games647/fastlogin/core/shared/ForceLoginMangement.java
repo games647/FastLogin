@@ -71,7 +71,7 @@ public abstract class ForceLoginMangement<P extends C, C, L extends LoginSession
     }
 
     public boolean forceRegister(P player) {
-        core.getPlugin().getLogger().log(Level.FINE, "Register player {0}", getName(player));
+        core.getPlugin().getLogger().log(Level.INFO, "Register player {0}", getName(player));
 
         String generatedPassword = core.getPasswordGenerator().getRandomPassword(player);
         boolean success = core.getAuthPluginHook().forceRegister(player, generatedPassword);
@@ -86,7 +86,7 @@ public abstract class ForceLoginMangement<P extends C, C, L extends LoginSession
     }
 
     public boolean forceLogin(P player) {
-        core.getPlugin().getLogger().log(Level.FINE, "Logging player {0} in", getName(player));
+        core.getPlugin().getLogger().log(Level.INFO, "Logging player {0} in", getName(player));
         boolean success = core.getAuthPluginHook().forceLogin(player);
 
         if (success) {

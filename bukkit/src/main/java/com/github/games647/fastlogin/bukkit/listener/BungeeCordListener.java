@@ -46,9 +46,9 @@ public class BungeeCordListener implements PluginMessageListener {
         }
 
         ByteArrayDataInput dataInput = ByteStreams.newDataInput(message);
-        String subchannel = dataInput.readUTF();
-        plugin.getLogger().log(Level.FINEST, "Received plugin message for subchannel {0} from {1}"
-                , new Object[]{subchannel, player});
+        String subChannel = dataInput.readUTF();
+        plugin.getLogger().log(Level.FINEST, "Received plugin message for sub channel {0} from {1}"
+                , new Object[]{subChannel, player});
 
         String playerName = dataInput.readUTF();
 
@@ -64,7 +64,7 @@ public class BungeeCordListener implements PluginMessageListener {
 
             //fail if BungeeCord support is disabled (id = null)
             if (proxyIds.contains(sourceId)) {
-                readMessage(checkedPlayer, subchannel, playerName, player);
+                readMessage(checkedPlayer, subChannel, playerName, player);
             }
         }
     }
