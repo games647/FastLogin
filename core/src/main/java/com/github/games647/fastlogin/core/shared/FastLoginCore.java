@@ -10,6 +10,7 @@ import com.github.games647.fastlogin.core.importer.AutoInImporter;
 import com.github.games647.fastlogin.core.importer.ImportPlugin;
 import com.github.games647.fastlogin.core.importer.Importer;
 import com.google.common.cache.CacheLoader;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 import java.io.BufferedReader;
@@ -70,7 +71,7 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
 
     protected final Map<String, String> localeMessages = new ConcurrentHashMap<>();
 
-    private final ConcurrentMap<String, Object> pendingLogins = FastLoginCore.buildCache(5, 0);
+    private final ConcurrentMap<String, Object> pendingLogins = FastLoginCore.buildCache(5, -1);
     private final Set<UUID> pendingConfirms = Sets.newHashSet();
     private final T plugin;
 
@@ -127,7 +128,7 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
 
         List<String> ipAddresses = sharedConfig.get("ip-addresses");
         int requestLimit = sharedConfig.get("mojang-request-limit");
-        List<String> proxyList = sharedConfig.get("proxies");
+        List<String> proxyList = sharedConfig.get("proxies", Lists.newArrayList());
         Map<String, Integer> proxies = proxyList.stream()
                 .collect(Collectors
                         .toMap(line -> line.split(":")[0], line -> Integer.parseInt(line.split(":")[1])));

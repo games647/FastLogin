@@ -56,33 +56,8 @@ public abstract class MojangApiConnector {
     public MojangApiConnector(Logger logger, Collection<String> localAddresses, int rateLimit
             , Map<String, Integer> proxies) {
         this.logger = logger;
-        
-        if (rateLimit > 600) {
-            this.rateLimit = 600;
-        } else {
-            this.rateLimit = rateLimit;
-        }
-
-        if (localAddresses.isEmpty()) {
-            this.sslFactory = null;
-        } else {
-            Set<InetAddress> addresses = Sets.newHashSet();
-            for (String localAddress : localAddresses) {
-                try {
-                    InetAddress address = InetAddress.getByName(localAddress);
-                    if (!address.isAnyLocalAddress()) {
-                        logger.log(Level.WARNING, "Submitted IP-Address is not local {0}", address);
-                        continue;
-                    }
-
-                    addresses.add(address);
-                } catch (UnknownHostException ex) {
-                    logger.log(Level.SEVERE, "IP-Address is unknown to us", ex);
-                }
-            }
-
-            this.sslFactory = new BalancedSSLFactory(HttpsURLConnection.getDefaultSSLSocketFactory(), addresses);
-        }
+        this.rateLimit = Math.max(rateLimit, 600);
+        this.sslFactory = buildAddresses(logger, localAddresses);
 
         List<Proxy> proxyBuilder = Lists.newArrayList();
         for (Entry<String, Integer> proxy : proxies.entrySet()) {
@@ -92,45 +67,46 @@ public abstract class MojangApiConnector {
         this.proxies = Iterables.cycle(proxyBuilder).iterator();
     }
 
-
     /**
      * @return null on non-premium
      */
     public UUID getPremiumUUID(String playerName) {
-        //check if it's a valid player name
-        if (nameMatcher.matcher(playerName).matches()) {
-            try {
-                HttpsURLConnection connection;
-                if (requests.size() >= rateLimit || System.currentTimeMillis() - lastRateLimit < 1_000 * 60 * 10) {
-                    synchronized (proxies) {
-                        if (proxies.hasNext()) {
-                            connection = getConnection(UUID_LINK + playerName, proxies.next());
-                        } else {
-                            return null;
-                        }
-                    }
-                } else {
-                    requests.put(new Object(), new Object());
-                    connection = getConnection(UUID_LINK + playerName);
-                }
+        if (!nameMatcher.matcher(playerName).matches()) {
+            //check if it's a valid player name
+            return null;
+        }
 
-                if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                    String line = reader.readLine();
-                    if (!"null".equals(line)) {
-                        return FastLoginCore.parseId(getUUIDFromJson(line));
-                    }
-                } else if (connection.getResponseCode() == RATE_LIMIT_CODE) {
-                    logger.info("RATE_LIMIT REACHED");
-                    lastRateLimit = System.currentTimeMillis();
-                    if (!connection.usingProxy()) {
-                        return getPremiumUUID(playerName);
+        try {
+            HttpsURLConnection connection;
+            if (requests.size() >= rateLimit || System.currentTimeMillis() - lastRateLimit < 1_000 * 60 * 10) {
+                synchronized (proxies) {
+                    if (proxies.hasNext()) {
+                        connection = getConnection(UUID_LINK + playerName, proxies.next());
+                    } else {
+                        return null;
                     }
                 }
-                //204 - no content for not found
-            } catch (Exception ex) {
-                logger.log(Level.SEVERE, "Failed to check if player has a paid account", ex);
+            } else {
+                requests.put(new Object(), new Object());
+                connection = getConnection(UUID_LINK + playerName);
             }
+
+            if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                String line = reader.readLine();
+                if (!"null".equals(line)) {
+                    return FastLoginCore.parseId(getUUIDFromJson(line));
+                }
+            } else if (connection.getResponseCode() == RATE_LIMIT_CODE) {
+                logger.info("RATE_LIMIT REACHED");
+                lastRateLimit = System.currentTimeMillis();
+                if (!connection.usingProxy()) {
+                    return getPremiumUUID(playerName);
+                }
+            }
+            //204 - no content for not found
+        } catch (Exception ex) {
+            logger.log(Level.SEVERE, "Failed to check if player has a paid account", ex);
         }
 
         return null;
@@ -158,5 +134,28 @@ public abstract class MojangApiConnector {
 
     protected HttpsURLConnection getConnection(String url) throws IOException {
         return getConnection(url, Proxy.NO_PROXY);
+    }
+
+    private BalancedSSLFactory buildAddresses(Logger logger, Collection<String> localAddresses) {
+        if (localAddresses.isEmpty()) {
+            return null;
+        } else {
+            Set<InetAddress> addresses = Sets.newHashSet();
+            for (String localAddress : localAddresses) {
+                try {
+                    InetAddress address = InetAddress.getByName(localAddress);
+                    if (!address.isAnyLocalAddress()) {
+                        logger.log(Level.WARNING, "Submitted IP-Address is not local {0}", address);
+                        continue;
+                    }
+
+                    addresses.add(address);
+                } catch (UnknownHostException ex) {
+                    logger.log(Level.SEVERE, "IP-Address is unknown to us", ex);
+                }
+            }
+
+            return new BalancedSSLFactory(HttpsURLConnection.getDefaultSSLSocketFactory(), addresses);
+        }
     }
 }
