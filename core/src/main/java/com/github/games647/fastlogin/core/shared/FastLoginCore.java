@@ -6,9 +6,6 @@ import com.github.games647.fastlogin.core.SharedConfig;
 import com.github.games647.fastlogin.core.hooks.AuthPlugin;
 import com.github.games647.fastlogin.core.hooks.DefaultPasswordGenerator;
 import com.github.games647.fastlogin.core.hooks.PasswordGenerator;
-import com.github.games647.fastlogin.core.importer.AutoInImporter;
-import com.github.games647.fastlogin.core.importer.ImportPlugin;
-import com.github.games647.fastlogin.core.importer.Importer;
 import com.google.common.cache.CacheLoader;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -19,9 +16,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -178,46 +172,6 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
             plugin.getLogger().log(Level.SEVERE, "Failed to setup database. Disabling plugin...", ex);
             return false;
         }
-    }
-
-    public boolean importDatabase(ImportPlugin importPlugin, boolean sqlite, AuthStorage storage, String host, String database
-            , String username, String pass) {
-        if (sqlite && (importPlugin == ImportPlugin.BPA || importPlugin == ImportPlugin.ELDZI)) {
-            throw new IllegalArgumentException("These plugins doesn't support flat file databases");
-        }
-
-        Importer importer;
-        try {
-            importer = importPlugin.getImporter().newInstance();
-        } catch (Exception ex) {
-            plugin.getLogger().log(Level.SEVERE, "Couldn't not setup importer class", ex);
-            return false;
-        } 
-
-        try {
-            if (sqlite && importPlugin == ImportPlugin.AUTO_IN) {
-                //load SQLite driver
-                Class.forName("org.sqlite.JDBC");
-
-                String jdbcUrl = "jdbc:sqlite:" + AutoInImporter.getSQLitePath();
-                Connection con = DriverManager.getConnection(jdbcUrl);
-                importer.importData(con, storage.getDataSource(), storage);
-                return true;
-            } else {
-                Class.forName("com.mysql.jdbc.Driver");
-
-                String jdbcUrl = "jdbc:mysql://" + host + '/' + database;
-                Connection con = DriverManager.getConnection(jdbcUrl, username, pass);
-                importer.importData(con, storage.getDataSource(), storage);
-                return true;
-            }
-        } catch (ClassNotFoundException ex) {
-            plugin.getLogger().log(Level.SEVERE, "Cannot find SQL driver. Do you removed it?", ex);
-        } catch (SQLException ex) {
-            plugin.getLogger().log(Level.SEVERE, "Couldn't import data. Aborting...", ex);
-        }
-
-        return false;
     }
 
     public SharedConfig getConfig() {

@@ -1,7 +1,6 @@
 package com.github.games647.fastlogin.bukkit;
 
 import com.github.games647.fastlogin.bukkit.commands.CrackedCommand;
-import com.github.games647.fastlogin.bukkit.commands.ImportCommand;
 import com.github.games647.fastlogin.bukkit.commands.PremiumCommand;
 import com.github.games647.fastlogin.bukkit.listener.BukkitJoinListener;
 import com.github.games647.fastlogin.bukkit.listener.BungeeCordListener;
@@ -102,7 +101,6 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
         //register commands using a unique name
         getCommand("premium").setExecutor(new PremiumCommand(this));
         getCommand("cracked").setExecutor(new CrackedCommand(this));
-        getCommand("import-auth").setExecutor(new ImportCommand(core));
 
         if (getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
             //prevents NoClassDef errors if it's not available

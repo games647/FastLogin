@@ -52,7 +52,7 @@ switchMode: false
 # will have the same inventory, permissions, ... if they switched to premium authentification from offline/cracked
 # authentication.
 #
-# This feature requires Cauldron, Spigot or a fork of Spigot (PaperSpigot, TacoSpigot)
+# This feature requires Cauldron, Spigot or a fork of Spigot (Paper)
 premiumUuid: false
 
 # This will make an additional check (only for player names which are not in the database) against the mojang servers

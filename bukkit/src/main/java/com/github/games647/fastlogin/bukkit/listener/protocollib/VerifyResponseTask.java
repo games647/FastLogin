@@ -170,7 +170,6 @@ public class VerifyResponseTask implements Runnable {
 
         PacketContainer kickPacket = protocolManager.createPacket(PacketType.Login.Server.DISCONNECT);
         kickPacket.getChatComponents().write(0, WrappedChatComponent.fromText(reason));
-
         try {
             //send kick packet at login state
             //the normal event.getPlayer.kickPlayer(String) method does only work at play state

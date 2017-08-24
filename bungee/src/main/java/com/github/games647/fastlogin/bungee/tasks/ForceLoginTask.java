@@ -64,7 +64,7 @@ public class ForceLoginTask extends ForceLoginMangement<ProxiedPlayer, CommandSe
     @Override
     public void onForceActionSuccess(LoginSession session) {
         ByteArrayDataOutput dataOutput = ByteStreams.newDataOutput();
-        //subchannel name
+        //sub channel name
         if (session.needsRegistration()) {
             dataOutput.writeUTF("AUTO_REGISTER");
         } else {

@@ -44,7 +44,7 @@ So they don't need to enter passwords. This is also called auto login (auto-logi
 * Run Spigot and/or BungeeCord/Waterfall in offline mode (see server.properties or config.yml)
 * An auth plugin. Supported plugins
 
-#### Bukkit/Spigot/PaperSpigot
+#### Bukkit/Spigot/Paper
 
 * [AuthMe (both 5.X and 3.X)](https://dev.bukkit.org/bukkit-plugins/authme-reloaded/)
 * [xAuth](https://dev.bukkit.org/bukkit-plugins/xauth/)
@@ -67,7 +67,7 @@ https://www.spigotmc.org/resources/fastlogin.14153/history
 
 ### How to install
 
-#### Bukkit/Spigot/PaperSpigot
+#### Bukkit/Spigot/Paper
 
 1. Download and install ProtocolLib
 2. Download and install FastLogin
