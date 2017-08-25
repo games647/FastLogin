@@ -44,9 +44,9 @@ public class EncryptionUtil {
                 , serverId.getBytes(Charsets.ISO_8859_1), secretKey.getEncoded(), publicKey.getEncoded());
     }
 
-    private static byte[] digestOperation(String algo, byte[]... content) {
+    private static byte[] digestOperation(String algorithm, byte[]... content) {
         try {
-            MessageDigest messagedigest = MessageDigest.getInstance(algo);
+            MessageDigest messagedigest = MessageDigest.getInstance(algorithm);
             Stream.of(content).forEach(messagedigest::update);
 
             return messagedigest.digest();
@@ -81,8 +81,8 @@ public class EncryptionUtil {
     private static byte[] cipherOperation(int operationMode, Key key, byte[] data) {
         try {
             return createCipherInstance(operationMode, key.getAlgorithm(), key).doFinal(data);
-        } catch (IllegalBlockSizeException | BadPaddingException illegalblocksizeexception) {
-            illegalblocksizeexception.printStackTrace();
+        } catch (IllegalBlockSizeException | BadPaddingException ex) {
+            ex.printStackTrace();
         }
 
         System.err.println("Cipher data failed!");
@@ -95,8 +95,8 @@ public class EncryptionUtil {
 
             cipher.init(operationMode, key);
             return cipher;
-        } catch (InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException invalidkeyexception) {
-            invalidkeyexception.printStackTrace();
+        } catch (InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException ex) {
+            ex.printStackTrace();
         }
 
         System.err.println("Cipher creation failed!");

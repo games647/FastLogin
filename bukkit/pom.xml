@@ -34,7 +34,7 @@
             <url>http://repo.dmulloy2.net/content/groups/public/</url>
         </repository>
 
-        <!--Authme Reloaded-->
+        <!--AuthMe Reloaded-->
         <repository>
             <id>xephi-repo</id>
             <url>https://ci.xephi.fr/plugin/repository/everything/</url>
@@ -52,7 +52,7 @@
             <url>https://jitpack.io</url>
         </repository>
         
-        <!--PlaceholerAPI -->
+        <!--PlaceholderAPI -->
         <repository>
             <id>placeholderapi</id>
             <url>http://repo.extendedclip.com/content/repositories/placeholderapi/</url>

@@ -3,7 +3,7 @@ package com.github.games647.fastlogin.bungee.tasks;
 import com.github.games647.fastlogin.bungee.BungeeLoginSession;
 import com.github.games647.fastlogin.bungee.FastLoginBungee;
 import com.github.games647.fastlogin.core.shared.FastLoginCore;
-import com.github.games647.fastlogin.core.shared.ForceLoginMangement;
+import com.github.games647.fastlogin.core.shared.ForceLoginManagement;
 import com.github.games647.fastlogin.core.shared.LoginSession;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
@@ -15,7 +15,7 @@ import net.md_5.bungee.api.connection.PendingConnection;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.connection.Server;
 
-public class ForceLoginTask extends ForceLoginMangement<ProxiedPlayer, CommandSender, BungeeLoginSession, FastLoginBungee> {
+public class ForceLoginTask extends ForceLoginManagement<ProxiedPlayer, CommandSender, BungeeLoginSession, FastLoginBungee> {
 
     private final Server server;
 

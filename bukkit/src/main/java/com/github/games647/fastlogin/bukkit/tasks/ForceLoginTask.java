@@ -3,7 +3,7 @@ package com.github.games647.fastlogin.bukkit.tasks;
 import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 import com.github.games647.fastlogin.core.shared.FastLoginCore;
-import com.github.games647.fastlogin.core.shared.ForceLoginMangement;
+import com.github.games647.fastlogin.core.shared.ForceLoginManagement;
 import com.github.games647.fastlogin.core.shared.LoginSession;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
@@ -16,7 +16,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.FixedMetadataValue;
 
-public class ForceLoginTask extends ForceLoginMangement<Player, CommandSender, BukkitLoginSession, FastLoginBukkit> {
+public class ForceLoginTask extends ForceLoginManagement<Player, CommandSender, BukkitLoginSession, FastLoginBukkit> {
 
     public ForceLoginTask(FastLoginCore<Player, CommandSender, FastLoginBukkit> core, Player player) {
         super(core, player);

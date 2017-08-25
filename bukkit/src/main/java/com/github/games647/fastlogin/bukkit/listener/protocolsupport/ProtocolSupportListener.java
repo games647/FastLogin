@@ -56,7 +56,7 @@ public class ProtocolSupportListener extends JoinManagement<Player, CommandSende
         source.setOnlineMode();
 
         String ip = source.getAddress().getAddress().getHostAddress();
-        plugin.getCore().getPendingLogins().put(ip + username, new Object());
+        plugin.getCore().getPendingLogin().put(ip + username, new Object());
 
         BukkitLoginSession playerSession = new BukkitLoginSession(username, null, null, registered, profile);
         plugin.getLoginSessions().put(source.getAddress().toString(), playerSession);

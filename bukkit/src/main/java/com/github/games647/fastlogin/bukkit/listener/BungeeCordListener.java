@@ -54,7 +54,7 @@ public class BungeeCordListener implements PluginMessageListener {
 
         //check if the player is still online or disconnected
         Player checkedPlayer = plugin.getServer().getPlayerExact(playerName);
-        //fail if target player is blacklisted because already authed or wrong bungeecord id
+        //fail if target player is blacklisted because already authenticated or wrong bungeecord id
         if (checkedPlayer != null && !checkedPlayer.hasMetadata(plugin.getName())) {
             //bungeecord UUID
             long mostSignificantBits = dataInput.readLong();

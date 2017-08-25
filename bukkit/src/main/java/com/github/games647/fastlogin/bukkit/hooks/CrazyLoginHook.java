@@ -38,7 +38,7 @@ public class CrazyLoginHook implements AuthPlugin<Player> {
                 playerData.setLoggedIn(true);
 
                 String ip = player.getAddress().getAddress().getHostAddress();
-//this should be done after login to restore the inventory, unhide players, prevent potential memory leaks...
+//this should be done after login to restore the inventory, show players, prevent potential memory leaks...
 //from: https://github.com/ST-DDT/CrazyLogin/blob/master/src/main/java/de/st_ddt/crazylogin/CrazyLogin.java#L1948
                 playerData.resetLoginFails();
                 player.setFireTicks(0);

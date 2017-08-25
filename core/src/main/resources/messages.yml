@@ -8,7 +8,7 @@
 # You want to have language template? Visit the Github Wiki here:
 # https://github.com/games647/FastLogin/wiki/English
 
-# In order to split a message into seperate lines you could just make a new line, but keep the '
+# In order to split a message into separate lines you could just make a new line, but keep the '
 # Example:
 # bla: '&aFirst line
 # Second line
@@ -24,10 +24,10 @@
 # Switch mode is activated and a new (non-whitelist) cracked player tries to join
 switch-kick-message: '&4Only paid minecraft whitelisted accounts are allowed to join this server'
 
-# Player activated premium logins in order to skip offline authentication
+# Player activated premium login in order to skip offline authentication
 add-premium: '&2Added to the list of premium players'
 
-# Player activated premium logins in order to skip offline authentication
+# Player activated premium login in order to skip offline authentication
 add-premium-other: '&2Player has been added to the premium list'
 
 # Player is already set be a paid account
@@ -73,17 +73,17 @@ wait-on-proxy: '&6Sending request...'
 # authentication. In this state the client expects a success packet with a encrypted connection or disconnect packet.
 # So we kick the player, if we cannot encrypt the connection. In other situation (example: premium name check),
 # the player will be just authenticated as cracked
-error-kick: '&4Error occured'
+error-kick: '&4Error occurred'
 
-# The server sents a verify token within the premium authentication reqest. If this doesn't match on response,
+# The server sends a verify token within the premium authentication request. If this doesn't match on response,
 # it could be another client sending malicious packets
 invalid-verify-token: '&4Invalid token'
 
 # The client sent no request join server request to the mojang servers which would proof that it's owner of that
-# acciunt. Only modified clients would do this.
+# account. Only modified clients would do this.
 invalid-session: '&4Invalid session'
 
-# The client sent a malicous packet without a login request packet
+# The client sent a malicious packet without a login request packet
 invalid-requst: '&4Invalid request'
 
 # Message if the bukkit isn't fully started to inject the packets

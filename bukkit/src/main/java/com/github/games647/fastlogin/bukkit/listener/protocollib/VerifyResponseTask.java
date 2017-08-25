@@ -81,7 +81,7 @@ public class VerifyResponseTask implements Runnable {
         String serverId = (new BigInteger(serverIdHash)).toString(16);
 
         String username = session.getUsername();
-        if (plugin.getCore().getApiConnector().hasJoinedServer(session, serverId)) {
+        if (plugin.getCore().getApiConnector().hasJoinedServer(session, serverId, fromPlayer.getAddress())) {
             plugin.getLogger().log(Level.INFO, "Player {0} has a verified premium account", username);
 
             session.setVerified(true);
@@ -177,7 +177,7 @@ public class VerifyResponseTask implements Runnable {
             //tell the server that we want to close the connection
             player.kickPlayer("Disconnect");
         } catch (InvocationTargetException ex) {
-            plugin.getLogger().log(Level.SEVERE, "Error sending kickpacket", ex);
+            plugin.getLogger().log(Level.SEVERE, "Error sending kick packet", ex);
         }
     }
 

@@ -5,7 +5,6 @@ import com.google.common.collect.ImmutableList;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -36,7 +35,7 @@ public class BalancedSSLFactory extends SSLSocketFactory {
     }
 
     @Override
-    public Socket createSocket(Socket socket, String host, int port, boolean autoclose) throws IOException {
+    public Socket createSocket(Socket socket, String host, int port, boolean autoClose) throws IOException {
         return oldFactory.createSocket(host, port, getNextLocalAddress(), 0);
     }
 

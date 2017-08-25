@@ -47,7 +47,7 @@ public class AsyncPremiumCheck extends JoinManagement<ProxiedPlayer, CommandSend
         plugin.getSession().put(source.getConnection(), new BungeeLoginSession(username, registered, profile));
 
         String ip = source.getAddress().getAddress().getHostAddress();
-        plugin.getCore().getPendingLogins().put(ip + username, new Object());
+        plugin.getCore().getPendingLogin().put(ip + username, new Object());
     }
 
     @Override

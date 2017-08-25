@@ -5,7 +5,7 @@
 * Remove bungee chatcolor for Bukkit to support KCauldron
 * Minor cleanup using inspections + Https
 * Increase hook delay to let ProtocolLib inject the listener
-* Drop support for old authme API + Add support for new authme API
+* Drop support for old AuthMe API + Add support for new AuthMe API
 * Remove ebean util usage to make it compatible with 1.12
 * Do not try to hook into a plugin if auth plugin hook is already set using the FastLogin API
 * Automatically register accounts if they are not in the auth plugin database but in the FastLogin database
@@ -14,7 +14,7 @@
 * Finally set a value to the API column
 * No duplicate session login
 * Fix timestamp parsing in newer versions of SQLite
-* Fix Spigot console command invocation sends result to ingame players
+* Fix Spigot console command invocation sends result to in game players
 
 ### 1.9
 
@@ -170,7 +170,7 @@
 
 ### 0.5
 
-* Added unpremium command
+* Added cracked command
 * Added autologin - See config
 * Added config
 * Added isRegistered API method

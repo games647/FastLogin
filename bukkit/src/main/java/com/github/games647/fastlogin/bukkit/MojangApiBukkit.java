@@ -7,6 +7,8 @@ import com.github.games647.fastlogin.core.shared.MojangApiConnector;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.InetSocketAddress;
+import java.net.URLEncoder;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -19,17 +21,22 @@ import org.json.simple.JSONValue;
 public class MojangApiBukkit extends MojangApiConnector {
 
     //mojang api check to prove a player is logged in minecraft and made a join server request
-    private static final String HAS_JOINED_URL = "https://sessionserver.mojang.com/session/minecraft/hasJoined?";
+    private static final String HAS_JOINED_URL = "https://sessionserver.mojang.com/session/minecraft/hasJoined?" +
+            "username=%s&serverId=%s";
 
     public MojangApiBukkit(Logger logger, List<String> localAddresses, int rateLimit, Map<String, Integer> proxies) {
         super(logger, localAddresses, rateLimit, proxies);
     }
 
     @Override
-    public boolean hasJoinedServer(LoginSession session, String serverId) {
+    public boolean hasJoinedServer(LoginSession session, String serverId, InetSocketAddress ip) {
         BukkitLoginSession playerSession = (BukkitLoginSession) session;
         try {
-            String url = HAS_JOINED_URL + "username=" + playerSession.getUsername() + "&serverId=" + serverId;
+            String url = String.format(HAS_JOINED_URL, playerSession.getUsername(), serverId);
+            if (ip != null) {
+                url += "&ip=" + URLEncoder.encode(ip.getAddress().getHostAddress(), "UTF-8");
+            }
+
             HttpURLConnection conn = getConnection(url);
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
@@ -54,7 +61,7 @@ public class MojangApiBukkit extends MojangApiConnector {
                 return true;
             }
         } catch (Exception ex) {
-            //catch not only ioexceptions also parse and NPE on unexpected json format
+            //catch not only io-exceptions also parse and NPE on unexpected json format
             logger.log(Level.WARNING, "Failed to verify session", ex);
         }
 

@@ -58,7 +58,7 @@ public class PlayerConnectionListener implements Listener {
             return;
         }
 
-        //use the loginevent instead of the postlogin event in order to send the loginsuccess packet to the client
+        //use the login event instead of the postlogin event in order to send the loginsuccess packet to the client
         //with the offline uuid this makes it possible to set the skin then
         PendingConnection connection = loginEvent.getConnection();
         InitialHandler initialHandler = (InitialHandler) connection;

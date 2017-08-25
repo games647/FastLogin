@@ -65,7 +65,7 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
 
     protected final Map<String, String> localeMessages = new ConcurrentHashMap<>();
 
-    private final ConcurrentMap<String, Object> pendingLogins = FastLoginCore.buildCache(5, -1);
+    private final ConcurrentMap<String, Object> pendingLogin = FastLoginCore.buildCache(5, -1);
     private final Set<UUID> pendingConfirms = Sets.newHashSet();
     private final T plugin;
 
@@ -186,8 +186,8 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
         this.passwordGenerator = passwordGenerator;
     }
 
-    public ConcurrentMap<String, Object> getPendingLogins() {
-        return pendingLogins;
+    public ConcurrentMap<String, Object> getPendingLogin() {
+        return pendingLogin;
     }
 
     public Collection<UUID> getPendingConfirms() {

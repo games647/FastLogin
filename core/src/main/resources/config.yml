@@ -37,7 +37,7 @@ secondAttemptCracked: false
 switchMode: false
 
 # If this plugin detected that a player has a premium, it can also set the associated
-# uuid from that account. So if the players changes their usernames, they will still have
+# uuid from that account. So if the player changes the username, they will still have
 # the same player data (inventory, permissions, ...)
 #
 # Warning: This also means that the UUID will be different if the player is connecting
@@ -49,14 +49,14 @@ switchMode: false
 # players could still join the server, because they have different UUID.
 #
 # Moreover you may want to convert the offline UUID to a premium UUID. This will ensure that the player
-# will have the same inventory, permissions, ... if they switched to premium authentification from offline/cracked
+# will have the same inventory, permissions, ... if they switched to premium authentication from offline/cracked
 # authentication.
 #
 # This feature requires Cauldron, Spigot or a fork of Spigot (Paper)
 premiumUuid: false
 
 # This will make an additional check (only for player names which are not in the database) against the mojang servers
-# in order to get the premium UUID. If that premium UUID is in the database, we can assume on sucessful login that the
+# in order to get the premium UUID. If that premium UUID is in the database, we can assume on successful login that the
 # player changed it's  username and we just update the name in the database.
 # Examples:
 # #### Case 1

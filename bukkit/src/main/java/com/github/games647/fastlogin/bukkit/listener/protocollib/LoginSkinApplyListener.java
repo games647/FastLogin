@@ -42,7 +42,7 @@ public class LoginSkinApplyListener implements Listener {
 
         if (plugin.getConfig().getBoolean("forwardSkin")) {
             //go through every session, because player.getAddress is null 
-            //loginEvent.getAddress is just a InetAddress not InetSocketAddres, so not unique enough
+            //loginEvent.getAddress is just a InetAddress not InetSocketAddress, so not unique enough
             for (BukkitLoginSession session : plugin.getLoginSessions().values()) {
                 if (session.getUsername().equals(player.getName())) {
                     String signature = session.getSkinSignature();

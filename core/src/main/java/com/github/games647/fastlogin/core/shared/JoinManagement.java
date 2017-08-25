@@ -29,7 +29,7 @@ public abstract class JoinManagement<P extends C, C, S extends LoginSource> {
         profile.setLastIp(ip);
         try {
             if (profile.getUserId() == -1) {
-                if (core.getPendingLogins().remove(ip + username) != null && config.get("secondAttemptCracked", false)) {
+                if (core.getPendingLogin().remove(ip + username) != null && config.get("secondAttemptCracked", false)) {
                     core.getPlugin().getLogger().log(Level.INFO, "Second attempt login -> cracked {0}", username);
 
                     //first login request failed so make a cracked session

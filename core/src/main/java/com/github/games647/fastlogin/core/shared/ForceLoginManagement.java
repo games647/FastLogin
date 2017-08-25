@@ -6,7 +6,7 @@ import com.github.games647.fastlogin.core.hooks.AuthPlugin;
 
 import java.util.logging.Level;
 
-public abstract class ForceLoginMangement<P extends C, C, L extends LoginSession, T extends PlatformPlugin<C>>
+public abstract class ForceLoginManagement<P extends C, C, L extends LoginSession, T extends PlatformPlugin<C>>
         implements Runnable {
 
     protected final FastLoginCore<P, C, T> core;
@@ -14,7 +14,7 @@ public abstract class ForceLoginMangement<P extends C, C, L extends LoginSession
 
     protected L session;
 
-    public ForceLoginMangement(FastLoginCore<P, C, T> core, P player) {
+    public ForceLoginManagement(FastLoginCore<P, C, T> core, P player) {
         this.core = core;
         this.player = player;
     }

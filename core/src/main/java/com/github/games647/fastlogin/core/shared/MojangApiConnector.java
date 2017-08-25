@@ -112,7 +112,7 @@ public abstract class MojangApiConnector {
         return null;
     }
 
-    public abstract boolean hasJoinedServer(LoginSession session, String serverId);
+    public abstract boolean hasJoinedServer(LoginSession session, String serverId, InetSocketAddress ip);
 
     protected abstract String getUUIDFromJson(String json);
 
