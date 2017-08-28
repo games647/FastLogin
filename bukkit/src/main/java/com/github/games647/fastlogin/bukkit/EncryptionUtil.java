@@ -2,18 +2,18 @@ package com.github.games647.fastlogin.bukkit;
 
 import com.google.common.base.Charsets;
 
-import java.security.InvalidKeyException;
+import java.math.BigInteger;
+import java.security.GeneralSecurityException;
 import java.security.Key;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.stream.Stream;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.util.Random;
 
-import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
@@ -21,15 +21,21 @@ import javax.crypto.spec.SecretKeySpec;
  * Encryption and decryption minecraft util for connection between servers
  * and paid minecraft account clients.
  *
- * Source: https://github.com/bergerkiller/CraftSource/blob/master/net.minecraft.server/MinecraftEncryption.java
- *
- * Remapped by: https://github.com/Techcable/MinecraftMappings/tree/master/1.8
+ * @see net.minecraft.server.MinecraftEncryption
  */
 public class EncryptionUtil {
 
+    public static final int VERIFY_TOKEN_LENGTH = 4;
+    public static final String KEY_PAIR_ALGORITHM = "RSA";
+
+    /**
+     * Generate a RSA key pair
+     *
+     * @return The RSA key pair.
+     */
     public static KeyPair generateKeyPair() {
         try {
-            KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
+            KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(KEY_PAIR_ALGORITHM);
 
             keyPairGenerator.initialize(1_024);
             return keyPairGenerator.generateKeyPair();
@@ -39,80 +45,76 @@ public class EncryptionUtil {
         }
     }
 
-    public static byte[] getServerIdHash(String serverId, Key publicKey, Key secretKey) {
-        return digestOperation("SHA-1"
-                , serverId.getBytes(Charsets.ISO_8859_1), secretKey.getEncoded(), publicKey.getEncoded());
+    /**
+     * Generate a random token. This is used to verify that we are communicating with the same player
+     * in a login session.
+     *
+     * @param random random generator
+     * @return an error with 4 bytes long
+     */
+    public static byte[] generateVerifyToken(Random random) {
+        byte[] token = new byte[VERIFY_TOKEN_LENGTH];
+        random.nextBytes(token);
+        return token;
     }
 
-    private static byte[] digestOperation(String algorithm, byte[]... content) {
+    /**
+     * Generate the server id based on client and server data.
+     *
+     * @param sessionId session for the current login attempt
+     * @param sharedSecret shared secret between the client and the server
+     * @param publicKey public key of the server
+     * @return the server id formatted as a hexadecimal string.
+     */
+    public static String getServerIdHashString(String sessionId, Key sharedSecret, PublicKey publicKey) {
         try {
-            MessageDigest messagedigest = MessageDigest.getInstance(algorithm);
-            Stream.of(content).forEach(messagedigest::update);
-
-            return messagedigest.digest();
-        } catch (NoSuchAlgorithmException nosuchalgorithmexception) {
-            nosuchalgorithmexception.printStackTrace();
-            return null;
-        }
-    }
-
-//    public static PublicKey decodePublicKey(byte[] encodedKey) {
-//        try {
-//            KeyFactory keyfactory = KeyFactory.getInstance("RSA");
-//
-//            X509EncodedKeySpec x509encodedkeyspec = new X509EncodedKeySpec(encodedKey);
-//            return keyfactory.generatePublic(x509encodedkeyspec);
-//        } catch (NoSuchAlgorithmException | InvalidKeySpecException nosuchalgorithmexception) {
-//            //ignore
-//        }
-//
-//        System.err.println("Public key reconstitute failed!");
-//        return null;
-//    }
-
-    public static SecretKey decryptSharedKey(Key privateKey, byte[] encryptedSharedKey) {
-        return new SecretKeySpec(decryptData(privateKey, encryptedSharedKey), "AES");
-    }
-
-    public static byte[] decryptData(Key key, byte[] data) {
-        return cipherOperation(Cipher.DECRYPT_MODE, key, data);
-    }
-
-    private static byte[] cipherOperation(int operationMode, Key key, byte[] data) {
-        try {
-            return createCipherInstance(operationMode, key.getAlgorithm(), key).doFinal(data);
-        } catch (IllegalBlockSizeException | BadPaddingException ex) {
-            ex.printStackTrace();
+            byte[] serverHash = getServerIdHash(sessionId, sharedSecret, publicKey);
+            return (new BigInteger(serverHash)).toString(16);
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
         }
 
-        System.err.println("Cipher data failed!");
-        return null;
+        return "";
     }
 
-    private static Cipher createCipherInstance(int operationMode, String cipherName, Key key) {
-        try {
-            Cipher cipher = Cipher.getInstance(cipherName);
-
-            cipher.init(operationMode, key);
-            return cipher;
-        } catch (InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException ex) {
-            ex.printStackTrace();
-        }
-
-        System.err.println("Cipher creation failed!");
-        return null;
+    /**
+     * Decrypts the content and extracts the key spec.
+     *
+     * @param cipher decryption cipher
+     * @param privateKey private key of the server
+     * @param sharedKey the encrypted shared key
+     * @return
+     * @throws GeneralSecurityException
+     */
+    public static SecretKey decryptSharedKey(Cipher cipher, PrivateKey privateKey, byte[] sharedKey)
+            throws GeneralSecurityException {
+        return new SecretKeySpec(decrypt(cipher, privateKey, sharedKey), "AES");
     }
-//
-//    public static Cipher createBufferedBlockCipher(int operationMode, Key key) {
-//        try {
-//            Cipher cipher = Cipher.getInstance("AES/CFB8/NoPadding");
-//
-//            cipher.init(operationMode, key, new IvParameterSpec(key.getEncoded()));
-//            return cipher;
-//        } catch (GeneralSecurityException generalsecurityexception) {
-//            throw new RuntimeException(generalsecurityexception);
-//        }
-//    }
+
+    /**
+     * Decrypted the given data using the cipher.
+     *
+     * @param cipher decryption cypher
+     * @param key server private key
+     * @param data the encrypted data
+     * @return clear text data
+     * @throws GeneralSecurityException if it fails to initialize and decrypt the data
+     */
+    public static byte[] decrypt(Cipher cipher, PrivateKey key, byte[] data) throws GeneralSecurityException {
+        cipher.init(Cipher.DECRYPT_MODE, key);
+        return cipher.doFinal(data);
+    }
+
+    private static byte[] getServerIdHash(String sessionId, Key sharedSecret, PublicKey publicKey)
+            throws NoSuchAlgorithmException {
+        MessageDigest digest = MessageDigest.getInstance("SHA-1");
+
+        digest.update(sessionId.getBytes(Charsets.ISO_8859_1));
+        digest.update(sharedSecret.getEncoded());
+        digest.update(publicKey.getEncoded());
+
+        return digest.digest();
+    }
 
     private EncryptionUtil() {
         //utility

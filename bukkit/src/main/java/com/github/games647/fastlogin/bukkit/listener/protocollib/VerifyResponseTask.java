@@ -1,6 +1,5 @@
 package com.github.games647.fastlogin.bukkit.listener.protocollib;
 
-import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.PacketContainer;
@@ -16,40 +15,44 @@ import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.math.BigInteger;
-import java.security.Key;
+import java.security.GeneralSecurityException;
 import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.util.Arrays;
 import java.util.UUID;
 import java.util.logging.Level;
 
+import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 
 import org.bukkit.entity.Player;
+
+import static com.comphenix.protocol.PacketType.Login.Client.START;
+import static com.comphenix.protocol.PacketType.Login.Server.DISCONNECT;
 
 public class VerifyResponseTask implements Runnable {
 
     private final FastLoginBukkit plugin;
     private final PacketEvent packetEvent;
 
-    private final Player fromPlayer;
+    private final Player player;
 
     private final byte[] sharedSecret;
 
-    public VerifyResponseTask(FastLoginBukkit plugin, PacketEvent packetEvent, Player fromPlayer, byte[] sharedSecret) {
+    public VerifyResponseTask(FastLoginBukkit plugin, PacketEvent packetEvent, Player player, byte[] sharedSecret) {
         this.plugin = plugin;
         this.packetEvent = packetEvent;
-        this.fromPlayer = fromPlayer;
+        this.player = player;
         this.sharedSecret = sharedSecret;
     }
 
     @Override
     public void run() {
         try {
-            BukkitLoginSession session = plugin.getLoginSessions().get(fromPlayer.getAddress().toString());
+            BukkitLoginSession session = plugin.getLoginSessions().get(player.getAddress().toString());
             if (session == null) {
                 disconnect(plugin.getCore().getMessage("invalid-request"), true
-                        , "Player {0} tried to send encryption response at invalid state", fromPlayer.getAddress());
+                        , "Player {0} tried to send encryption response at invalid state", player.getAddress());
             } else {
                 verifyResponse(session);
             }
@@ -64,24 +67,36 @@ public class VerifyResponseTask implements Runnable {
     }
 
     private void verifyResponse(BukkitLoginSession session) {
+        PublicKey publicKey = plugin.getServerKey().getPublic();
         PrivateKey privateKey = plugin.getServerKey().getPrivate();
 
-        SecretKey loginKey = EncryptionUtil.decryptSharedKey(privateKey, sharedSecret);
-        if (!checkVerifyToken(session, privateKey) || !encryptConnection(loginKey)) {
+        Cipher cipher;
+        SecretKey loginKey;
+        try {
+            cipher = Cipher.getInstance(privateKey.getAlgorithm());
+
+            loginKey = EncryptionUtil.decryptSharedKey(cipher, privateKey, sharedSecret);
+        } catch (GeneralSecurityException securityEx) {
+            disconnect("error-kick", false, "Cannot decrypt received contents", securityEx);
+            return;
+        }
+
+        try {
+            if (!checkVerifyToken(session, cipher, privateKey) || !encryptConnection(loginKey)) {
+                return;
+            }
+        } catch (Exception ex) {
+            disconnect("error-kick", false, "Cannot decrypt received contents", ex);
             return;
         }
 
         //this makes sure the request from the client is for us
         //this might be relevant http://www.sk89q.com/2011/09/minecraft-name-spoofing-exploit/
         String generatedId = session.getServerId();
-
-        //https://github.com/bergerkiller/CraftSource/blob/master/net.minecraft.server/LoginListener.java#L193
-        //generate the server id based on client and server data
-        byte[] serverIdHash = EncryptionUtil.getServerIdHash(generatedId, plugin.getServerKey().getPublic(), loginKey);
-        String serverId = (new BigInteger(serverIdHash)).toString(16);
+        String serverId = EncryptionUtil.getServerIdHashString(generatedId, loginKey, publicKey);
 
         String username = session.getUsername();
-        if (plugin.getCore().getApiConnector().hasJoinedServer(session, serverId, fromPlayer.getAddress())) {
+        if (plugin.getCore().getApiConnector().hasJoinedServer(session, serverId, player.getAddress())) {
             plugin.getLogger().log(Level.INFO, "Player {0} has a verified premium account", username);
 
             session.setVerified(true);
@@ -91,7 +106,7 @@ public class VerifyResponseTask implements Runnable {
             //user tried to fake a authentication
             disconnect(plugin.getCore().getMessage("invalid-session"), true
                     , "Player {0} ({1}) tried to log in with an invalid session ServerId: {2}"
-                    , session.getUsername(), fromPlayer.getAddress(), serverId);
+                    , session.getUsername(), player.getAddress(), serverId);
         }
     }
 
@@ -107,13 +122,14 @@ public class VerifyResponseTask implements Runnable {
         }
     }
 
-    private boolean checkVerifyToken(BukkitLoginSession session, Key privateKey) {
+    private boolean checkVerifyToken(BukkitLoginSession session, Cipher cipher, PrivateKey privateKey)
+            throws GeneralSecurityException {
         byte[] requestVerify = session.getVerifyToken();
         //encrypted verify token
         byte[] responseVerify = packetEvent.getPacket().getByteArrays().read(1);
 
         //https://github.com/bergerkiller/CraftSource/blob/master/net.minecraft.server/LoginListener.java#L182
-        if (!Arrays.equals(requestVerify, EncryptionUtil.decryptData(privateKey, responseVerify))) {
+        if (!Arrays.equals(requestVerify, EncryptionUtil.decrypt(cipher, privateKey, responseVerify))) {
             //check if the verify token are equal to the server sent one
             disconnect(plugin.getCore().getMessage("invalid-verify-token"), true
                     , "Player {0} ({1}) tried to login with an invalid verify token. Server: {2} Client: {3}"
@@ -126,7 +142,7 @@ public class VerifyResponseTask implements Runnable {
 
     //try to get the networkManager from ProtocolLib
     private Object getNetworkManager() throws IllegalAccessException, NoSuchFieldException, ClassNotFoundException {
-        Object injectorContainer = TemporaryPlayerFactory.getInjectorFromPlayer(fromPlayer);
+        Object injectorContainer = TemporaryPlayerFactory.getInjectorFromPlayer(player);
 
         //ChannelInjector
         Class<?> injectorClass = Class.forName("com.comphenix.protocol.injector.netty.Injector");
@@ -147,8 +163,7 @@ public class VerifyResponseTask implements Runnable {
             //the client expects this behaviour
             encryptMethod.invoke(networkManager, loginKey);
         } catch (Exception ex) {
-            plugin.getLogger().log(Level.SEVERE, "Couldn't enable encryption", ex);
-            disconnect(plugin.getCore().getMessage("error-kick"), false, "Couldn't enable encryption");
+            disconnect("error-kick", false, "Couldn't enable encryption", ex);
             return false;
         }
 
@@ -162,13 +177,13 @@ public class VerifyResponseTask implements Runnable {
             plugin.getLogger().log(Level.SEVERE, logMessage, arguments);
         }
 
-        kickPlayer(packetEvent.getPlayer(), kickReason);
+        kickPlayer(plugin.getCore().getMessage(kickReason));
     }
 
-    private void kickPlayer(Player player, String reason) {
+    private void kickPlayer(String reason) {
         ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
 
-        PacketContainer kickPacket = protocolManager.createPacket(PacketType.Login.Server.DISCONNECT);
+        PacketContainer kickPacket = protocolManager.createPacket(DISCONNECT);
         kickPacket.getChatComponents().write(0, WrappedChatComponent.fromText(reason));
         try {
             //send kick packet at login state
@@ -186,18 +201,18 @@ public class VerifyResponseTask implements Runnable {
         ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
         
         //see StartPacketListener for packet information
-        PacketContainer startPacket = protocolManager.createPacket(PacketType.Login.Client.START);
+        PacketContainer startPacket = protocolManager.createPacket(START);
 
         //uuid is ignored by the packet definition
         WrappedGameProfile fakeProfile = new WrappedGameProfile(UUID.randomUUID(), username);
         startPacket.getGameProfiles().write(0, fakeProfile);
         try {
             //we don't want to handle our own packets so ignore filters
-            protocolManager.recieveClientPacket(fromPlayer, startPacket, false);
+            protocolManager.recieveClientPacket(player, startPacket, false);
         } catch (InvocationTargetException | IllegalAccessException ex) {
             plugin.getLogger().log(Level.WARNING, "Failed to fake a new start packet", ex);
             //cancel the event in order to prevent the server receiving an invalid packet
-            kickPlayer(fromPlayer, plugin.getCore().getMessage("error-kick"));
+            kickPlayer(plugin.getCore().getMessage("error-kick"));
         }
     }
 }

@@ -1,18 +1,20 @@
 package com.github.games647.fastlogin.bukkit.listener.protocollib;
 
 import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.PacketType.Login.Client;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 
-import java.util.Random;
+import java.security.SecureRandom;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+
+import static com.comphenix.protocol.PacketType.Login.Client.ENCRYPTION_BEGIN;
+import static com.comphenix.protocol.PacketType.Login.Client.START;
 
 public class ProtocolLibListener extends PacketAdapter {
 
@@ -20,12 +22,12 @@ public class ProtocolLibListener extends PacketAdapter {
 
     private final FastLoginBukkit plugin;
     //just create a new once on plugin enable. This used for verify token generation
-    private final Random random = new Random();
+    private final SecureRandom random = new SecureRandom();
 
     public ProtocolLibListener(FastLoginBukkit plugin) {
         //run async in order to not block the server, because we are making api calls to Mojang
         super(params().plugin(plugin)
-                .types(PacketType.Login.Client.START, PacketType.Login.Client.ENCRYPTION_BEGIN)
+                .types(START, ENCRYPTION_BEGIN)
                 .optionAsync());
 
         this.plugin = plugin;
@@ -48,7 +50,7 @@ public class ProtocolLibListener extends PacketAdapter {
 
         Player sender = packetEvent.getPlayer();
         PacketType packetType = packetEvent.getPacketType();
-        if (packetType == Client.START) {
+        if (packetType == START) {
             onLogin(packetEvent, sender);
         } else {
             onEncryptionBegin(packetEvent, sender);

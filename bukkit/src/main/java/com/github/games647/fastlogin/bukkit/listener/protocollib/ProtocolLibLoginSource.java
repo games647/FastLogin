@@ -1,11 +1,11 @@
 package com.github.games647.fastlogin.bukkit.listener.protocollib;
 
-import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
+import com.github.games647.fastlogin.bukkit.EncryptionUtil;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 import com.github.games647.fastlogin.core.shared.LoginSource;
 
@@ -16,9 +16,10 @@ import java.util.Random;
 
 import org.bukkit.entity.Player;
 
-public class ProtocolLibLoginSource implements LoginSource {
+import static com.comphenix.protocol.PacketType.Login.Server.DISCONNECT;
+import static com.comphenix.protocol.PacketType.Login.Server.ENCRYPTION_BEGIN;
 
-    private static final int VERIFY_TOKEN_LENGTH = 4;
+public class ProtocolLibLoginSource implements LoginSource {
 
     private final FastLoginBukkit plugin;
 
@@ -28,7 +29,7 @@ public class ProtocolLibLoginSource implements LoginSource {
     private final Random random;
 
     private String serverId;
-    private final byte[] verifyToken = new byte[VERIFY_TOKEN_LENGTH];
+    private byte[] verifyToken;
 
     public ProtocolLibLoginSource(FastLoginBukkit plugin, PacketEvent packetEvent, Player player, Random random) {
         this.plugin = plugin;
@@ -42,9 +43,7 @@ public class ProtocolLibLoginSource implements LoginSource {
         //randomized server id to make sure the request is for our server
         //this could be relevant http://www.sk89q.com/2011/09/minecraft-name-spoofing-exploit/
         serverId = Long.toString(random.nextLong(), 16);
-
-        //generate a random token which should be the same when we receive it from the client
-        random.nextBytes(verifyToken);
+        verifyToken = EncryptionUtil.generateVerifyToken(random);
         
         sentEncryptionRequest();
     }
@@ -53,7 +52,7 @@ public class ProtocolLibLoginSource implements LoginSource {
     public void kick(String message) throws Exception {
         ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
 
-        PacketContainer kickPacket = protocolManager.createPacket(PacketType.Login.Server.DISCONNECT);
+        PacketContainer kickPacket = protocolManager.createPacket(DISCONNECT);
         kickPacket.getChatComponents().write(0, WrappedChatComponent.fromText(message));
 
         try {
@@ -78,10 +77,11 @@ public class ProtocolLibLoginSource implements LoginSource {
          *
          * ServerID="" (String) key=public server key verifyToken=random 4 byte array
          */
-        PacketContainer newPacket = protocolManager.createPacket(PacketType.Login.Server.ENCRYPTION_BEGIN);
+        PacketContainer newPacket = protocolManager.createPacket(ENCRYPTION_BEGIN);
 
         newPacket.getStrings().write(0, serverId);
-        newPacket.getSpecificModifier(PublicKey.class).write(0, plugin.getServerKey().getPublic());
+        PublicKey publicKey = plugin.getServerKey().getPublic();
+        newPacket.getSpecificModifier(PublicKey.class).write(0, publicKey);
 
         newPacket.getByteArrays().write(0, verifyToken);
 
