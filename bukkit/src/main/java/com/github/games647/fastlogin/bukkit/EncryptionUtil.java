@@ -83,7 +83,7 @@ public class EncryptionUtil {
      * @param cipher decryption cipher
      * @param privateKey private key of the server
      * @param sharedKey the encrypted shared key
-     * @return
+     * @return shared secret key
      * @throws GeneralSecurityException
      */
     public static SecretKey decryptSharedKey(Cipher cipher, PrivateKey privateKey, byte[] sharedKey)

@@ -26,7 +26,8 @@ public class ProtocolLibListener extends PacketAdapter {
 
     public ProtocolLibListener(FastLoginBukkit plugin) {
         //run async in order to not block the server, because we are making api calls to Mojang
-        super(params().plugin(plugin)
+        super(params()
+                .plugin(plugin)
                 .types(START, ENCRYPTION_BEGIN)
                 .optionAsync());
 
