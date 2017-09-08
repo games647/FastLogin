@@ -1,5 +1,13 @@
+### 1.11
+
+* Drop support for RoyalAuth, because it doesn't seem to be supported anymore
+* Clean up client-server encryption -> use only one cipher per connection, simplify code
+
 ### 1.10
 
+* Prevent authentication proxies
+* Drop database importer
+* More logging by default
 * Add support for HTTP proxies
 * Set the fake offline UUID on lowest priority (-> as soon as possible)
 * Remove bungee chatcolor for Bukkit to support KCauldron
@@ -11,7 +19,7 @@
 * Automatically register accounts if they are not in the auth plugin database but in the FastLogin database
 * Update BungeeAuth dependency and use the new API. Please update your plugin if you still use the old one.
 * Remove deprecated API methods from the last version
-* Finally set a value to the API column
+* Finally update the IP column on every login
 * No duplicate session login
 * Fix timestamp parsing in newer versions of SQLite
 * Fix Spigot console command invocation sends result to in game players

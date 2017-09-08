@@ -40,19 +40,18 @@ So they don't need to enter passwords. This is also called auto login (auto-logi
 ### Requirements:
 * Plugin: [ProtocolLib](https://www.spigotmc.org/resources/protocollib.1997/) or [ProtocolSupport](https://www.spigotmc.org/resources/protocolsupport.7201/)
 * Tested Bukkit/[Spigot](https://www.spigotmc.org) 1.9 (could also work with other versions)
-* Java 7+
+* Java 8+
 * Run Spigot and/or BungeeCord/Waterfall in offline mode (see server.properties or config.yml)
 * An auth plugin. Supported plugins
 
 #### Bukkit/Spigot/Paper
 
-* [AuthMe (both 5.X and 3.X)](https://dev.bukkit.org/bukkit-plugins/authme-reloaded/)
+* [AuthMe (both 5.X)](https://dev.bukkit.org/bukkit-plugins/authme-reloaded/)
 * [xAuth](https://dev.bukkit.org/bukkit-plugins/xauth/)
 * [LogIt](https://github.com/XziomekX/LogIt)
 * [AdvancedLogin (Paid)](https://www.spigotmc.org/resources/advancedlogin.10510/)
 * [CrazyLogin](https://dev.bukkit.org/bukkit-plugins/crazylogin/)
 * [LoginSecurity](https://dev.bukkit.org/bukkit-plugins/loginsecurity/)
-* [RoyalAuth](https://dev.bukkit.org/bukkit-plugins/royalauth/)
 * [UltraAuth](https://dev.bukkit.org/bukkit-plugins/ultraauth-aa/)
 
 #### BungeeCord/Waterfall
