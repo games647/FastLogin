@@ -15,8 +15,6 @@ import java.util.UUID;
 import java.util.concurrent.ThreadFactory;
 import java.util.logging.Level;
 
-import javax.sql.DataSource;
-
 public class AuthStorage {
 
     private static final String PREMIUM_TABLE = "premium";
@@ -63,10 +61,6 @@ public class AuthStorage {
         this.dataSource = new HikariDataSource(config);
     }
 
-    public DataSource getDataSource() {
-        return dataSource;
-    }
-
     public void createTables() throws SQLException {
         Connection con = null;
         Statement createStmt = null;
@@ -90,34 +84,6 @@ public class AuthStorage {
             }
 
             createStmt.executeUpdate(createDataStmt);
-
-            //drop the old unique uuid index
-            try {
-                if (dataSource.getJdbcUrl().contains("sqlite")) {
-                    String tempTableCreate = createDataStmt.replace(PREMIUM_TABLE, PREMIUM_TABLE + "_TEMP")
-                            //if we already imported the table fail here
-                            .replace("IF NOT EXISTS", "");
-                    //create a temp table insert it there and then back
-                    createStmt.executeUpdate(tempTableCreate);
-                    createStmt.executeUpdate("INSERT INTO " + PREMIUM_TABLE + "_TEMP SELECT * FROM " + PREMIUM_TABLE);
-
-                    createStmt.executeUpdate("DROP TABLE " + PREMIUM_TABLE);
-                    createStmt.executeUpdate(createDataStmt);
-
-                    //insert it back into the new table
-                    createStmt.executeUpdate("INSERT INTO " + PREMIUM_TABLE + " SELECT * FROM " + PREMIUM_TABLE + "_TEMP");
-                } else {
-                    createStmt.executeUpdate("ALTER TABLE premium DROP INDEX UUID");
-                }
-            } catch (SQLException sqlEx) {
-                //silent - we already migrated
-            }
-
-            try {
-                createStmt.executeUpdate("CREATE INDEX uuid_idx on premium (UUID)");
-            } catch (SQLException sqlEx) {
-                //silent - we already migrated
-            }
         } finally {
             closeQuietly(con);
             closeQuietly(createStmt);
