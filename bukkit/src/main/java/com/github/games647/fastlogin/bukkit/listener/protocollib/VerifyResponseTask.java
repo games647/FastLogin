@@ -91,7 +91,7 @@ public class VerifyResponseTask implements Runnable {
         }
 
         //this makes sure the request from the client is for us
-        //this might be relevant http://www.sk89q.com/2011/09/minecraft-name-spoofing-exploit/
+        //this might be r https://www.sk89q.com/2011/09/minecraft-name-spoofing-exploit/
         String generatedId = session.getServerId();
         String serverId = EncryptionUtil.getServerIdHashString(generatedId, loginKey, publicKey);
 

@@ -14,7 +14,7 @@ import org.bukkit.entity.Player;
 /**
  * Github: https://github.com/lenis0012/LoginSecurity-2 Project page:
  *
- * Bukkit: http://dev.bukkit.org/bukkit-plugins/loginsecurity/
+ * Bukkit: https://dev.bukkit.org/bukkit-plugins/loginsecurity/
  * Spigot: https://www.spigotmc.org/resources/loginsecurity.19362/
  */
 public class LoginSecurityHook implements AuthPlugin<Player> {

@@ -18,7 +18,7 @@ import org.royaldev.royalauth.RoyalAuth;
  *
  * Project page:
  *
- * Bukkit: http://dev.bukkit.org/bukkit-plugins/royalauth/
+ * Bukkits: http://dev.bukkit.org/bukkit-plugins/royalauth/
  */
 public class RoyalAuthHook implements AuthPlugin<Player> {
 

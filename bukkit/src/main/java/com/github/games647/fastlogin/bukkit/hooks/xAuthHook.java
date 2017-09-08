@@ -17,7 +17,7 @@ import org.bukkit.entity.Player;
  *
  * Project page:
  *
- * Bukkit: http://dev.bukkit.org/bukkit-plugins/xauth/
+ * Bukkit: https://dev.bukkit.org/bukkit-plugins/xauth/
  */
 public class xAuthHook implements AuthPlugin<Player> {
 

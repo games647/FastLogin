@@ -34,16 +34,10 @@
             <url>http://repo.dmulloy2.net/content/groups/public/</url>
         </repository>
 
-        <!--AuthMe Reloaded-->
+        <!--AuthMe Reloaded and xAuth -->
         <repository>
             <id>xephi-repo</id>
             <url>https://ci.xephi.fr/plugin/repository/everything/</url>
-        </repository>
-
-        <!--xAuth-->
-        <repository>
-            <id>luricos.de-repo</id>
-            <url>http://repo.luricos.de/bukkit-plugins/</url>
         </repository>
 
         <!--Github automatic maven builds-->
@@ -71,7 +65,7 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.12-pre2-SNAPSHOT</version>
+            <version>1.12-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
 

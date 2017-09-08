@@ -6,7 +6,7 @@ name: ${project.parent.name}
 main: ${project.groupId}.${project.artifactId}.${project.name}
 
 version: ${project.version}-git${git.commit.id}
-author: games647, http://github.com/games647/FastLogin/graphs/contributors
+author: games647, https://github.com/games647/FastLogin/graphs/contributors
 
 softDepends:
     # BungeeCord auth plugins

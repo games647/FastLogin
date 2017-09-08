@@ -11,7 +11,7 @@ import org.bukkit.entity.Player;
  *
  * Project page:
  *
- * Bukkit: http://dev.bukkit.org/bukkit-plugins/authme-reloaded/
+ * Bukkit: https://dev.bukkit.org/bukkit-plugins/authme-reloaded/
  *
  * Spigot: https://www.spigotmc.org/resources/authme-reloaded.6269/
  */

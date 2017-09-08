@@ -41,7 +41,7 @@ public class BukkitLoginSession extends LoginSession {
     /**
      * Gets the random generated server id. This makes sure the request sent from the client is just for this server.
      *
-     * See this for details http://www.sk89q.com/2011/09/Minecraft-name-spoofing-exploit/
+     * See this for details https://www.sk89q.com/2011/09/Minecraft-name-spoofing-exploit/
      *
      * Empty if it's a BungeeCord connection
      *

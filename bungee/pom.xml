@@ -25,7 +25,7 @@
 
         <repository>
             <id>vik1395-repo</id>
-            <url>http://repo.vik1395.me/repositories</url>
+            <url>https://vik1395.github.io/repositories</url>
         </repository>
     </repositories>
 
