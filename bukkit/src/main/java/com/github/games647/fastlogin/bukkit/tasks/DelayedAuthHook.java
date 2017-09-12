@@ -53,7 +53,7 @@ public class DelayedAuthHook implements Runnable {
             for (Class<? extends AuthPlugin<Player>> clazz : supportedHooks) {
                 String pluginName = clazz.getSimpleName().replace("Hook", "");
                 //uses only member classes which uses AuthPlugin interface (skip interfaces)
-                if (Bukkit.getServer().getPluginManager().getPlugin(pluginName) != null) {
+                if (Bukkit.getServer().getPluginManager().isPluginEnabled(pluginName)) {
                     //check only for enabled plugins. A single plugin could be disabled by plugin managers
                     authPluginHook = clazz.newInstance();
                     plugin.getLogger().log(Level.INFO, "Hooking into auth plugin: {0}", pluginName);

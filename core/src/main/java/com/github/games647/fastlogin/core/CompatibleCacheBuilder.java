@@ -22,7 +22,6 @@ public class CompatibleCacheBuilder<K, V> {
      *
      * @param <K> Key type
      * @param <V> Value type
-     *
      * @return A new cache builder.
      */
     public static <K, V> CompatibleCacheBuilder<K, V> newBuilder() {
@@ -30,7 +29,7 @@ public class CompatibleCacheBuilder<K, V> {
     }
 
     private final CacheBuilder<K, V> builder;
-    
+
     @SuppressWarnings("unchecked")
     private CompatibleCacheBuilder() {
         builder = (CacheBuilder<K, V>) CacheBuilder.newBuilder();
@@ -46,16 +45,15 @@ public class CompatibleCacheBuilder<K, V> {
      * much noticeable impact. A value of one permits only one thread to modify the cache at a time, but since read
      * operations can proceed concurrently, this still yields higher concurrency than full synchronization. Defaults to
      * 4.
-     *
+     * <p>
      * <p>
      * <b>Note:</b>The default may change in the future. If you care about this value, you should always choose it
      * explicitly.
      *
      * @param concurrencyLevel New concurrency level
      * @return This for chaining
-     *
      * @throws IllegalArgumentException if {@code concurrencyLevel} is non-positive
-     * @throws IllegalStateException if a concurrency level was already set
+     * @throws IllegalStateException    if a concurrency level was already set
      */
     public CompatibleCacheBuilder<K, V> concurrencyLevel(int concurrencyLevel) {
         builder.concurrencyLevel(concurrencyLevel);
@@ -67,23 +65,22 @@ public class CompatibleCacheBuilder<K, V> {
      * the entry's creation, or last access. Access time is reset by
      * {@link com.google.common.cache.Cache#get Cache.get()}, but not by operations on the view returned by
      * {@link com.google.common.cache.Cache#asMap() Cache.asMap()}.
-     *
+     * <p>
      * <p>
      * When {@code duration} is zero, elements will be evicted immediately after being loaded into the cache. This has
      * the same effect as invoking {@link #maximumSize maximumSize}{@code (0)}. It can be useful in testing, or to
      * disable caching temporarily without a code change.
-     *
+     * <p>
      * <p>
      * Expired entries may be counted by {@link com.google.common.cache.Cache#size Cache.size()}, but will never be
      * visible to read or write operations. Expired entries are currently cleaned up during write operations, or during
      * occasional read operations in the absence of writes; though this behavior may change in the future.
      *
      * @param duration the length of time after an entry is last accessed that it should be automatically removed
-     * @param unit the unit that {@code duration} is expressed in
+     * @param unit     the unit that {@code duration} is expressed in
      * @return This for chaining
-     *
      * @throws IllegalArgumentException if {@code duration} is negative
-     * @throws IllegalStateException if the time to idle or time to live was already set
+     * @throws IllegalStateException    if the time to idle or time to live was already set
      */
     public CompatibleCacheBuilder<K, V> expireAfterAccess(long duration, TimeUnit unit) {
         builder.expireAfterAccess(duration, unit);
@@ -93,23 +90,22 @@ public class CompatibleCacheBuilder<K, V> {
     /**
      * Specifies that each entry should be automatically removed from the cache once a fixed duration has elapsed after
      * the entry's creation, or the most recent replacement of its value.
-     *
+     * <p>
      * <p>
      * When {@code duration} is zero, elements will be evicted immediately after being loaded into the cache. This has
      * the same effect as invoking {@link #maximumSize maximumSize}{@code (0)}. It can be useful in testing, or to
      * disable caching temporarily without a code change.
-     *
+     * <p>
      * <p>
      * Expired entries may be counted by {@link com.google.common.cache.Cache#size Cache.size()}, but will never be
      * visible to read or write operations. Expired entries are currently cleaned up during write operations, or during
      * occasional read operations in the absence of writes; though this behavior may change in the future.
      *
      * @param duration the length of time after an entry is created that it should be automatically removed
-     * @param unit the unit that {@code duration} is expressed in
+     * @param unit     the unit that {@code duration} is expressed in
      * @return This for chaining
-     *
      * @throws IllegalArgumentException if {@code duration} is negative
-     * @throws IllegalStateException if the time to live or time to idle was already set
+     * @throws IllegalStateException    if the time to live or time to idle was already set
      */
     public CompatibleCacheBuilder<K, V> expireAfterWrite(long duration, TimeUnit unit) {
         builder.expireAfterWrite(duration, unit);
@@ -124,9 +120,8 @@ public class CompatibleCacheBuilder<K, V> {
      *
      * @param initialCapacity - initial capacity
      * @return This for chaining
-     *
      * @throws IllegalArgumentException if {@code initialCapacity} is negative
-     * @throws IllegalStateException if an initial capacity was already set
+     * @throws IllegalStateException    if an initial capacity was already set
      */
     public CompatibleCacheBuilder<K, V> initialCapacity(int initialCapacity) {
         builder.initialCapacity(initialCapacity);
@@ -138,17 +133,16 @@ public class CompatibleCacheBuilder<K, V> {
      * this limit is exceeded</b>. As the cache size grows close to the maximum, the cache evicts entries that are less
      * likely to be used again. For example, the cache may evict an entry because it hasn't been used recently or very
      * often.
-     *
+     * <p>
      * <p>
      * When {@code size} is zero, elements will be evicted immediately after being loaded into the cache. This has the
      * same effect as invoking {@link #expireAfterWrite expireAfterWrite}{@code (0, unit)} or      {@link #expireAfterAccess expireAfterAccess}{@code (0,
-	 * unit)}. It can be useful in testing, or to disable caching temporarily without a code change.
+     * unit)}. It can be useful in testing, or to disable caching temporarily without a code change.
      *
      * @param size the maximum size of the cache
      * @return This for chaining
-     *
      * @throws IllegalArgumentException if {@code size} is negative
-     * @throws IllegalStateException if a maximum size was already set
+     * @throws IllegalStateException    if a maximum size was already set
      */
     public CompatibleCacheBuilder<K, V> maximumSize(int size) {
         builder.maximumSize(size);
@@ -158,13 +152,13 @@ public class CompatibleCacheBuilder<K, V> {
     /**
      * Specifies a listener instance, which all caches built using this {@code CacheBuilder} will notify each time an
      * entry is removed from the cache by any means.
-     *
+     * <p>
      * <p>
      * Each cache built by this {@code CacheBuilder} after this method is called invokes the supplied listener after
      * removing an element for any reason (see removal causes in
      * {@link com.google.common.cache.RemovalCause RemovalCause}). It will invoke the listener during invocations of any
      * of that cache's public methods (even read-only methods).
-     *
+     * <p>
      * <p>
      * <b>Important note:</b> Instead of returning <em>this</em> as a {@code CacheBuilder} instance, this method returns
      * {@code CacheBuilder<K1, V1>}. From this point on, either the original reference or the returned reference may be
@@ -173,17 +167,16 @@ public class CompatibleCacheBuilder<K, V> {
      * the listener already provided; the {@code CacheBuilder} type cannot do this. For best results, simply use the
      * standard method-chaining idiom, as illustrated in the documentation at top, configuring a {@code CacheBuilder}
      * and building your {@link com.google.common.cache.Cache Cache} all in a single statement.
-     *
+     * <p>
      * <p>
      * <b>Warning:</b> if you ignore the above advice, and use this {@code CacheBuilder} to build a cache whose key or
      * value type is incompatible with the listener, you will likely experience a {@link ClassCastException} at some
      * <i>undefined</i> point in the future.
      *
-     * @param <K1> Key type
-     * @param <V1> Value type
+     * @param <K1>     Key type
+     * @param <V1>     Value type
      * @param listener - removal listener
      * @return This for chaining
-     *
      * @throws IllegalStateException if a removal listener was already set
      */
     @SuppressWarnings("unchecked")
@@ -195,14 +188,13 @@ public class CompatibleCacheBuilder<K, V> {
     /**
      * Specifies a nanosecond-precision time source for use in determining when entries should be expired. By default,
      * {@link System#nanoTime} is used.
-     *
+     * <p>
      * <p>
      * The primary intent of this method is to facilitate testing of caches which have been configured with
      * {@link #expireAfterWrite} or {@link #expireAfterAccess}.
      *
      * @param ticker - ticker
      * @return This for chaining
-     *
      * @throws IllegalStateException if a ticker was already set
      */
     public CompatibleCacheBuilder<K, V> ticker(Ticker ticker) {
@@ -215,18 +207,17 @@ public class CompatibleCacheBuilder<K, V> {
      * {@link java.lang.ref.SoftReference SoftReference} (by default, strong references are used). Softly-referenced
      * objects will be garbage-collected in a <i>globally</i>
      * least-recently-used manner, in response to memory demand.
-     *
+     * <p>
      * <p>
      * <b>Warning:</b> in most circumstances it is better to set a per-cache {@linkplain #maximumSize maximum size}
      * instead of using soft references. You should only use this method if you are well familiar with the practical
      * consequences of soft references.
-     *
+     * <p>
      * <p>
      * <b>Note:</b> when this method is used, the resulting cache will use identity ({@code ==}) comparison to determine
      * equality of values.
      *
      * @return This for chaining
-     *
      * @throws IllegalStateException if the value strength was already set
      */
     public CompatibleCacheBuilder<K, V> softValues() {
@@ -237,13 +228,12 @@ public class CompatibleCacheBuilder<K, V> {
     /**
      * Specifies that each key (not value) stored in the cache should be wrapped in a
      * {@link java.lang.ref.WeakReference WeakReference} (by default, strong references are used).
-     *
+     * <p>
      * <p>
      * <b>Warning:</b> when this method is used, the resulting cache will use identity ({@code ==}) comparison to
      * determine equality of keys.
      *
      * @return This for chaining
-     *
      * @throws IllegalStateException if the key strength was already set
      */
     public CompatibleCacheBuilder<K, V> weakKeys() {
@@ -254,17 +244,16 @@ public class CompatibleCacheBuilder<K, V> {
     /**
      * Specifies that each value (not key) stored in the cache should be wrapped in a
      * {@link java.lang.ref.WeakReference WeakReference} (by default, strong references are used).
-     *
+     * <p>
      * <p>
      * Weak values will be garbage collected once they are weakly reachable. This makes them a poor candidate for
      * caching; consider {@link #softValues} instead.
-     *
+     * <p>
      * <p>
      * <b>Note:</b> when this method is used, the resulting cache will use identity ({@code ==}) comparison to determine
      * equality of values.
      *
      * @return This for chaining
-     *
      * @throws IllegalStateException if the value strength was already set
      */
     public CompatibleCacheBuilder<K, V> weakValues() {
@@ -277,8 +266,8 @@ public class CompatibleCacheBuilder<K, V> {
      * <p>
      * We can't return the direct Cache instance as it changed in Guava 13.
      *
-     * @param <K1> Key type
-     * @param <V1> Value type
+     * @param <K1>   Key type
+     * @param <V1>   Value type
      * @param loader - cache loader
      * @return The cache as a a map.
      */

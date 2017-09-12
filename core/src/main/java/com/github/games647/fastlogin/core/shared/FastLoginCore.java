@@ -203,11 +203,15 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
     }
 
     public void saveDefaultFile(String fileName) {
-        if (!plugin.getDataFolder().exists()) {
-            plugin.getDataFolder().mkdir();
+        Path dataFolder = plugin.getDataFolder().toPath();
+
+        try {
+            Files.createDirectories(dataFolder);
+        } catch (IOException ioExc) {
+            plugin.getLogger().log(Level.SEVERE, "Cannot create plugin folder " + dataFolder, ioExc);
         }
 
-        Path configFile = plugin.getDataFolder().toPath().resolve(fileName);
+        Path configFile = dataFolder.resolve(fileName);
         if (Files.notExists(configFile)) {
             InputStream in = getClass().getClassLoader().getResourceAsStream(fileName);
             try {

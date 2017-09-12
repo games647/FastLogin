@@ -46,9 +46,9 @@ So they don't need to enter passwords. This is also called auto login (auto-logi
 
 #### Bukkit/Spigot/Paper
 
-* [AuthMe (both 5.X)](https://dev.bukkit.org/bukkit-plugins/authme-reloaded/)
+* [AuthMe (5.X)](https://dev.bukkit.org/bukkit-plugins/authme-reloaded/)
 * [xAuth](https://dev.bukkit.org/bukkit-plugins/xauth/)
-* [LogIt](https://github.com/XziomekX/LogIt)
+* [LogIt](https://github.com/games647/LogIt)
 * [AdvancedLogin (Paid)](https://www.spigotmc.org/resources/advancedlogin.10510/)
 * [CrazyLogin](https://dev.bukkit.org/bukkit-plugins/crazylogin/)
 * [LoginSecurity](https://dev.bukkit.org/bukkit-plugins/loginsecurity/)

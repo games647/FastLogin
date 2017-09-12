@@ -21,7 +21,7 @@ import org.bukkit.entity.Player;
  *
  * Project page:
  *
- * Bukkits: http://dev.bukkit.org/server-mods/crazylogin/
+ * Bukkit: https://dev.bukkit.org/server-mods/crazylogin/
  */
 public class CrazyLoginHook implements AuthPlugin<Player> {
 

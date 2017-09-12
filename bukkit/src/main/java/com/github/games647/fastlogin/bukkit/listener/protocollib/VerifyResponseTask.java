@@ -91,7 +91,7 @@ public class VerifyResponseTask implements Runnable {
         }
 
         //this makes sure the request from the client is for us
-        //this might be r https://www.sk89q.com/2011/09/minecraft-name-spoofing-exploit/
+        //this might be relevant https://www.sk89q.com/2011/09/minecraft-name-spoofing-exploit/
         String generatedId = session.getServerId();
         String serverId = EncryptionUtil.getServerIdHashString(generatedId, loginKey, publicKey);
 
@@ -141,7 +141,7 @@ public class VerifyResponseTask implements Runnable {
     }
 
     //try to get the networkManager from ProtocolLib
-    private Object getNetworkManager() throws IllegalAccessException, NoSuchFieldException, ClassNotFoundException {
+    private Object getNetworkManager() throws IllegalAccessException, ClassNotFoundException {
         Object injectorContainer = TemporaryPlayerFactory.getInjectorFromPlayer(player);
 
         //ChannelInjector

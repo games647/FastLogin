@@ -41,7 +41,7 @@ public class ProtocolLibLoginSource implements LoginSource {
     @Override
     public void setOnlineMode() throws Exception {
         //randomized server id to make sure the request is for our server
-        //this could be relevant http://www.sk89q.com/2011/09/minecraft-name-spoofing-exploit/
+        //this could be relevant https://www.sk89q.com/2011/09/minecraft-name-spoofing-exploit/
         serverId = Long.toString(random.nextLong(), 16);
         verifyToken = EncryptionUtil.generateVerifyToken(random);
         
@@ -72,7 +72,7 @@ public class ProtocolLibLoginSource implements LoginSource {
 
     private void sentEncryptionRequest() throws InvocationTargetException {
         ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
-        /**
+        /*
          * Packet Information: http://wiki.vg/Protocol#Encryption_Request
          *
          * ServerID="" (String) key=public server key verifyToken=random 4 byte array
