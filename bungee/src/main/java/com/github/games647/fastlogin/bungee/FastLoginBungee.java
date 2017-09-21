@@ -1,7 +1,7 @@
 package com.github.games647.fastlogin.bungee;
 
 import com.github.games647.fastlogin.bungee.hooks.BungeeAuthHook;
-import com.github.games647.fastlogin.bungee.listener.PlayerConnectionListener;
+import com.github.games647.fastlogin.bungee.listener.ConnectionListener;
 import com.github.games647.fastlogin.bungee.listener.PluginMessageListener;
 import com.github.games647.fastlogin.core.shared.FastLoginCore;
 import com.github.games647.fastlogin.core.shared.MojangApiConnector;
@@ -46,7 +46,7 @@ public class FastLoginBungee extends Plugin implements PlatformPlugin<CommandSen
         }
 
         //events
-        getProxy().getPluginManager().registerListener(this, new PlayerConnectionListener(this));
+        getProxy().getPluginManager().registerListener(this, new ConnectionListener(this));
         getProxy().getPluginManager().registerListener(this, new PluginMessageListener(this));
 
         //this is required to listen to messages from the server

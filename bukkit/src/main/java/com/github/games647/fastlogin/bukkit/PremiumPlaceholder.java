@@ -34,7 +34,7 @@ public class PremiumPlaceholder extends PlaceholderHook {
         return null;
     }
 
-    public static boolean register(FastLoginBukkit plugin) {
-        return PlaceholderAPI.registerPlaceholderHook(plugin, new PremiumPlaceholder(plugin));
+    public static void register(FastLoginBukkit plugin) {
+        PlaceholderAPI.registerPlaceholderHook(plugin, new PremiumPlaceholder(plugin));
     }
 }

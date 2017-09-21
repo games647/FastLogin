@@ -126,7 +126,7 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
 
     public void sendBungeeActivateMessage(CommandSender sender, String target, boolean activate) {
         if (sender instanceof Player) {
-            notifyBungeeCord((Player) sender, target, activate, sender instanceof Player);
+            notifyBungeeCord((Player) sender, target, activate, true);
         } else {
             Player firstPlayer = Iterables.getFirst(getServer().getOnlinePlayers(), null);
             if (firstPlayer == null) {
@@ -134,7 +134,7 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
                 return;
             }
 
-            notifyBungeeCord(firstPlayer, target, activate, sender instanceof Player);
+            notifyBungeeCord(firstPlayer, target, activate, false);
         }
     }
 

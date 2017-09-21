@@ -54,11 +54,8 @@ public class ForceLoginTask extends ForceLoginManagement<ProxiedPlayer, CommandS
 
     @Override
     public boolean forceRegister(ProxiedPlayer player) {
-        if (session.isAlreadyLogged()) {
-            return true;
-        }
+        return session.isAlreadyLogged() || super.forceRegister(player);
 
-        return super.forceRegister(player);
     }
 
     @Override

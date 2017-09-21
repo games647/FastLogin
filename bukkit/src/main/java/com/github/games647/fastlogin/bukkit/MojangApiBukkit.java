@@ -9,7 +9,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
 import java.net.URLEncoder;
-import java.util.List;
+import java.util.Collection;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -24,41 +24,44 @@ public class MojangApiBukkit extends MojangApiConnector {
     private static final String HAS_JOINED_URL = "https://sessionserver.mojang.com/session/minecraft/hasJoined?" +
             "username=%s&serverId=%s";
 
-    public MojangApiBukkit(Logger logger, List<String> localAddresses, int rateLimit, Map<String, Integer> proxies) {
+    public MojangApiBukkit(Logger logger, Collection<String> localAddresses, int rateLimit
+            , Map<String, Integer> proxies) {
         super(logger, localAddresses, rateLimit, proxies);
     }
 
     @Override
     public boolean hasJoinedServer(LoginSession session, String serverId, InetSocketAddress ip) {
         BukkitLoginSession playerSession = (BukkitLoginSession) session;
+
+        String url = String.format(HAS_JOINED_URL, playerSession.getUsername(), serverId);
         try {
-            String url = String.format(HAS_JOINED_URL, playerSession.getUsername(), serverId);
             if (ip != null) {
                 url += "&ip=" + URLEncoder.encode(ip.getAddress().getHostAddress(), "UTF-8");
             }
 
             HttpURLConnection conn = getConnection(url);
 
-            BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-            String line = reader.readLine();
-            if (line != null && !"null".equals(line)) {
-                //validate parsing
-                //http://wiki.vg/Protocol_Encryption#Server
-                JSONObject userData = (JSONObject) JSONValue.parseWithException(line);
-                String uuid = (String) userData.get("id");
-                playerSession.setUuid(FastLoginCore.parseId(uuid));
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()))) {
+                String line = reader.readLine();
+                if (line != null && !"null".equals(line)) {
+                    //validate parsing
+                    //http://wiki.vg/Protocol_Encryption#Server
+                    JSONObject userData = (JSONObject) JSONValue.parseWithException(line);
+                    String uuid = (String) userData.get("id");
+                    playerSession.setUuid(FastLoginCore.parseId(uuid));
 
-                JSONArray properties = (JSONArray) userData.get("properties");
-                JSONObject skinProperty = (JSONObject) properties.get(0);
+                    JSONArray properties = (JSONArray) userData.get("properties");
+                    JSONObject skinProperty = (JSONObject) properties.get(0);
 
-                String propertyName = (String) skinProperty.get("name");
-                if ("textures".equals(propertyName)) {
-                    String skinValue = (String) skinProperty.get("value");
-                    String signature = (String) skinProperty.get("signature");
-                    playerSession.setSkin(skinValue, signature);
+                    String propertyName = (String) skinProperty.get("name");
+                    if ("textures".equals(propertyName)) {
+                        String skinValue = (String) skinProperty.get("value");
+                        String signature = (String) skinProperty.get("signature");
+                        playerSession.setSkin(skinValue, signature);
+                    }
+
+                    return true;
                 }
-
-                return true;
             }
         } catch (Exception ex) {
             //catch not only io-exceptions also parse and NPE on unexpected json format

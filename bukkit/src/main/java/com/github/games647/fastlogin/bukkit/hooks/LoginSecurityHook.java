@@ -24,11 +24,8 @@ public class LoginSecurityHook implements AuthPlugin<Player> {
     @Override
     public boolean forceLogin(Player player) {
         PlayerSession session = LoginSecurity.getSessionManager().getPlayerSession(player);
-        if (session.isAuthorized()) {
-            return true;
-        }
+        return session.isAuthorized() || session.performAction(new LoginAction(AuthService.PLUGIN, plugin)).isSuccess();
 
-        return session.performAction(new LoginAction(AuthService.PLUGIN, plugin)).isSuccess();
     }
 
     @Override

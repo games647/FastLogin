@@ -20,11 +20,9 @@ public class LogItHook implements AuthPlugin<Player> {
     @Override
     public boolean forceLogin(Player player) {
         SessionManager sessionManager = LogItCore.getInstance().getSessionManager();
-        if (sessionManager.isSessionAlive(player)) {
-            return true;
-        }
+        return sessionManager.isSessionAlive(player)
+                || sessionManager.startSession(player) == CancelledState.NOT_CANCELLED;
 
-        return sessionManager.startSession(player) == CancelledState.NOT_CANCELLED;
     }
 
     @Override

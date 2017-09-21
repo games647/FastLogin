@@ -63,15 +63,11 @@ public class xAuthHook implements AuthPlugin<Player> {
         //not thread-safe
         Future<Boolean> future = Bukkit.getScheduler().callSyncMethod(xAuthPlugin, () -> {
             xAuthPlayer xAuthPlayer = xAuthPlugin.getPlayerManager().getPlayer(player);
-            if (xAuthPlayer != null) {
-                //this should run async because the plugin executes a sql query, but the method
-                //accesses non thread-safe collections :(
+            //this should run async because the plugin executes a sql query, but the method
+            //accesses non thread-safe collections :(
+            return xAuthPlayer != null
+                    && xAuthPlugin.getAuthClass(xAuthPlayer).adminRegister(player.getName(), password, null);
 
-                return xAuthPlugin.getAuthClass(xAuthPlayer)
-                        .adminRegister(player.getName(), password, null);
-            }
-
-            return false;
         });
 
         try {

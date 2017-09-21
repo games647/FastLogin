@@ -83,41 +83,18 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
         saveDefaultFile("messages.yml");
         saveDefaultFile("config.yml");
 
-        BufferedReader reader = null;
         try {
-            reader = new BufferedReader(new InputStreamReader(getClass().getClassLoader().getResourceAsStream("config.yml")));
-            sharedConfig = new SharedConfig(plugin.loadYamlFile(reader));
-            reader.close();
+            sharedConfig = new SharedConfig(loadFile("config.yml"));
+            Map<String, Object> messages = loadFile("messages.yml");
 
-            reader = Files.newBufferedReader(plugin.getDataFolder().toPath().resolve("config.yml"));
-            sharedConfig.getConfigValues().putAll(plugin.loadYamlFile(reader));
-            reader.close();
-
-            reader = new BufferedReader(new InputStreamReader(getClass().getClassLoader().getResourceAsStream("messages.yml")));
-            reader = Files.newBufferedReader(plugin.getDataFolder().toPath().resolve("messages.yml"));
-            Map<String, Object> messageConfig = plugin.loadYamlFile(reader);
-            reader.close();
-
-            reader = Files.newBufferedReader(plugin.getDataFolder().toPath().resolve("messages.yml"));
-            messageConfig.putAll(plugin.loadYamlFile(reader));
-            for (Entry<String, Object> entry : messageConfig.entrySet()) {
+            for (Entry<String, Object> entry : messages.entrySet()) {
                 String message = plugin.translateColorCodes('&', (String) entry.getValue());
                 if (!message.isEmpty()) {
                     localeMessages.put(entry.getKey(), message);
                 }
             }
-
-            reader.close();
         } catch (IOException ioEx) {
             plugin.getLogger().log(Level.INFO, "Failed to load yaml files", ioEx);
-        } finally {
-            if (reader != null) {
-                try {
-                    reader.close();
-                } catch (IOException ex) {
-                    plugin.getLogger().log(Level.SEVERE, null, ex);
-                }
-            }
         }
 
         List<String> ipAddresses = sharedConfig.get("ip-addresses");
@@ -128,6 +105,22 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
                         .toMap(line -> line.split(":")[0], line -> Integer.parseInt(line.split(":")[1])));
 
         this.apiConnector = plugin.makeApiConnector(plugin.getLogger(), ipAddresses, requestLimit, proxies);
+    }
+
+    private Map<String, Object> loadFile(String fileName) throws IOException {
+        Map<String, Object> values;
+
+        try (InputStream defaultStream = getClass().getClassLoader().getResourceAsStream(fileName);
+             BufferedReader reader = new BufferedReader(new InputStreamReader(defaultStream))) {
+            values = plugin.loadYamlFile(reader);
+        }
+
+        Path file = plugin.getDataFolder().toPath().resolve(fileName);
+        try (BufferedReader reader = Files.newBufferedReader(file)) {
+            values.putAll(plugin.loadYamlFile(reader));
+        }
+
+        return values;
     }
 
     public MojangApiConnector getApiConnector() {
@@ -213,17 +206,10 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
 
         Path configFile = dataFolder.resolve(fileName);
         if (Files.notExists(configFile)) {
-            InputStream in = getClass().getClassLoader().getResourceAsStream(fileName);
-            try {
+            try (InputStream in = getClass().getClassLoader().getResourceAsStream(fileName)) {
                 Files.copy(in, configFile);
             } catch (IOException ioExc) {
                 plugin.getLogger().log(Level.SEVERE, "Error saving default " + fileName, ioExc);
-            } finally {
-                try {
-                    in.close();
-                } catch (IOException ex) {
-                    plugin.getLogger().log(Level.SEVERE, null, ex);
-                }
             }
         }
     }

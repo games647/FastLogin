@@ -1,5 +1,7 @@
 ### 1.11
 
+* Drop support for deprecated AuthMe API
+* Remove legacy database migration code
 * Drop support for RoyalAuth, because it doesn't seem to be supported anymore
 * Clean up client-server encryption -> use only one cipher per connection, simplify code
 

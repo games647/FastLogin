@@ -92,10 +92,11 @@ public abstract class MojangApiConnector {
             }
 
             if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
-                BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                String line = reader.readLine();
-                if (!"null".equals(line)) {
-                    return FastLoginCore.parseId(getUUIDFromJson(line));
+                try (BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
+                    String line = reader.readLine();
+                    if (!"null".equals(line)) {
+                        return FastLoginCore.parseId(getUUIDFromJson(line));
+                    }
                 }
             } else if (connection.getResponseCode() == RATE_LIMIT_CODE) {
                 logger.info("RATE_LIMIT REACHED");

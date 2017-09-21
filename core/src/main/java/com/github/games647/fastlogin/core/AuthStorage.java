@@ -62,12 +62,8 @@ public class AuthStorage {
     }
 
     public void createTables() throws SQLException {
-        Connection con = null;
-        Statement createStmt = null;
-        try {
-            con = dataSource.getConnection();
-            createStmt = con.createStatement();
-
+        try (Connection con = dataSource.getConnection();
+             Statement createStmt = con.createStatement()) {
             String createDataStmt = "CREATE TABLE IF NOT EXISTS " + PREMIUM_TABLE + " ("
                     + "UserID INTEGER PRIMARY KEY AUTO_INCREMENT, "
                     + "UUID CHAR(36), "
@@ -84,132 +80,106 @@ public class AuthStorage {
             }
 
             createStmt.executeUpdate(createDataStmt);
-        } finally {
-            closeQuietly(con);
-            closeQuietly(createStmt);
         }
     }
 
     public PlayerProfile loadProfile(String name) {
-        Connection con = null;
-        PreparedStatement loadStmt = null;
-        ResultSet resultSet = null;
-        try {
-            con = dataSource.getConnection();
-            loadStmt = con.prepareStatement("SELECT * FROM " + PREMIUM_TABLE + " WHERE Name=? LIMIT 1");
+        try (Connection con = dataSource.getConnection();
+             PreparedStatement loadStmt = con.prepareStatement("SELECT * FROM "
+                     + PREMIUM_TABLE + " WHERE Name=? LIMIT 1")) {
             loadStmt.setString(1, name);
 
-            resultSet = loadStmt.executeQuery();
-            if (resultSet.next()) {
-                long userId = resultSet.getInt(1);
+            try (ResultSet resultSet = loadStmt.executeQuery()) {
+                if (resultSet.next()) {
+                    long userId = resultSet.getInt(1);
 
-                UUID uuid = FastLoginCore.parseId(resultSet.getString(2));
+                    UUID uuid = FastLoginCore.parseId(resultSet.getString(2));
 
-                boolean premium = resultSet.getBoolean(4);
-                String lastIp = resultSet.getString(5);
-                long lastLogin = resultSet.getTimestamp(6).getTime();
-                return new PlayerProfile(userId, uuid, name, premium, lastIp, lastLogin);
-            } else {
-                return new PlayerProfile(null, name, false, "");
+                    boolean premium = resultSet.getBoolean(4);
+                    String lastIp = resultSet.getString(5);
+                    long lastLogin = resultSet.getTimestamp(6).getTime();
+                    return new PlayerProfile(userId, uuid, name, premium, lastIp, lastLogin);
+                } else {
+                    return new PlayerProfile(null, name, false, "");
+                }
             }
         } catch (SQLException sqlEx) {
             core.getPlugin().getLogger().log(Level.SEVERE, "Failed to query profile", sqlEx);
-        } finally {
-            closeQuietly(con);
-            closeQuietly(loadStmt);
-            closeQuietly(resultSet);
         }
 
         return null;
     }
 
     public PlayerProfile loadProfile(UUID uuid) {
-        Connection con = null;
-        PreparedStatement loadStmt = null;
-        ResultSet resultSet = null;
-        try {
-            con = dataSource.getConnection();
-            loadStmt = con.prepareStatement("SELECT * FROM " + PREMIUM_TABLE + " WHERE UUID=? LIMIT 1");
+        try (Connection con = dataSource.getConnection();
+             PreparedStatement loadStmt = con.prepareStatement("SELECT * FROM "
+                     + PREMIUM_TABLE + " WHERE UUID=? LIMIT 1")) {
             loadStmt.setString(1, uuid.toString().replace("-", ""));
 
-            resultSet = loadStmt.executeQuery();
-            if (resultSet.next()) {
-                long userId = resultSet.getInt(1);
+            try (ResultSet resultSet = loadStmt.executeQuery()) {
+                if (resultSet.next()) {
+                    long userId = resultSet.getInt(1);
 
-                String name = resultSet.getString(3);
-                boolean premium = resultSet.getBoolean(4);
-                String lastIp = resultSet.getString(5);
-                long lastLogin = resultSet.getTimestamp(6).getTime();
-                return new PlayerProfile(userId, uuid, name, premium, lastIp, lastLogin);
+                    String name = resultSet.getString(3);
+                    boolean premium = resultSet.getBoolean(4);
+                    String lastIp = resultSet.getString(5);
+                    long lastLogin = resultSet.getTimestamp(6).getTime();
+                    return new PlayerProfile(userId, uuid, name, premium, lastIp, lastLogin);
+                }
             }
         } catch (SQLException sqlEx) {
             core.getPlugin().getLogger().log(Level.SEVERE, "Failed to query profile", sqlEx);
-        } finally {
-            closeQuietly(con);
-            closeQuietly(loadStmt);
-            closeQuietly(resultSet);
         }
 
         return null;
     }
 
     public boolean save(PlayerProfile playerProfile) {
-        Connection con = null;
-        PreparedStatement updateStmt = null;
-        PreparedStatement saveStmt = null;
-
-        ResultSet generatedKeys = null;
-        try {
-            con = dataSource.getConnection();
-
+        try (Connection con = dataSource.getConnection()) {
             UUID uuid = playerProfile.getUuid();
             
             if (playerProfile.getUserId() == -1) {
-                saveStmt = con.prepareStatement("INSERT INTO " + PREMIUM_TABLE
-                        + " (UUID, Name, Premium, LastIp) VALUES (?, ?, ?, ?) ", Statement.RETURN_GENERATED_KEYS);
+                try (PreparedStatement saveStmt = con.prepareStatement("INSERT INTO " + PREMIUM_TABLE
+                        + " (UUID, Name, Premium, LastIp) VALUES (?, ?, ?, ?) ", Statement.RETURN_GENERATED_KEYS)) {
+                    if (uuid == null) {
+                        saveStmt.setString(1, null);
+                    } else {
+                        saveStmt.setString(1, uuid.toString().replace("-", ""));
+                    }
 
-                if (uuid == null) {
-                    saveStmt.setString(1, null);
-                } else {
-                    saveStmt.setString(1, uuid.toString().replace("-", ""));
-                }
+                    saveStmt.setString(2, playerProfile.getPlayerName());
+                    saveStmt.setBoolean(3, playerProfile.isPremium());
+                    saveStmt.setString(4, playerProfile.getLastIp());
 
-                saveStmt.setString(2, playerProfile.getPlayerName());
-                saveStmt.setBoolean(3, playerProfile.isPremium());
-                saveStmt.setString(4, playerProfile.getLastIp());
+                    saveStmt.execute();
 
-                saveStmt.execute();
-
-                generatedKeys = saveStmt.getGeneratedKeys();
-                if (generatedKeys != null && generatedKeys.next()) {
-                    playerProfile.setUserId(generatedKeys.getInt(1));
+                    try (ResultSet generatedKeys = saveStmt.getGeneratedKeys()) {
+                        if (generatedKeys != null && generatedKeys.next()) {
+                            playerProfile.setUserId(generatedKeys.getInt(1));
+                        }
+                    }
                 }
             } else {
-                saveStmt = con.prepareStatement("UPDATE " + PREMIUM_TABLE
-                        + " SET UUID=?, Name=?, Premium=?, LastIp=?, LastLogin=CURRENT_TIMESTAMP WHERE UserID=?");
+                try (PreparedStatement saveStmt = con.prepareStatement("UPDATE " + PREMIUM_TABLE
+                        + " SET UUID=?, Name=?, Premium=?, LastIp=?, LastLogin=CURRENT_TIMESTAMP WHERE UserID=?")) {
+                    if (uuid == null) {
+                        saveStmt.setString(1, null);
+                    } else {
+                        saveStmt.setString(1, uuid.toString().replace("-", ""));
+                    }
 
-                if (uuid == null) {
-                    saveStmt.setString(1, null);
-                } else {
-                    saveStmt.setString(1, uuid.toString().replace("-", ""));
+                    saveStmt.setString(2, playerProfile.getPlayerName());
+                    saveStmt.setBoolean(3, playerProfile.isPremium());
+                    saveStmt.setString(4, playerProfile.getLastIp());
+
+                    saveStmt.setLong(5, playerProfile.getUserId());
+                    saveStmt.execute();
                 }
-
-                saveStmt.setString(2, playerProfile.getPlayerName());
-                saveStmt.setBoolean(3, playerProfile.isPremium());
-                saveStmt.setString(4, playerProfile.getLastIp());
-
-                saveStmt.setLong(5, playerProfile.getUserId());
-                saveStmt.execute();
             }
 
             return true;
         } catch (SQLException ex) {
             core.getPlugin().getLogger().log(Level.SEVERE, "Failed to save playerProfile", ex);
-        } finally {
-            closeQuietly(con);
-            closeQuietly(updateStmt);
-            closeQuietly(saveStmt);
-            closeQuietly(generatedKeys);
         }
 
         return false;
@@ -217,15 +187,5 @@ public class AuthStorage {
 
     public void close() {
         dataSource.close();
-    }
-
-    private void closeQuietly(AutoCloseable closeable) {
-        if (closeable != null) {
-            try {
-                closeable.close();
-            } catch (Exception closeEx) {
-                core.getPlugin().getLogger().log(Level.SEVERE, "Failed to close connection", closeEx);
-            }
-        }
     }
 }

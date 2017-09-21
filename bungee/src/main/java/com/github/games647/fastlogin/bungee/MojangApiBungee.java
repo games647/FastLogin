@@ -4,7 +4,7 @@ import com.github.games647.fastlogin.core.shared.LoginSession;
 import com.github.games647.fastlogin.core.shared.MojangApiConnector;
 
 import java.net.InetSocketAddress;
-import java.util.List;
+import java.util.Collection;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -12,7 +12,8 @@ import net.md_5.bungee.BungeeCord;
 
 public class MojangApiBungee extends MojangApiConnector {
 
-    public MojangApiBungee(Logger logger, List<String> localAddresses, int rateLimit, Map<String, Integer> proxies) {
+    public MojangApiBungee(Logger logger, Collection<String> localAddresses, int rateLimit
+            , Map<String, Integer> proxies) {
         super(logger, localAddresses, rateLimit, proxies);
     }
 

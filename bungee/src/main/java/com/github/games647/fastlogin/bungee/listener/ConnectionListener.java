@@ -31,11 +31,11 @@ import net.md_5.bungee.event.EventPriority;
  * plugin message to the Bukkit version of this plugin in
  * order to clear that the connection is online mode.
  */
-public class PlayerConnectionListener implements Listener {
+public class ConnectionListener implements Listener {
 
     private final FastLoginBungee plugin;
 
-    public PlayerConnectionListener(FastLoginBungee plugin) {
+    public ConnectionListener(FastLoginBungee plugin) {
         this.plugin = plugin;
     }
 
