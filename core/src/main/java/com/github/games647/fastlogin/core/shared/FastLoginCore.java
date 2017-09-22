@@ -1,12 +1,11 @@
 package com.github.games647.fastlogin.core.shared;
 
 import com.github.games647.fastlogin.core.AuthStorage;
-import com.github.games647.fastlogin.core.CompatibleCacheBuilder;
+import com.github.games647.fastlogin.core.CommonUtil;
 import com.github.games647.fastlogin.core.hooks.AuthPlugin;
 import com.github.games647.fastlogin.core.hooks.DefaultPasswordGenerator;
 import com.github.games647.fastlogin.core.hooks.PasswordGenerator;
 import com.github.games647.fastlogin.core.mojang.MojangApiConnector;
-import com.google.common.cache.CacheLoader;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
@@ -22,7 +21,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
@@ -38,37 +36,9 @@ import net.md_5.bungee.config.YamlConfiguration;
  */
 public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
 
-    public static <K, V> ConcurrentMap<K, V> buildCache(int expireAfterWrite, int maxSize) {
-        CompatibleCacheBuilder<Object, Object> builder = CompatibleCacheBuilder.newBuilder();
-
-        if (expireAfterWrite > 0) {
-            builder.expireAfterWrite(expireAfterWrite, TimeUnit.MINUTES);
-        }
-
-        if (maxSize > 0) {
-            builder.maximumSize(maxSize);
-        }
-
-        return builder.build(CacheLoader.from(() -> {
-            throw new UnsupportedOperationException();
-        }));
-    }
-
-    public static UUID parseId(String withoutDashes) {
-        if (withoutDashes == null) {
-            return null;
-        }
-
-        return UUID.fromString(withoutDashes.substring(0, 8)
-                + '-' + withoutDashes.substring(8, 12)
-                + '-' + withoutDashes.substring(12, 16)
-                + '-' + withoutDashes.substring(16, 20)
-                + '-' + withoutDashes.substring(20, 32));
-    }
-
     protected final Map<String, String> localeMessages = new ConcurrentHashMap<>();
 
-    private final ConcurrentMap<String, Object> pendingLogin = FastLoginCore.buildCache(5, -1);
+    private final ConcurrentMap<String, Object> pendingLogin = CommonUtil.buildCache(5, -1);
     private final Set<UUID> pendingConfirms = Sets.newHashSet();
     private final T plugin;
 
@@ -92,8 +62,8 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
 
             messages.getKeys()
                     .stream()
-                    .filter(key -> config.get(key) != null)
-                    .collect(Collectors.toMap(Function.identity(), config::get))
+                    .filter(key -> messages.get(key) != null)
+                    .collect(Collectors.toMap(Function.identity(), messages::get))
                     .forEach((key, message) -> {
                         String colored = plugin.translateColorCodes('&', (String) message);
                         if (!colored.isEmpty()) {

@@ -8,6 +8,7 @@ import com.github.games647.fastlogin.bukkit.listener.protocollib.LoginSkinApplyL
 import com.github.games647.fastlogin.bukkit.listener.protocollib.ProtocolLibListener;
 import com.github.games647.fastlogin.bukkit.listener.protocolsupport.ProtocolSupportListener;
 import com.github.games647.fastlogin.bukkit.tasks.DelayedAuthHook;
+import com.github.games647.fastlogin.core.CommonUtil;
 import com.github.games647.fastlogin.core.mojang.MojangApiConnector;
 import com.github.games647.fastlogin.core.shared.FastLoginCore;
 import com.github.games647.fastlogin.core.shared.PlatformPlugin;
@@ -42,7 +43,7 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
     private boolean serverStarted;
 
     //1 minutes should be enough as a timeout for bad internet connection (Server, Client and Mojang)
-    private final ConcurrentMap<String, BukkitLoginSession> loginSession = FastLoginCore.buildCache(1, -1);
+    private final ConcurrentMap<String, BukkitLoginSession> loginSession = CommonUtil.buildCache(1, -1);
 
     @Override
     public void onEnable() {

@@ -1,7 +1,7 @@
 package com.github.games647.fastlogin.core.mojang;
 
 import com.github.games647.fastlogin.core.BalancedSSLFactory;
-import com.github.games647.fastlogin.core.shared.FastLoginCore;
+import com.github.games647.fastlogin.core.CommonUtil;
 import com.github.games647.fastlogin.core.shared.LoginSession;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
@@ -47,7 +47,7 @@ public class MojangApiConnector {
     private final Pattern validNameMatcher = Pattern.compile("^\\w{2,16}$");
 
     private final Iterator<Proxy> proxies;
-    private final Map<Object, Object> requests = FastLoginCore.buildCache(10, -1);
+    private final Map<Object, Object> requests = CommonUtil.buildCache(10, -1);
     private final BalancedSSLFactory sslFactory;
     private final int rateLimit;
     private long lastRateLimit;
@@ -97,7 +97,7 @@ public class MojangApiConnector {
                 try (BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
                     String line = reader.readLine();
                     if (!"null".equals(line)) {
-                        return FastLoginCore.parseId(getUUIDFromJson(line));
+                        return CommonUtil.parseId(getUUIDFromJson(line));
                     }
                 }
             } else if (connection.getResponseCode() == RATE_LIMIT_CODE) {

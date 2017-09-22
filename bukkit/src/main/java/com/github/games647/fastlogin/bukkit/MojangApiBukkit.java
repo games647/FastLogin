@@ -1,9 +1,9 @@
 package com.github.games647.fastlogin.bukkit;
 
+import com.github.games647.fastlogin.core.CommonUtil;
 import com.github.games647.fastlogin.core.mojang.MojangApiConnector;
 import com.github.games647.fastlogin.core.mojang.SkinProperties;
 import com.github.games647.fastlogin.core.mojang.VerificationReply;
-import com.github.games647.fastlogin.core.shared.FastLoginCore;
 import com.github.games647.fastlogin.core.shared.LoginSession;
 
 import java.io.BufferedReader;
@@ -45,7 +45,7 @@ public class MojangApiBukkit extends MojangApiConnector {
                 VerificationReply verification = gson.fromJson(reader, VerificationReply.class);
 
                 String uuid = verification.getId();
-                playerSession.setUuid(FastLoginCore.parseId(uuid));
+                playerSession.setUuid(CommonUtil.parseId(uuid));
 
                 SkinProperties[] properties = verification.getProperties();
                 if (properties != null && properties.length > 0) {

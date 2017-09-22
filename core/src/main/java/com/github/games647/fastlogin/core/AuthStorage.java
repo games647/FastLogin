@@ -93,7 +93,7 @@ public class AuthStorage {
                 if (resultSet.next()) {
                     long userId = resultSet.getInt(1);
 
-                    UUID uuid = FastLoginCore.parseId(resultSet.getString(2));
+                    UUID uuid = CommonUtil.parseId(resultSet.getString(2));
 
                     boolean premium = resultSet.getBoolean(4);
                     String lastIp = resultSet.getString(5);
