@@ -3,7 +3,6 @@ package com.github.games647.fastlogin.core.shared;
 import com.github.games647.fastlogin.core.mojang.MojangApiConnector;
 
 import java.io.File;
-import java.io.Reader;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ThreadFactory;
@@ -16,8 +15,6 @@ public interface PlatformPlugin<C> {
     File getDataFolder();
 
     Logger getLogger();
-
-    Map<String, Object> loadYamlFile(Reader reader);
 
     void sendMessage(C receiver, String message);
 

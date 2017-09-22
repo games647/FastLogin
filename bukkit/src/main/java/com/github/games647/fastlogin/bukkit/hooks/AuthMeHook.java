@@ -30,7 +30,7 @@ public class AuthMeHook implements AuthPlugin<Player> {
     }
 
     @Override
-    public boolean isRegistered(String playerName) throws Exception {
+    public boolean isRegistered(String playerName) {
         return AuthMeApi.getInstance().isRegistered(playerName);
     }
 

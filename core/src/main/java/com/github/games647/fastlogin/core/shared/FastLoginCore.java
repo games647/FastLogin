@@ -2,7 +2,6 @@ package com.github.games647.fastlogin.core.shared;
 
 import com.github.games647.fastlogin.core.AuthStorage;
 import com.github.games647.fastlogin.core.CompatibleCacheBuilder;
-import com.github.games647.fastlogin.core.SharedConfig;
 import com.github.games647.fastlogin.core.hooks.AuthPlugin;
 import com.github.games647.fastlogin.core.hooks.DefaultPasswordGenerator;
 import com.github.games647.fastlogin.core.hooks.PasswordGenerator;
@@ -11,23 +10,26 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
-import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
+
+import net.md_5.bungee.config.Configuration;
+import net.md_5.bungee.config.ConfigurationProvider;
+import net.md_5.bungee.config.YamlConfiguration;
 
 /**
  * @param <P> Player class
@@ -70,7 +72,7 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
     private final Set<UUID> pendingConfirms = Sets.newHashSet();
     private final T plugin;
 
-    private SharedConfig sharedConfig;
+    private Configuration config;
     private MojangApiConnector apiConnector;
     private AuthStorage storage;
     private PasswordGenerator<P> passwordGenerator = new DefaultPasswordGenerator<>();
@@ -85,22 +87,26 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
         saveDefaultFile("config.yml");
 
         try {
-            sharedConfig = new SharedConfig(loadFile("config.yml"));
-            Map<String, Object> messages = loadFile("messages.yml");
+            config = loadFile("config.yml");
+            Configuration messages = loadFile("messages.yml");
 
-            for (Entry<String, Object> entry : messages.entrySet()) {
-                String message = plugin.translateColorCodes('&', (String) entry.getValue());
-                if (!message.isEmpty()) {
-                    localeMessages.put(entry.getKey(), message);
-                }
-            }
+            messages.getKeys()
+                    .stream()
+                    .filter(key -> config.get(key) != null)
+                    .collect(Collectors.toMap(Function.identity(), config::get))
+                    .forEach((key, message) -> {
+                        String colored = plugin.translateColorCodes('&', (String) message);
+                        if (!colored.isEmpty()) {
+                            localeMessages.put(key, colored);
+                        }
+                    });
         } catch (IOException ioEx) {
             plugin.getLogger().log(Level.INFO, "Failed to load yaml files", ioEx);
         }
 
-        List<String> ipAddresses = sharedConfig.get("ip-addresses");
-        int requestLimit = sharedConfig.get("mojang-request-limit");
-        List<String> proxyList = sharedConfig.get("proxies", Lists.newArrayList());
+        List<String> ipAddresses = config.getStringList("ip-addresses");
+        int requestLimit = config.getInt("mojang-request-limit");
+        List<String> proxyList = config.get("proxies", Lists.newArrayList());
         Map<String, Integer> proxies = proxyList.stream()
                 .collect(Collectors
                         .toMap(line -> line.split(":")[0], line -> Integer.parseInt(line.split(":")[1])));
@@ -108,20 +114,16 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
         this.apiConnector = plugin.makeApiConnector(plugin.getLogger(), ipAddresses, requestLimit, proxies);
     }
 
-    private Map<String, Object> loadFile(String fileName) throws IOException {
-        Map<String, Object> values;
+    private Configuration loadFile(String fileName) throws IOException {
+        Configuration defaults;
 
-        try (InputStream defaultStream = getClass().getClassLoader().getResourceAsStream(fileName);
-             BufferedReader reader = new BufferedReader(new InputStreamReader(defaultStream))) {
-            values = plugin.loadYamlFile(reader);
+        ConfigurationProvider configProvider = ConfigurationProvider.getProvider(YamlConfiguration.class);
+        try (InputStream defaultStream = getClass().getClassLoader().getResourceAsStream(fileName)) {
+            defaults = configProvider.load(defaultStream);
         }
 
-        Path file = plugin.getDataFolder().toPath().resolve(fileName);
-        try (BufferedReader reader = Files.newBufferedReader(file)) {
-            values.putAll(plugin.loadYamlFile(reader));
-        }
-
-        return values;
+        File file = new File(plugin.getDataFolder(), fileName);
+        return configProvider.load(file, defaults);
     }
 
     public MojangApiConnector getApiConnector() {
@@ -148,15 +150,15 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
     }
 
     public boolean setupDatabase() {
-        String driver = sharedConfig.get("driver");
-        String host = sharedConfig.get("host", "");
-        int port = sharedConfig.get("port", 3306);
-        String database = sharedConfig.get("database");
+        String driver = config.getString("driver");
+        String host = config.get("host", "");
+        int port = config.get("port", 3306);
+        String database = config.getString("database");
 
-        String user = sharedConfig.get("username", "");
-        String password = sharedConfig.get("password", "");
+        String user = config.get("username", "");
+        String password = config.get("password", "");
 
-        boolean useSSL = sharedConfig.get("useSSL", false);
+        boolean useSSL = config.get("useSSL", false);
 
         storage = new AuthStorage(this, driver, host, port, database, user, password, useSSL);
         try {
@@ -168,8 +170,8 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
         }
     }
 
-    public SharedConfig getConfig() {
-        return sharedConfig;
+    public Configuration getConfig() {
+        return config;
     }
 
     public PasswordGenerator<P> getPasswordGenerator() {
@@ -201,17 +203,15 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
 
         try {
             Files.createDirectories(dataFolder);
+
+            Path configFile = dataFolder.resolve(fileName);
+            if (Files.notExists(configFile)) {
+                try (InputStream defaultStream = getClass().getClassLoader().getResourceAsStream(fileName)) {
+                    Files.copy(defaultStream, configFile);
+                }
+            }
         } catch (IOException ioExc) {
             plugin.getLogger().log(Level.SEVERE, "Cannot create plugin folder " + dataFolder, ioExc);
-        }
-
-        Path configFile = dataFolder.resolve(fileName);
-        if (Files.notExists(configFile)) {
-            try (InputStream in = getClass().getClassLoader().getResourceAsStream(fileName)) {
-                Files.copy(in, configFile);
-            } catch (IOException ioExc) {
-                plugin.getLogger().log(Level.SEVERE, "Error saving default " + fileName, ioExc);
-            }
         }
     }
 

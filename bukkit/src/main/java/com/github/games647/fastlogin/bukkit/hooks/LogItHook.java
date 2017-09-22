@@ -26,7 +26,7 @@ public class LogItHook implements AuthPlugin<Player> {
     }
 
     @Override
-    public boolean isRegistered(String playerName) throws Exception {
+    public boolean isRegistered(String playerName) {
         return LogItCore.getInstance().getAccountManager().isRegistered(playerName);
     }
 

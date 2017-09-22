@@ -1,6 +1,7 @@
 package com.github.games647.fastlogin.bukkit;
 
 import com.github.games647.fastlogin.core.PlayerProfile;
+import com.github.games647.fastlogin.core.mojang.SkinProperties;
 import com.github.games647.fastlogin.core.shared.LoginSession;
 
 import org.apache.commons.lang.ArrayUtils;
@@ -17,8 +18,7 @@ public class BukkitLoginSession extends LoginSession {
 
     private boolean verified;
 
-    private String encodedSkinData;
-    private String skinSignature;
+    private SkinProperties skinProperty;
 
     public BukkitLoginSession(String username, String serverId, byte[] verifyToken, boolean registered
             , PlayerProfile profile) {
@@ -62,23 +62,15 @@ public class BukkitLoginSession extends LoginSession {
         return ArrayUtils.clone(verifyToken);
     }
 
-    public synchronized String getEncodedSkinData() {
-        return encodedSkinData;
-    }
-
-    public synchronized String getSkinSignature() {
-        return skinSignature;
+    public synchronized SkinProperties getSkinProperty() {
+        return skinProperty;
     }
 
     /**
      * Sets the premium skin property which was retrieved by the session server
-     *
-     * @param encodedData
-     * @param skinSignature
      */
-    public synchronized void setSkin(String encodedData, String skinSignature) {
-        this.encodedSkinData = encodedData;
-        this.skinSignature = skinSignature;
+    public synchronized void setSkinProperty(SkinProperties skinProperty) {
+        this.skinProperty = skinProperty;
     }
 
     /**

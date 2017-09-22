@@ -31,6 +31,7 @@
                             <include>${project.groupId}:*</include>
                             <include>com.zaxxer:HikariCP</include>
                             <include>org.slf4j:*</include>
+                            <include>net.md-5:bungeecord-config</include>
                         </includes>
                     </artifactSet>
                 </configuration>

@@ -49,7 +49,7 @@ public class ProtocolLibLoginSource implements LoginSource {
     }
 
     @Override
-    public void kick(String message) throws Exception {
+    public void kick(String message) throws InvocationTargetException {
         ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
 
         PacketContainer kickPacket = protocolManager.createPacket(DISCONNECT);

@@ -22,4 +22,5 @@ This can be found by running `/version plugin-name`
 [Hastebin](https://hastebin.com/) / [Gist](https://gist.github.com/) link of the error or stacktrace (if any)
 
 ### Configuration:
-[Hastebin](https://hastebin.com/) / [Gist](https://gist.github.com/) link of your config.yml file (remember to delete any sensitive data)
+[Hastebin](https://hastebin.com/) / [Gist](https://gist.github.com/) link of your config.yml file 
+(remember to delete any sensitive data)

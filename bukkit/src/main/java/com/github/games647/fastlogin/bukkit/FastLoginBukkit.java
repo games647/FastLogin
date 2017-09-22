@@ -8,14 +8,13 @@ import com.github.games647.fastlogin.bukkit.listener.protocollib.LoginSkinApplyL
 import com.github.games647.fastlogin.bukkit.listener.protocollib.ProtocolLibListener;
 import com.github.games647.fastlogin.bukkit.listener.protocolsupport.ProtocolSupportListener;
 import com.github.games647.fastlogin.bukkit.tasks.DelayedAuthHook;
-import com.github.games647.fastlogin.core.shared.FastLoginCore;
 import com.github.games647.fastlogin.core.mojang.MojangApiConnector;
+import com.github.games647.fastlogin.core.shared.FastLoginCore;
 import com.github.games647.fastlogin.core.shared.PlatformPlugin;
 import com.google.common.collect.Iterables;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 
-import java.io.Reader;
 import java.security.KeyPair;
 import java.util.List;
 import java.util.Map;
@@ -26,7 +25,6 @@ import java.util.logging.Logger;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.messaging.PluginMessageRecipient;
@@ -188,12 +186,6 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
         dataOutput.writeUTF(target);
         dataOutput.writeBoolean(isPlayer);
         sender.sendPluginMessage(this, getName(), dataOutput.toByteArray());
-    }
-
-    @Override
-    public Map<String, Object> loadYamlFile(Reader reader) {
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(reader);
-        return config.getValues(true);
     }
 
     @Override

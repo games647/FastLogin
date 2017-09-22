@@ -52,7 +52,7 @@ public class xAuthHook implements AuthPlugin<Player> {
     }
 
     @Override
-    public boolean isRegistered(String playerName) throws Exception {
+    public boolean isRegistered(String playerName) {
         //this will load the player if it's not in the cache
         xAuthPlayer xAuthPlayer = xAuthPlugin.getPlayerManager().getPlayer(playerName);
         return xAuthPlayer != null && xAuthPlayer.isRegistered();

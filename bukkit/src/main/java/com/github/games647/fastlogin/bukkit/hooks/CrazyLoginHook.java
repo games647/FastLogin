@@ -78,7 +78,7 @@ public class CrazyLoginHook implements AuthPlugin<Player> {
     }
 
     @Override
-    public boolean isRegistered(String playerName) throws Exception {
+    public boolean isRegistered(String playerName) {
         return crazyLoginPlugin.getPlayerData(playerName) != null;
     }
 

@@ -1,11 +1,12 @@
 package com.github.games647.fastlogin.core.shared;
 
 import com.github.games647.fastlogin.core.PlayerProfile;
-import com.github.games647.fastlogin.core.SharedConfig;
 import com.github.games647.fastlogin.core.hooks.AuthPlugin;
 
 import java.util.UUID;
 import java.util.logging.Level;
+
+import net.md_5.bungee.config.Configuration;
 
 public abstract class JoinManagement<P extends C, C, S extends LoginSource> {
 
@@ -23,7 +24,7 @@ public abstract class JoinManagement<P extends C, C, S extends LoginSource> {
             return;
         }
 
-        SharedConfig config = core.getConfig();
+        Configuration config = core.getConfig();
 
         String ip = source.getAddress().getAddress().getHostAddress();
         profile.setLastIp(ip);

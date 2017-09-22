@@ -26,7 +26,7 @@ public class BungeeAuthHook implements AuthPlugin<ProxiedPlayer> {
     }
 
     @Override
-    public boolean isRegistered(String playerName) throws Exception {
+    public boolean isRegistered(String playerName) {
         return requestHandler.isRegistered(playerName);
     }
 

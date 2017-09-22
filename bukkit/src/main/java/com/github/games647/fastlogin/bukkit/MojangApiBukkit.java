@@ -50,10 +50,7 @@ public class MojangApiBukkit extends MojangApiConnector {
                 SkinProperties[] properties = verification.getProperties();
                 if (properties != null && properties.length > 0) {
                     SkinProperties skinProperty = properties[0];
-
-                    String skinValue = skinProperty.getValue();
-                    String signature = skinProperty.getSignature();
-                    playerSession.setSkin(skinValue, signature);
+                    playerSession.setSkinProperty(skinProperty);
                 }
 
                 return true;

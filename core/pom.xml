@@ -14,7 +14,16 @@
 
     <name>FastLoginCore</name>
 
+    <repositories>
+        <repository>
+            <id>luck-repo</id>
+            <url>https://ci.lucko.me/plugin/repository/everything</url>
+        </repository>
+    </repositories>
+
     <dependencies>
+        <!-- Libraries that we shade into the project -->
+
         <!--Database pooling-->
         <dependency>
             <groupId>com.zaxxer</groupId>
@@ -29,9 +38,20 @@
             <version>1.7.25</version>
         </dependency>
 
+        <!-- snakeyaml is present in Bungee, Spigot, Cauldron and so we could use this independent implementation -->
+        <dependency>
+            <groupId>net.md-5</groupId>
+            <artifactId>bungeecord-config</artifactId>
+            <version>1.12-SNAPSHOT</version>
+        </dependency>
+
+        <!-- APIs we can use because they are available in all platforms (Spigot, Bungee, Cauldron) -->
+
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
+            <!-- The Uranium project (fork of Cauldron) uses 17.0 like Spigot 1.8 as experimental feature -->
+            <!-- Project url: https://github.com/UraniumMC/Uranium -->
             <version>10.0.1</version>
             <scope>provided</scope>
         </dependency>

@@ -8,6 +8,7 @@ import com.comphenix.protocol.wrappers.WrappedGameProfile;
 import com.comphenix.protocol.wrappers.WrappedSignedProperty;
 import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
+import com.github.games647.fastlogin.core.mojang.SkinProperties;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.logging.Level;
@@ -45,10 +46,8 @@ public class LoginSkinApplyListener implements Listener {
             //loginEvent.getAddress is just a InetAddress not InetSocketAddress, so not unique enough
             for (BukkitLoginSession session : plugin.getLoginSessions().values()) {
                 if (session.getUsername().equals(player.getName())) {
-                    String signature = session.getSkinSignature();
-                    String skinData = session.getEncodedSkinData();
-
-                    applySkin(player, skinData, signature);
+                    SkinProperties skinProperty = session.getSkinProperty();
+                    applySkin(player, skinProperty.getValue(), skinProperty.getSignature());
                     break;
                 }
             }

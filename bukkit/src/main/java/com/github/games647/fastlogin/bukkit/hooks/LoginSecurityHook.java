@@ -29,7 +29,7 @@ public class LoginSecurityHook implements AuthPlugin<Player> {
     }
 
     @Override
-    public boolean isRegistered(String playerName) throws Exception {
+    public boolean isRegistered(String playerName) {
         PlayerSession session = LoginSecurity.getSessionManager().getOfflineSession(playerName);
         return session.isRegistered();
     }
