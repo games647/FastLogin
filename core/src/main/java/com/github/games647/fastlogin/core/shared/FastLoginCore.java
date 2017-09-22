@@ -6,6 +6,7 @@ import com.github.games647.fastlogin.core.SharedConfig;
 import com.github.games647.fastlogin.core.hooks.AuthPlugin;
 import com.github.games647.fastlogin.core.hooks.DefaultPasswordGenerator;
 import com.github.games647.fastlogin.core.hooks.PasswordGenerator;
+import com.github.games647.fastlogin.core.mojang.MojangApiConnector;
 import com.google.common.cache.CacheLoader;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;

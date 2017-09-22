@@ -9,7 +9,7 @@ import com.github.games647.fastlogin.bukkit.listener.protocollib.ProtocolLibList
 import com.github.games647.fastlogin.bukkit.listener.protocolsupport.ProtocolSupportListener;
 import com.github.games647.fastlogin.bukkit.tasks.DelayedAuthHook;
 import com.github.games647.fastlogin.core.shared.FastLoginCore;
-import com.github.games647.fastlogin.core.shared.MojangApiConnector;
+import com.github.games647.fastlogin.core.mojang.MojangApiConnector;
 import com.github.games647.fastlogin.core.shared.PlatformPlugin;
 import com.google.common.collect.Iterables;
 import com.google.common.io.ByteArrayDataOutput;

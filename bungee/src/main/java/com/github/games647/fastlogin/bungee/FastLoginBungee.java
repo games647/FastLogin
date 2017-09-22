@@ -4,7 +4,7 @@ import com.github.games647.fastlogin.bungee.hooks.BungeeAuthHook;
 import com.github.games647.fastlogin.bungee.listener.ConnectionListener;
 import com.github.games647.fastlogin.bungee.listener.PluginMessageListener;
 import com.github.games647.fastlogin.core.shared.FastLoginCore;
-import com.github.games647.fastlogin.core.shared.MojangApiConnector;
+import com.github.games647.fastlogin.core.mojang.MojangApiConnector;
 import com.github.games647.fastlogin.core.shared.PlatformPlugin;
 import com.google.common.collect.Maps;
 
@@ -111,6 +111,6 @@ public class FastLoginBungee extends Plugin implements PlatformPlugin<CommandSen
     @Override
     public MojangApiConnector makeApiConnector(Logger logger, List<String> addresses, int requests
             , Map<String, Integer> proxies) {
-        return new MojangApiBungee(logger, addresses, requests, proxies);
+        return new MojangApiConnector(logger, addresses, requests, proxies);
     }
 }

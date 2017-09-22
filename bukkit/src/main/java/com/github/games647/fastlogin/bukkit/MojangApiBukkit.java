@@ -1,8 +1,10 @@
 package com.github.games647.fastlogin.bukkit;
 
+import com.github.games647.fastlogin.core.mojang.MojangApiConnector;
+import com.github.games647.fastlogin.core.mojang.SkinProperties;
+import com.github.games647.fastlogin.core.mojang.VerificationReply;
 import com.github.games647.fastlogin.core.shared.FastLoginCore;
 import com.github.games647.fastlogin.core.shared.LoginSession;
-import com.github.games647.fastlogin.core.shared.MojangApiConnector;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -13,10 +15,6 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.JSONValue;
 
 public class MojangApiBukkit extends MojangApiConnector {
 
@@ -42,26 +40,23 @@ public class MojangApiBukkit extends MojangApiConnector {
             HttpURLConnection conn = getConnection(url);
 
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()))) {
-                String line = reader.readLine();
-                if (line != null && !"null".equals(line)) {
-                    //validate parsing
-                    //http://wiki.vg/Protocol_Encryption#Server
-                    JSONObject userData = (JSONObject) JSONValue.parseWithException(line);
-                    String uuid = (String) userData.get("id");
-                    playerSession.setUuid(FastLoginCore.parseId(uuid));
+                //validate parsing
+                //http://wiki.vg/Protocol_Encryption#Server
+                VerificationReply verification = gson.fromJson(reader, VerificationReply.class);
 
-                    JSONArray properties = (JSONArray) userData.get("properties");
-                    JSONObject skinProperty = (JSONObject) properties.get(0);
+                String uuid = verification.getId();
+                playerSession.setUuid(FastLoginCore.parseId(uuid));
 
-                    String propertyName = (String) skinProperty.get("name");
-                    if ("textures".equals(propertyName)) {
-                        String skinValue = (String) skinProperty.get("value");
-                        String signature = (String) skinProperty.get("signature");
-                        playerSession.setSkin(skinValue, signature);
-                    }
+                SkinProperties[] properties = verification.getProperties();
+                if (properties != null && properties.length > 0) {
+                    SkinProperties skinProperty = properties[0];
 
-                    return true;
+                    String skinValue = skinProperty.getValue();
+                    String signature = skinProperty.getSignature();
+                    playerSession.setSkin(skinValue, signature);
                 }
+
+                return true;
             }
         } catch (Exception ex) {
             //catch not only io-exceptions also parse and NPE on unexpected json format
@@ -70,25 +65,5 @@ public class MojangApiBukkit extends MojangApiConnector {
 
         //this connection doesn't need to be closed. So can make use of keep alive in java
         return false;
-    }
-
-    @Override
-    protected String getUUIDFromJson(String json) {
-        boolean isArray = json.startsWith("[");
-
-        JSONObject mojangPlayer;
-        if (isArray) {
-            JSONArray array = (JSONArray) JSONValue.parse(json);
-            mojangPlayer = (JSONObject) array.get(0);
-        } else {
-            mojangPlayer = (JSONObject) JSONValue.parse(json);
-        }
-
-        String uuid = (String) mojangPlayer.get("id");
-        if ("null".equals(uuid)) {
-            return null;
-        }
-        
-        return uuid;
     }
 }

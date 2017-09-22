@@ -1,5 +1,7 @@
 package com.github.games647.fastlogin.core.shared;
 
+import com.github.games647.fastlogin.core.mojang.MojangApiConnector;
+
 import java.io.File;
 import java.io.Reader;
 import java.util.List;

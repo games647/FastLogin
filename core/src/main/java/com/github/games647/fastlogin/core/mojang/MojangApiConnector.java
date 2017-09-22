@@ -1,9 +1,12 @@
-package com.github.games647.fastlogin.core.shared;
+package com.github.games647.fastlogin.core.mojang;
 
 import com.github.games647.fastlogin.core.BalancedSSLFactory;
+import com.github.games647.fastlogin.core.shared.FastLoginCore;
+import com.github.games647.fastlogin.core.shared.LoginSession;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.google.gson.Gson;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -22,14 +25,13 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 import javax.net.ssl.HttpsURLConnection;
 
-public abstract class MojangApiConnector {
+public class MojangApiConnector {
 
     //http connection, read timeout and user agent for a connection to mojang api servers
     private static final int TIMEOUT = 3 * 1_000;
@@ -37,20 +39,20 @@ public abstract class MojangApiConnector {
 
     //only premium (paid account) users have a uuid from here
     private static final String UUID_LINK = "https://api.mojang.com/users/profiles/minecraft/";
-    //this includes a-zA-Z1-9_
-    private static final String VALID_PLAYERNAME = "^\\w{2,16}$";
 
     private static final int RATE_LIMIT_CODE = 429;
 
+    //this includes a-zA-Z1-9_
     //compile the pattern only on plugin enable -> and this have to be thread-safe
-    private final Pattern nameMatcher = Pattern.compile(VALID_PLAYERNAME);
+    private final Pattern validNameMatcher = Pattern.compile("^\\w{2,16}$");
 
     private final Iterator<Proxy> proxies;
-    private final ConcurrentMap<Object, Object> requests = FastLoginCore.buildCache(10, -1);
+    private final Map<Object, Object> requests = FastLoginCore.buildCache(10, -1);
     private final BalancedSSLFactory sslFactory;
     private final int rateLimit;
     private long lastRateLimit;
 
+    protected final Gson gson = new Gson();
     protected final Logger logger;
 
     public MojangApiConnector(Logger logger, Collection<String> localAddresses, int rateLimit
@@ -71,7 +73,7 @@ public abstract class MojangApiConnector {
      * @return null on non-premium
      */
     public UUID getPremiumUUID(String playerName) {
-        if (!nameMatcher.matcher(playerName).matches()) {
+        if (!validNameMatcher.matcher(playerName).matches()) {
             //check if it's a valid player name
             return null;
         }
@@ -113,9 +115,28 @@ public abstract class MojangApiConnector {
         return null;
     }
 
-    public abstract boolean hasJoinedServer(LoginSession session, String serverId, InetSocketAddress ip);
+    public boolean hasJoinedServer(LoginSession session, String serverId, InetSocketAddress ip) {
+        //only available in Spigot and not in BungeeCord
+        return false;
+    }
 
-    protected abstract String getUUIDFromJson(String json);
+    private String getUUIDFromJson(String json) {
+        boolean isArray = json.startsWith("[");
+
+        Player mojangPlayer;
+        if (isArray) {
+            mojangPlayer = gson.fromJson(json, Player[].class)[0];
+        } else {
+            mojangPlayer = gson.fromJson(json, Player.class);
+        }
+
+        String id = mojangPlayer.getId();
+        if ("null".equals(id)) {
+            return null;
+        }
+
+        return id;
+    }
 
     protected HttpsURLConnection getConnection(String url, Proxy proxy) throws IOException {
         HttpsURLConnection connection = (HttpsURLConnection) new URL(url).openConnection(proxy);

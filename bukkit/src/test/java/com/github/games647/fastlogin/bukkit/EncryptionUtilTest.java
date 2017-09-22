@@ -15,7 +15,7 @@ public class EncryptionUtilTest {
         byte[] token = EncryptionUtil.generateVerifyToken(random);
 
         assertNotNull(token);
-        assertEquals(token.length, 4);
+        assertEquals(4, token.length);
     }
 
     // @Test

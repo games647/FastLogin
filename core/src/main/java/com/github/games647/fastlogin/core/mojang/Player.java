@@ -1,6 +1,6 @@
-package com.github.games647.fastlogin.bungee;
+package com.github.games647.fastlogin.core.mojang;
 
-public class MojangPlayer {
+public class Player {
 
     private String id;
     private String name;
