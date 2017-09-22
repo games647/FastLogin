@@ -6,6 +6,7 @@ import com.github.games647.fastlogin.core.shared.LoginSession;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.google.common.net.HostAndPort;
 import com.google.gson.Gson;
 
 import java.io.BufferedReader;
@@ -22,7 +23,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -56,14 +56,14 @@ public class MojangApiConnector {
     protected final Logger logger;
 
     public MojangApiConnector(Logger logger, Collection<String> localAddresses, int rateLimit
-            , Map<String, Integer> proxies) {
+            , List<HostAndPort> proxies) {
         this.logger = logger;
         this.rateLimit = Math.max(rateLimit, 600);
         this.sslFactory = buildAddresses(logger, localAddresses);
 
         List<Proxy> proxyBuilder = Lists.newArrayList();
-        for (Entry<String, Integer> proxy : proxies.entrySet()) {
-            proxyBuilder.add(new Proxy(Type.HTTP, new InetSocketAddress(proxy.getKey(), proxy.getValue())));
+        for (HostAndPort proxy : proxies) {
+            proxyBuilder.add(new Proxy(Type.HTTP, new InetSocketAddress(proxy.getHostText(), proxy.getPort())));
         }
 
         this.proxies = Iterables.cycle(proxyBuilder).iterator();

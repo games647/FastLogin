@@ -15,16 +15,14 @@ import com.github.games647.fastlogin.core.shared.PlatformPlugin;
 import com.google.common.collect.Iterables;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
+import com.google.common.net.HostAndPort;
 
 import java.security.KeyPair;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ThreadFactory;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -195,19 +193,13 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
     }
 
     @Override
-    public String translateColorCodes(char colorChar, String rawMessage) {
-        return ChatColor.translateAlternateColorCodes(colorChar, rawMessage);
-    }
-
-    @Override
     public ThreadFactory getThreadFactory() {
         //not required here to make a custom thread factory
         return null;
     }
 
     @Override
-    public MojangApiConnector makeApiConnector(Logger logger, List<String> addresses, int requests
-            , Map<String, Integer> proxies) {
-        return new MojangApiBukkit(logger, addresses, requests, proxies);
+    public MojangApiConnector makeApiConnector(List<String> addresses, int requests, List<HostAndPort> proxies) {
+        return new MojangApiBukkit(getLogger(), addresses, requests, proxies);
     }
 }

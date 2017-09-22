@@ -7,14 +7,12 @@ import com.github.games647.fastlogin.core.mojang.MojangApiConnector;
 import com.github.games647.fastlogin.core.shared.FastLoginCore;
 import com.github.games647.fastlogin.core.shared.PlatformPlugin;
 import com.google.common.collect.Maps;
+import com.google.common.net.HostAndPort;
 
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ThreadFactory;
-import java.util.logging.Logger;
 
-import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.PendingConnection;
@@ -83,19 +81,13 @@ public class FastLoginBungee extends Plugin implements PlatformPlugin<CommandSen
     }
 
     @Override
-    public String translateColorCodes(char colorChar, String rawMessage) {
-        return ChatColor.translateAlternateColorCodes(colorChar, rawMessage);
-    }
-
-    @Override
     @SuppressWarnings("deprecation")
     public ThreadFactory getThreadFactory() {
         return new GroupedThreadFactory(this, getName());
     }
 
     @Override
-    public MojangApiConnector makeApiConnector(Logger logger, List<String> addresses, int requests
-            , Map<String, Integer> proxies) {
-        return new MojangApiConnector(logger, addresses, requests, proxies);
+    public MojangApiConnector makeApiConnector(List<String> addresses, int requests, List<HostAndPort> proxies) {
+        return new MojangApiConnector(getLogger(), addresses, requests, proxies);
     }
 }

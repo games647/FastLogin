@@ -8,6 +8,7 @@ import com.github.games647.fastlogin.core.hooks.PasswordGenerator;
 import com.github.games647.fastlogin.core.mojang.MojangApiConnector;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.google.common.net.HostAndPort;
 
 import java.io.File;
 import java.io.IOException;
@@ -65,7 +66,7 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
                     .filter(key -> messages.get(key) != null)
                     .collect(Collectors.toMap(Function.identity(), messages::get))
                     .forEach((key, message) -> {
-                        String colored = plugin.translateColorCodes('&', (String) message);
+                        String colored = CommonUtil.translateColorCodes((String) message);
                         if (!colored.isEmpty()) {
                             localeMessages.put(key, colored);
                         }
@@ -77,11 +78,9 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
         List<String> ipAddresses = config.getStringList("ip-addresses");
         int requestLimit = config.getInt("mojang-request-limit");
         List<String> proxyList = config.get("proxies", Lists.newArrayList());
-        Map<String, Integer> proxies = proxyList.stream()
-                .collect(Collectors
-                        .toMap(line -> line.split(":")[0], line -> Integer.parseInt(line.split(":")[1])));
+        List<HostAndPort> proxies = proxyList.stream().map(HostAndPort::fromString).collect(Collectors.toList());
 
-        this.apiConnector = plugin.makeApiConnector(plugin.getLogger(), ipAddresses, requestLimit, proxies);
+        this.apiConnector = plugin.makeApiConnector(ipAddresses, requestLimit, proxies);
     }
 
     private Configuration loadFile(String fileName) throws IOException {

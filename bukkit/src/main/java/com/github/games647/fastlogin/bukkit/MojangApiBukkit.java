@@ -5,6 +5,7 @@ import com.github.games647.fastlogin.core.mojang.MojangApiConnector;
 import com.github.games647.fastlogin.core.mojang.SkinProperties;
 import com.github.games647.fastlogin.core.mojang.VerificationReply;
 import com.github.games647.fastlogin.core.shared.LoginSession;
+import com.google.common.net.HostAndPort;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -12,7 +13,7 @@ import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
 import java.net.URLEncoder;
 import java.util.Collection;
-import java.util.Map;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -23,7 +24,7 @@ public class MojangApiBukkit extends MojangApiConnector {
             "username=%s&serverId=%s";
 
     public MojangApiBukkit(Logger logger, Collection<String> localAddresses, int rateLimit
-            , Map<String, Integer> proxies) {
+            , List<HostAndPort> proxies) {
         super(logger, localAddresses, rateLimit, proxies);
     }
 
