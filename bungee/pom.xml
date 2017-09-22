@@ -21,6 +21,11 @@
             <id>vik1395-repo</id>
             <url>https://vik1395.github.io/repo.vik1395.me/repositories</url>
         </repository>
+        
+        <repository>
+            <id>luck-repo</id>
+            <url>https://ci.lucko.me/plugin/repository/everything</url>
+        </repository>
     </repositories>
 
     <dependencies>

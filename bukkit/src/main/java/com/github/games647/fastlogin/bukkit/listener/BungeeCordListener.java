@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Collections;
 import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -112,6 +113,6 @@ public class BungeeCordListener implements PluginMessageListener {
             plugin.getLogger().log(Level.SEVERE, "Failed to retrieve proxy Id. Disabling BungeeCord support", ex);
         }
 
-        return null;
+        return Collections.emptySet();
     }
 }

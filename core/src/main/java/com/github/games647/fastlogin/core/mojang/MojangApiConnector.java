@@ -30,6 +30,7 @@ import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLSocketFactory;
 
 public class MojangApiConnector {
 
@@ -48,7 +49,7 @@ public class MojangApiConnector {
 
     private final Iterator<Proxy> proxies;
     private final Map<Object, Object> requests = CommonUtil.buildCache(10, -1);
-    private final BalancedSSLFactory sslFactory;
+    private final SSLSocketFactory sslFactory;
     private final int rateLimit;
     private long lastRateLimit;
 
@@ -96,9 +97,7 @@ public class MojangApiConnector {
             if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
                 try (BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
                     String line = reader.readLine();
-                    if (!"null".equals(line)) {
-                        return CommonUtil.parseId(getUUIDFromJson(line));
-                    }
+                    return getUUIDFromJson(line);
                 }
             } else if (connection.getResponseCode() == RATE_LIMIT_CODE) {
                 logger.info("RATE_LIMIT REACHED");
@@ -120,7 +119,7 @@ public class MojangApiConnector {
         return false;
     }
 
-    private String getUUIDFromJson(String json) {
+    private UUID getUUIDFromJson(String json) {
         boolean isArray = json.startsWith("[");
 
         Player mojangPlayer;
@@ -131,11 +130,7 @@ public class MojangApiConnector {
         }
 
         String id = mojangPlayer.getId();
-        if ("null".equals(id)) {
-            return null;
-        }
-
-        return id;
+        return CommonUtil.parseId(id);
     }
 
     protected HttpsURLConnection getConnection(String url, Proxy proxy) throws IOException {
@@ -158,9 +153,9 @@ public class MojangApiConnector {
         return getConnection(url, Proxy.NO_PROXY);
     }
 
-    private BalancedSSLFactory buildAddresses(Logger logger, Collection<String> localAddresses) {
+    private SSLSocketFactory buildAddresses(Logger logger, Collection<String> localAddresses) {
         if (localAddresses.isEmpty()) {
-            return null;
+            return HttpsURLConnection.getDefaultSSLSocketFactory();
         } else {
             Set<InetAddress> addresses = Sets.newHashSet();
             for (String localAddress : localAddresses) {

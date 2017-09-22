@@ -31,7 +31,7 @@ public class PremiumPlaceholder extends PlaceholderHook {
             }
         }
 
-        return null;
+        return "";
     }
 
     public static void register(FastLoginBukkit plugin) {
