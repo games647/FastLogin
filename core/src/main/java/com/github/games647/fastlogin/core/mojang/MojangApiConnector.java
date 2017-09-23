@@ -8,6 +8,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.net.HostAndPort;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -53,7 +54,7 @@ public class MojangApiConnector {
     private final int rateLimit;
     private long lastRateLimit;
 
-    protected final Gson gson = new Gson();
+    protected final Gson gson = new GsonBuilder().registerTypeAdapter(UUID.class, new UUIDTypeAdapter()).create();
     protected final Logger logger;
 
     public MojangApiConnector(Logger logger, Collection<String> localAddresses, int rateLimit
@@ -122,15 +123,14 @@ public class MojangApiConnector {
     private UUID getUUIDFromJson(String json) {
         boolean isArray = json.startsWith("[");
 
-        Player mojangPlayer;
+        GameProfile mojangPlayer;
         if (isArray) {
-            mojangPlayer = gson.fromJson(json, Player[].class)[0];
+            mojangPlayer = gson.fromJson(json, GameProfile[].class)[0];
         } else {
-            mojangPlayer = gson.fromJson(json, Player.class);
+            mojangPlayer = gson.fromJson(json, GameProfile.class);
         }
 
-        String id = mojangPlayer.getId();
-        return CommonUtil.parseId(id);
+        return mojangPlayer.getId();
     }
 
     protected HttpsURLConnection getConnection(String url, Proxy proxy) throws IOException {
@@ -141,11 +141,9 @@ public class MojangApiConnector {
         connection.setRequestProperty("Content-Type", "application/json");
         connection.setRequestProperty("User-Agent", USER_AGENT);
 
-        //this connection doesn't need to be closed. So can make use of keep alive in java
-        if (sslFactory != null) {
-            connection.setSSLSocketFactory(sslFactory);
-        }
+        connection.setSSLSocketFactory(sslFactory);
 
+        //this connection doesn't need to be closed. So can make use of keep alive in java
         return connection;
     }
 

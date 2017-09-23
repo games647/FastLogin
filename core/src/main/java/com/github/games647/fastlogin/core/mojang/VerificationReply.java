@@ -1,12 +1,14 @@
 package com.github.games647.fastlogin.core.mojang;
 
+import java.util.UUID;
+
 public class VerificationReply {
 
-    private String id;
+    private UUID id;
     private String name;
     private SkinProperties[] properties;
 
-    public String getId() {
+    public UUID getId() {
         return id;
     }
 

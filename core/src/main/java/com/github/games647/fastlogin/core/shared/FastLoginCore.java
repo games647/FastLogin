@@ -31,7 +31,7 @@ import net.md_5.bungee.config.ConfigurationProvider;
 import net.md_5.bungee.config.YamlConfiguration;
 
 /**
- * @param <P> Player class
+ * @param <P> GameProfile class
  * @param <C> CommandSender
  * @param <T> Plugin class
  */

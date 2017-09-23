@@ -65,7 +65,7 @@ public abstract class JoinManagement<P extends C, C, S extends LoginSource> {
     }
 
     private boolean checkPremiumName(S source, String username, PlayerProfile profile) throws Exception {
-        core.getPlugin().getLogger().log(Level.FINER, "Player {0} uses a premium username", username);
+        core.getPlugin().getLogger().log(Level.FINER, "GameProfile {0} uses a premium username", username);
         if (core.getConfig().get("autoRegister", false) && (authHook == null || !authHook.isRegistered(username))) {
             requestPremiumLogin(source, profile, username, false);
             return true;
@@ -80,7 +80,7 @@ public abstract class JoinManagement<P extends C, C, S extends LoginSource> {
             PlayerProfile profile = core.getStorage().loadProfile(premiumUUID);
             if (profile != null) {
                 //uuid exists in the database
-                core.getPlugin().getLogger().log(Level.FINER, "Player {0} changed it's username", premiumUUID);
+                core.getPlugin().getLogger().log(Level.FINER, "GameProfile {0} changed it's username", premiumUUID);
 
                 //update the username to the new one in the database
                 profile.setPlayerName(username);

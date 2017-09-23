@@ -77,7 +77,7 @@ public class ProtocolLibListener extends PacketAdapter {
         PacketContainer packet = packetEvent.getPacket();
 
         String username = packet.getGameProfiles().read(0).getName();
-        plugin.getLogger().log(Level.FINER, "Player {0} with {1} connecting", new Object[]{sessionKey, username});
+        plugin.getLogger().log(Level.FINER, "GameProfile {0} with {1} connecting", new Object[]{sessionKey, username});
 
         packetEvent.getAsyncMarker().incrementProcessingDelay();
         Runnable nameCheckTask = new NameCheckTask(plugin, packetEvent, random, player, username);

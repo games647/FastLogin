@@ -1,5 +1,9 @@
 ### 1.11
 
+* Add support for IPv6 proxies
+* Shared configuration implementation for easier maintained code
+* Use Gson for json parsing, because it's supported on all platforms and removes code duplicates
+* Clean up project code
 * Drop support for deprecated AuthMe API
 * Remove legacy database migration code
 * Drop support for RoyalAuth, because it doesn't seem to be supported anymore

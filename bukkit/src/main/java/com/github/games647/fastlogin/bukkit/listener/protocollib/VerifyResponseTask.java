@@ -52,7 +52,7 @@ public class VerifyResponseTask implements Runnable {
             BukkitLoginSession session = plugin.getLoginSessions().get(player.getAddress().toString());
             if (session == null) {
                 disconnect(plugin.getCore().getMessage("invalid-request"), true
-                        , "Player {0} tried to send encryption response at invalid state", player.getAddress());
+                        , "GameProfile {0} tried to send encryption response at invalid state", player.getAddress());
             } else {
                 verifyResponse(session);
             }
@@ -97,7 +97,7 @@ public class VerifyResponseTask implements Runnable {
 
         String username = session.getUsername();
         if (plugin.getCore().getApiConnector().hasJoinedServer(session, serverId, player.getAddress())) {
-            plugin.getLogger().log(Level.INFO, "Player {0} has a verified premium account", username);
+            plugin.getLogger().log(Level.INFO, "GameProfile {0} has a verified premium account", username);
 
             session.setVerified(true);
             setPremiumUUID(session.getUuid());
@@ -105,7 +105,7 @@ public class VerifyResponseTask implements Runnable {
         } else {
             //user tried to fake a authentication
             disconnect(plugin.getCore().getMessage("invalid-session"), true
-                    , "Player {0} ({1}) tried to log in with an invalid session ServerId: {2}"
+                    , "GameProfile {0} ({1}) tried to log in with an invalid session ServerId: {2}"
                     , session.getUsername(), player.getAddress(), serverId);
         }
     }
@@ -132,7 +132,7 @@ public class VerifyResponseTask implements Runnable {
         if (!Arrays.equals(requestVerify, EncryptionUtil.decrypt(cipher, privateKey, responseVerify))) {
             //check if the verify token are equal to the server sent one
             disconnect(plugin.getCore().getMessage("invalid-verify-token"), true
-                    , "Player {0} ({1}) tried to login with an invalid verify token. Server: {2} Client: {3}"
+                    , "GameProfile {0} ({1}) tried to login with an invalid verify token. Server: {2} Client: {3}"
                     , session.getUsername(), packetEvent.getPlayer().getAddress(), requestVerify, responseVerify);
             return false;
         }

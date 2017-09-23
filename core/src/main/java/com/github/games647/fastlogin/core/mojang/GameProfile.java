@@ -1,11 +1,13 @@
 package com.github.games647.fastlogin.core.mojang;
 
-public class Player {
+import java.util.UUID;
 
-    private String id;
+public class GameProfile {
+
+    private UUID id;
     private String name;
 
-    public String getId() {
+    public UUID getId() {
         return id;
     }
 

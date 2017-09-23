@@ -24,25 +24,25 @@
 # Switch mode is activated and a new (non-whitelist) cracked player tries to join
 switch-kick-message: '&4Only paid minecraft whitelisted accounts are allowed to join this server'
 
-# Player activated premium login in order to skip offline authentication
+# GameProfile activated premium login in order to skip offline authentication
 add-premium: '&2Added to the list of premium players'
 
-# Player activated premium login in order to skip offline authentication
+# GameProfile activated premium login in order to skip offline authentication
 add-premium-other: '&2Player has been added to the premium list'
 
-# Player is already set be a paid account
+# GameProfile is already set be a paid account
 already-exists: '&4You are already on the premium list'
 
-# Player is already set be a paid account
+# GameProfile is already set be a paid account
 already-exists-other: '&4Player is already on the premium list'
 
-# Player was changed to be cracked
+# GameProfile was changed to be cracked
 remove-premium: '&2Removed from the list of premium players'
 
-# Player is already set to be cracked
+# GameProfile is already set to be cracked
 not-premium: '&4You are not in the premium list'
 
-# Player is already set to be cracked
+# GameProfile is already set to be cracked
 not-premium-other: '&4Player is not in the premium list'
 
 # Admin wanted to change the premium of a user that isn't known to the plugin
@@ -58,7 +58,7 @@ auto-login: '&2Auto logged in'
 auto-register: '&2Auto registered with password: %password
 You may want change it?'
 
-# Player is not able to toggle the premium state of other players
+# GameProfile is not able to toggle the premium state of other players
 no-permission: '&4Not enough permissions'
 
 # Although the console can toggle the premium state, it's not possible for the console itself.

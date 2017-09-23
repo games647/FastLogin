@@ -62,7 +62,7 @@ premiumUuid: false
 # #### Case 1
 # nameChangeCheck = false ----- autoRegister = false
 #
-# Player logins as cracked until the player invoked the command /premium. Then we could override the existing database
+# GameProfile logins as cracked until the player invoked the command /premium. Then we could override the existing database
 # record.
 #
 # #### Case 2
