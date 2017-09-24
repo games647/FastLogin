@@ -8,6 +8,7 @@ import de.st_ddt.crazylogin.databases.CrazyLoginDataDatabase;
 import de.st_ddt.crazylogin.listener.PlayerListener;
 import de.st_ddt.crazylogin.metadata.Authenticated;
 
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.logging.Level;
@@ -31,7 +32,7 @@ public class CrazyLoginHook implements AuthPlugin<Player> {
     @Override
     public boolean forceLogin(Player player) {
         //not thread-safe operation
-        Future<LoginPlayerData> future = Bukkit.getScheduler().callSyncMethod(crazyLoginPlugin, () -> {
+        Future<Optional<LoginPlayerData>> future = Bukkit.getScheduler().callSyncMethod(crazyLoginPlugin, () -> {
             LoginPlayerData playerData = crazyLoginPlugin.getPlayerData(player);
             if (playerData != null) {
                 //mark the account as logged in
@@ -56,17 +57,17 @@ public class CrazyLoginHook implements AuthPlugin<Player> {
                 playerData.addIP(ip);
                 player.setMetadata("Authenticated", new Authenticated(crazyLoginPlugin, player));
                 crazyLoginPlugin.unregisterDynamicHooks();
-                return playerData;
+                return Optional.of(playerData);
             }
 
-            return null;
+            return Optional.empty();
         });
 
         try {
-            LoginPlayerData result = future.get();
-            if (result != null && result.isLoggedIn()) {
+            Optional<LoginPlayerData> result = future.get().filter(LoginPlayerData::isLoggedIn);
+            if (result.isPresent()) {
                 //SQL-Queries should run async
-                crazyLoginPlugin.getCrazyDatabase().saveWithoutPassword(result);
+                crazyLoginPlugin.getCrazyDatabase().saveWithoutPassword(result.get());
                 return true;
             }
         } catch (InterruptedException | ExecutionException ex) {

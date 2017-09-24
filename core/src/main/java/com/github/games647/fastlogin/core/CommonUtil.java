@@ -28,10 +28,6 @@ public class CommonUtil {
     }
 
     public static UUID parseId(String withoutDashes) {
-        if (withoutDashes == null) {
-            return null;
-        }
-
         return UUID.fromString(withoutDashes.substring(0, 8)
                 + '-' + withoutDashes.substring(8, 12)
                 + '-' + withoutDashes.substring(12, 16)

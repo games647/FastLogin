@@ -20,7 +20,7 @@
 * Minor cleanup using inspections + Https
 * Increase hook delay to let ProtocolLib inject the listener
 * Drop support for old AuthMe API + Add support for new AuthMe API
-* Remove ebean util usage to make it compatible with 1.12
+* Remove eBean util usage to make it compatible with 1.12
 * Do not try to hook into a plugin if auth plugin hook is already set using the FastLogin API
 * Automatically register accounts if they are not in the auth plugin database but in the FastLogin database
 * Update BungeeAuth dependency and use the new API. Please update your plugin if you still use the old one.
@@ -38,7 +38,7 @@
 * Added missing add-premium-other message
 * Upgrade to Java 8 -> Minimize file size
 * Refactored/Cleaned up a lot of code
-* [API] Deprecated platform specific authplugin. Please use AuthPlugin< platform specific player type >
+* [API] Deprecated platform specific auth-plugin. Please use AuthPlugin< platform specific player type >
 * [API] Deprecated bukkit's password generator. Please use PasswordGenerator< platform specific player type >
 * Fix ProtocolSupport autoRegister
 * Fix update username in FastLogin database after nameChange
@@ -61,7 +61,7 @@
 ### 1.7.1
 
 * Fix BungeeCord autoRegister (Fixes #46)
-* Fix protocollsupport autoregister
+* Fix ProtocolSupport auto-register
 
 ### 1.7
 
@@ -175,7 +175,7 @@
 * Removes the need of an Bukkit auth plugin if you use a bungeecord one
 * Optimize performance and thread-safety
 * Fixed BungeeCord support
-* Changed config option autologin to autoregister to clarify the usage
+* Changed config option auto-login to auto-register to clarify the usage
 
 ### 0.6
 
@@ -185,19 +185,19 @@
 ### 0.5
 
 * Added cracked command
-* Added autologin - See config
+* Added auto-login - See config
 * Added config
 * Added isRegistered API method
 * Added forceRegister API method
 
 * Fixed CrazyLogin player data restore -> Fixes memory leaks with this plugin
-* Fixed premium name check to protocolsupport
+* Fixed premium name check to ProtocolSupport
 * Improved permissions management
 
 ### 0.4
 
 * Added forward premium skin
-* Added plugin support for protocolsupport
+* Added plugin support for ProtocolSupport
 
 ### 0.3.2
 
@@ -223,7 +223,7 @@
 
 ### 0.2.3
 
-* Remove useless AuthMe forcelogin code
+* Remove useless AuthMe force-login code
 * Send a kick message to the client instead of just "Disconnect"
 * Reformat source code
 * Fix thread safety for fake start packets (Bukkit.getOfflinePlayer doesn't look like to be thread-safe)

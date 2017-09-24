@@ -30,7 +30,8 @@
                         <includes>
                             <include>${project.groupId}:*</include>
                             <include>com.zaxxer:HikariCP</include>
-                            <include>org.slf4j:*</include>
+                            <include>org.slf4j:slf4j-jdk14</include>
+                            <include>org.slf4j:slf4j-api</include>
                             <include>net.md-5:bungeecord-config</include>
                         </includes>
                     </artifactSet>

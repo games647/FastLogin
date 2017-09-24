@@ -3,6 +3,7 @@ package com.github.games647.fastlogin.core.shared;
 import com.github.games647.fastlogin.core.PlayerProfile;
 import com.github.games647.fastlogin.core.hooks.AuthPlugin;
 
+import java.util.Optional;
 import java.util.UUID;
 import java.util.logging.Level;
 
@@ -38,13 +39,13 @@ public abstract class JoinManagement<P extends C, C, S extends LoginSource> {
                     return;
                 }
 
-                UUID premiumUUID = null;
+                Optional<UUID> premiumUUID = Optional.empty();
                 if (config.get("nameChangeCheck", false) || config.get("autoRegister", false)) {
                     premiumUUID = core.getApiConnector().getPremiumUUID(username);
                 }
 
-                if (premiumUUID == null
-                        || (!checkNameChange(source, username, premiumUUID)
+                if (!premiumUUID.isPresent()
+                        || (!checkNameChange(source, username, premiumUUID.get())
                         && !checkPremiumName(source, username, profile))) {
                     //nothing detected the player as premium -> start a cracked session
                     if (core.getConfig().get("switchMode", false)) {

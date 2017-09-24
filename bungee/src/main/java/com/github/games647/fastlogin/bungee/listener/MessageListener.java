@@ -19,11 +19,11 @@ import net.md_5.bungee.api.event.PluginMessageEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 
-public class PluginMessageListener implements Listener {
+public class MessageListener implements Listener {
 
     private final FastLoginBungee plugin;
 
-    public PluginMessageListener(FastLoginBungee plugin) {
+    public MessageListener(FastLoginBungee plugin) {
         this.plugin = plugin;
     }
 
@@ -52,10 +52,10 @@ public class PluginMessageListener implements Listener {
         FastLoginCore<ProxiedPlayer, CommandSender, FastLoginBungee> core = plugin.getCore();
 
         ByteArrayDataInput dataInput = ByteStreams.newDataInput(data);
-        String subchannel = dataInput.readUTF();
-        if ("SUCCESS".equals(subchannel)) {
+        String subChannel = dataInput.readUTF();
+        if ("SUCCESS".equals(subChannel)) {
             onSuccessMessage(forPlayer);
-        } else if ("ON".equals(subchannel)) {
+        } else if ("ON".equals(subChannel)) {
             String playerName = dataInput.readUTF();
             boolean isPlayerSender = dataInput.readBoolean();
 
@@ -70,7 +70,7 @@ public class PluginMessageListener implements Listener {
             core.getPendingConfirms().remove(forPlayer.getUniqueId());
             Runnable task = new AsyncToggleMessage(core, forPlayer, playerName, true, isPlayerSender);
             ProxyServer.getInstance().getScheduler().runAsync(plugin, task);
-        } else if ("OFF".equals(subchannel)) {
+        } else if ("OFF".equals(subChannel)) {
             String playerName = dataInput.readUTF();
             boolean isPlayerSender = dataInput.readBoolean();
 

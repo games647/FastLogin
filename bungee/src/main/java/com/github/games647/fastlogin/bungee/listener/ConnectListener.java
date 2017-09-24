@@ -31,11 +31,11 @@ import net.md_5.bungee.event.EventPriority;
  * plugin message to the Bukkit version of this plugin in
  * order to clear that the connection is online mode.
  */
-public class ConnectionListener implements Listener {
+public class ConnectListener implements Listener {
 
     private final FastLoginBungee plugin;
 
-    public ConnectionListener(FastLoginBungee plugin) {
+    public ConnectListener(FastLoginBungee plugin) {
         this.plugin = plugin;
     }
 
@@ -58,7 +58,7 @@ public class ConnectionListener implements Listener {
             return;
         }
 
-        //use the login event instead of the postlogin event in order to send the loginsuccess packet to the client
+        //use the login event instead of the post login event in order to send the login success packet to the client
         //with the offline uuid this makes it possible to set the skin then
         PendingConnection connection = loginEvent.getConnection();
         InitialHandler initialHandler = (InitialHandler) connection;

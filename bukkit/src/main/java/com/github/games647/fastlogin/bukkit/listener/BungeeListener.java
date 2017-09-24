@@ -27,7 +27,7 @@ import org.bukkit.plugin.messaging.PluginMessageListener;
  * This class also receives the plugin message from the bungeecord version of this plugin in order to get notified if
  * the connection is in online mode.
  */
-public class BungeeCordListener implements PluginMessageListener {
+public class BungeeListener implements PluginMessageListener {
 
     private static final String FILE_NAME = "proxy-whitelist.txt";
 
@@ -35,7 +35,7 @@ public class BungeeCordListener implements PluginMessageListener {
     //null if whitelist is empty so bungeecord support is disabled
     private final Set<UUID> proxyIds;
 
-    public BungeeCordListener(FastLoginBukkit plugin) {
+    public BungeeListener(FastLoginBukkit plugin) {
         this.plugin = plugin;
         this.proxyIds = loadBungeeCordIds();
     }
@@ -70,15 +70,15 @@ public class BungeeCordListener implements PluginMessageListener {
         }
     }
 
-    private void readMessage(Player checkedPlayer, String subchannel, String playerName, Player player) {
+    private void readMessage(Player checkedPlayer, String subChannel, String playerName, Player player) {
         InetSocketAddress address = checkedPlayer.getAddress();
         String id = '/' + address.getAddress().getHostAddress() + ':' + address.getPort();
-        if ("AUTO_LOGIN".equalsIgnoreCase(subchannel)) {
+        if ("AUTO_LOGIN".equalsIgnoreCase(subChannel)) {
             BukkitLoginSession playerSession = new BukkitLoginSession(playerName, true);
             playerSession.setVerified(true);
             plugin.getLoginSessions().put(id, playerSession);
             Bukkit.getScheduler().runTaskAsynchronously(plugin, new ForceLoginTask(plugin.getCore(), player));
-        } else if ("AUTO_REGISTER".equalsIgnoreCase(subchannel)) {
+        } else if ("AUTO_REGISTER".equalsIgnoreCase(subChannel)) {
             Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
                 AuthPlugin<Player> authPlugin = plugin.getCore().getAuthPluginHook();
                 try {

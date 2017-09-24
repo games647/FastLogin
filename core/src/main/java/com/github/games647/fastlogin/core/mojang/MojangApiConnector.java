@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -58,7 +59,7 @@ public class MojangApiConnector {
     protected final Logger logger;
 
     public MojangApiConnector(Logger logger, Collection<String> localAddresses, int rateLimit
-            , List<HostAndPort> proxies) {
+            , Iterable<HostAndPort> proxies) {
         this.logger = logger;
         this.rateLimit = Math.max(rateLimit, 600);
         this.sslFactory = buildAddresses(logger, localAddresses);
@@ -74,10 +75,10 @@ public class MojangApiConnector {
     /**
      * @return null on non-premium
      */
-    public UUID getPremiumUUID(String playerName) {
+    public Optional<UUID> getPremiumUUID(String playerName) {
         if (!validNameMatcher.matcher(playerName).matches()) {
             //check if it's a valid player name
-            return null;
+            return Optional.empty();
         }
 
         try {
@@ -87,7 +88,7 @@ public class MojangApiConnector {
                     if (proxies.hasNext()) {
                         connection = getConnection(UUID_LINK + playerName, proxies.next());
                     } else {
-                        return null;
+                        return Optional.empty();
                     }
                 }
             } else {
@@ -98,7 +99,7 @@ public class MojangApiConnector {
             if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
                 try (BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
                     String line = reader.readLine();
-                    return getUUIDFromJson(line);
+                    return Optional.of(getUUIDFromJson(line));
                 }
             } else if (connection.getResponseCode() == RATE_LIMIT_CODE) {
                 logger.info("RATE_LIMIT REACHED");
@@ -112,7 +113,7 @@ public class MojangApiConnector {
             logger.log(Level.SEVERE, "Failed to check if player has a paid account", ex);
         }
 
-        return null;
+        return Optional.empty();
     }
 
     public boolean hasJoinedServer(LoginSession session, String serverId, InetSocketAddress ip) {

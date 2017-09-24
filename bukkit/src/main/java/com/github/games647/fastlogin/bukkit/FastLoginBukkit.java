@@ -2,8 +2,8 @@ package com.github.games647.fastlogin.bukkit;
 
 import com.github.games647.fastlogin.bukkit.commands.CrackedCommand;
 import com.github.games647.fastlogin.bukkit.commands.PremiumCommand;
-import com.github.games647.fastlogin.bukkit.listener.BukkitJoinListener;
-import com.github.games647.fastlogin.bukkit.listener.BungeeCordListener;
+import com.github.games647.fastlogin.bukkit.listener.JoinListener;
+import com.github.games647.fastlogin.bukkit.listener.BungeeListener;
 import com.github.games647.fastlogin.bukkit.listener.protocollib.LoginSkinApplyListener;
 import com.github.games647.fastlogin.bukkit.listener.protocollib.ProtocolLibListener;
 import com.github.games647.fastlogin.bukkit.listener.protocolsupport.ProtocolSupportListener;
@@ -66,7 +66,7 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
             setServerStarted();
 
             //check for incoming messages from the bungeecord version of this plugin
-            getServer().getMessenger().registerIncomingPluginChannel(this, getName(), new BungeeCordListener(this));
+            getServer().getMessenger().registerIncomingPluginChannel(this, getName(), new BungeeListener(this));
             getServer().getMessenger().registerOutgoingPluginChannel(this, getName());
             //register listeners on success
         } else {
@@ -93,7 +93,7 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
         //delay dependency setup because we load the plugin very early where plugins are initialized yet
         getServer().getScheduler().runTaskLater(this, new DelayedAuthHook(this), 5L);
 
-        getServer().getPluginManager().registerEvents(new BukkitJoinListener(this), this);
+        getServer().getPluginManager().registerEvents(new JoinListener(this), this);
 
         //register commands using a unique name
         getCommand("premium").setExecutor(new PremiumCommand(this));
@@ -122,8 +122,8 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
     }
 
     public void sendBungeeActivateMessage(CommandSender sender, String target, boolean activate) {
-        if (sender instanceof Player) {
-            notifyBungeeCord((Player) sender, target, activate, true);
+        if (sender instanceof PluginMessageRecipient) {
+            notifyBungeeCord((PluginMessageRecipient) sender, target, activate, true);
         } else {
             Player firstPlayer = Iterables.getFirst(getServer().getOnlinePlayers(), null);
             if (firstPlayer == null) {
