@@ -4,8 +4,6 @@ import com.github.games647.fastlogin.core.AuthStorage;
 import com.github.games647.fastlogin.core.PlayerProfile;
 import com.github.games647.fastlogin.core.hooks.AuthPlugin;
 
-import java.util.logging.Level;
-
 public abstract class ForceLoginManagement<P extends C, C, L extends LoginSession, T extends PlatformPlugin<C>>
         implements Runnable {
 
@@ -66,12 +64,12 @@ public abstract class ForceLoginManagement<P extends C, C, L extends LoginSessio
                 storage.save(playerProfile);
             }
         } catch (Exception ex) {
-            core.getPlugin().getLogger().log(Level.WARNING, "ERROR ON FORCE LOGIN", ex);
+            core.getPlugin().getLog().warn("ERROR ON FORCE LOGIN", ex);
         }
     }
 
     public boolean forceRegister(P player) {
-        core.getPlugin().getLogger().log(Level.INFO, "Register player {0}", getName(player));
+        core.getPlugin().getLog().info("Register player {}", getName(player));
 
         String generatedPassword = core.getPasswordGenerator().getRandomPassword(player);
         boolean success = core.getAuthPluginHook().forceRegister(player, generatedPassword);
@@ -86,7 +84,7 @@ public abstract class ForceLoginManagement<P extends C, C, L extends LoginSessio
     }
 
     public boolean forceLogin(P player) {
-        core.getPlugin().getLogger().log(Level.INFO, "Logging player {0} in", getName(player));
+        core.getPlugin().getLog().info("Logging player {} in", getName(player));
         boolean success = core.getAuthPluginHook().forceLogin(player);
 
         if (success) {

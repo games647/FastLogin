@@ -8,7 +8,6 @@ import com.comphenix.protocol.events.PacketEvent;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 
 import java.security.SecureRandom;
-import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -77,7 +76,7 @@ public class ProtocolLibListener extends PacketAdapter {
         PacketContainer packet = packetEvent.getPacket();
 
         String username = packet.getGameProfiles().read(0).getName();
-        plugin.getLogger().log(Level.FINER, "GameProfile {0} with {1} connecting", new Object[]{sessionKey, username});
+        plugin.getLog().trace("GameProfile {} with {} connecting", sessionKey, username);
 
         packetEvent.getAsyncMarker().incrementProcessingDelay();
         Runnable nameCheckTask = new NameCheckTask(plugin, packetEvent, random, player, username);

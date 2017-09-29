@@ -27,23 +27,22 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLSocketFactory;
+
+import org.slf4j.Logger;
 
 public class MojangApiConnector {
 
     //http connection, read timeout and user agent for a connection to mojang api servers
     private static final int TIMEOUT = 3 * 1_000;
     private static final String USER_AGENT = "Premium-Checker";
+    private static final int RATE_LIMIT_CODE = 429;
 
     //only premium (paid account) users have a uuid from here
     private static final String UUID_LINK = "https://api.mojang.com/users/profiles/minecraft/";
-
-    private static final int RATE_LIMIT_CODE = 429;
 
     //this includes a-zA-Z1-9_
     //compile the pattern only on plugin enable -> and this have to be thread-safe
@@ -53,6 +52,7 @@ public class MojangApiConnector {
     private final Map<Object, Object> requests = CommonUtil.buildCache(10, -1);
     private final SSLSocketFactory sslFactory;
     private final int rateLimit;
+
     private long lastRateLimit;
 
     protected final Gson gson = new GsonBuilder().registerTypeAdapter(UUID.class, new UUIDTypeAdapter()).create();
@@ -110,7 +110,7 @@ public class MojangApiConnector {
             }
             //204 - no content for not found
         } catch (Exception ex) {
-            logger.log(Level.SEVERE, "Failed to check if player has a paid account", ex);
+            logger.error("Failed to check if player has a paid account", ex);
         }
 
         return Optional.empty();
@@ -161,13 +161,13 @@ public class MojangApiConnector {
                 try {
                     InetAddress address = InetAddress.getByName(localAddress);
                     if (!address.isAnyLocalAddress()) {
-                        logger.log(Level.WARNING, "Submitted IP-Address is not local {0}", address);
+                        logger.warn("Submitted IP-Address is not local {0}", address);
                         continue;
                     }
 
                     addresses.add(address);
                 } catch (UnknownHostException ex) {
-                    logger.log(Level.SEVERE, "IP-Address is unknown to us", ex);
+                    logger.error("IP-Address is unknown to us", ex);
                 }
             }
 

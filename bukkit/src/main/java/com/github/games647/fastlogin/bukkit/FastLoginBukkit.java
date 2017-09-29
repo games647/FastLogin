@@ -27,6 +27,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.messaging.PluginMessageRecipient;
+import org.slf4j.Logger;
 
 /**
  * This plugin checks if a player has a paid account and if so tries to skip offline mode authentication.
@@ -35,6 +36,7 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
 
     //provide a immutable key pair to be thread safe | used for encrypting and decrypting traffic
     private final KeyPair keyPair = EncryptionUtil.generateKeyPair();
+    private final Logger logger = CommonUtil.createLoggerFromJDK(getLogger());
 
     private boolean bungeeCord;
     private FastLoginCore<Player, CommandSender, FastLoginBukkit> core;
@@ -52,12 +54,12 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
         } catch (ClassNotFoundException notFoundEx) {
             //ignore server has no bungee support
         } catch (Exception ex) {
-            getLogger().log(Level.WARNING, "Cannot check bungeecord support. You use a non-spigot build", ex);
+            logger.warn("Cannot check bungeecord support. You use a non-spigot build", ex);
         }
 
         if (getServer().getOnlineMode()) {
             //we need to require offline to prevent a loginSession request for a offline player
-            getLogger().severe("Server have to be in offline mode");
+            logger.error("Server have to be in offline mode");
             setEnabled(false);
             return;
         }
@@ -85,8 +87,7 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
 
                 getServer().getPluginManager().registerEvents(new LoginSkinApplyListener(this), this);
             } else {
-                getLogger().warning("Either ProtocolLib or ProtocolSupport have to be installed "
-                        + "if you don't use BungeeCord");
+                logger.warn("Either ProtocolLib or ProtocolSupport have to be installed if you don't use BungeeCord");
             }
         }
 
@@ -127,7 +128,7 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
         } else {
             Player firstPlayer = Iterables.getFirst(getServer().getOnlinePlayers(), null);
             if (firstPlayer == null) {
-                getLogger().info("No player online to send a plugin message to the proxy");
+                logger.info("No player online to send a plugin message to the proxy");
                 return;
             }
 
@@ -188,6 +189,11 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
     }
 
     @Override
+    public Logger getLog() {
+        return logger;
+    }
+
+    @Override
     public void sendMessage(CommandSender receiver, String message) {
         receiver.sendMessage(message);
     }
@@ -200,6 +206,6 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
 
     @Override
     public MojangApiConnector makeApiConnector(List<String> addresses, int requests, List<HostAndPort> proxies) {
-        return new MojangApiBukkit(getLogger(), addresses, requests, proxies);
+        return new MojangApiBukkit(getLog(), addresses, requests, proxies);
     }
 }

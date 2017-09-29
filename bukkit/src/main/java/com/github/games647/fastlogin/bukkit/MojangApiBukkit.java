@@ -13,14 +13,14 @@ import java.net.InetSocketAddress;
 import java.net.URLEncoder;
 import java.util.Collection;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
 
 public class MojangApiBukkit extends MojangApiConnector {
 
     //mojang api check to prove a player is logged in minecraft and made a join server request
     private static final String HAS_JOINED_URL = "https://sessionserver.mojang.com/session/minecraft/hasJoined?" +
-            "username=%s&serverId=%s";
+            "username=%s&serverId=%s&ip=%s";
 
     public MojangApiBukkit(Logger logger, Collection<String> localAddresses, int rateLimit
             , List<HostAndPort> proxies) {
@@ -31,11 +31,9 @@ public class MojangApiBukkit extends MojangApiConnector {
     public boolean hasJoinedServer(LoginSession session, String serverId, InetSocketAddress ip) {
         BukkitLoginSession playerSession = (BukkitLoginSession) session;
 
-        String url = String.format(HAS_JOINED_URL, playerSession.getUsername(), serverId);
         try {
-            if (ip != null) {
-                url += "&ip=" + URLEncoder.encode(ip.getAddress().getHostAddress(), "UTF-8");
-            }
+            String encodedIp = URLEncoder.encode(ip.getAddress().getHostAddress(), "UTF-8");
+            String url = String.format(HAS_JOINED_URL, playerSession.getUsername(), serverId, encodedIp);
 
             HttpURLConnection conn = getConnection(url);
 
@@ -55,7 +53,7 @@ public class MojangApiBukkit extends MojangApiConnector {
             }
         } catch (Exception ex) {
             //catch not only io-exceptions also parse and NPE on unexpected json format
-            logger.log(Level.WARNING, "Failed to verify session", ex);
+            logger.warn("Failed to verify session", ex);
         }
 
         //this connection doesn't need to be closed. So can make use of keep alive in java

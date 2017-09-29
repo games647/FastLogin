@@ -14,7 +14,6 @@ import java.nio.file.Path;
 import java.util.Collections;
 import java.util.Set;
 import java.util.UUID;
-import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
@@ -48,20 +47,19 @@ public class BungeeListener implements PluginMessageListener {
 
         ByteArrayDataInput dataInput = ByteStreams.newDataInput(message);
         String subChannel = dataInput.readUTF();
-        plugin.getLogger().log(Level.FINEST, "Received plugin message for sub channel {0} from {1}"
-                , new Object[]{subChannel, player});
+        plugin.getLog().debug("Received plugin message for sub channel {} from {}", subChannel, player);
 
         String playerName = dataInput.readUTF();
 
         //check if the player is still online or disconnected
-        Player checkedPlayer = plugin.getServer().getPlayerExact(playerName);
+        Player checkedPlayer = Bukkit.getPlayerExact(playerName);
         //fail if target player is blacklisted because already authenticated or wrong bungeecord id
         if (checkedPlayer != null && !checkedPlayer.hasMetadata(plugin.getName())) {
             //bungeecord UUID
             long mostSignificantBits = dataInput.readLong();
             long leastSignificantBits = dataInput.readLong();
             UUID sourceId = new UUID(mostSignificantBits, leastSignificantBits);
-            plugin.getLogger().log(Level.FINEST, "Received proxy id {0} from {1}", new Object[]{sourceId, player});
+            plugin.getLog().debug("Received proxy id {} from {}", sourceId, player);
 
             //fail if BungeeCord support is disabled (id = null)
             if (proxyIds.contains(sourceId)) {
@@ -90,7 +88,7 @@ public class BungeeListener implements PluginMessageListener {
                         new ForceLoginTask(plugin.getCore(), player).run();
                     }
                 } catch (Exception ex) {
-                    plugin.getLogger().log(Level.SEVERE, "Failed to query isRegistered", ex);
+                    plugin.getLog().error("Failed to query isRegistered", ex);
                 }
             });
         }
@@ -108,9 +106,9 @@ public class BungeeListener implements PluginMessageListener {
                     .map(UUID::fromString)
                     .collect(Collectors.toSet());
         } catch (IOException ex) {
-            plugin.getLogger().log(Level.SEVERE, "Failed to create file for Proxy whitelist", ex);
+            plugin.getLog().error("Failed to create file for Proxy whitelist", ex);
         } catch (Exception ex) {
-            plugin.getLogger().log(Level.SEVERE, "Failed to retrieve proxy Id. Disabling BungeeCord support", ex);
+            plugin.getLog().error("Failed to retrieve proxy Id. Disabling BungeeCord support", ex);
         }
 
         return Collections.emptySet();

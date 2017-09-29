@@ -8,7 +8,6 @@ import com.github.games647.fastlogin.core.PlayerProfile;
 import com.github.games647.fastlogin.core.shared.JoinManagement;
 
 import java.util.Random;
-import java.util.logging.Level;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -50,7 +49,7 @@ public class NameCheckTask extends JoinManagement<Player, CommandSender, Protoco
         try {
             source.setOnlineMode();
         } catch (Exception ex) {
-            plugin.getLogger().log(Level.SEVERE, "Cannot send encryption packet. Falling back to cracked login", ex);
+            plugin.getLog().error("Cannot send encryption packet. Falling back to cracked login", ex);
             return;
         }
 

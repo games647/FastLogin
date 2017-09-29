@@ -23,7 +23,6 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.function.Function;
-import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 import net.md_5.bungee.config.Configuration;
@@ -72,7 +71,7 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
                         }
                     });
         } catch (IOException ioEx) {
-            plugin.getLogger().log(Level.INFO, "Failed to load yaml files", ioEx);
+            plugin.getLog().error("Failed to load yaml files", ioEx);
         }
 
         List<String> ipAddresses = config.getStringList("ip-addresses");
@@ -134,7 +133,7 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
             storage.createTables();
             return true;
         } catch (Exception ex) {
-            plugin.getLogger().log(Level.SEVERE, "Failed to setup database. Disabling plugin...", ex);
+            plugin.getLog().warn("Failed to setup database. Disabling plugin...", ex);
             return false;
         }
     }
@@ -180,7 +179,7 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
                 }
             }
         } catch (IOException ioExc) {
-            plugin.getLogger().log(Level.SEVERE, "Cannot create plugin folder " + dataFolder, ioExc);
+            plugin.getLog().error("Cannot create plugin folder {}", dataFolder, ioExc);
         }
     }
 

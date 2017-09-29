@@ -11,7 +11,6 @@ import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 import com.github.games647.fastlogin.core.mojang.SkinProperties;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.logging.Level;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -65,7 +64,7 @@ public class LoginSkinApplyListener implements Listener {
                 try {
                     MethodUtils.invokeMethod(map, "put", new Object[]{"textures", skin.getHandle()});
                 } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException ex) {
-                    plugin.getLogger().log(Level.SEVERE, "Error setting premium skin", ex);
+                    plugin.getLog().error("Error setting premium skin", ex);
                 }
             }
         }

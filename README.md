@@ -38,7 +38,7 @@ So they don't need to enter passwords. This is also called auto login (auto-logi
 
 ### Requirements:
 * Plugin: [ProtocolLib](https://www.spigotmc.org/resources/protocollib.1997/) or [ProtocolSupport](https://www.spigotmc.org/resources/protocolsupport.7201/)
-* Tested [Spigot](https://www.spigotmc.org) 1.8+ (could also work with other versions)
+* [Spigot](https://www.spigotmc.org) 1.7+
 * Java 8+
 * Run Spigot and/or BungeeCord/Waterfall in offline mode (see server.properties or config.yml)
 * An auth plugin. Supported plugins

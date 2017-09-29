@@ -13,7 +13,6 @@ import java.sql.Statement;
 import java.util.Properties;
 import java.util.UUID;
 import java.util.concurrent.ThreadFactory;
-import java.util.logging.Level;
 
 public class AuthStorage {
 
@@ -104,7 +103,7 @@ public class AuthStorage {
                 }
             }
         } catch (SQLException sqlEx) {
-            core.getPlugin().getLogger().log(Level.SEVERE, "Failed to query profile", sqlEx);
+            core.getPlugin().getLog().error("Failed to query profile", sqlEx);
         }
 
         return null;
@@ -128,7 +127,7 @@ public class AuthStorage {
                 }
             }
         } catch (SQLException sqlEx) {
-            core.getPlugin().getLogger().log(Level.SEVERE, "Failed to query profile", sqlEx);
+            core.getPlugin().getLog().error("Failed to query profile", sqlEx);
         }
 
         return null;
@@ -179,7 +178,7 @@ public class AuthStorage {
 
             return true;
         } catch (SQLException ex) {
-            core.getPlugin().getLogger().log(Level.SEVERE, "Failed to save playerProfile", ex);
+            core.getPlugin().getLog().error("Failed to save playerProfile", ex);
         }
 
         return false;

@@ -5,7 +5,6 @@ import com.github.games647.fastlogin.core.hooks.AuthPlugin;
 
 import java.util.Optional;
 import java.util.UUID;
-import java.util.logging.Level;
 
 import net.md_5.bungee.config.Configuration;
 
@@ -32,7 +31,7 @@ public abstract class JoinManagement<P extends C, C, S extends LoginSource> {
         try {
             if (profile.getUserId() == -1) {
                 if (core.getPendingLogin().remove(ip + username) != null && config.get("secondAttemptCracked", false)) {
-                    core.getPlugin().getLogger().log(Level.INFO, "Second attempt login -> cracked {0}", username);
+                    core.getPlugin().getLog().info("Second attempt login -> cracked {}", username);
 
                     //first login request failed so make a cracked session
                     startCrackedSession(source, profile, username);
@@ -61,12 +60,12 @@ public abstract class JoinManagement<P extends C, C, S extends LoginSource> {
                 startCrackedSession(source, profile, username);
             }
         } catch (Exception ex) {
-            core.getPlugin().getLogger().log(Level.SEVERE, "Failed to check premium state", ex);
+            core.getPlugin().getLog().error("Failed to check premium state", ex);
         }
     }
 
     private boolean checkPremiumName(S source, String username, PlayerProfile profile) throws Exception {
-        core.getPlugin().getLogger().log(Level.FINER, "GameProfile {0} uses a premium username", username);
+        core.getPlugin().getLog().debug("GameProfile {} uses a premium username", username);
         if (core.getConfig().get("autoRegister", false) && (authHook == null || !authHook.isRegistered(username))) {
             requestPremiumLogin(source, profile, username, false);
             return true;
@@ -81,7 +80,7 @@ public abstract class JoinManagement<P extends C, C, S extends LoginSource> {
             PlayerProfile profile = core.getStorage().loadProfile(premiumUUID);
             if (profile != null) {
                 //uuid exists in the database
-                core.getPlugin().getLogger().log(Level.FINER, "GameProfile {0} changed it's username", premiumUUID);
+                core.getPlugin().getLog().info("GameProfile {} changed it's username", premiumUUID);
 
                 //update the username to the new one in the database
                 profile.setPlayerName(username);

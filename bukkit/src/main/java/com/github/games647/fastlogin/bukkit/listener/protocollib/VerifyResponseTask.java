@@ -20,7 +20,6 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.Arrays;
 import java.util.UUID;
-import java.util.logging.Level;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
@@ -97,7 +96,7 @@ public class VerifyResponseTask implements Runnable {
 
         String username = session.getUsername();
         if (plugin.getCore().getApiConnector().hasJoinedServer(session, serverId, player.getAddress())) {
-            plugin.getLogger().log(Level.INFO, "GameProfile {0} has a verified premium account", username);
+            plugin.getLog().info("GameProfile {} has a verified premium account", username);
 
             session.setVerified(true);
             setPremiumUUID(session.getUuid());
@@ -117,7 +116,7 @@ public class VerifyResponseTask implements Runnable {
                 //https://github.com/bergerkiller/CraftSource/blob/master/net.minecraft.server/NetworkManager.java#L69
                 FieldUtils.writeField(networkManager, "spoofedUUID", premiumUUID, true);
             } catch (Exception exc) {
-                plugin.getLogger().log(Level.SEVERE, "Error setting premium uuid", exc);
+                plugin.getLog().error("Error setting premium uuid", exc);
             }
         }
     }
@@ -172,9 +171,9 @@ public class VerifyResponseTask implements Runnable {
 
     private void disconnect(String kickReason, boolean debug, String logMessage, Object... arguments) {
         if (debug) {
-            plugin.getLogger().log(Level.FINE, logMessage, arguments);
+            plugin.getLog().debug(logMessage, arguments);
         } else {
-            plugin.getLogger().log(Level.SEVERE, logMessage, arguments);
+            plugin.getLog().error(logMessage, arguments);
         }
 
         kickPlayer(plugin.getCore().getMessage(kickReason));
@@ -192,7 +191,7 @@ public class VerifyResponseTask implements Runnable {
             //tell the server that we want to close the connection
             player.kickPlayer("Disconnect");
         } catch (InvocationTargetException ex) {
-            plugin.getLogger().log(Level.SEVERE, "Error sending kick packet", ex);
+            plugin.getLog().error("Error sending kick packet", ex);
         }
     }
 
@@ -210,7 +209,7 @@ public class VerifyResponseTask implements Runnable {
             //we don't want to handle our own packets so ignore filters
             protocolManager.recieveClientPacket(player, startPacket, false);
         } catch (InvocationTargetException | IllegalAccessException ex) {
-            plugin.getLogger().log(Level.WARNING, "Failed to fake a new start packet", ex);
+            plugin.getLog().warn("Failed to fake a new start packet", ex);
             //cancel the event in order to prevent the server receiving an invalid packet
             kickPlayer(plugin.getCore().getMessage("error-kick"));
         }

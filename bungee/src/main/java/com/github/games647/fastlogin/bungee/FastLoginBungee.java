@@ -3,6 +3,7 @@ package com.github.games647.fastlogin.bungee;
 import com.github.games647.fastlogin.bungee.hooks.BungeeAuthHook;
 import com.github.games647.fastlogin.bungee.listener.ConnectListener;
 import com.github.games647.fastlogin.bungee.listener.MessageListener;
+import com.github.games647.fastlogin.core.CommonUtil;
 import com.github.games647.fastlogin.core.mojang.MojangApiConnector;
 import com.github.games647.fastlogin.core.shared.FastLoginCore;
 import com.github.games647.fastlogin.core.shared.PlatformPlugin;
@@ -20,12 +21,15 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.api.scheduler.GroupedThreadFactory;
 
+import org.slf4j.Logger;
+
 /**
  * BungeeCord version of FastLogin. This plugin keeps track on online mode connections.
  */
 public class FastLoginBungee extends Plugin implements PlatformPlugin<CommandSender> {
 
     private final ConcurrentMap<PendingConnection, BungeeLoginSession> session = Maps.newConcurrentMap();
+    private final Logger logger = CommonUtil.createLoggerFromJDK(getLogger());
 
     private FastLoginCore<ProxiedPlayer, CommandSender, FastLoginBungee> core;
 
@@ -66,13 +70,18 @@ public class FastLoginBungee extends Plugin implements PlatformPlugin<CommandSen
         Plugin plugin = getProxy().getPluginManager().getPlugin("BungeeAuth");
         if (plugin != null) {
             core.setAuthPluginHook(new BungeeAuthHook());
-            getLogger().info("Hooked into BungeeAuth");
+            logger.info("Hooked into BungeeAuth");
         }
     }
 
     @Override
     public String getName() {
         return getDescription().getName();
+    }
+
+    @Override
+    public Logger getLog() {
+        return logger;
     }
 
     @Override
@@ -88,6 +97,6 @@ public class FastLoginBungee extends Plugin implements PlatformPlugin<CommandSen
 
     @Override
     public MojangApiConnector makeApiConnector(List<String> addresses, int requests, List<HostAndPort> proxies) {
-        return new MojangApiConnector(getLogger(), addresses, requests, proxies);
+        return new MojangApiConnector(getLog(), addresses, requests, proxies);
     }
 }

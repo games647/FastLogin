@@ -6,6 +6,8 @@ sudo: false
 # This is a java project
 language: java
 
-script: mvn compile test
+script: mvn test -B
 
-jdk: [oraclejdk8]
+jdk:
+  - oraclejdk8
+  - oraclejdk9

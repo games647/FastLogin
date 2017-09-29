@@ -9,7 +9,6 @@ import com.google.common.base.Charsets;
 
 import java.lang.reflect.Field;
 import java.util.UUID;
-import java.util.logging.Level;
 
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.PendingConnection;
@@ -82,7 +81,7 @@ public class ConnectListener implements Listener {
                     idField.setAccessible(true);
                     idField.set(connection, offlineUUID);
                 } catch (NoSuchFieldException | IllegalAccessException ex) {
-                    plugin.getLogger().log(Level.SEVERE, "Failed to set offline uuid", ex);
+                    plugin.getLog().error("Failed to set offline uuid", ex);
                 }
             }
 
