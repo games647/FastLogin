@@ -3,7 +3,8 @@ package com.github.games647.fastlogin.core.hooks;
 /**
  * Represents a supporting authentication plugin in BungeeCord and Bukkit/Spigot/... servers
  *
- * @param <P> either org.bukkit.entity.GameProfile for Bukkit or net.md_5.bungee.api.connection.ProxiedPlayer for BungeeCord
+ * @param <P> either org.bukkit.entity.GameProfile for Bukkit or net.md_5.bungee.api.connection.ProxiedPlayer
+ *           for BungeeCord
  */
 public interface AuthPlugin<P> {
 

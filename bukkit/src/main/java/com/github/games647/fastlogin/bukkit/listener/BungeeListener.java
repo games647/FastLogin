@@ -95,7 +95,7 @@ public class BungeeListener implements PluginMessageListener {
     }
 
     public Set<UUID> loadBungeeCordIds() {
-        Path whitelistFile = plugin.getDataFolder().toPath().resolve(FILE_NAME);
+        Path whitelistFile = plugin.getPluginFolder().resolve(FILE_NAME);
         try {
             if (Files.notExists(whitelistFile)) {
                 Files.createFile(whitelistFile);

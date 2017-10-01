@@ -33,6 +33,7 @@ import net.md_5.bungee.event.EventPriority;
 public class ConnectListener implements Listener {
 
     private final FastLoginBungee plugin;
+    private final Property[] emptyProperties = {};
 
     public ConnectListener(FastLoginBungee plugin) {
         this.plugin = plugin;
@@ -89,7 +90,7 @@ public class ConnectListener implements Listener {
                 //this is null on offline mode
                 LoginResult loginProfile = initialHandler.getLoginProfile();
                 if (loginProfile != null) {
-                    loginProfile.setProperties(new Property[]{});
+                    loginProfile.setProperties(emptyProperties);
                 }
             }
         }

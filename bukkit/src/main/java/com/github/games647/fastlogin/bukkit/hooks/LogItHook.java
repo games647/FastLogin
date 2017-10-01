@@ -6,6 +6,9 @@ import io.github.lucaseasedup.logit.CancelledState;
 import io.github.lucaseasedup.logit.LogItCore;
 import io.github.lucaseasedup.logit.account.Account;
 import io.github.lucaseasedup.logit.session.SessionManager;
+
+import java.time.Instant;
+
 import org.bukkit.entity.Player;
 
 /**
@@ -22,7 +25,6 @@ public class LogItHook implements AuthPlugin<Player> {
         SessionManager sessionManager = LogItCore.getInstance().getSessionManager();
         return sessionManager.isSessionAlive(player)
                 || sessionManager.startSession(player) == CancelledState.NOT_CANCELLED;
-
     }
 
     @Override
@@ -34,8 +36,10 @@ public class LogItHook implements AuthPlugin<Player> {
     public boolean forceRegister(Player player, String password) {
         Account account = new Account(player.getName());
         account.changePassword(password);
-        account.setLastActiveDate(System.currentTimeMillis() / 1000);
-        account.setRegistrationDate(System.currentTimeMillis() / 1000);
+
+        Instant now = Instant.now();
+        account.setLastActiveDate(now.getEpochSecond());
+        account.setRegistrationDate(now.getEpochSecond());
         return LogItCore.getInstance().getAccountManager().insertAccount(account) == CancelledState.NOT_CANCELLED;
     }
 }

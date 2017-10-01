@@ -13,9 +13,9 @@ The actions that cause the issue
 This can be found by running `/pl`
 
 ### Environment description
-Standalone server/Bungeecord network, SQLite/MySql, ...
+Standalone server/Bungeecord network, SQLite/MySQL, ...
 
-### Plugin version:
+### Plugin version or build number (don't write latest):
 This can be found by running `/version plugin-name`
 
 ### Error Log:

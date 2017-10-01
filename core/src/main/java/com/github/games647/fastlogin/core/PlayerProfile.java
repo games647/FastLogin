@@ -1,5 +1,6 @@
 package com.github.games647.fastlogin.core;
 
+import java.time.Instant;
 import java.util.UUID;
 
 public class PlayerProfile {
@@ -11,9 +12,9 @@ public class PlayerProfile {
     private UUID uuid;
     private boolean premium;
     private String lastIp;
-    private long lastLogin;
+    private Instant lastLogin;
 
-    public PlayerProfile(long userId, UUID uuid, String playerName, boolean premium, String lastIp, long lastLogin) {
+    public PlayerProfile(long userId, UUID uuid, String playerName, boolean premium, String lastIp, Instant lastLogin) {
         this.userId = userId;
         this.uuid = uuid;
         this.playerName = playerName;
@@ -23,7 +24,7 @@ public class PlayerProfile {
     }
 
     public PlayerProfile(UUID uuid, String playerName, boolean premium, String lastIp) {
-        this(-1, uuid, playerName, premium, lastIp, System.currentTimeMillis());
+        this(-1, uuid, playerName, premium, lastIp, Instant.now());
     }
 
     public synchronized String getPlayerName() {
@@ -66,11 +67,11 @@ public class PlayerProfile {
         this.lastIp = lastIp;
     }
 
-    public synchronized long getLastLogin() {
+    public synchronized Instant getLastLogin() {
         return lastLogin;
     }
 
-    public synchronized void setLastLogin(long lastLogin) {
+    public synchronized void setLastLogin(Instant lastLogin) {
         this.lastLogin = lastLogin;
     }
 }

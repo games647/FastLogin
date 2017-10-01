@@ -42,7 +42,8 @@ public class AsyncPremiumCheck extends JoinManagement<ProxiedPlayer, CommandSend
     }
 
     @Override
-    public void requestPremiumLogin(BungeeLoginSource source, PlayerProfile profile, String username, boolean registered) {
+    public void requestPremiumLogin(BungeeLoginSource source, PlayerProfile profile,
+                                    String username, boolean registered) {
         source.setOnlineMode();
         plugin.getSession().put(source.getConnection(), new BungeeLoginSession(username, registered, profile));
 

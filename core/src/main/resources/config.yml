@@ -62,8 +62,8 @@ premiumUuid: false
 # #### Case 1
 # nameChangeCheck = false ----- autoRegister = false
 #
-# GameProfile logins as cracked until the player invoked the command /premium. Then we could override the existing database
-# record.
+# GameProfile logins as cracked until the player invoked the command /premium. Then we could override the existing
+# database record.
 #
 # #### Case 2
 #
@@ -128,8 +128,8 @@ premium-warning: true
 # Once the limit is reached, new players are always logged in as cracked until the rate-limit is expired.
 # (to the next ten minutes)
 #
-# The limit is IP-wide. If you have multiple IPv4-addresses you specify them here. FastLogin will then use it in rotating
-# order --> 5 different IP-addresses 5 * 600 per 10 minutes
+# The limit is IP-wide. If you have multiple IPv4-addresses you specify them here. FastLogin will then use it in
+# rotating order --> 5 different IP-addresses 5 * 600 per 10 minutes
 # If this list is empty only the default one will be used
 #
 # Lists are created like this:

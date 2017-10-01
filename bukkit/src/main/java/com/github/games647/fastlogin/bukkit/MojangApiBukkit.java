@@ -12,7 +12,6 @@ import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
 import java.net.URLEncoder;
 import java.util.Collection;
-import java.util.List;
 
 import org.slf4j.Logger;
 
@@ -23,7 +22,7 @@ public class MojangApiBukkit extends MojangApiConnector {
             "username=%s&serverId=%s&ip=%s";
 
     public MojangApiBukkit(Logger logger, Collection<String> localAddresses, int rateLimit
-            , List<HostAndPort> proxies) {
+            , Iterable<HostAndPort> proxies) {
         super(logger, localAddresses, rateLimit, proxies);
     }
 

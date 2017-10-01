@@ -2,8 +2,8 @@ package com.github.games647.fastlogin.bukkit;
 
 import com.github.games647.fastlogin.bukkit.commands.CrackedCommand;
 import com.github.games647.fastlogin.bukkit.commands.PremiumCommand;
-import com.github.games647.fastlogin.bukkit.listener.JoinListener;
 import com.github.games647.fastlogin.bukkit.listener.BungeeListener;
+import com.github.games647.fastlogin.bukkit.listener.JoinListener;
 import com.github.games647.fastlogin.bukkit.listener.protocollib.LoginSkinApplyListener;
 import com.github.games647.fastlogin.bukkit.listener.protocollib.ProtocolLibListener;
 import com.github.games647.fastlogin.bukkit.listener.protocolsupport.ProtocolSupportListener;
@@ -17,11 +17,11 @@ import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import com.google.common.net.HostAndPort;
 
+import java.nio.file.Path;
 import java.security.KeyPair;
 import java.util.List;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ThreadFactory;
-import java.util.logging.Level;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -189,6 +189,11 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
     }
 
     @Override
+    public Path getPluginFolder() {
+        return getDataFolder().toPath();
+    }
+
+    @Override
     public Logger getLog() {
         return logger;
     }
@@ -206,6 +211,6 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
 
     @Override
     public MojangApiConnector makeApiConnector(List<String> addresses, int requests, List<HostAndPort> proxies) {
-        return new MojangApiBukkit(getLog(), addresses, requests, proxies);
+        return new MojangApiBukkit(logger, addresses, requests, proxies);
     }
 }

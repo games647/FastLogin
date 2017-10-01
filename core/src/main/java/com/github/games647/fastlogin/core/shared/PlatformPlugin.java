@@ -3,7 +3,7 @@ package com.github.games647.fastlogin.core.shared;
 import com.github.games647.fastlogin.core.mojang.MojangApiConnector;
 import com.google.common.net.HostAndPort;
 
-import java.io.File;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.concurrent.ThreadFactory;
 
@@ -13,7 +13,7 @@ public interface PlatformPlugin<C> {
 
     String getName();
 
-    File getDataFolder();
+    Path getPluginFolder();
 
     Logger getLog();
 

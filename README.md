@@ -37,7 +37,8 @@ So they don't need to enter passwords. This is also called auto login (auto-logi
     * fastlogin.command.import
 
 ### Requirements:
-* Plugin: [ProtocolLib](https://www.spigotmc.org/resources/protocollib.1997/) or [ProtocolSupport](https://www.spigotmc.org/resources/protocolsupport.7201/)
+* Plugin: [ProtocolLib](https://www.spigotmc.org/resources/protocollib.1997/) or 
+[ProtocolSupport](https://www.spigotmc.org/resources/protocolsupport.7201/)
 * [Spigot](https://www.spigotmc.org) 1.7+
 * Java 8+
 * Run Spigot and/or BungeeCord/Waterfall in offline mode (see server.properties or config.yml)
@@ -77,5 +78,6 @@ Put your stats id from the BungeeCord config into this file
 5. Download and Install FastLogin on BungeeCord AND Spigot
 6. Check your database settings in the config of FastLogin on BungeeCord
 7. Set your proxy (BungeeCord) in offline mode by setting the value onlinemode in your config.yml to false
-8. You should *always* firewall your spigot server that it's only accessible through BungeeCord https://www.spigotmc.org/wiki/bungeecord-installation/#post-installation
+8. You should *always* firewall your Spigot server that it's only accessible through BungeeCord 
+https://www.spigotmc.org/wiki/bungeecord-installation/#post-installation
 9. (BungeeCord doesn't support SQLite per default, so you should change the configuration to MySQL or MariaDB)

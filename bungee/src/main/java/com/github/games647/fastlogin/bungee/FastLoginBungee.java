@@ -9,7 +9,9 @@ import com.github.games647.fastlogin.core.shared.FastLoginCore;
 import com.github.games647.fastlogin.core.shared.PlatformPlugin;
 import com.google.common.collect.Maps;
 import com.google.common.net.HostAndPort;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
+import java.nio.file.Path;
 import java.util.List;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ThreadFactory;
@@ -80,6 +82,11 @@ public class FastLoginBungee extends Plugin implements PlatformPlugin<CommandSen
     }
 
     @Override
+    public Path getPluginFolder() {
+        return getDataFolder().toPath();
+    }
+
+    @Override
     public Logger getLog() {
         return logger;
     }
@@ -92,11 +99,16 @@ public class FastLoginBungee extends Plugin implements PlatformPlugin<CommandSen
     @Override
     @SuppressWarnings("deprecation")
     public ThreadFactory getThreadFactory() {
-        return new GroupedThreadFactory(this, getName());
+        return new ThreadFactoryBuilder()
+                .setNameFormat(core.getPlugin().getName() + " Database Pool Thread #%1$d")
+                //Hikari create daemons by default
+                .setDaemon(true)
+                .setThreadFactory(new GroupedThreadFactory(this, getName()))
+                .build();
     }
 
     @Override
     public MojangApiConnector makeApiConnector(List<String> addresses, int requests, List<HostAndPort> proxies) {
-        return new MojangApiConnector(getLog(), addresses, requests, proxies);
+        return new MojangApiConnector(logger, addresses, requests, proxies);
     }
 }

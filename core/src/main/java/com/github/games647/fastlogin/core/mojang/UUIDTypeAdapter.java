@@ -11,18 +11,10 @@ import java.util.UUID;
 public class UUIDTypeAdapter extends TypeAdapter<UUID> {
 
     public void write(JsonWriter out, UUID value) throws IOException {
-        out.value(fromUUID(value));
+        out.value(value.toString().replace("-", ""));
     }
 
     public UUID read(JsonReader in) throws IOException {
-        return fromString(in.nextString());
-    }
-
-    public static String fromUUID(UUID value) {
-        return value.toString().replace("-", "");
-    }
-
-    public static UUID fromString(String input) {
-        return CommonUtil.parseId(input);
+        return CommonUtil.parseId(in.nextString());
     }
 }

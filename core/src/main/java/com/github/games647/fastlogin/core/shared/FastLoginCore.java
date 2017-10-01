@@ -90,7 +90,7 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
             defaults = configProvider.load(defaultStream);
         }
 
-        File file = new File(plugin.getDataFolder(), fileName);
+        File file = plugin.getPluginFolder().resolve(fileName).toFile();
         return configProvider.load(file, defaults);
     }
 
@@ -167,7 +167,7 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
     }
 
     public void saveDefaultFile(String fileName) {
-        Path dataFolder = plugin.getDataFolder().toPath();
+        Path dataFolder = plugin.getPluginFolder();
 
         try {
             Files.createDirectories(dataFolder);

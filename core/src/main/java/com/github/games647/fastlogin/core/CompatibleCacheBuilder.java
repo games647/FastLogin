@@ -136,8 +136,9 @@ public class CompatibleCacheBuilder<K, V> {
      * <p>
      * <p>
      * When {@code size} is zero, elements will be evicted immediately after being loaded into the cache. This has the
-     * same effect as invoking {@link #expireAfterWrite expireAfterWrite}{@code (0, unit)} or      {@link #expireAfterAccess expireAfterAccess}{@code (0,
-     * unit)}. It can be useful in testing, or to disable caching temporarily without a code change.
+     * same effect as invoking {@link #expireAfterWrite expireAfterWrite}{@code (0, unit)} or
+     * {@link #expireAfterAccess expireAfterAccess}{@code (0,unit)}.
+     * It can be useful in testing, or to disable caching temporarily without a code change.
      *
      * @param size the maximum size of the cache
      * @return This for chaining
@@ -180,7 +181,8 @@ public class CompatibleCacheBuilder<K, V> {
      * @throws IllegalStateException if a removal listener was already set
      */
     @SuppressWarnings("unchecked")
-    public <K1 extends K, V1 extends V> CompatibleCacheBuilder<K1, V1> removalListener(RemovalListener<? super K1, ? super V1> listener) {
+    public <K1 extends K, V1 extends V> CompatibleCacheBuilder<K1, V1> removalListener(
+            RemovalListener<? super K1, ? super V1> listener) {
         builder.removalListener(listener);
         return (CompatibleCacheBuilder<K1, V1>) this;
     }

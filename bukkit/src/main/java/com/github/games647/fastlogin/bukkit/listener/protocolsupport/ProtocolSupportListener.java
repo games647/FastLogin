@@ -52,13 +52,15 @@ public class ProtocolSupportListener extends JoinManagement<Player, CommandSende
     }
 
     @Override
-    public void requestPremiumLogin(ProtocolLoginSource source, PlayerProfile profile, String username, boolean registered) {
+    public void requestPremiumLogin(ProtocolLoginSource source, PlayerProfile profile, String username
+            , boolean registered) {
         source.setOnlineMode();
 
         String ip = source.getAddress().getAddress().getHostAddress();
         plugin.getCore().getPendingLogin().put(ip + username, new Object());
 
-        BukkitLoginSession playerSession = new BukkitLoginSession(username, null, null, registered, profile);
+        BukkitLoginSession playerSession = new BukkitLoginSession(username, null, null
+                , registered, profile);
         plugin.getLoginSessions().put(source.getAddress().toString(), playerSession);
         if (plugin.getConfig().getBoolean("premiumUuid")) {
             source.getLoginStartEvent().setUseOnlineModeUUID(true);

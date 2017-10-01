@@ -1,7 +1,6 @@
 package com.github.games647.fastlogin.core;
 
 import com.github.games647.fastlogin.core.shared.FastLoginCore;
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
@@ -10,13 +9,23 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.Instant;
 import java.util.Properties;
 import java.util.UUID;
 import java.util.concurrent.ThreadFactory;
 
+import static java.sql.Statement.RETURN_GENERATED_KEYS;
+
 public class AuthStorage {
 
     private static final String PREMIUM_TABLE = "premium";
+
+    private static final String LOAD_BY_NAME = "SELECT * FROM " + PREMIUM_TABLE + " WHERE Name=? LIMIT 1";
+    private static final String LOAD_BY_UUID = "SELECT * FROM " + PREMIUM_TABLE + " WHERE UUID=? LIMIT 1";
+    private static final String INSERT_PROFILE = "INSERT INTO " + PREMIUM_TABLE + " (UUID, Name, Premium, LastIp) "
+            + "VALUES (?, ?, ?, ?) ";
+    private static final String UPDATE_PROFILE = "UPDATE " + PREMIUM_TABLE
+            + " SET UUID=?, Name=?, Premium=?, LastIp=?, LastLogin=CURRENT_TIMESTAMP WHERE UserID=?";
 
     private final FastLoginCore<?, ?, ?> core;
     private final HikariDataSource dataSource;
@@ -38,22 +47,18 @@ public class AuthStorage {
 
         ThreadFactory platformThreadFactory = core.getPlugin().getThreadFactory();
         if (platformThreadFactory != null) {
-            config.setThreadFactory(new ThreadFactoryBuilder()
-                    .setNameFormat(core.getPlugin().getName() + " Database Pool Thread #%1$d")
-                    //Hikari create daemons by default
-                    .setDaemon(true)
-                    .setThreadFactory(platformThreadFactory)
-                    .build());
+            config.setThreadFactory(platformThreadFactory);
         }
 
-        databasePath = databasePath.replace("{pluginDir}", core.getPlugin().getDataFolder().getAbsolutePath());
+        String pluginFolder = core.getPlugin().getPluginFolder().toAbsolutePath().toString();
+        databasePath = databasePath.replace("{pluginDir}", pluginFolder);
 
         String jdbcUrl = "jdbc:";
         if (driver.contains("sqlite")) {
-            jdbcUrl += "sqlite" + "://" + databasePath;
+            jdbcUrl += "sqlite://" + databasePath;
             config.setConnectionTestQuery("SELECT 1");
         } else {
-            jdbcUrl += "mysql" + "://" + host + ':' + port + '/' + databasePath;
+            jdbcUrl += "mysql://" + host + ':' + port + '/' + databasePath;
         }
 
         config.setJdbcUrl(jdbcUrl);
@@ -84,8 +89,7 @@ public class AuthStorage {
 
     public PlayerProfile loadProfile(String name) {
         try (Connection con = dataSource.getConnection();
-             PreparedStatement loadStmt = con.prepareStatement("SELECT * FROM "
-                     + PREMIUM_TABLE + " WHERE Name=? LIMIT 1")) {
+             PreparedStatement loadStmt = con.prepareStatement(LOAD_BY_NAME)) {
             loadStmt.setString(1, name);
 
             try (ResultSet resultSet = loadStmt.executeQuery()) {
@@ -96,7 +100,7 @@ public class AuthStorage {
 
                     boolean premium = resultSet.getBoolean(4);
                     String lastIp = resultSet.getString(5);
-                    long lastLogin = resultSet.getTimestamp(6).getTime();
+                    Instant lastLogin = resultSet.getTimestamp(6).toInstant();
                     return new PlayerProfile(userId, uuid, name, premium, lastIp, lastLogin);
                 } else {
                     return new PlayerProfile(null, name, false, "");
@@ -111,8 +115,7 @@ public class AuthStorage {
 
     public PlayerProfile loadProfile(UUID uuid) {
         try (Connection con = dataSource.getConnection();
-             PreparedStatement loadStmt = con.prepareStatement("SELECT * FROM "
-                     + PREMIUM_TABLE + " WHERE UUID=? LIMIT 1")) {
+             PreparedStatement loadStmt = con.prepareStatement(LOAD_BY_UUID)) {
             loadStmt.setString(1, uuid.toString().replace("-", ""));
 
             try (ResultSet resultSet = loadStmt.executeQuery()) {
@@ -122,7 +125,7 @@ public class AuthStorage {
                     String name = resultSet.getString(3);
                     boolean premium = resultSet.getBoolean(4);
                     String lastIp = resultSet.getString(5);
-                    long lastLogin = resultSet.getTimestamp(6).getTime();
+                    Instant lastLogin = resultSet.getTimestamp(6).toInstant();
                     return new PlayerProfile(userId, uuid, name, premium, lastIp, lastLogin);
                 }
             }
@@ -138,8 +141,7 @@ public class AuthStorage {
             UUID uuid = playerProfile.getUuid();
             
             if (playerProfile.getUserId() == -1) {
-                try (PreparedStatement saveStmt = con.prepareStatement("INSERT INTO " + PREMIUM_TABLE
-                        + " (UUID, Name, Premium, LastIp) VALUES (?, ?, ?, ?) ", Statement.RETURN_GENERATED_KEYS)) {
+                try (PreparedStatement saveStmt = con.prepareStatement(INSERT_PROFILE, RETURN_GENERATED_KEYS)) {
                     if (uuid == null) {
                         saveStmt.setString(1, null);
                     } else {
@@ -159,8 +161,7 @@ public class AuthStorage {
                     }
                 }
             } else {
-                try (PreparedStatement saveStmt = con.prepareStatement("UPDATE " + PREMIUM_TABLE
-                        + " SET UUID=?, Name=?, Premium=?, LastIp=?, LastLogin=CURRENT_TIMESTAMP WHERE UserID=?")) {
+                try (PreparedStatement saveStmt = con.prepareStatement(UPDATE_PROFILE)) {
                     if (uuid == null) {
                         saveStmt.setString(1, null);
                     } else {

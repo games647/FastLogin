@@ -23,7 +23,8 @@ public class NameCheckTask extends JoinManagement<Player, CommandSender, Protoco
     private final Player player;
     private final String username;
 
-    public NameCheckTask(FastLoginBukkit plugin, PacketEvent packetEvent, Random random, Player player, String username) {
+    public NameCheckTask(FastLoginBukkit plugin, PacketEvent packetEvent, Random random,
+                         Player player, String username) {
         super(plugin.getCore(), plugin.getCore().getAuthPluginHook());
 
         this.plugin = plugin;
@@ -45,7 +46,8 @@ public class NameCheckTask extends JoinManagement<Player, CommandSender, Protoco
     //minecraft server implementation
     //https://github.com/bergerkiller/CraftSource/blob/master/net.minecraft.server/LoginListener.java#L161
     @Override
-    public void requestPremiumLogin(ProtocolLibLoginSource source, PlayerProfile profile, String username, boolean registered) {
+    public void requestPremiumLogin(ProtocolLibLoginSource source, PlayerProfile profile
+            , String username, boolean registered) {
         try {
             source.setOnlineMode();
         } catch (Exception ex) {

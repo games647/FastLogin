@@ -20,6 +20,8 @@ import java.net.Proxy;
 import java.net.Proxy.Type;
 import java.net.URL;
 import java.net.UnknownHostException;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -53,7 +55,7 @@ public class MojangApiConnector {
     private final SSLSocketFactory sslFactory;
     private final int rateLimit;
 
-    private long lastRateLimit;
+    private Instant lastRateLimit;
 
     protected final Gson gson = new GsonBuilder().registerTypeAdapter(UUID.class, new UUIDTypeAdapter()).create();
     protected final Logger logger;
@@ -72,9 +74,6 @@ public class MojangApiConnector {
         this.proxies = Iterables.cycle(proxyBuilder).iterator();
     }
 
-    /**
-     * @return null on non-premium
-     */
     public Optional<UUID> getPremiumUUID(String playerName) {
         if (!validNameMatcher.matcher(playerName).matches()) {
             //check if it's a valid player name
@@ -83,7 +82,7 @@ public class MojangApiConnector {
 
         try {
             HttpsURLConnection connection;
-            if (requests.size() >= rateLimit || System.currentTimeMillis() - lastRateLimit < 1_000 * 60 * 10) {
+            if (requests.size() >= rateLimit || Duration.between(lastRateLimit, Instant.now()).getSeconds() < 60 * 10) {
                 synchronized (proxies) {
                     if (proxies.hasNext()) {
                         connection = getConnection(UUID_LINK + playerName, proxies.next());
@@ -103,7 +102,7 @@ public class MojangApiConnector {
                 }
             } else if (connection.getResponseCode() == RATE_LIMIT_CODE) {
                 logger.info("RATE_LIMIT REACHED");
-                lastRateLimit = System.currentTimeMillis();
+                lastRateLimit = Instant.now();
                 if (!connection.usingProxy()) {
                     return getPremiumUUID(playerName);
                 }
@@ -153,25 +152,25 @@ public class MojangApiConnector {
     }
 
     private SSLSocketFactory buildAddresses(Logger logger, Collection<String> localAddresses) {
-        if (localAddresses.isEmpty()) {
+        if (!localAddresses.isEmpty()) {
             return HttpsURLConnection.getDefaultSSLSocketFactory();
-        } else {
-            Set<InetAddress> addresses = Sets.newHashSet();
-            for (String localAddress : localAddresses) {
-                try {
-                    InetAddress address = InetAddress.getByName(localAddress);
-                    if (!address.isAnyLocalAddress()) {
-                        logger.warn("Submitted IP-Address is not local {0}", address);
-                        continue;
-                    }
-
-                    addresses.add(address);
-                } catch (UnknownHostException ex) {
-                    logger.error("IP-Address is unknown to us", ex);
-                }
-            }
-
-            return new BalancedSSLFactory(HttpsURLConnection.getDefaultSSLSocketFactory(), addresses);
         }
+
+        Set<InetAddress> addresses = Sets.newHashSet();
+        for (String localAddress : localAddresses) {
+            try {
+                InetAddress address = InetAddress.getByName(localAddress);
+                if (!address.isAnyLocalAddress()) {
+                    logger.warn("Submitted IP-Address is not local {}", address);
+                    continue;
+                }
+
+                addresses.add(address);
+            } catch (UnknownHostException ex) {
+                logger.error("IP-Address is unknown to us", ex);
+            }
+        }
+
+        return new BalancedSSLFactory(HttpsURLConnection.getDefaultSSLSocketFactory(), addresses);
     }
 }

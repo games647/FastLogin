@@ -86,7 +86,7 @@ invalid-session: '&4Invalid session'
 # The client sent a malicious packet without a login request packet
 invalid-requst: '&4Invalid request'
 
-# Message if the bukkit isn't fully started to inject the packets
+# Message if the Bukkit isn't fully started to inject the packets
 not-started: '&cServer is not fully started yet. Please retry'
 
 # Warning message if a user invoked /premium command
