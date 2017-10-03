@@ -34,11 +34,19 @@ public class CommonUtil {
     }
 
     public static UUID parseId(String withoutDashes) {
+        if (withoutDashes == null) {
+            return null;
+        }
+
         return UUID.fromString(withoutDashes.substring(0, 8)
                 + '-' + withoutDashes.substring(8, 12)
                 + '-' + withoutDashes.substring(12, 16)
                 + '-' + withoutDashes.substring(16, 20)
                 + '-' + withoutDashes.substring(20, 32));
+    }
+
+    public static String toMojangId(UUID uuid) {
+        return uuid.toString().replace("-", "");
     }
 
     public static String translateColorCodes(String rawMessage) {

@@ -116,7 +116,7 @@ public class AuthStorage {
     public PlayerProfile loadProfile(UUID uuid) {
         try (Connection con = dataSource.getConnection();
              PreparedStatement loadStmt = con.prepareStatement(LOAD_BY_UUID)) {
-            loadStmt.setString(1, uuid.toString().replace("-", ""));
+            loadStmt.setString(1, CommonUtil.toMojangId(uuid));
 
             try (ResultSet resultSet = loadStmt.executeQuery()) {
                 if (resultSet.next()) {
@@ -145,7 +145,7 @@ public class AuthStorage {
                     if (uuid == null) {
                         saveStmt.setString(1, null);
                     } else {
-                        saveStmt.setString(1, uuid.toString().replace("-", ""));
+                        saveStmt.setString(1, CommonUtil.toMojangId(uuid));
                     }
 
                     saveStmt.setString(2, playerProfile.getPlayerName());
@@ -165,7 +165,7 @@ public class AuthStorage {
                     if (uuid == null) {
                         saveStmt.setString(1, null);
                     } else {
-                        saveStmt.setString(1, uuid.toString().replace("-", ""));
+                        saveStmt.setString(1, CommonUtil.toMojangId(uuid));
                     }
 
                     saveStmt.setString(2, playerProfile.getPlayerName());

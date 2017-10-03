@@ -11,7 +11,7 @@ import java.util.UUID;
 public class UUIDTypeAdapter extends TypeAdapter<UUID> {
 
     public void write(JsonWriter out, UUID value) throws IOException {
-        out.value(value.toString().replace("-", ""));
+        out.value(CommonUtil.toMojangId(value));
     }
 
     public UUID read(JsonReader in) throws IOException {
