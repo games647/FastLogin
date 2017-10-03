@@ -1,5 +1,9 @@
 ### 1.11
 
+* Optimize issue template
+* Use Instant for timestamps
+* Migrate SLF4J logging (Fixes #177)
+* Use Gson's TypeAdapter for more type safety
 * Add support for IPv6 proxies
 * Shared configuration implementation for easier maintained code
 * Use Gson for json parsing, because it's supported on all platforms and removes code duplicates

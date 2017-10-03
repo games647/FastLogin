@@ -22,6 +22,7 @@ import java.net.URL;
 import java.net.UnknownHostException;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -55,7 +56,7 @@ public class MojangApiConnector {
     private final SSLSocketFactory sslFactory;
     private final int rateLimit;
 
-    private Instant lastRateLimit;
+    private Instant lastRateLimit = Instant.now().minus(10, ChronoUnit.MINUTES);
 
     protected final Gson gson = new GsonBuilder().registerTypeAdapter(UUID.class, new UUIDTypeAdapter()).create();
     protected final Logger logger;
