@@ -31,12 +31,14 @@ import org.slf4j.Logger;
 public class FastLoginBungee extends Plugin implements PlatformPlugin<CommandSender> {
 
     private final ConcurrentMap<PendingConnection, BungeeLoginSession> session = Maps.newConcurrentMap();
-    private final Logger logger = CommonUtil.createLoggerFromJDK(getLogger());
 
     private FastLoginCore<ProxiedPlayer, CommandSender, FastLoginBungee> core;
+    private Logger logger;
 
     @Override
     public void onEnable() {
+        logger = CommonUtil.createLoggerFromJDK(getLogger());
+
         core = new FastLoginCore<>(this);
         core.load();
         if (!core.setupDatabase()) {

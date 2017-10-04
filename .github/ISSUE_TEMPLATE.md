@@ -15,7 +15,7 @@
 [//]: # (This can be found by running `/pl`)
 
 ### Environment description
-[//]: # (Standalone server/Bungeecord network, SQLite/MySQL, ...)
+[//]: # (Standalone server/Bungeecord network with version and build number , SQLite/MySQL, ...)
 
 ### Plugin version or build number (don't write latest):
 [//]: # (This can be found by running `/version plugin-name`.)
