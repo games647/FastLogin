@@ -1,7 +1,6 @@
 package com.github.games647.fastlogin.bukkit.listener.protocollib;
 
 import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.injector.server.TemporaryPlayerFactory;
@@ -180,14 +179,12 @@ public class VerifyResponseTask implements Runnable {
     }
 
     private void kickPlayer(String reason) {
-        ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
-
-        PacketContainer kickPacket = protocolManager.createPacket(DISCONNECT);
+        PacketContainer kickPacket = new PacketContainer(DISCONNECT);
         kickPacket.getChatComponents().write(0, WrappedChatComponent.fromText(reason));
         try {
             //send kick packet at login state
             //the normal event.getPlayer.kickPlayer(String) method does only work at play state
-            protocolManager.sendServerPacket(player, kickPacket);
+            ProtocolLibrary.getProtocolManager().sendServerPacket(player, kickPacket);
             //tell the server that we want to close the connection
             player.kickPlayer("Disconnect");
         } catch (InvocationTargetException ex) {
@@ -197,17 +194,15 @@ public class VerifyResponseTask implements Runnable {
 
     //fake a new login packet in order to let the server handle all the other stuff
     private void receiveFakeStartPacket(String username) {
-        ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
-        
         //see StartPacketListener for packet information
-        PacketContainer startPacket = protocolManager.createPacket(START);
+        PacketContainer startPacket = new PacketContainer(START);
 
         //uuid is ignored by the packet definition
         WrappedGameProfile fakeProfile = new WrappedGameProfile(UUID.randomUUID(), username);
         startPacket.getGameProfiles().write(0, fakeProfile);
         try {
             //we don't want to handle our own packets so ignore filters
-            protocolManager.recieveClientPacket(player, startPacket, false);
+            ProtocolLibrary.getProtocolManager().recieveClientPacket(player, startPacket, false);
         } catch (InvocationTargetException | IllegalAccessException ex) {
             plugin.getLog().warn("Failed to fake a new start packet", ex);
             //cancel the event in order to prevent the server receiving an invalid packet

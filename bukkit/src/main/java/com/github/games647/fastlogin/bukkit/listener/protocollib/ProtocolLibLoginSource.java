@@ -52,7 +52,7 @@ public class ProtocolLibLoginSource implements LoginSource {
     public void kick(String message) throws InvocationTargetException {
         ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
 
-        PacketContainer kickPacket = protocolManager.createPacket(DISCONNECT);
+        PacketContainer kickPacket = new PacketContainer(DISCONNECT);
         kickPacket.getChatComponents().write(0, WrappedChatComponent.fromText(message));
 
         try {
@@ -71,13 +71,12 @@ public class ProtocolLibLoginSource implements LoginSource {
     }
 
     private void sentEncryptionRequest() throws InvocationTargetException {
-        ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
         /*
          * Packet Information: http://wiki.vg/Protocol#Encryption_Request
          *
          * ServerID="" (String) key=public server key verifyToken=random 4 byte array
          */
-        PacketContainer newPacket = protocolManager.createPacket(ENCRYPTION_BEGIN);
+        PacketContainer newPacket = new PacketContainer(ENCRYPTION_BEGIN);
 
         newPacket.getStrings().write(0, serverId);
         PublicKey publicKey = plugin.getServerKey().getPublic();
@@ -86,7 +85,7 @@ public class ProtocolLibLoginSource implements LoginSource {
         newPacket.getByteArrays().write(0, verifyToken);
 
         //serverId is a empty string
-        protocolManager.sendServerPacket(player, newPacket);
+        ProtocolLibrary.getProtocolManager().sendServerPacket(player, newPacket);
     }
 
     public String getServerId() {
