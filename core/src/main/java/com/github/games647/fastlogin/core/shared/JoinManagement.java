@@ -65,7 +65,7 @@ public abstract class JoinManagement<P extends C, C, S extends LoginSource> {
     }
 
     private boolean checkPremiumName(S source, String username, PlayerProfile profile) throws Exception {
-        core.getPlugin().getLog().debug("GameProfile {} uses a premium username", username);
+        core.getPlugin().getLog().info("GameProfile {} uses a premium username", username);
         if (core.getConfig().get("autoRegister", false) && (authHook == null || !authHook.isRegistered(username))) {
             requestPremiumLogin(source, profile, username, false);
             return true;

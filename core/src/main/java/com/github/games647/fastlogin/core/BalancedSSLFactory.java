@@ -1,27 +1,23 @@
 package com.github.games647.fastlogin.core;
 
-import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
 
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.Iterator;
 
 import javax.net.ssl.SSLSocketFactory;
 
 public class BalancedSSLFactory extends SSLSocketFactory {
 
-    private final SSLSocketFactory oldFactory;
-
     //in order to be thread-safe
-    private final List<InetAddress> localAddresses;
-
-    private AtomicInteger id;
+    private final Iterator<InetAddress> iterator;
+    private final SSLSocketFactory oldFactory;
 
     public BalancedSSLFactory(SSLSocketFactory oldFactory, Iterable<InetAddress> localAddresses) {
         this.oldFactory = oldFactory;
-        this.localAddresses = ImmutableList.copyOf(localAddresses);
+        this.iterator = Iterables.cycle(localAddresses).iterator();
     }
 
     @Override
@@ -63,7 +59,8 @@ public class BalancedSSLFactory extends SSLSocketFactory {
     }
 
     private InetAddress getNextLocalAddress() {
-        int index = id.incrementAndGet() % localAddresses.size();
-        return localAddresses.get(index);
+        synchronized (iterator) {
+            return iterator.next();
+        }
     }
 }

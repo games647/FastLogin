@@ -68,8 +68,7 @@ public class CommonUtil {
             Class<JDK14LoggerAdapter> adapterClass = JDK14LoggerAdapter.class;
             Constructor<JDK14LoggerAdapter> cons = adapterClass.getDeclaredConstructor(java.util.logging.Logger.class);
             cons.setAccessible(true);
-            JDK14LoggerAdapter logger = cons.newInstance(parent);
-            return logger;
+            return cons.newInstance(parent);
         } catch (ReflectiveOperationException reflectEx) {
             parent.log(Level.WARNING, "Cannot create slf4j logging adapter", reflectEx);
             parent.log(Level.WARNING, "Creating logger instance manually...");

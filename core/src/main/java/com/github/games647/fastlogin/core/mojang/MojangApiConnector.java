@@ -153,7 +153,7 @@ public class MojangApiConnector {
     }
 
     private SSLSocketFactory buildAddresses(Logger logger, Collection<String> localAddresses) {
-        if (!localAddresses.isEmpty()) {
+        if (localAddresses.isEmpty()) {
             return HttpsURLConnection.getDefaultSSLSocketFactory();
         }
 
