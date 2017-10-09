@@ -160,7 +160,7 @@ public class MojangApiConnector {
         Set<InetAddress> addresses = Sets.newHashSet();
         for (String localAddress : localAddresses) {
             try {
-                InetAddress address = InetAddress.getByName(localAddress);
+                InetAddress address = InetAddress.getByName(localAddress.replace('-', '.'));
                 if (!address.isAnyLocalAddress()) {
                     logger.warn("Submitted IP-Address is not local {}", address);
                     continue;
