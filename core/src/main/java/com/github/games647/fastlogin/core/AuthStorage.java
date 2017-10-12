@@ -136,7 +136,7 @@ public class AuthStorage {
         return null;
     }
 
-    public boolean save(PlayerProfile playerProfile) {
+    public void save(PlayerProfile playerProfile) {
         try (Connection con = dataSource.getConnection()) {
             UUID uuid = playerProfile.getUuid();
             
@@ -177,12 +177,10 @@ public class AuthStorage {
                 }
             }
 
-            return true;
         } catch (SQLException ex) {
             core.getPlugin().getLog().error("Failed to save playerProfile", ex);
         }
 
-        return false;
     }
 
     public void close() {

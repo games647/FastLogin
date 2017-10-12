@@ -152,24 +152,19 @@ public class MojangApiConnector {
         return getConnection(url, Proxy.NO_PROXY);
     }
 
-    private SSLSocketFactory buildAddresses(Logger logger, Collection<String> localAddresses) {
-        if (localAddresses.isEmpty()) {
-            return HttpsURLConnection.getDefaultSSLSocketFactory();
-        }
-
+    private SSLSocketFactory buildAddresses(Logger logger, Iterable<String> localAddresses) {
         Set<InetAddress> addresses = Sets.newHashSet();
         for (String localAddress : localAddresses) {
             try {
                 InetAddress address = InetAddress.getByName(localAddress.replace('-', '.'));
-                if (!address.isAnyLocalAddress()) {
-                    logger.warn("Submitted IP-Address is not local {}", address);
-                    continue;
-                }
-
                 addresses.add(address);
             } catch (UnknownHostException ex) {
                 logger.error("IP-Address is unknown to us", ex);
             }
+        }
+
+        if (addresses.isEmpty()) {
+            return HttpsURLConnection.getDefaultSSLSocketFactory();
         }
 
         return new BalancedSSLFactory(HttpsURLConnection.getDefaultSSLSocketFactory(), addresses);
