@@ -43,11 +43,12 @@ public class PlayerProfile {
         this.userId = generatedId;
     }
 
-    public synchronized UUID getUuid() {
+    //todo: this should be optional
+    public synchronized UUID getUUID() {
         return uuid;
     }
 
-    public synchronized void setUuid(UUID uuid) {
+    public synchronized void setUUID(UUID uuid) {
         this.uuid = uuid;
     }
 

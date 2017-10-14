@@ -9,7 +9,6 @@ import com.lenis0012.bukkit.loginsecurity.session.action.LoginAction;
 import com.lenis0012.bukkit.loginsecurity.session.action.RegisterAction;
 
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.java.JavaPlugin;
 
 /**
  * Github: https://github.com/lenis0012/LoginSecurity-2 Project page:
@@ -19,7 +18,11 @@ import org.bukkit.plugin.java.JavaPlugin;
  */
 public class LoginSecurityHook implements AuthPlugin<Player> {
 
-    private final FastLoginBukkit plugin = JavaPlugin.getPlugin(FastLoginBukkit.class);
+    private final FastLoginBukkit plugin;
+
+    public LoginSecurityHook(FastLoginBukkit plugin) {
+        this.plugin = plugin;
+    }
 
     @Override
     public boolean forceLogin(Player player) {

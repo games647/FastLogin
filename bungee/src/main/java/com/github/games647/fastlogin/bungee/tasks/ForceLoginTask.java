@@ -31,7 +31,6 @@ public class ForceLoginTask
     public void run() {
         PendingConnection pendingConnection = player.getPendingConnection();
         session = core.getPlugin().getSession().get(pendingConnection);
-
         if (session == null) {
             return;
         }
