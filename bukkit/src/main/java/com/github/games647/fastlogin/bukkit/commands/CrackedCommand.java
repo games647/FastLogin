@@ -36,7 +36,7 @@ public class CrackedCommand implements CommandExecutor {
                     plugin.getCore().sendLocaleMessage("remove-premium", sender);
 
                     profile.setPremium(false);
-                    profile.setUUID(null);
+                    profile.setUuid(null);
                     Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
                         plugin.getCore().getStorage().save(profile);
                     });

@@ -62,6 +62,7 @@ public class BukkitLoginSession extends LoginSession {
         return ArrayUtils.clone(verifyToken);
     }
 
+    //todo: this should be optional for players without a skin at all
     public synchronized SkinProperties getSkinProperty() {
         return skinProperty;
     }

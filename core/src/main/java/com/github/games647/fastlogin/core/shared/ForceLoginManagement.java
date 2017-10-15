@@ -9,12 +9,12 @@ public abstract class ForceLoginManagement<P extends C, C, L extends LoginSessio
 
     protected final FastLoginCore<P, C, T> core;
     protected final P player;
+    protected final L session;
 
-    protected L session;
-
-    public ForceLoginManagement(FastLoginCore<P, C, T> core, P player) {
+    public ForceLoginManagement(FastLoginCore<P, C, T> core, P player, L session) {
         this.core = core;
         this.player = player;
+        this.session = session;
     }
 
     @Override
@@ -49,7 +49,7 @@ public abstract class ForceLoginManagement<P extends C, C, L extends LoginSessio
                     if (success) {
                         //update only on success to prevent corrupt data
                         if (playerProfile != null) {
-                            playerProfile.setUUID(session.getUuid());
+                            playerProfile.setUuid(session.getUuid());
                             playerProfile.setPremium(true);
                             storage.save(playerProfile);
                         }
@@ -59,7 +59,7 @@ public abstract class ForceLoginManagement<P extends C, C, L extends LoginSessio
                 }
             } else if (playerProfile != null) {
                 //cracked player
-                playerProfile.setUUID(null);
+                playerProfile.setUuid(null);
                 playerProfile.setPremium(false);
                 storage.save(playerProfile);
             }

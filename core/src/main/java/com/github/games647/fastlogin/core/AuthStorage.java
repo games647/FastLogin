@@ -138,7 +138,7 @@ public class AuthStorage {
 
     public void save(PlayerProfile playerProfile) {
         try (Connection con = dataSource.getConnection()) {
-            UUID uuid = playerProfile.getUUID();
+            UUID uuid = playerProfile.getUuid();
             
             if (playerProfile.getUserId() == -1) {
                 try (PreparedStatement saveStmt = con.prepareStatement(INSERT_PROFILE, RETURN_GENERATED_KEYS)) {

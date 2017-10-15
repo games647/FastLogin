@@ -7,10 +7,12 @@ import com.github.games647.fastlogin.core.shared.LoginSession;
 import com.google.common.net.HostAndPort;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 
 import org.slf4j.Logger;
@@ -36,7 +38,8 @@ public class MojangApiBukkit extends MojangApiConnector {
 
             HttpURLConnection conn = getConnection(url);
 
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()))) {
+            try (BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8))) {
                 //validate parsing
                 //http://wiki.vg/Protocol_Encryption#Server
                 VerificationReply verification = gson.fromJson(reader, VerificationReply.class);
@@ -50,7 +53,7 @@ public class MojangApiBukkit extends MojangApiConnector {
 
                 return true;
             }
-        } catch (Exception ex) {
+        } catch (IOException ex) {
             //catch not only io-exceptions also parse and NPE on unexpected json format
             logger.warn("Failed to verify session", ex);
         }

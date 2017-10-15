@@ -44,11 +44,11 @@ public class PlayerProfile {
     }
 
     //todo: this should be optional
-    public synchronized UUID getUUID() {
+    public synchronized UUID getUuid() {
         return uuid;
     }
 
-    public synchronized void setUUID(UUID uuid) {
+    public synchronized void setUuid(UUID uuid) {
         this.uuid = uuid;
     }
 

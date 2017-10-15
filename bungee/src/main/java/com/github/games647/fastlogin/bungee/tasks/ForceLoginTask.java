@@ -11,7 +11,6 @@ import com.google.common.io.ByteStreams;
 import java.util.UUID;
 
 import net.md_5.bungee.api.CommandSender;
-import net.md_5.bungee.api.connection.PendingConnection;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.connection.Server;
 
@@ -22,15 +21,13 @@ public class ForceLoginTask
 
     public ForceLoginTask(FastLoginCore<ProxiedPlayer, CommandSender, FastLoginBungee> core,
              ProxiedPlayer player, Server server) {
-        super(core, player);
+        super(core, player, core.getPlugin().getSession().get(player.getPendingConnection()));
 
         this.server = server;
     }
 
     @Override
     public void run() {
-        PendingConnection pendingConnection = player.getPendingConnection();
-        session = core.getPlugin().getSession().get(pendingConnection);
         if (session == null) {
             return;
         }

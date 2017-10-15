@@ -18,15 +18,17 @@ import org.bukkit.metadata.FixedMetadataValue;
 public class ForceLoginTask extends ForceLoginManagement<Player, CommandSender, BukkitLoginSession, FastLoginBukkit> {
 
     public ForceLoginTask(FastLoginCore<Player, CommandSender, FastLoginBukkit> core, Player player) {
-        super(core, player);
+        super(core, player, getSession(core.getPlugin(), player));
+    }
+
+    private static BukkitLoginSession getSession(FastLoginBukkit plugin, Player player) {
+        //remove the bungeecord identifier if there is ones
+        String id = '/' + player.getAddress().getAddress().getHostAddress() + ':' + player.getAddress().getPort();
+        return plugin.getLoginSessions().remove(id);
     }
 
     @Override
     public void run() {
-        //remove the bungeecord identifier if there is ones
-        String id = '/' + player.getAddress().getAddress().getHostAddress() + ':' + player.getAddress().getPort();
-        session = core.getPlugin().getLoginSessions().remove(id);
-
         //blacklist this target player for BungeeCord Id brute force attacks
         FastLoginBukkit plugin = core.getPlugin();
         player.setMetadata(core.getPlugin().getName(), new FixedMetadataValue(plugin, true));

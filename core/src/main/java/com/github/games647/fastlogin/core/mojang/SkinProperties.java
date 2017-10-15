@@ -2,6 +2,8 @@ package com.github.games647.fastlogin.core.mojang;
 
 public class SkinProperties {
 
+    public static final String TEXTURE_KEY = "textures";
+
     private final String name = "textures";
 
     private String value;

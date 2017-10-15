@@ -4,7 +4,7 @@ import com.github.games647.fastlogin.bukkit.commands.CrackedCommand;
 import com.github.games647.fastlogin.bukkit.commands.PremiumCommand;
 import com.github.games647.fastlogin.bukkit.listener.BungeeListener;
 import com.github.games647.fastlogin.bukkit.listener.JoinListener;
-import com.github.games647.fastlogin.bukkit.listener.protocollib.LoginSkinApplyListener;
+import com.github.games647.fastlogin.bukkit.listener.protocollib.SkinApplyListener;
 import com.github.games647.fastlogin.bukkit.listener.protocollib.ProtocolLibListener;
 import com.github.games647.fastlogin.bukkit.listener.protocolsupport.ProtocolSupportListener;
 import com.github.games647.fastlogin.bukkit.tasks.DelayedAuthHook;
@@ -70,7 +70,6 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
             //check for incoming messages from the bungeecord version of this plugin
             getServer().getMessenger().registerIncomingPluginChannel(this, getName(), new BungeeListener(this));
             getServer().getMessenger().registerOutgoingPluginChannel(this, getName());
-            //register listeners on success
         } else {
             if (!core.setupDatabase()) {
                 setEnabled(false);
@@ -81,11 +80,10 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
                 getServer().getPluginManager().registerEvents(new ProtocolSupportListener(this), this);
             } else if (getServer().getPluginManager().isPluginEnabled("ProtocolLib")) {
                 //they will be created with a static builder, because otherwise it will throw a
-                //java.lang.NoClassDefFoundError: com/comphenix/protocol/events/PacketListener if ProtocolSupport was
-                //only found
+                //NoClassDefFoundError: com/comphenix/protocol/events/PacketListener if only ProtocolSupport was found
                 ProtocolLibListener.register(this);
 
-                getServer().getPluginManager().registerEvents(new LoginSkinApplyListener(this), this);
+                getServer().getPluginManager().registerEvents(new SkinApplyListener(this), this);
             } else {
                 logger.warn("Either ProtocolLib or ProtocolSupport have to be installed if you don't use BungeeCord");
             }

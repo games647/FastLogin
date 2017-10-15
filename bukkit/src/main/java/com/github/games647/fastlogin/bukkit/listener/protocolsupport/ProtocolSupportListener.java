@@ -3,6 +3,7 @@ package com.github.games647.fastlogin.bukkit.listener.protocolsupport;
 import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 import com.github.games647.fastlogin.core.PlayerProfile;
+import com.github.games647.fastlogin.core.mojang.SkinProperties;
 import com.github.games647.fastlogin.core.shared.JoinManagement;
 
 import java.net.InetSocketAddress;
@@ -46,7 +47,7 @@ public class ProtocolSupportListener extends JoinManagement<Player, CommandSende
         BukkitLoginSession session = plugin.getLoginSessions().get(address.toString());
 
         //skin was resolved -> premium player
-        if (propertiesResolveEvent.hasProperty("textures") && session != null) {
+        if (propertiesResolveEvent.hasProperty(SkinProperties.TEXTURE_KEY) && session != null) {
             session.setVerified(true);
         }
     }

@@ -41,7 +41,7 @@ public class VerifyResponseTask implements Runnable {
         this.plugin = plugin;
         this.packetEvent = packetEvent;
         this.player = player;
-        this.sharedSecret = sharedSecret;
+        this.sharedSecret = Arrays.copyOf(sharedSecret, sharedSecret.length);
     }
 
     @Override

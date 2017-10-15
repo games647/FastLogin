@@ -51,8 +51,9 @@ public class MojangApiConnector {
 
     private Instant lastRateLimit = Instant.now().minus(10, ChronoUnit.MINUTES);
 
-    protected final Gson gson = new GsonBuilder().registerTypeAdapter(UUID.class, new UUIDTypeAdapter()).create();
     protected final Logger logger;
+    protected final Gson gson = new GsonBuilder()
+            .registerTypeAdapter(UUID.class, new UUIDTypeAdapter()).create();
 
     public MojangApiConnector(Logger logger, Collection<String> localAddresses, int rateLimit
             , Iterable<HostAndPort> proxies) {

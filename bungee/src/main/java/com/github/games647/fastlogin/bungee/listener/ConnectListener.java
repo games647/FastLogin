@@ -69,7 +69,7 @@ public class ConnectListener implements Listener {
             session.setUuid(connection.getUniqueId());
 
             PlayerProfile playerProfile = session.getProfile();
-            playerProfile.setUUID(connection.getUniqueId());
+            playerProfile.setUuid(connection.getUniqueId());
 
             //bungeecord will do this automatically so override it on disabled option
             if (!plugin.getCore().getConfig().get("premiumUuid", true)) {

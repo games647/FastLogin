@@ -19,15 +19,14 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerLoginEvent.Result;
 
-public class LoginSkinApplyListener implements Listener {
+public class SkinApplyListener implements Listener {
 
     private static final Class<?> GAME_PROFILE = MinecraftReflection.getGameProfileClass();
-
     private static final MethodAccessor GET_PROPERTIES = Accessors.getMethodAccessor(GAME_PROFILE, "getProperties");
 
     private final FastLoginBukkit plugin;
 
-    public LoginSkinApplyListener(FastLoginBukkit plugin) {
+    public SkinApplyListener(FastLoginBukkit plugin) {
         this.plugin = plugin;
     }
 
@@ -46,7 +45,10 @@ public class LoginSkinApplyListener implements Listener {
             for (BukkitLoginSession session : plugin.getLoginSessions().values()) {
                 if (session.getUsername().equals(player.getName())) {
                     SkinProperties skinProperty = session.getSkinProperty();
-                    applySkin(player, skinProperty.getValue(), skinProperty.getSignature());
+                    if (skinProperty != null) {
+                        applySkin(player, skinProperty.getValue(), skinProperty.getSignature());
+                    }
+
                     break;
                 }
             }
@@ -56,13 +58,13 @@ public class LoginSkinApplyListener implements Listener {
     private void applySkin(Player player, String skinData, String signature) {
         WrappedGameProfile gameProfile = WrappedGameProfile.fromPlayer(player);
         if (skinData != null && signature != null) {
-            WrappedSignedProperty skin = WrappedSignedProperty.fromValues("textures", skinData, signature);
+            WrappedSignedProperty skin = WrappedSignedProperty.fromValues(SkinProperties.TEXTURE_KEY, skinData, signature);
             try {
-                gameProfile.getProperties().put("textures", skin);
+                gameProfile.getProperties().put(SkinProperties.TEXTURE_KEY, skin);
             } catch (ClassCastException castException) {
                 Object map = GET_PROPERTIES.invoke(gameProfile.getHandle());
                 try {
-                    MethodUtils.invokeMethod(map, "put", new Object[]{"textures", skin.getHandle()});
+                    MethodUtils.invokeMethod(map, "put", new Object[]{SkinProperties.TEXTURE_KEY, skin.getHandle()});
                 } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException ex) {
                     plugin.getLog().error("Error setting premium skin", ex);
                 }

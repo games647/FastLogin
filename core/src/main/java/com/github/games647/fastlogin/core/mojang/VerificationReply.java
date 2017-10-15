@@ -1,5 +1,6 @@
 package com.github.games647.fastlogin.core.mojang;
 
+import java.util.Arrays;
 import java.util.UUID;
 
 public class VerificationReply {
@@ -17,6 +18,6 @@ public class VerificationReply {
     }
 
     public SkinProperties[] getProperties() {
-        return properties;
+        return Arrays.copyOf(properties, properties.length);
     }
 }
