@@ -4,7 +4,7 @@ public class SkinProperties {
 
     public static final String TEXTURE_KEY = "textures";
 
-    private final String name = "textures";
+    private final String name = TEXTURE_KEY;
 
     private String value;
     private String signature;

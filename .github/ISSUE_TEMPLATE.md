@@ -9,7 +9,7 @@
 [//]: # (What did you expect?)
 
 ### Steps/models to reproduce:
-[//]: # (The actions that cause the issue)
+[//]: # (The actions that cause the issue. Please explain it in detail)
 
 ### Plugin list:
 [//]: # (This can be found by running `/pl`)

@@ -37,7 +37,6 @@ public class MojangApiBukkit extends MojangApiConnector {
             String url = String.format(HAS_JOINED_URL, playerSession.getUsername(), serverId, encodedIp);
 
             HttpURLConnection conn = getConnection(url);
-
             try (BufferedReader reader = new BufferedReader(
                     new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8))) {
                 //validate parsing

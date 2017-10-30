@@ -50,13 +50,14 @@ public class AuthStorage {
             config.setThreadFactory(platformThreadFactory);
         }
 
-        String pluginFolder = core.getPlugin().getPluginFolder().toAbsolutePath().toString();
-        databasePath = databasePath.replace("{pluginDir}", pluginFolder);
-
         String jdbcUrl = "jdbc:";
         if (driver.contains("sqlite")) {
+            String pluginFolder = core.getPlugin().getPluginFolder().toAbsolutePath().toString();
+            databasePath = databasePath.replace("{pluginDir}", pluginFolder);
+
             jdbcUrl += "sqlite://" + databasePath;
             config.setConnectionTestQuery("SELECT 1");
+            config.setMaximumPoolSize(1);
         } else {
             jdbcUrl += "mysql://" + host + ':' + port + '/' + databasePath;
         }

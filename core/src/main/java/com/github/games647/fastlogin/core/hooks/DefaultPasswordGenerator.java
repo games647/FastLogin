@@ -1,12 +1,14 @@
 package com.github.games647.fastlogin.core.hooks;
 
+import java.security.SecureRandom;
 import java.util.Random;
 
 public class DefaultPasswordGenerator<P> implements PasswordGenerator<P> {
 
     private static final char[] PASSWORD_CHARACTERS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
             .toCharArray();
-    private final Random random = new Random();
+
+    private final Random random = new SecureRandom();
 
     @Override
     public String getRandomPassword(P player) {

@@ -57,17 +57,17 @@ public class SkinApplyListener implements Listener {
 
     private void applySkin(Player player, String skinData, String signature) {
         WrappedGameProfile gameProfile = WrappedGameProfile.fromPlayer(player);
-        if (skinData != null && signature != null) {
-            WrappedSignedProperty skin = WrappedSignedProperty.fromValues(SkinProperties.TEXTURE_KEY, skinData, signature);
+
+        WrappedSignedProperty skin = WrappedSignedProperty.fromValues(SkinProperties.TEXTURE_KEY, skinData, signature);
+        try {
+            gameProfile.getProperties().put(SkinProperties.TEXTURE_KEY, skin);
+        } catch (ClassCastException castException) {
+            //Cauldron, MCPC, Thermos, ...
+            Object map = GET_PROPERTIES.invoke(gameProfile.getHandle());
             try {
-                gameProfile.getProperties().put(SkinProperties.TEXTURE_KEY, skin);
-            } catch (ClassCastException castException) {
-                Object map = GET_PROPERTIES.invoke(gameProfile.getHandle());
-                try {
-                    MethodUtils.invokeMethod(map, "put", new Object[]{SkinProperties.TEXTURE_KEY, skin.getHandle()});
-                } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException ex) {
-                    plugin.getLog().error("Error setting premium skin", ex);
-                }
+                MethodUtils.invokeMethod(map, "put", new Object[]{SkinProperties.TEXTURE_KEY, skin.getHandle()});
+            } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException ex) {
+                plugin.getLog().error("Error setting premium skin", ex);
             }
         }
     }
