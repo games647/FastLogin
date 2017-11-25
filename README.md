@@ -75,7 +75,7 @@ So they don't need to enter passwords. This is also called auto login (auto-logi
 3. Now there is proxy-whitelist file in the FastLogin folder
 Put your stats id from the BungeeCord config into this file
 4. Activate ipForward in your BungeeCord config
-5. Download and Install FastLogin on BungeeCord AND Spigot
+5. Download and Install FastLogin on BungeeCord AND Spigot (on the servers where your login plugin is)
 6. Check your database settings in the config of FastLogin on BungeeCord
 7. Set your proxy (BungeeCord) in offline mode by setting the value onlinemode in your config.yml to false
 8. You should *always* firewall your Spigot server that it's only accessible through BungeeCord 
