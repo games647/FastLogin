@@ -37,7 +37,7 @@
         <!--AuthMe Reloaded and xAuth -->
         <repository>
             <id>xephi-repo</id>
-            <url>https://ci.xephi.fr/plugin/repository/everything/</url>
+            <url>https://ci.codemc.org/plugin/repository/everything/</url>
         </repository>
 
         <!--Github automatic maven builds-->
