@@ -4,8 +4,10 @@ import java.security.SecureRandom;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+
+import static org.junit.Assert.assertThat;
 
 public class EncryptionUtilTest {
 
@@ -14,8 +16,8 @@ public class EncryptionUtilTest {
         SecureRandom random = new SecureRandom();
         byte[] token = EncryptionUtil.generateVerifyToken(random);
 
-        assertNotNull(token);
-        assertEquals(4, token.length);
+        assertThat(token, notNullValue());
+        assertThat(token.length, is(4));
     }
 
     // @Test
