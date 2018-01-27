@@ -6,8 +6,6 @@ import com.github.games647.fastlogin.core.hooks.AuthPlugin;
 import com.github.games647.fastlogin.core.hooks.DefaultPasswordGenerator;
 import com.github.games647.fastlogin.core.hooks.PasswordGenerator;
 import com.github.games647.fastlogin.core.mojang.MojangApiConnector;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import com.google.common.net.HostAndPort;
 
 import java.io.File;
@@ -15,7 +13,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -39,7 +39,7 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
     protected final Map<String, String> localeMessages = new ConcurrentHashMap<>();
 
     private final ConcurrentMap<String, Object> pendingLogin = CommonUtil.buildCache(5, -1);
-    private final Set<UUID> pendingConfirms = Sets.newHashSet();
+    private final Set<UUID> pendingConfirms = new HashSet<>();
     private final T plugin;
 
     private Configuration config;
@@ -76,7 +76,7 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
 
         List<String> ipAddresses = config.getStringList("ip-addresses");
         int requestLimit = config.getInt("mojang-request-limit");
-        List<String> proxyList = config.get("proxies", Lists.newArrayList());
+        List<String> proxyList = config.get("proxies", new ArrayList<>());
         List<HostAndPort> proxies = proxyList.stream().map(HostAndPort::fromString).collect(Collectors.toList());
 
         this.apiConnector = plugin.makeApiConnector(ipAddresses, requestLimit, proxies);
@@ -170,7 +170,9 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
         Path dataFolder = plugin.getPluginFolder();
 
         try {
-            Files.createDirectories(dataFolder);
+            if (Files.notExists(dataFolder)) {
+                Files.createDirectories(dataFolder);
+            }
 
             Path configFile = dataFolder.resolve(fileName);
             if (Files.notExists(configFile)) {

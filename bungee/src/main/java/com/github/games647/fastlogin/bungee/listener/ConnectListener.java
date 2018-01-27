@@ -5,9 +5,9 @@ import com.github.games647.fastlogin.bungee.tasks.AsyncPremiumCheck;
 import com.github.games647.fastlogin.bungee.tasks.ForceLoginTask;
 import com.github.games647.fastlogin.core.PlayerProfile;
 import com.github.games647.fastlogin.core.shared.LoginSession;
-import com.google.common.base.Charsets;
 
 import java.lang.reflect.Field;
+import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 import net.md_5.bungee.api.ProxyServer;
@@ -46,7 +46,7 @@ public class ConnectListener implements Listener {
         }
 
         preLoginEvent.registerIntent(plugin);
-        
+
         PendingConnection connection = preLoginEvent.getConnection();
         Runnable asyncPremiumCheck = new AsyncPremiumCheck(plugin, preLoginEvent, connection);
         ProxyServer.getInstance().getScheduler().runAsync(plugin, asyncPremiumCheck);
@@ -74,7 +74,7 @@ public class ConnectListener implements Listener {
             //bungeecord will do this automatically so override it on disabled option
             if (!plugin.getCore().getConfig().get("premiumUuid", true)) {
                 try {
-                    UUID offlineUUID = UUID.nameUUIDFromBytes(("OfflinePlayer:" + username).getBytes(Charsets.UTF_8));
+                    UUID offlineUUID = UUID.nameUUIDFromBytes(("OfflinePlayer:" + username).getBytes(StandardCharsets.UTF_8));
 
                     //bungeecord doesn't support overriding the premium uuid
                     //so we have to do it with reflection

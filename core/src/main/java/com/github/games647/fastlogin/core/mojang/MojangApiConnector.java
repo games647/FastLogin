@@ -3,7 +3,6 @@ package com.github.games647.fastlogin.core.mojang;
 import com.github.games647.fastlogin.core.CommonUtil;
 import com.github.games647.fastlogin.core.shared.LoginSession;
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
 import com.google.common.net.HostAndPort;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -19,6 +18,7 @@ import java.net.URL;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -60,7 +60,7 @@ public class MojangApiConnector {
         this.logger = logger;
         this.rateLimit = Math.max(rateLimit, 600);
 
-        List<Proxy> proxyBuilder = Lists.newArrayList();
+        List<Proxy> proxyBuilder = new ArrayList<>();
         for (HostAndPort proxy : proxies) {
             proxyBuilder.add(new Proxy(Type.HTTP, new InetSocketAddress(proxy.getHostText(), proxy.getPort())));
         }

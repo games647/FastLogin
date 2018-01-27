@@ -1,8 +1,7 @@
 package com.github.games647.fastlogin.bukkit;
 
-import com.google.common.base.Charsets;
-
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.security.Key;
 import java.security.KeyPair;
@@ -27,6 +26,10 @@ public class EncryptionUtil {
 
     public static final int VERIFY_TOKEN_LENGTH = 4;
     public static final String KEY_PAIR_ALGORITHM = "RSA";
+
+    private EncryptionUtil() {
+        //utility
+    }
 
     /**
      * Generate a RSA key pair
@@ -61,9 +64,9 @@ public class EncryptionUtil {
     /**
      * Generate the server id based on client and server data.
      *
-     * @param sessionId session for the current login attempt
+     * @param sessionId    session for the current login attempt
      * @param sharedSecret shared secret between the client and the server
-     * @param publicKey public key of the server
+     * @param publicKey    public key of the server
      * @return the server id formatted as a hexadecimal string.
      */
     public static String getServerIdHashString(String sessionId, Key sharedSecret, PublicKey publicKey) {
@@ -80,9 +83,9 @@ public class EncryptionUtil {
     /**
      * Decrypts the content and extracts the key spec.
      *
-     * @param cipher decryption cipher
+     * @param cipher     decryption cipher
      * @param privateKey private key of the server
-     * @param sharedKey the encrypted shared key
+     * @param sharedKey  the encrypted shared key
      * @return shared secret key
      * @throws GeneralSecurityException
      */
@@ -95,8 +98,8 @@ public class EncryptionUtil {
      * Decrypted the given data using the cipher.
      *
      * @param cipher decryption cypher
-     * @param key server private key
-     * @param data the encrypted data
+     * @param key    server private key
+     * @param data   the encrypted data
      * @return clear text data
      * @throws GeneralSecurityException if it fails to initialize and decrypt the data
      */
@@ -109,14 +112,10 @@ public class EncryptionUtil {
             throws NoSuchAlgorithmException {
         MessageDigest digest = MessageDigest.getInstance("SHA-1");
 
-        digest.update(sessionId.getBytes(Charsets.ISO_8859_1));
+        digest.update(sessionId.getBytes(StandardCharsets.ISO_8859_1));
         digest.update(sharedSecret.getEncoded());
         digest.update(publicKey.getEncoded());
 
         return digest.digest();
-    }
-
-    private EncryptionUtil() {
-        //utility
     }
 }
