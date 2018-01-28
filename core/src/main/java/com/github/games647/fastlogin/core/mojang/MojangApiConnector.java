@@ -99,7 +99,11 @@ public class MojangApiConnector {
                     return Optional.of(getUUIDFromJson(line));
                 }
             } else if (connection.getResponseCode() == RATE_LIMIT_CODE) {
-                logger.info("RATE_LIMIT REACHED");
+                logger.info("Mojang's rate-limit reached. The public IPv4 address of this server issued more than 600" +
+                        " Name -> UUID requests within 10 minutes. Once those 10 minutes ended we could make requests" +
+                        " again. In the meanwhile new skins can only be downloaded using the UUID directly." +
+                        " If you are using BungeeCord, consider adding a caching server in order to prevent multiple" +
+                        " spigot servers creating the same requests against Mojang's servers.");
                 lastRateLimit = Instant.now();
                 if (!connection.usingProxy()) {
                     return getPremiumUUID(playerName);
