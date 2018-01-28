@@ -11,23 +11,28 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.Proxy.Type;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
 import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLSocketFactory;
 
 import org.slf4j.Logger;
 
@@ -46,6 +51,7 @@ public class MojangApiConnector {
     private final Pattern validNameMatcher = Pattern.compile("^\\w{2,16}$");
 
     private final Iterator<Proxy> proxies;
+    private final SSLSocketFactory sslFactory;
     private final Map<Object, Object> requests = CommonUtil.buildCache(10, -1);
     private final int rateLimit;
 
@@ -59,14 +65,11 @@ public class MojangApiConnector {
             , Iterable<HostAndPort> proxies) {
         this.logger = logger;
         this.rateLimit = Math.max(rateLimit, 600);
+        this.sslFactory = buildAddresses(logger, localAddresses);
 
         List<Proxy> proxyBuilder = new ArrayList<>();
         for (HostAndPort proxy : proxies) {
             proxyBuilder.add(new Proxy(Type.HTTP, new InetSocketAddress(proxy.getHostText(), proxy.getPort())));
-        }
-
-        for (String address : localAddresses) {
-            proxyBuilder.add(new Proxy(Type.DIRECT, new InetSocketAddress(address.replace('-', '.'), 0)));
         }
 
         this.proxies = Iterables.cycle(proxyBuilder).iterator();
@@ -143,11 +146,31 @@ public class MojangApiConnector {
         connection.setRequestProperty("Content-Type", "application/json");
         connection.setRequestProperty("User-Agent", USER_AGENT);
 
+        connection.setSSLSocketFactory(sslFactory);
+
         //this connection doesn't need to be closed. So can make use of keep alive in java
         return connection;
     }
 
     protected HttpsURLConnection getConnection(String url) throws IOException {
         return getConnection(url, Proxy.NO_PROXY);
+    }
+
+    private SSLSocketFactory buildAddresses(Logger logger, Iterable<String> localAddresses) {
+        Set<InetAddress> addresses = new HashSet<>();
+        for (String localAddress : localAddresses) {
+            try {
+                InetAddress address = InetAddress.getByName(localAddress.replace('-', '.'));
+                addresses.add(address);
+            } catch (UnknownHostException ex) {
+                logger.error("IP-Address is unknown to us", ex);
+            }
+        }
+
+        if (addresses.isEmpty()) {
+            return HttpsURLConnection.getDefaultSSLSocketFactory();
+        }
+
+        return new BalancedSSLFactory(HttpsURLConnection.getDefaultSSLSocketFactory(), addresses);
     }
 }
