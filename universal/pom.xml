@@ -33,8 +33,15 @@
                             <include>org.slf4j:slf4j-jdk14</include>
                             <include>org.slf4j:slf4j-api</include>
                             <include>net.md-5:bungeecord-config</include>
+                            <include>com.google.code.gson:gson</include>
                         </includes>
                     </artifactSet>
+                    <relocations>
+                        <relocation>
+                            <pattern>com.google.gson</pattern>
+                            <shadedPattern>fastlogin.gson</shadedPattern>
+                        </relocation>
+                    </relocations>
                 </configuration>
                 <executions>
                     <execution>
