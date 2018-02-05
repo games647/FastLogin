@@ -74,6 +74,7 @@
             <groupId>com.comphenix.protocol</groupId>
             <artifactId>ProtocolLib</artifactId>
             <version>4.3.0</version>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
@@ -81,6 +82,7 @@
             <artifactId>ProtocolSupport</artifactId>
             <!--4.25.dev-->
             <version>a4f060dc46</version>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
@@ -102,6 +104,7 @@
             <groupId>fr.xephi</groupId>
             <artifactId>authme</artifactId>
             <version>5.3.2</version>
+            <scope>provided</scope>
             <optional>true</optional>
             <exclusions>
                 <exclusion>
@@ -115,6 +118,7 @@
             <groupId>com.lenis0012.bukkit</groupId>
             <artifactId>loginsecurity</artifactId>
             <version>2.1.7</version>
+            <scope>provided</scope>
             <optional>true</optional>
             <exclusions>
                 <exclusion>
@@ -128,8 +132,8 @@
             <groupId>com.github.games647</groupId>
             <artifactId>LogIt</artifactId>
             <version>9e3581db27</version>
-            <optional>true</optional>
             <scope>provided</scope>
+            <optional>true</optional>
             <exclusions>
                 <exclusion>
                     <groupId>*</groupId>
@@ -142,6 +146,7 @@
             <groupId>de.luricos.bukkit</groupId>
             <artifactId>xAuth</artifactId>
             <version>2.6</version>
+            <scope>provided</scope>
             <optional>true</optional>
             <!--These artifacts produce conflicts on downloading-->
             <exclusions>

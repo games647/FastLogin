@@ -1,6 +1,6 @@
 [//]: # (Lines in this format are considered as comments and will not be displayed.)
 [//]: #
-[//]: # (Before reporting an issue make sure you are running the latest build of the plugin and checked for duplicate issues!)
+[//]: # (Before reporting make sure you're running the **latest build** of the plugin and checked for duplicate issues!)
 
 ### What behaviour is observed:
 [//]: # (What happened?)
@@ -15,7 +15,7 @@
 [//]: # (This can be found by running `/pl`)
 
 ### Environment description
-[//]: # (Standalone server/Bungeecord network with version and build number , SQLite/MySQL, ...)
+[//]: # (Server software with exact version number, Minecraft version, SQLite/MySQL, ...)
 
 ### Plugin version or build number (don't write latest):
 [//]: # (This can be found by running `/version plugin-name`.)

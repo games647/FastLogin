@@ -14,11 +14,12 @@ import java.nio.file.Path;
 import java.util.Collections;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
+
+import static java.util.stream.Collectors.toSet;
 
 /**
  * Responsible for receiving messages from a BungeeCord instance.
@@ -104,7 +105,7 @@ public class BungeeListener implements PluginMessageListener {
             return Files.lines(whitelistFile)
                     .map(String::trim)
                     .map(UUID::fromString)
-                    .collect(Collectors.toSet());
+                    .collect(toSet());
         } catch (IOException ex) {
             plugin.getLog().error("Failed to create file for Proxy whitelist", ex);
         } catch (Exception ex) {

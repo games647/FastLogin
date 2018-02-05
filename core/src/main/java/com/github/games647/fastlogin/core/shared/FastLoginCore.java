@@ -22,12 +22,14 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.config.ConfigurationProvider;
 import net.md_5.bungee.config.YamlConfiguration;
+
+import static java.util.function.Function.identity;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 
 /**
  * @param <P> GameProfile class
@@ -63,7 +65,7 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
             messages.getKeys()
                     .stream()
                     .filter(key -> messages.get(key) != null)
-                    .collect(Collectors.toMap(Function.identity(), messages::get))
+                    .collect(toMap(identity(), messages::get))
                     .forEach((key, message) -> {
                         String colored = CommonUtil.translateColorCodes((String) message);
                         if (!colored.isEmpty()) {
@@ -77,7 +79,7 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
         List<String> ipAddresses = config.getStringList("ip-addresses");
         int requestLimit = config.getInt("mojang-request-limit");
         List<String> proxyList = config.get("proxies", new ArrayList<>());
-        List<HostAndPort> proxies = proxyList.stream().map(HostAndPort::fromString).collect(Collectors.toList());
+        List<HostAndPort> proxies = proxyList.stream().map(HostAndPort::fromString).collect(toList());
 
         this.apiConnector = plugin.makeApiConnector(ipAddresses, requestLimit, proxies);
     }

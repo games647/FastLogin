@@ -38,6 +38,7 @@
             <version>1.7.25</version>
         </dependency>
 
+        <!--GSON is not at the right position for Minecraft 1.7-->
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
