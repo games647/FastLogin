@@ -1,5 +1,6 @@
 package com.github.games647.fastlogin.bukkit.hooks;
 
+import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 import com.github.games647.fastlogin.core.hooks.AuthPlugin;
 
 import java.util.concurrent.ExecutionException;
@@ -23,11 +24,16 @@ import ultraauth.managers.PlayerManager;
 public class UltraAuthHook implements AuthPlugin<Player> {
 
     private final Plugin ultraAuthPlugin = Main.main;
+    private final FastLoginBukkit plugin;
+
+    public UltraAuthHook(FastLoginBukkit plugin) {
+        this.plugin = plugin;
+    }
 
     @Override
     public boolean forceLogin(Player player) {
         //not thread-safe
-        Future<Boolean> future = Bukkit.getScheduler().callSyncMethod(ultraAuthPlugin, () -> {
+        Future<Boolean> future = Bukkit.getScheduler().callSyncMethod(plugin, () -> {
             if (UltraAuthAPI.isAuthenticated(player)) {
                 return true;
             }
@@ -39,7 +45,7 @@ public class UltraAuthHook implements AuthPlugin<Player> {
         try {
             return future.get();
         } catch (InterruptedException | ExecutionException ex) {
-            ultraAuthPlugin.getLogger().log(Level.SEVERE, "Failed to forceLogin", ex);
+            plugin.getLogger().log(Level.SEVERE, "Failed to forceLogin", ex);
             return false;
         }
     }

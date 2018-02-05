@@ -1,5 +1,6 @@
 package com.github.games647.fastlogin.bukkit.hooks;
 
+import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 import com.github.games647.fastlogin.core.hooks.AuthPlugin;
 
 import de.st_ddt.crazylogin.CrazyLogin;
@@ -26,13 +27,19 @@ import org.bukkit.entity.Player;
  */
 public class CrazyLoginHook implements AuthPlugin<Player> {
 
+    private final FastLoginBukkit plugin;
+
     private final CrazyLogin crazyLoginPlugin = CrazyLogin.getPlugin();
     private final PlayerListener playerListener = getListener();
+
+    public CrazyLoginHook(FastLoginBukkit plugin) {
+        this.plugin = plugin;
+    }
 
     @Override
     public boolean forceLogin(Player player) {
         //not thread-safe operation
-        Future<Optional<LoginPlayerData>> future = Bukkit.getScheduler().callSyncMethod(crazyLoginPlugin, () -> {
+        Future<Optional<LoginPlayerData>> future = Bukkit.getScheduler().callSyncMethod(plugin, () -> {
             LoginPlayerData playerData = crazyLoginPlugin.getPlayerData(player);
             if (playerData != null) {
                 //mark the account as logged in
@@ -71,7 +78,7 @@ public class CrazyLoginHook implements AuthPlugin<Player> {
                 return true;
             }
         } catch (InterruptedException | ExecutionException ex) {
-            crazyLoginPlugin.getLogger().log(Level.SEVERE, "Failed to forceLogin", ex);
+            plugin.getLogger().log(Level.SEVERE, "Failed to forceLogin", ex);
             return false;
         }
 
@@ -105,7 +112,7 @@ public class CrazyLoginHook implements AuthPlugin<Player> {
         try {
             listener = (PlayerListener) FieldUtils.readField(crazyLoginPlugin, "playerListener", true);
         } catch (IllegalAccessException ex) {
-            crazyLoginPlugin.getLogger().log(Level.SEVERE, "Failed to get the listener instance for auto login", ex);
+            plugin.getLogger().log(Level.SEVERE, "Failed to get the listener instance for auto login", ex);
             listener = null;
         }
 

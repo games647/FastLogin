@@ -1,5 +1,6 @@
 package com.github.games647.fastlogin.bukkit.hooks;
 
+import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 import com.github.games647.fastlogin.core.hooks.AuthPlugin;
 
 import de.luricos.bukkit.xAuth.xAuth;
@@ -22,11 +23,16 @@ import org.bukkit.entity.Player;
 public class xAuthHook implements AuthPlugin<Player> {
 
     private final xAuth xAuthPlugin = xAuth.getPlugin();
+    private final FastLoginBukkit plugin;
+
+    public xAuthHook(FastLoginBukkit plugin) {
+        this.plugin = plugin;
+    }
 
     @Override
     public boolean forceLogin(Player player) {
         //not thread-safe
-        Future<Boolean> future = Bukkit.getScheduler().callSyncMethod(xAuthPlugin, () -> {
+        Future<Boolean> future = Bukkit.getScheduler().callSyncMethod(plugin, () -> {
             xAuthPlayer xAuthPlayer = xAuthPlugin.getPlayerManager().getPlayer(player);
             if (xAuthPlayer != null) {
                 if (xAuthPlayer.isAuthenticated()) {
@@ -46,7 +52,7 @@ public class xAuthHook implements AuthPlugin<Player> {
         try {
             return future.get();
         } catch (InterruptedException | ExecutionException ex) {
-            xAuthPlugin.getLogger().log(Level.SEVERE, "Failed to forceLogin", ex);
+            plugin.getLogger().log(Level.SEVERE, "Failed to forceLogin", ex);
             return false;
         }
     }
@@ -74,7 +80,7 @@ public class xAuthHook implements AuthPlugin<Player> {
             //login in the player after registration
             return future.get() && forceLogin(player);
         } catch (InterruptedException | ExecutionException ex) {
-            xAuthPlugin.getLogger().log(Level.SEVERE, "Failed to forceLogin", ex);
+            plugin.getLogger().log(Level.SEVERE, "Failed to forceLogin", ex);
             return false;
         }
     }
