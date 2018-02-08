@@ -15,9 +15,9 @@ import org.bukkit.entity.Player;
 
 /**
  * Github: https://github.com/LycanDevelopment/xAuth/
- *
+ * <p>
  * Project page:
- *
+ * <p>
  * Bukkit: https://dev.bukkit.org/bukkit-plugins/xauth/
  */
 public class xAuthHook implements AuthPlugin<Player> {

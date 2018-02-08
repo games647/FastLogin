@@ -50,7 +50,7 @@ public class FastLoginBungee extends Plugin implements PlatformPlugin<CommandSen
         getProxy().getPluginManager().registerListener(this, new MessageListener(this));
 
         //this is required to listen to messages from the server
-        getProxy().registerChannel(getDescription().getName());
+        getProxy().registerChannel(getName());
 
         registerHook();
     }

@@ -30,7 +30,7 @@ public class MessageListener implements Listener {
     @EventHandler
     public void onPluginMessage(PluginMessageEvent pluginMessageEvent) {
         String channel = pluginMessageEvent.getTag();
-        if (pluginMessageEvent.isCancelled() || !plugin.getDescription().getName().equals(channel)) {
+        if (pluginMessageEvent.isCancelled() || !plugin.getName().equals(channel)) {
             return;
         }
 

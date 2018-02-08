@@ -26,7 +26,7 @@ public class DelayedAuthHook implements Runnable {
 
     @Override
     public void run() {
-        boolean hookFound = plugin.getCore().getAuthPluginHook() != null || registerHooks();
+        boolean hookFound = isHookFound();
         if (plugin.isBungeeCord()) {
             plugin.getLog().info("BungeeCord setting detected. No auth plugin is required");
         } else if (!hookFound) {
@@ -39,6 +39,10 @@ public class DelayedAuthHook implements Runnable {
         if (hookFound) {
             plugin.setServerStarted();
         }
+    }
+
+    private boolean isHookFound() {
+        return plugin.getCore().getAuthPluginHook() != null || registerHooks();
     }
 
     private boolean registerHooks() {
@@ -82,10 +86,10 @@ public class DelayedAuthHook implements Runnable {
     private AuthPlugin<Player> newInstance(Class<? extends AuthPlugin<Player>> clazz)
             throws ReflectiveOperationException {
         try {
-            Constructor<? extends AuthPlugin<Player>> cons = clazz.getConstructor(FastLoginBukkit.class);
+            Constructor<? extends AuthPlugin<Player>> cons = clazz.getDeclaredConstructor(FastLoginBukkit.class);
             return cons.newInstance(plugin);
         } catch (NoSuchMethodException noMethodEx) {
-            return clazz.newInstance();
+            return clazz.getDeclaredConstructor().newInstance();
         }
     }
 }

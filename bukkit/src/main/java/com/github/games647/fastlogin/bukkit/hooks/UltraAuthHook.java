@@ -16,9 +16,9 @@ import ultraauth.managers.PlayerManager;
 
 /**
  * Project page:
- *
+ * <p>
  * Bukkit: https://dev.bukkit.org/bukkit-plugins/ultraauth-aa/
- *
+ * <p>
  * Spigot: https://www.spigotmc.org/resources/ultraauth.17044/
  */
 public class UltraAuthHook implements AuthPlugin<Player> {

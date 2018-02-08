@@ -13,9 +13,11 @@ import org.bukkit.entity.Player;
 
 /**
  * Github: https://github.com/XziomekX/LogIt
+ * <p>
  * Project page:
- *
+ * <p>
  * Bukkit: Unknown
+ * <p>
  * Spigot: Unknown
  */
 public class LogItHook implements AuthPlugin<Player> {
