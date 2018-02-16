@@ -15,6 +15,46 @@
 
     <name>FastLoginBukkit</name>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.1.0</version>
+                <configuration>
+                    <createDependencyReducedPom>false</createDependencyReducedPom>
+                    <shadedArtifactAttached>false</shadedArtifactAttached>
+                    <relocations>
+                        <relocation>
+                            <pattern>com.zaxxer.hikari</pattern>
+                            <shadedPattern>changeskin.hikari</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>org.slf4j</pattern>
+                            <shadedPattern>changeskin.slf4j</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>net.md_5.bungee.config</pattern>
+                            <shadedPattern>changeskin.config</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>com.google.gson</pattern>
+                            <shadedPattern>changeskin.gson</shadedPattern>
+                        </relocation>
+                    </relocations>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
     <repositories>
         <!--Bukkit-Server-API -->
         <repository>
@@ -45,7 +85,7 @@
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>
         </repository>
-        
+
         <!--PlaceholderAPI -->
         <repository>
             <id>placeholderapi</id>
@@ -58,7 +98,6 @@
             <groupId>com.github.games647</groupId>
             <artifactId>fastlogin.core</artifactId>
             <version>${project.version}</version>
-            <scope>provided</scope>
         </dependency>
 
         <!--Server API-->

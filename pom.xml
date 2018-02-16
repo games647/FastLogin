@@ -29,7 +29,6 @@
         <module>core</module>
         <module>bukkit</module>
         <module>bungee</module>
-        <module>universal</module>
     </modules>
 
     <build>
