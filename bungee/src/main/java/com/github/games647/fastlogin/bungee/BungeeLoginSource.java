@@ -33,4 +33,11 @@ public class BungeeLoginSource implements LoginSource {
     public PendingConnection getConnection() {
         return connection;
     }
+
+    @Override
+    public String toString() {
+        return this.getClass().getSimpleName() + '{' +
+                "connection=" + connection +
+                '}';
+    }
 }

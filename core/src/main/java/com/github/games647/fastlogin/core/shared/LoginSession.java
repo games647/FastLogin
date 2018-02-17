@@ -53,4 +53,14 @@ public abstract class LoginSession {
     public synchronized void setUuid(UUID uuid) {
         this.uuid = uuid;
     }
+
+    @Override
+    public String toString() {
+        return this.getClass().getSimpleName() + '{' +
+                "username='" + username + '\'' +
+                ", profile=" + profile +
+                ", uuid=" + uuid +
+                ", registered=" + registered +
+                '}';
+    }
 }

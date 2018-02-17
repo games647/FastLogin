@@ -12,6 +12,7 @@ import com.github.games647.fastlogin.core.shared.LoginSource;
 import java.lang.reflect.InvocationTargetException;
 import java.net.InetSocketAddress;
 import java.security.PublicKey;
+import java.util.Arrays;
 import java.util.Random;
 
 import org.apache.commons.lang.ArrayUtils;
@@ -95,5 +96,16 @@ public class ProtocolLibLoginSource implements LoginSource {
 
     public byte[] getVerifyToken() {
         return ArrayUtils.clone(verifyToken);
+    }
+
+    @Override
+    public String toString() {
+        return this.getClass().getSimpleName() + '{' +
+                "packetEvent=" + packetEvent +
+                ", player=" + player +
+                ", random=" + random +
+                ", serverId='" + serverId + '\'' +
+                ", verifyToken=" + Arrays.toString(verifyToken) +
+                '}';
     }
 }

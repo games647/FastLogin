@@ -16,4 +16,13 @@ public class SkinProperties {
     public String getSignature() {
         return signature;
     }
+
+    @Override
+    public String toString() {
+        return this.getClass().getSimpleName() + '{' +
+                "name='" + name + '\'' +
+                ", value='" + value + '\'' +
+                ", signature='" + signature + '\'' +
+                '}';
+    }
 }

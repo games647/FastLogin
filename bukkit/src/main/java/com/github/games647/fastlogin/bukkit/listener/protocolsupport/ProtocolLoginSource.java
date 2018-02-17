@@ -32,4 +32,11 @@ public class ProtocolLoginSource implements LoginSource {
     public PlayerLoginStartEvent getLoginStartEvent() {
         return loginStartEvent;
     }
+
+    @Override
+    public String toString() {
+        return this.getClass().getSimpleName() + '{' +
+                "loginStartEvent=" + loginStartEvent +
+                '}';
+    }
 }

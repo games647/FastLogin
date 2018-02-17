@@ -75,4 +75,16 @@ public class PlayerProfile {
     public synchronized void setLastLogin(Instant lastLogin) {
         this.lastLogin = lastLogin;
     }
+
+    @Override
+    public String toString() {
+        return this.getClass().getSimpleName() + '{' +
+                "playerName='" + playerName + '\'' +
+                ", userId=" + userId +
+                ", uuid=" + uuid +
+                ", premium=" + premium +
+                ", lastIp='" + lastIp + '\'' +
+                ", lastLogin=" + lastLogin +
+                '}';
+    }
 }

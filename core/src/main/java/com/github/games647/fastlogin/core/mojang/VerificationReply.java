@@ -20,4 +20,13 @@ public class VerificationReply {
     public SkinProperties[] getProperties() {
         return Arrays.copyOf(properties, properties.length);
     }
+
+    @Override
+    public String toString() {
+        return this.getClass().getSimpleName() + '{' +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", properties=" + Arrays.toString(properties) +
+                '}';
+    }
 }

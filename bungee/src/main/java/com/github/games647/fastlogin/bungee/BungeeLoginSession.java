@@ -31,4 +31,13 @@ public class BungeeLoginSession extends LoginSession {
     public void setAlreadyLogged(boolean alreadyLogged) {
         this.alreadyLogged = alreadyLogged;
     }
+
+    @Override
+    public String toString() {
+        return this.getClass().getSimpleName() + '{' +
+                "alreadySaved=" + alreadySaved +
+                ", alreadyLogged=" + alreadyLogged +
+                ", registered=" + registered +
+                "} " + super.toString();
+    }
 }
