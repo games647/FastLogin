@@ -2,15 +2,16 @@ package com.github.games647.fastlogin.bungee.tasks;
 
 import com.github.games647.fastlogin.bungee.BungeeLoginSession;
 import com.github.games647.fastlogin.bungee.FastLoginBungee;
+import com.github.games647.fastlogin.core.messages.ChannelMessage;
+import com.github.games647.fastlogin.core.messages.ForceActionMessage;
 import com.github.games647.fastlogin.core.shared.FastLoginCore;
 import com.github.games647.fastlogin.core.shared.ForceLoginManagement;
 import com.github.games647.fastlogin.core.shared.LoginSession;
-import com.google.common.io.ByteArrayDataOutput;
-import com.google.common.io.ByteStreams;
 
 import java.util.UUID;
 
 import net.md_5.bungee.api.CommandSender;
+import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.connection.Server;
 
@@ -57,25 +58,16 @@ public class ForceLoginTask
 
     @Override
     public void onForceActionSuccess(LoginSession session) {
-        ByteArrayDataOutput dataOutput = ByteStreams.newDataOutput();
         //sub channel name
+        String type = "AUTO_LOGIN";
         if (session.needsRegistration()) {
-            dataOutput.writeUTF("AUTO_REGISTER");
-        } else {
-            dataOutput.writeUTF("AUTO_LOGIN");
+            type = "AUTO_REGISTER";
         }
 
-        //Data is sent through a random player. We have to tell the Bukkit version of this plugin the target
-        dataOutput.writeUTF(player.getName());
+        UUID proxyId = UUID.fromString(ProxyServer.getInstance().getConfig().getUuid());
+        ChannelMessage loginMessage = new ForceActionMessage(type, player.getName(), proxyId);
 
-        //proxy identifier to check if it's a acceptable proxy
-        UUID proxyId = UUID.fromString(core.getPlugin().getProxy().getConfig().getUuid());
-        dataOutput.writeLong(proxyId.getMostSignificantBits());
-        dataOutput.writeLong(proxyId.getLeastSignificantBits());
-
-        if (server != null) {
-            server.sendData(core.getPlugin().getName(), dataOutput.toByteArray());
-        }
+        core.getPlugin().sendPluginMessage(server, loginMessage);
     }
 
     @Override

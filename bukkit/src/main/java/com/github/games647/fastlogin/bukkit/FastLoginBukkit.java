@@ -9,6 +9,8 @@ import com.github.games647.fastlogin.bukkit.listener.protocollib.SkinApplyListen
 import com.github.games647.fastlogin.bukkit.listener.protocolsupport.ProtocolSupportListener;
 import com.github.games647.fastlogin.bukkit.tasks.DelayedAuthHook;
 import com.github.games647.fastlogin.core.CommonUtil;
+import com.github.games647.fastlogin.core.messages.ChangePremiumMessage;
+import com.github.games647.fastlogin.core.messages.ChannelMessage;
 import com.github.games647.fastlogin.core.mojang.MojangApiConnector;
 import com.github.games647.fastlogin.core.shared.FastLoginCore;
 import com.github.games647.fastlogin.core.shared.PlatformPlugin;
@@ -120,9 +122,10 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
         return core;
     }
 
-    public void sendBungeeActivateMessage(CommandSender sender, String target, boolean activate) {
-        if (sender instanceof PluginMessageRecipient) {
-            notifyBungeeCord((PluginMessageRecipient) sender, target, activate, true);
+    public void sendBungeeActivateMessage(CommandSender invoker, String target, boolean activate) {
+        if (invoker instanceof PluginMessageRecipient) {
+            ChannelMessage message = new ChangePremiumMessage(target, activate, true);
+            sendPluginMessage((PluginMessageRecipient) invoker, message);
         } else {
 
             Optional<? extends Player> optPlayer = getServer().getOnlinePlayers().stream().findFirst();
@@ -131,7 +134,9 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
                 return;
             }
 
-            notifyBungeeCord(optPlayer.get(), target, activate, false);
+            Player sender = optPlayer.get();
+            ChannelMessage message = new ChangePremiumMessage(target, activate, false);
+            sendPluginMessage(sender, message);
         }
     }
 
@@ -174,17 +179,14 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
         }
     }
 
-    private void notifyBungeeCord(PluginMessageRecipient sender, String target, boolean activate, boolean isPlayer) {
-        ByteArrayDataOutput dataOutput = ByteStreams.newDataOutput();
-        if (activate) {
-            dataOutput.writeUTF("ON");
-        } else {
-            dataOutput.writeUTF("OFF");
-        }
+    public void sendPluginMessage(PluginMessageRecipient player, ChannelMessage message) {
+        if (player != null) {
+            ByteArrayDataOutput dataOutput = ByteStreams.newDataOutput();
+            dataOutput.writeUTF(message.getChannelName());
 
-        dataOutput.writeUTF(target);
-        dataOutput.writeBoolean(isPlayer);
-        sender.sendPluginMessage(this, getName(), dataOutput.toByteArray());
+            message.writeTo(dataOutput);
+            player.sendPluginMessage(this, this.getName(), dataOutput.toByteArray());
+        }
     }
 
     @Override

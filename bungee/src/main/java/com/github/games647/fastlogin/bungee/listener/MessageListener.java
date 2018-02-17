@@ -4,6 +4,7 @@ import com.github.games647.fastlogin.bungee.BungeeLoginSession;
 import com.github.games647.fastlogin.bungee.FastLoginBungee;
 import com.github.games647.fastlogin.bungee.tasks.AsyncToggleMessage;
 import com.github.games647.fastlogin.core.PlayerProfile;
+import com.github.games647.fastlogin.core.messages.ChangePremiumMessage;
 import com.github.games647.fastlogin.core.shared.FastLoginCore;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteStreams;
@@ -55,28 +56,29 @@ public class MessageListener implements Listener {
         String subChannel = dataInput.readUTF();
         if ("SUCCESS".equals(subChannel)) {
             onSuccessMessage(forPlayer);
-        } else if ("ON".equals(subChannel)) {
-            String playerName = dataInput.readUTF();
-            boolean isPlayerSender = dataInput.readBoolean();
+        } else if ("CHANGE".equals(subChannel)) {
+            ChangePremiumMessage changeMessage = new ChangePremiumMessage();
+            changeMessage.readFrom(dataInput);
 
-            if (playerName.equals(forPlayer.getName()) && plugin.getCore().getConfig().get("premium-warning", true)
-                    && !core.getPendingConfirms().contains(forPlayer.getUniqueId())) {
-                String message = core.getMessage("premium-warning");
-                forPlayer.sendMessage(TextComponent.fromLegacyText(message));
-                core.getPendingConfirms().add(forPlayer.getUniqueId());
-                return;
+            String playerName = changeMessage.getPlayerName();
+            boolean isSourceInvoker = changeMessage.isSourceInvoker();
+            if (changeMessage.isWillEnable()) {
+                if (playerName.equals(forPlayer.getName()) && plugin.getCore().getConfig().get("premium-warning", true)
+                        && !core.getPendingConfirms().contains(forPlayer.getUniqueId())) {
+                    String message = core.getMessage("premium-warning");
+                    forPlayer.sendMessage(TextComponent.fromLegacyText(message));
+                    core.getPendingConfirms().add(forPlayer.getUniqueId());
+                    return;
+                }
+
+                core.getPendingConfirms().remove(forPlayer.getUniqueId());
+                Runnable task = new AsyncToggleMessage(core, forPlayer, playerName, true, isSourceInvoker);
+                ProxyServer.getInstance().getScheduler().runAsync(plugin, task);
+            } else {
+                Runnable task = new AsyncToggleMessage(core, forPlayer, playerName, false, isSourceInvoker);
+                ProxyServer.getInstance().getScheduler().runAsync(plugin, task);
             }
-
-            core.getPendingConfirms().remove(forPlayer.getUniqueId());
-            Runnable task = new AsyncToggleMessage(core, forPlayer, playerName, true, isPlayerSender);
-            ProxyServer.getInstance().getScheduler().runAsync(plugin, task);
-        } else if ("OFF".equals(subChannel)) {
-            String playerName = dataInput.readUTF();
-            boolean isPlayerSender = dataInput.readBoolean();
-
-            Runnable task = new AsyncToggleMessage(core, forPlayer, playerName, false, isPlayerSender);
-            ProxyServer.getInstance().getScheduler().runAsync(plugin, task);
-        } 
+        }
     }
 
     private void onSuccessMessage(ProxiedPlayer forPlayer) {

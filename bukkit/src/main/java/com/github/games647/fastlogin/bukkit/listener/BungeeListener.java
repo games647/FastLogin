@@ -4,6 +4,8 @@ import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 import com.github.games647.fastlogin.bukkit.tasks.ForceLoginTask;
 import com.github.games647.fastlogin.core.hooks.AuthPlugin;
+import com.github.games647.fastlogin.core.messages.ForceActionMessage;
+import com.github.games647.fastlogin.core.messages.ForceActionMessage.Type;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteStreams;
 
@@ -14,6 +16,7 @@ import java.nio.file.Path;
 import java.util.Collections;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -48,38 +51,43 @@ public class BungeeListener implements PluginMessageListener {
 
         ByteArrayDataInput dataInput = ByteStreams.newDataInput(message);
         String subChannel = dataInput.readUTF();
-        plugin.getLog().debug("Received plugin message for sub channel {} from {}", subChannel, player);
+        if (!"FORCE_ACTION".equals(subChannel)) {
+            plugin.getLog().info("Unknown sub channel {}", subChannel);
+            return;
+        }
 
-        String playerName = dataInput.readUTF();
+        ForceActionMessage loginMessage = new ForceActionMessage();
+        loginMessage.readFrom(dataInput);
+
+        plugin.getLog().debug("Received plugin message {}", loginMessage);
 
         //check if the player is still online or disconnected
-        Player checkedPlayer = Bukkit.getPlayerExact(playerName);
+        Player checkedPlayer = Bukkit.getPlayerExact(loginMessage.getPlayerName());
+
         //fail if target player is blacklisted because already authenticated or wrong bungeecord id
         if (checkedPlayer != null && !checkedPlayer.hasMetadata(plugin.getName())) {
-            //bungeecord UUID
-            long mostSignificantBits = dataInput.readLong();
-            long leastSignificantBits = dataInput.readLong();
-            UUID sourceId = new UUID(mostSignificantBits, leastSignificantBits);
-            plugin.getLog().debug("Received proxy id {} from {}", sourceId, player);
-
             //fail if BungeeCord support is disabled (id = null)
+            UUID sourceId = loginMessage.getProxyId();
             if (proxyIds.contains(sourceId)) {
-                readMessage(checkedPlayer, subChannel, playerName, player);
+                readMessage(checkedPlayer, loginMessage);
             } else {
                 plugin.getLog().warn("Received proxy id: {} that doesn't exist in the proxy whitelist file", sourceId);
             }
         }
     }
 
-    private void readMessage(Player checkedPlayer, String subChannel, String playerName, Player player) {
-        InetSocketAddress address = checkedPlayer.getAddress();
+    private void readMessage(Player player, ForceActionMessage message) {
+        String playerName = message.getPlayerName();
+        Type type = message.getType();
+
+        InetSocketAddress address = player.getAddress();
         String id = '/' + address.getAddress().getHostAddress() + ':' + address.getPort();
-        if ("AUTO_LOGIN".equalsIgnoreCase(subChannel)) {
+        if (type == Type.LOGIN) {
             BukkitLoginSession playerSession = new BukkitLoginSession(playerName, true);
             playerSession.setVerified(true);
             plugin.getLoginSessions().put(id, playerSession);
             Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, new ForceLoginTask(plugin.getCore(), player), 20L);
-        } else if ("AUTO_REGISTER".equalsIgnoreCase(subChannel)) {
+        } else if (type == Type.REGISTER) {
             Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> {
                 AuthPlugin<Player> authPlugin = plugin.getCore().getAuthPluginHook();
                 try {
@@ -104,10 +112,11 @@ public class BungeeListener implements PluginMessageListener {
                 Files.createFile(whitelistFile);
             }
 
-            return Files.lines(whitelistFile)
-                    .map(String::trim)
-                    .map(UUID::fromString)
-                    .collect(toSet());
+            try (Stream<String> lines = Files.lines(whitelistFile)) {
+                return lines.map(String::trim)
+                        .map(UUID::fromString)
+                        .collect(toSet());
+            }
         } catch (IOException ex) {
             plugin.getLog().error("Failed to create file for Proxy whitelist", ex);
         } catch (Exception ex) {

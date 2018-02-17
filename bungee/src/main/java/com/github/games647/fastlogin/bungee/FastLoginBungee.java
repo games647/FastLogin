@@ -4,9 +4,12 @@ import com.github.games647.fastlogin.bungee.hooks.BungeeAuthHook;
 import com.github.games647.fastlogin.bungee.listener.ConnectListener;
 import com.github.games647.fastlogin.bungee.listener.MessageListener;
 import com.github.games647.fastlogin.core.CommonUtil;
+import com.github.games647.fastlogin.core.messages.ChannelMessage;
 import com.github.games647.fastlogin.core.mojang.MojangApiConnector;
 import com.github.games647.fastlogin.core.shared.FastLoginCore;
 import com.github.games647.fastlogin.core.shared.PlatformPlugin;
+import com.google.common.io.ByteArrayDataOutput;
+import com.google.common.io.ByteStreams;
 import com.google.common.net.HostAndPort;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
@@ -20,6 +23,7 @@ import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.PendingConnection;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.md_5.bungee.api.connection.Server;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.api.scheduler.GroupedThreadFactory;
 
@@ -75,6 +79,16 @@ public class FastLoginBungee extends Plugin implements PlatformPlugin<CommandSen
         if (plugin != null) {
             core.setAuthPluginHook(new BungeeAuthHook());
             logger.info("Hooked into BungeeAuth");
+        }
+    }
+
+    public void sendPluginMessage(Server server, ChannelMessage message) {
+        if (server != null) {
+            ByteArrayDataOutput dataOutput = ByteStreams.newDataOutput();
+            dataOutput.writeUTF(message.getChannelName());
+
+            message.writeTo(dataOutput);
+            server.sendData(core.getPlugin().getName(), dataOutput.toByteArray());
         }
     }
 
