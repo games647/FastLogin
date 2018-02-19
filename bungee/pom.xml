@@ -35,11 +35,11 @@
                     <relocations>
                         <relocation>
                             <pattern>com.zaxxer.hikari</pattern>
-                            <shadedPattern>changeskin.hikari</shadedPattern>
+                            <shadedPattern>fastlogin.hikari</shadedPattern>
                         </relocation>
                         <relocation>
                             <pattern>org.slf4j</pattern>
-                            <shadedPattern>changeskin.slf4j</shadedPattern>
+                            <shadedPattern>fastlogin.slf4j</shadedPattern>
                         </relocation>
                     </relocations>
                 </configuration>

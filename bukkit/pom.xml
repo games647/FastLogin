@@ -27,19 +27,19 @@
                     <relocations>
                         <relocation>
                             <pattern>com.zaxxer.hikari</pattern>
-                            <shadedPattern>changeskin.hikari</shadedPattern>
+                            <shadedPattern>fastlogin.hikari</shadedPattern>
                         </relocation>
                         <relocation>
                             <pattern>org.slf4j</pattern>
-                            <shadedPattern>changeskin.slf4j</shadedPattern>
+                            <shadedPattern>fastlogin.slf4j</shadedPattern>
                         </relocation>
                         <relocation>
                             <pattern>net.md_5.bungee.config</pattern>
-                            <shadedPattern>changeskin.config</shadedPattern>
+                            <shadedPattern>fastlogin.config</shadedPattern>
                         </relocation>
                         <relocation>
                             <pattern>com.google.gson</pattern>
-                            <shadedPattern>changeskin.gson</shadedPattern>
+                            <shadedPattern>fastlogin.gson</shadedPattern>
                         </relocation>
                     </relocations>
                 </configuration>
