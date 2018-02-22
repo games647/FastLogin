@@ -80,7 +80,7 @@
             <url>https://ci.codemc.org/plugin/repository/everything/</url>
         </repository>
 
-        <!--Github automatic maven builds-->
+        <!--GitHub automatic maven builds-->
         <repository>
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>

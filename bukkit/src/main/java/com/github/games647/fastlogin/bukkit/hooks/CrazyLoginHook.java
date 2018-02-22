@@ -19,7 +19,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 /**
- * Github: https://github.com/ST-DDT/CrazyLogin
+ * GitHub: https://github.com/ST-DDT/CrazyLogin
  * <p>
  * Project page:
  * <p>

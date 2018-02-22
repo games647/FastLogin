@@ -12,7 +12,7 @@ import java.time.Instant;
 import org.bukkit.entity.Player;
 
 /**
- * Github: https://github.com/XziomekX/LogIt
+ * GitHub: https://github.com/XziomekX/LogIt
  * <p>
  * Project page:
  * <p>

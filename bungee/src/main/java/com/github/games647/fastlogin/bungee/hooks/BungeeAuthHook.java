@@ -8,7 +8,7 @@ import me.vik1395.BungeeAuthAPI.RequestHandler;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 /**
- * Github: https://github.com/vik1395/BungeeAuth-Minecraft
+ * GitHub: https://github.com/vik1395/BungeeAuth-Minecraft
  *
  * Project page:
  *

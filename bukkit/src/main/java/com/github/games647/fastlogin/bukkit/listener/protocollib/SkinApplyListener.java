@@ -31,7 +31,7 @@ public class SkinApplyListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.LOW)
-    //run this on the loginEvent to let skins plugins see the skin like in normal minecraft behaviour
+    //run this on the loginEvent to let skins plugins see the skin like in normal Minecraft behaviour
     public void onPlayerLogin(PlayerLoginEvent loginEvent) {
         if (loginEvent.getResult() != Result.ALLOWED) {
             return;

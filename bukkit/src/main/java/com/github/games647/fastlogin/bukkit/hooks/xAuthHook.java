@@ -14,7 +14,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 /**
- * Github: https://github.com/LycanDevelopment/xAuth/
+ * GitHub: https://github.com/LycanDevelopment/xAuth/
  * <p>
  * Project page:
  * <p>

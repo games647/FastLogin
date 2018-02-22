@@ -106,7 +106,7 @@ public class MojangApiConnector {
                         " Name -> UUID requests within 10 minutes. Once those 10 minutes ended we could make requests" +
                         " again. In the meanwhile new skins can only be downloaded using the UUID directly." +
                         " If you are using BungeeCord, consider adding a caching server in order to prevent multiple" +
-                        " spigot servers creating the same requests against Mojang's servers.");
+                        " Spigot servers creating the same requests against Mojang's servers.");
                 lastRateLimit = Instant.now();
                 if (!connection.usingProxy()) {
                     return getPremiumUUID(playerName);

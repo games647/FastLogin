@@ -3,6 +3,7 @@ package com.github.games647.fastlogin.core;
 import com.google.common.cache.CacheLoader;
 
 import java.lang.reflect.Constructor;
+import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
@@ -42,6 +43,10 @@ public class CommonUtil {
 
     public static String toMojangId(UUID uuid) {
         return uuid.toString().replace("-", "");
+    }
+
+    public static UUID getOfflineUUID(String playerName) {
+        return UUID.nameUUIDFromBytes(("OfflinePlayer:" + playerName).getBytes(StandardCharsets.UTF_8));
     }
 
     public static String translateColorCodes(String rawMessage) {

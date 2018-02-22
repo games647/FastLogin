@@ -18,7 +18,7 @@ import javax.crypto.spec.SecretKeySpec;
 
 /**
  * Encryption and decryption minecraft util for connection between servers
- * and paid minecraft account clients.
+ * and paid Minecraft account clients.
  *
  * @see net.minecraft.server.MinecraftEncryption
  */

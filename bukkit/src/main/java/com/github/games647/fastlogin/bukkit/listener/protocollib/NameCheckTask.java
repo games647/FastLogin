@@ -43,7 +43,7 @@ public class NameCheckTask extends JoinManagement<Player, CommandSender, Protoco
         }
     }
 
-    //minecraft server implementation
+    //Minecraft server implementation
     //https://github.com/bergerkiller/CraftSource/blob/master/net.minecraft.server/LoginListener.java#L161
     @Override
     public void requestPremiumLogin(ProtocolLibLoginSource source, PlayerProfile profile

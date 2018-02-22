@@ -19,7 +19,7 @@ import org.slf4j.Logger;
 
 public class MojangApiBukkit extends MojangApiConnector {
 
-    //mojang api check to prove a player is logged in minecraft and made a join server request
+    //mojang api check to prove a player is logged in Minecraft and made a join server request
     private static final String HAS_JOINED_URL = "https://sessionserver.mojang.com/session/minecraft/hasJoined?" +
             "username=%s&serverId=%s&ip=%s";
 

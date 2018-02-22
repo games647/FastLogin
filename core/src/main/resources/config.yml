@@ -82,7 +82,7 @@ premiumUuid: false
 #
 # nameChangeCheck = false ----- autoRegister = true
 #
-# We will always request a premium authentication if the username is unknown to us, but is in use by a paid minecraft
+# We will always request a premium authentication if the username is unknown to us, but is in use by a paid Minecraft
 # account. This means it's kind of a more aggressive check like nameChangeCheck = true and autoRegister = false, because
 # it request a premium authentication which are completely new to us, that even the premium UUID is not in our database.
 #
@@ -95,7 +95,7 @@ premiumUuid: false
 # Based on autoRegister it checks if the player name is premium and login using a premium authentication. After that
 # fastlogin receives the premium UUID and can update the database record.
 #
-# **Limitation from autoRegister**: New offline players who uses the username of an existing minecraft cannot join the
+# **Limitation from autoRegister**: New offline players who uses the username of an existing Minecraft cannot join the
 # server.
 nameChangeCheck: false
 
@@ -138,7 +138,7 @@ premium-warning: true
 ip-addresses: []
 
 # How many requests should be established to the Mojang API for Name -> UUID requests. Some other plugins as well
-# as the head minecraft block make such requests as well. Using this option you can limit the amount requests this
+# as the head Minecraft block make such requests as well. Using this option you can limit the amount requests this
 # plugin should make.
 #
 # If you lower this value, other plugins could still make requests while FastLogin cannot.
@@ -154,7 +154,7 @@ auto-register-unknown: false
 # the player won't be auto logged into the account.
 #
 # This can be used as 2Factor authentication for better security of your accounts. A hacker then needs both passwords.
-# The password of your minecraft and the password to login in with your auth plugin
+# The password of your Minecraft and the password to login in with your auth plugin
 autoLogin: true
 
 # Database configuration

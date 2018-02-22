@@ -56,7 +56,7 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
         } catch (ClassNotFoundException notFoundEx) {
             //ignore server has no bungee support
         } catch (Exception ex) {
-            logger.warn("Cannot check bungeecord support. You use a non-spigot build", ex);
+            logger.warn("Cannot check bungeecord support. You use a non-Spigot build", ex);
         }
 
         if (getServer().getOnlineMode()) {

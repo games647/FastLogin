@@ -11,7 +11,9 @@ import com.lenis0012.bukkit.loginsecurity.session.action.RegisterAction;
 import org.bukkit.entity.Player;
 
 /**
- * Github: https://github.com/lenis0012/LoginSecurity-2 Project page:
+ * GitHub: https://github.com/lenis0012/LoginSecurity-2 
+ * <p>
+ * Project page:
  * <p>
  * Bukkit: https://dev.bukkit.org/bukkit-plugins/loginsecurity/
  * <p>

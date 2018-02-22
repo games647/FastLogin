@@ -8,7 +8,6 @@ import com.github.games647.fastlogin.core.hooks.PasswordGenerator;
 import com.github.games647.fastlogin.core.mojang.MojangApiConnector;
 import com.google.common.net.HostAndPort;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -26,6 +25,8 @@ import java.util.concurrent.ConcurrentMap;
 import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.config.ConfigurationProvider;
 import net.md_5.bungee.config.YamlConfiguration;
+
+import org.slf4j.Logger;
 
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toList;
@@ -92,8 +93,8 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
             defaults = configProvider.load(defaultStream);
         }
 
-        File file = plugin.getPluginFolder().resolve(fileName).toFile();
-        return configProvider.load(file, defaults);
+        Path file = plugin.getPluginFolder().resolve(fileName);
+        return configProvider.load(Files.newBufferedReader(file), defaults);
     }
 
     public MojangApiConnector getApiConnector() {
@@ -121,6 +122,10 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
 
     public boolean setupDatabase() {
         String driver = config.getString("driver");
+        if (!checkDriver(driver)) {
+            return false;
+        }
+
         String host = config.get("host", "");
         int port = config.get("port", 3306);
         String database = config.getString("database");
@@ -139,6 +144,20 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
             return false;
         }
     }
+
+    private boolean checkDriver(String className) {
+        try {
+            Class.forName(className);
+            return true;
+        } catch (ClassNotFoundException notFoundEx) {
+            Logger log = plugin.getLog();
+            log.warn("This driver {} is not supported on this platform", className);
+            log.warn("Please choose MySQL (Spigot+BungeeCord), SQLite (Spigot+Sponge) or MariaDB (Sponge)", notFoundEx);
+        }
+
+        return false;
+    }
+
 
     public Configuration getConfig() {
         return config;

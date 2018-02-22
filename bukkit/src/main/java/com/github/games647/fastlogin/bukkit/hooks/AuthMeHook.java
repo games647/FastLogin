@@ -9,7 +9,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 
 /**
- * Github: https://github.com/Xephi/AuthMeReloaded/
+ * GitHub: https://github.com/Xephi/AuthMeReloaded/
  * <p>
  * Project page:
  * <p>
