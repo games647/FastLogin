@@ -65,6 +65,8 @@ public class BungeeListener implements PluginMessageListener {
             //fail if BungeeCord support is disabled (id = null)
             if (proxyIds.contains(sourceId)) {
                 readMessage(checkedPlayer, subChannel, playerName, player);
+            } else {
+                plugin.getLog().warn("Received proxy id: {} that doesn't exist in the proxy whitelist file", sourceId);
             }
         }
     }
@@ -76,9 +78,9 @@ public class BungeeListener implements PluginMessageListener {
             BukkitLoginSession playerSession = new BukkitLoginSession(playerName, true);
             playerSession.setVerified(true);
             plugin.getLoginSessions().put(id, playerSession);
-            Bukkit.getScheduler().runTaskAsynchronously(plugin, new ForceLoginTask(plugin.getCore(), player));
+            Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, new ForceLoginTask(plugin.getCore(), player), 20L);
         } else if ("AUTO_REGISTER".equalsIgnoreCase(subChannel)) {
-            Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> {
                 AuthPlugin<Player> authPlugin = plugin.getCore().getAuthPluginHook();
                 try {
                     //we need to check if the player is registered on Bukkit too
@@ -91,7 +93,7 @@ public class BungeeListener implements PluginMessageListener {
                 } catch (Exception ex) {
                     plugin.getLog().error("Failed to query isRegistered", ex);
                 }
-            });
+            }, 20L);
         }
     }
 

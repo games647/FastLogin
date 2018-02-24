@@ -26,8 +26,7 @@ import net.md_5.bungee.event.EventHandler;
 import net.md_5.bungee.event.EventPriority;
 
 /**
- * Enables online mode logins for specified users and sends
- * plugin message to the Bukkit version of this plugin in
+ * Enables online mode logins for specified users and sends plugin message to the Bukkit version of this plugin in
  * order to clear that the connection is online mode.
  */
 public class ConnectListener implements Listener {
