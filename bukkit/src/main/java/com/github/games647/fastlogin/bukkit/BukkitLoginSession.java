@@ -1,7 +1,7 @@
 package com.github.games647.fastlogin.bukkit;
 
-import com.github.games647.fastlogin.core.PlayerProfile;
-import com.github.games647.fastlogin.core.mojang.SkinProperties;
+import com.github.games647.craftapi.model.skin.SkinProperty;
+import com.github.games647.fastlogin.core.StoredProfile;
 import com.github.games647.fastlogin.core.shared.LoginSession;
 
 import java.util.Optional;
@@ -20,10 +20,10 @@ public class BukkitLoginSession extends LoginSession {
 
     private boolean verified;
 
-    private SkinProperties skinProperty;
+    private SkinProperty skinProperty;
 
     public BukkitLoginSession(String username, String serverId, byte[] verifyToken, boolean registered
-            , PlayerProfile profile) {
+            , StoredProfile profile) {
         super(username, registered, profile);
 
         this.serverId = serverId;
@@ -36,7 +36,7 @@ public class BukkitLoginSession extends LoginSession {
     }
 
     //cracked player
-    public BukkitLoginSession(String username, PlayerProfile profile) {
+    public BukkitLoginSession(String username, StoredProfile profile) {
         this(username, "", ArrayUtils.EMPTY_BYTE_ARRAY, false, profile);
     }
 
@@ -51,14 +51,14 @@ public class BukkitLoginSession extends LoginSession {
         return ArrayUtils.clone(verifyToken);
     }
 
-    public synchronized Optional<SkinProperties> getSkin() {
+    public synchronized Optional<SkinProperty> getSkin() {
         return Optional.ofNullable(skinProperty);
     }
 
     /**
      * Sets the premium skin property which was retrieved by the session server
      */
-    public synchronized void setSkinProperty(SkinProperties skinProperty) {
+    public synchronized void setSkinProperty(SkinProperty skinProperty) {
         this.skinProperty = skinProperty;
     }
 

@@ -3,7 +3,7 @@ package com.github.games647.fastlogin.bungee.listener;
 import com.github.games647.fastlogin.bungee.BungeeLoginSession;
 import com.github.games647.fastlogin.bungee.FastLoginBungee;
 import com.github.games647.fastlogin.bungee.tasks.AsyncToggleMessage;
-import com.github.games647.fastlogin.core.PlayerProfile;
+import com.github.games647.fastlogin.core.StoredProfile;
 import com.github.games647.fastlogin.core.messages.ChangePremiumMessage;
 import com.github.games647.fastlogin.core.shared.FastLoginCore;
 import com.google.common.io.ByteArrayDataInput;
@@ -86,7 +86,7 @@ public class MessageListener implements Listener {
             //bukkit module successfully received and force logged in the user
             //update only on success to prevent corrupt data
             BungeeLoginSession loginSession = plugin.getSession().get(forPlayer.getPendingConnection());
-            PlayerProfile playerProfile = loginSession.getProfile();
+            StoredProfile playerProfile = loginSession.getProfile();
             loginSession.setRegistered(true);
 
             if (!loginSession.isAlreadySaved()) {

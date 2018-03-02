@@ -1,22 +1,27 @@
 package com.github.games647.fastlogin.core.shared;
 
+import com.github.games647.craftapi.resolver.MojangResolver;
+import com.github.games647.craftapi.resolver.http.RotatingProxySelector;
 import com.github.games647.fastlogin.core.AuthStorage;
 import com.github.games647.fastlogin.core.CommonUtil;
 import com.github.games647.fastlogin.core.hooks.AuthPlugin;
 import com.github.games647.fastlogin.core.hooks.DefaultPasswordGenerator;
 import com.github.games647.fastlogin.core.hooks.PasswordGenerator;
-import com.github.games647.fastlogin.core.mojang.MojangApiConnector;
 import com.google.common.net.HostAndPort;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
+import java.net.Proxy.Type;
+import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -28,8 +33,8 @@ import net.md_5.bungee.config.YamlConfiguration;
 import org.slf4j.Logger;
 
 import static java.util.function.Function.identity;
-import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.toSet;
 
 /**
  * @param <P> GameProfile class
@@ -38,14 +43,14 @@ import static java.util.stream.Collectors.toMap;
  */
 public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
 
-    protected final Map<String, String> localeMessages = new ConcurrentHashMap<>();
-
+    private final Map<String, String> localeMessages = new ConcurrentHashMap<>();
     private final ConcurrentMap<String, Object> pendingLogin = CommonUtil.buildCache(5, -1);
     private final Collection<UUID> pendingConfirms = new HashSet<>();
     private final T plugin;
 
+    private final MojangResolver resolver = new MojangResolver();
+
     private Configuration config;
-    private MojangApiConnector apiConnector;
     private AuthStorage storage;
     private PasswordGenerator<P> passwordGenerator = new DefaultPasswordGenerator<>();
     private AuthPlugin<P> authPlugin;
@@ -76,12 +81,25 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
             plugin.getLog().error("Failed to load yaml files", ioEx);
         }
 
-        List<String> ipAddresses = config.getStringList("ip-addresses");
-        int requestLimit = config.getInt("mojang-request-limit");
-        List<String> proxyList = config.get("proxies", new ArrayList<>());
-        List<HostAndPort> proxies = proxyList.stream().map(HostAndPort::fromString).collect(toList());
+        Set<Proxy> proxies = config.getStringList("proxies")
+                .stream()
+                .map(HostAndPort::fromString)
+                .map(proxy -> new InetSocketAddress(proxy.getHostText(), proxy.getPort()))
+                .map(sa -> new Proxy(Type.HTTP, sa))
+                .collect(toSet());
 
-        this.apiConnector = plugin.makeApiConnector(ipAddresses, requestLimit, proxies);
+        Collection<InetAddress> addresses = new HashSet<>();
+        for (String localAddress : config.getStringList("ip-addresses")) {
+            try {
+                addresses.add(InetAddress.getByName(localAddress.replace('-', '.')));
+            } catch (UnknownHostException ex) {
+                plugin.getLog().error("IP-Address is unknown to us", ex);
+            }
+        }
+
+        resolver.setMaxNameRequests(config.getInt("mojang-request-limit"));
+        resolver.setProxySelector(new RotatingProxySelector(proxies));
+        resolver.setOutgoingAddresses(addresses);
     }
 
     private Configuration loadFile(String fileName) throws IOException {
@@ -96,8 +114,8 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
         return configProvider.load(Files.newBufferedReader(file), defaults);
     }
 
-    public MojangApiConnector getApiConnector() {
-        return apiConnector;
+    public MojangResolver getResolver() {
+        return resolver;
     }
 
     public AuthStorage getStorage() {

@@ -8,16 +8,22 @@ import com.comphenix.protocol.reflect.FieldUtils;
 import com.comphenix.protocol.reflect.FuzzyReflection;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
+import com.github.games647.craftapi.model.auth.Verification;
+import com.github.games647.craftapi.resolver.MojangResolver;
 import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
 import com.github.games647.fastlogin.bukkit.EncryptionUtil;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.security.GeneralSecurityException;
 import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.util.Arrays;
+import java.util.Optional;
 import java.util.UUID;
 
 import javax.crypto.Cipher;
@@ -93,17 +99,25 @@ public class VerifyResponseTask implements Runnable {
         String serverId = EncryptionUtil.getServerIdHashString("", loginKey, serverKey.getPublic());
 
         String username = session.getUsername();
-        if (plugin.getCore().getApiConnector().hasJoinedServer(session, serverId, player.getAddress())) {
-            plugin.getLog().info("GameProfile {} has a verified premium account", username);
+        InetSocketAddress socketAddress = player.getAddress();
+        try {
+            MojangResolver resolver = plugin.getCore().getResolver();
+            InetAddress address = socketAddress.getAddress();
+            Optional<Verification> response = resolver.hasJoined(username, serverId, address);
+            if (response.isPresent()) {
+                plugin.getLog().info("GameProfile {} has a verified premium account", username);
 
-            session.setVerified(true);
-            setPremiumUUID(session.getUuid());
-            receiveFakeStartPacket(username);
-        } else {
-            //user tried to fake a authentication
-            disconnect(plugin.getCore().getMessage("invalid-session"), true
-                    , "GameProfile {0} ({1}) tried to log in with an invalid session ServerId: {2}"
-                    , session.getUsername(), player.getAddress(), serverId);
+                session.setVerified(true);
+                setPremiumUUID(session.getUuid());
+                receiveFakeStartPacket(username);
+            } else {
+                //user tried to fake a authentication
+                disconnect(plugin.getCore().getMessage("invalid-session"), true
+                        , "GameProfile {0} ({1}) tried to log in with an invalid session ServerId: {2}"
+                        , session.getUsername(), socketAddress, serverId);
+            }
+        } catch (IOException ioEx) {
+            disconnect("error-kick", false, "Failed to connect to sessionserver", ioEx);
         }
     }
 

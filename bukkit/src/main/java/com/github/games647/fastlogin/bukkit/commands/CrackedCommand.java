@@ -1,7 +1,7 @@
 package com.github.games647.fastlogin.bukkit.commands;
 
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
-import com.github.games647.fastlogin.core.PlayerProfile;
+import com.github.games647.fastlogin.core.StoredProfile;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -31,7 +31,7 @@ public class CrackedCommand implements CommandExecutor {
                 plugin.getCore().sendLocaleMessage("wait-on-proxy", sender);
             } else {
                 //todo: load async if
-                PlayerProfile profile = plugin.getCore().getStorage().loadProfile(sender.getName());
+                StoredProfile profile = plugin.getCore().getStorage().loadProfile(sender.getName());
                 if (profile.isPremium()) {
                     plugin.getCore().sendLocaleMessage("remove-premium", sender);
 
@@ -64,7 +64,7 @@ public class CrackedCommand implements CommandExecutor {
             plugin.getCore().sendLocaleMessage("wait-on-proxy", sender);
         } else {
             //todo: load async
-            PlayerProfile profile = plugin.getCore().getStorage().loadProfile(args[0]);
+            StoredProfile profile = plugin.getCore().getStorage().loadProfile(args[0]);
             if (profile == null) {
                 sender.sendMessage("Error occurred");
                 return;

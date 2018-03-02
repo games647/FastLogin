@@ -1,6 +1,6 @@
 package com.github.games647.fastlogin.core;
 
-import com.github.games647.fastlogin.core.mojang.UUIDTypeAdapter;
+import com.github.games647.craftapi.UUIDAdapter;
 import com.github.games647.fastlogin.core.shared.FastLoginCore;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
@@ -92,14 +92,14 @@ public class AuthStorage {
         }
     }
 
-    public PlayerProfile loadProfile(String name) {
+    public StoredProfile loadProfile(String name) {
         try (Connection con = dataSource.getConnection();
              PreparedStatement loadStmt = con.prepareStatement(LOAD_BY_NAME)
         ) {
             loadStmt.setString(1, name);
 
             try (ResultSet resultSet = loadStmt.executeQuery()) {
-                return parseResult(resultSet).orElseGet(() -> new PlayerProfile(null, name, false, ""));
+                return parseResult(resultSet).orElseGet(() -> new StoredProfile(null, name, false, ""));
             }
         } catch (SQLException sqlEx) {
             core.getPlugin().getLog().error("Failed to query profile: {}", name, sqlEx);
@@ -108,11 +108,10 @@ public class AuthStorage {
         return null;
     }
 
-    public PlayerProfile loadProfile(UUID uuid) {
+    public StoredProfile loadProfile(UUID uuid) {
         try (Connection con = dataSource.getConnection();
-             PreparedStatement loadStmt = con.prepareStatement(LOAD_BY_UUID)
-        ) {
-            loadStmt.setString(1, UUIDTypeAdapter.toMojangId(uuid));
+             PreparedStatement loadStmt = con.prepareStatement(LOAD_BY_UUID)) {
+            loadStmt.setString(1, UUIDAdapter.toMojangId(uuid));
 
             try (ResultSet resultSet = loadStmt.executeQuery()) {
                 return parseResult(resultSet).orElse(null);
@@ -124,30 +123,30 @@ public class AuthStorage {
         return null;
     }
 
-    private Optional<PlayerProfile> parseResult(ResultSet resultSet) throws SQLException {
+    private Optional<StoredProfile> parseResult(ResultSet resultSet) throws SQLException {
         if (resultSet.next()) {
             long userId = resultSet.getInt(1);
 
-            UUID uuid = UUIDTypeAdapter.parseId(resultSet.getString(2));
+            UUID uuid = UUIDAdapter.parseId(resultSet.getString(2));
 
             String name = resultSet.getString(3);
             boolean premium = resultSet.getBoolean(4);
             String lastIp = resultSet.getString(5);
             Instant lastLogin = resultSet.getTimestamp(6).toInstant();
-            return Optional.of(new PlayerProfile(userId, uuid, name, premium, lastIp, lastLogin));
+            return Optional.of(new StoredProfile(userId, uuid, name, premium, lastIp, lastLogin));
         }
 
         return Optional.empty();
     }
 
-    public void save(PlayerProfile playerProfile) {
+    public void save(StoredProfile playerProfile) {
         try (Connection con = dataSource.getConnection()) {
-            String uuid = playerProfile.getId().map(UUIDTypeAdapter::toMojangId).orElse(null);
+            String uuid = playerProfile.getOptId().map(UUIDAdapter::toMojangId).orElse(null);
 
             if (playerProfile.isSaved()) {
                 try (PreparedStatement saveStmt = con.prepareStatement(UPDATE_PROFILE)) {
                     saveStmt.setString(1, uuid);
-                    saveStmt.setString(2, playerProfile.getPlayerName());
+                    saveStmt.setString(2, playerProfile.getName());
                     saveStmt.setBoolean(3, playerProfile.isPremium());
                     saveStmt.setString(4, playerProfile.getLastIp());
 
@@ -158,7 +157,7 @@ public class AuthStorage {
                 try (PreparedStatement saveStmt = con.prepareStatement(INSERT_PROFILE, RETURN_GENERATED_KEYS)) {
                     saveStmt.setString(1, uuid);
 
-                    saveStmt.setString(2, playerProfile.getPlayerName());
+                    saveStmt.setString(2, playerProfile.getName());
                     saveStmt.setBoolean(3, playerProfile.isPremium());
                     saveStmt.setString(4, playerProfile.getLastIp());
 

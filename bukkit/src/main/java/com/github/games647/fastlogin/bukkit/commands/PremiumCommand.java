@@ -1,7 +1,7 @@
 package com.github.games647.fastlogin.bukkit.commands;
 
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
-import com.github.games647.fastlogin.core.PlayerProfile;
+import com.github.games647.fastlogin.core.StoredProfile;
 
 import java.util.UUID;
 
@@ -47,7 +47,7 @@ public class PremiumCommand implements CommandExecutor {
 
                 plugin.getCore().getPendingConfirms().remove(id);
                 //todo: load async
-                PlayerProfile profile = plugin.getCore().getStorage().loadProfile(sender.getName());
+                StoredProfile profile = plugin.getCore().getStorage().loadProfile(sender.getName());
                 if (profile.isPremium()) {
                     plugin.getCore().sendLocaleMessage("already-exists", sender);
                 } else {
@@ -80,7 +80,7 @@ public class PremiumCommand implements CommandExecutor {
             plugin.getCore().sendLocaleMessage("wait-on-proxy", sender);
         } else {
             //todo: load async
-            PlayerProfile profile = plugin.getCore().getStorage().loadProfile(args[0]);
+            StoredProfile profile = plugin.getCore().getStorage().loadProfile(args[0]);
             if (profile == null) {
                 plugin.getCore().sendLocaleMessage("player-unknown", sender);
                 return;

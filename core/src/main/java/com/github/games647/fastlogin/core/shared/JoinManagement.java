@@ -1,10 +1,11 @@
 package com.github.games647.fastlogin.core.shared;
 
-import com.github.games647.fastlogin.core.PlayerProfile;
+import com.github.games647.craftapi.model.Profile;
+import com.github.games647.craftapi.resolver.RateLimitException;
+import com.github.games647.fastlogin.core.StoredProfile;
 import com.github.games647.fastlogin.core.hooks.AuthPlugin;
 
 import java.util.Optional;
-import java.util.UUID;
 
 import net.md_5.bungee.config.Configuration;
 
@@ -19,7 +20,7 @@ public abstract class JoinManagement<P extends C, C, S extends LoginSource> {
     }
 
     public void onLogin(String username, S source) {
-        PlayerProfile profile = core.getStorage().loadProfile(username);
+        StoredProfile profile = core.getStorage().loadProfile(username);
         if (profile == null) {
             return;
         }
@@ -44,9 +45,9 @@ public abstract class JoinManagement<P extends C, C, S extends LoginSource> {
                     return;
                 }
 
-                Optional<UUID> premiumUUID = Optional.empty();
+                Optional<Profile> premiumUUID = Optional.empty();
                 if (config.get("nameChangeCheck", false) || config.get("autoRegister", false)) {
-                    premiumUUID = core.getApiConnector().getPremiumUUID(username);
+                    premiumUUID = core.getResolver().findProfile(username);
                 }
 
                 if (!premiumUUID.isPresent()
@@ -61,12 +62,17 @@ public abstract class JoinManagement<P extends C, C, S extends LoginSource> {
                     startCrackedSession(source, profile, username);
                 }
             }
+        } catch (RateLimitException rateLimitEx) {
+            core.getPlugin().getLog().error("Mojang's rate limit reached for {}. The public IPv4 address of this" +
+                    " server issued more than 600 Name -> UUID requests within 10 minutes. After those 10" +
+                    " minutes we can make requests again.", username);
         } catch (Exception ex) {
+            core.getPlugin().getLog().error("Failed to check premium state for {}", username, ex);
             core.getPlugin().getLog().error("Failed to check premium state of {}", username, ex);
         }
     }
 
-    private boolean checkPremiumName(S source, String username, PlayerProfile profile) throws Exception {
+    private boolean checkPremiumName(S source, String username, StoredProfile profile) throws Exception {
         core.getPlugin().getLog().info("GameProfile {} uses a premium username", username);
         if (core.getConfig().get("autoRegister", false) && (authHook == null || !authHook.isRegistered(username))) {
             requestPremiumLogin(source, profile, username, false);
@@ -76,18 +82,18 @@ public abstract class JoinManagement<P extends C, C, S extends LoginSource> {
         return false;
     }
 
-    private boolean checkNameChange(S source, String username, UUID premiumUUID) {
+    private boolean checkNameChange(S source, String username, Profile profile) {
         //user not exists in the db
         if (core.getConfig().get("nameChangeCheck", false)) {
-            PlayerProfile profile = core.getStorage().loadProfile(premiumUUID);
-            if (profile != null) {
+            StoredProfile storedProfile = core.getStorage().loadProfile(profile.getId());
+            if (storedProfile != null) {
                 //uuid exists in the database
-                core.getPlugin().getLog().info("GameProfile {} changed it's username", premiumUUID);
+                core.getPlugin().getLog().info("GameProfile {} changed it's username", profile);
 
                 //update the username to the new one in the database
-                profile.setPlayerName(username);
+                storedProfile.setPlayerName(username);
 
-                requestPremiumLogin(source, profile, username, false);
+                requestPremiumLogin(source, storedProfile, username, false);
                 return true;
             }
         }
@@ -95,7 +101,7 @@ public abstract class JoinManagement<P extends C, C, S extends LoginSource> {
         return false;
     }
 
-    public abstract void requestPremiumLogin(S source, PlayerProfile profile, String username, boolean registered);
+    public abstract void requestPremiumLogin(S source, StoredProfile profile, String username, boolean registered);
 
-    public abstract void startCrackedSession(S source, PlayerProfile profile, String username);
+    public abstract void startCrackedSession(S source, StoredProfile profile, String username);
 }

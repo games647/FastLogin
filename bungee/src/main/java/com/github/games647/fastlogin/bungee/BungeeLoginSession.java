@@ -1,6 +1,6 @@
 package com.github.games647.fastlogin.bungee;
 
-import com.github.games647.fastlogin.core.PlayerProfile;
+import com.github.games647.fastlogin.core.StoredProfile;
 import com.github.games647.fastlogin.core.shared.LoginSession;
 
 public class BungeeLoginSession extends LoginSession {
@@ -8,7 +8,7 @@ public class BungeeLoginSession extends LoginSession {
     private boolean alreadySaved;
     private boolean alreadyLogged;
 
-    public BungeeLoginSession(String username, boolean registered, PlayerProfile profile) {
+    public BungeeLoginSession(String username, boolean registered, StoredProfile profile) {
         super(username, registered, profile);
     }
 

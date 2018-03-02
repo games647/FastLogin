@@ -1,5 +1,6 @@
 package com.github.games647.fastlogin.core;
 
+import com.github.games647.craftapi.cache.SafeCacheBuilder;
 import com.google.common.cache.CacheLoader;
 
 import java.lang.reflect.Constructor;
@@ -17,7 +18,7 @@ public class CommonUtil {
     private static final char TRANSLATED_CHAR = '§';
 
     public static <K, V> ConcurrentMap<K, V> buildCache(int expireAfterWrite, int maxSize) {
-        CompatibleCacheBuilder<Object, Object> builder = CompatibleCacheBuilder.newBuilder();
+        SafeCacheBuilder<Object, Object> builder = SafeCacheBuilder.newBuilder();
 
         if (expireAfterWrite > 0) {
             builder.expireAfterWrite(expireAfterWrite, TimeUnit.MINUTES);

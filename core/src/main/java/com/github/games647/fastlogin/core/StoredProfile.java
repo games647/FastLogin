@@ -1,29 +1,31 @@
 package com.github.games647.fastlogin.core;
 
+import com.github.games647.craftapi.model.Profile;
+
 import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 
-public class PlayerProfile {
+import javax.annotation.Nullable;
 
-    private String playerName;
+public class StoredProfile extends Profile {
+
     private long rowId;
 
-    private UUID uuid;
     private boolean premium;
     private String lastIp;
     private Instant lastLogin;
 
-    public PlayerProfile(long rowId, UUID uuid, String playerName, boolean premium, String lastIp, Instant lastLogin) {
+    public StoredProfile(long rowId, UUID uuid, String playerName, boolean premium, String lastIp, Instant lastLogin) {
+        super(uuid, playerName);
+
         this.rowId = rowId;
-        this.uuid = uuid;
-        this.playerName = playerName;
         this.premium = premium;
         this.lastIp = lastIp;
         this.lastLogin = lastLogin;
     }
 
-    public PlayerProfile(UUID uuid, String playerName, boolean premium, String lastIp) {
+    public StoredProfile(UUID uuid, String playerName, boolean premium, String lastIp) {
         this(-1, uuid, playerName, premium, lastIp, Instant.now());
     }
 
@@ -31,12 +33,8 @@ public class PlayerProfile {
         return rowId >= 0;
     }
 
-    public synchronized String getPlayerName() {
-        return playerName;
-    }
-
     public synchronized void setPlayerName(String playerName) {
-        this.playerName = playerName;
+        this.name = playerName;
     }
 
     public synchronized long getRowId() {
@@ -47,12 +45,17 @@ public class PlayerProfile {
         this.rowId = generatedId;
     }
 
-    public synchronized Optional<UUID> getId() {
-        return Optional.ofNullable(uuid);
+    @Nullable
+    public synchronized UUID getId() {
+        return id;
     }
 
-    public synchronized void setId(UUID uuid) {
-        this.uuid = uuid;
+    public synchronized Optional<UUID> getOptId() {
+        return Optional.ofNullable(id);
+    }
+
+    public synchronized void setId(UUID uniqueId) {
+        this.id = uniqueId;
     }
 
     public synchronized boolean isPremium() {
@@ -82,12 +85,10 @@ public class PlayerProfile {
     @Override
     public synchronized String toString() {
         return this.getClass().getSimpleName() + '{' +
-                "playerName='" + playerName + '\'' +
-                ", rowId=" + rowId +
-                ", uuid=" + uuid +
+                "rowId=" + rowId +
                 ", premium=" + premium +
                 ", lastIp='" + lastIp + '\'' +
                 ", lastLogin=" + lastLogin +
-                '}';
+                "} " + super.toString();
     }
 }

@@ -1,19 +1,19 @@
 package com.github.games647.fastlogin.core.shared;
 
-import com.github.games647.fastlogin.core.PlayerProfile;
+import com.github.games647.fastlogin.core.StoredProfile;
 
 import java.util.UUID;
 
 public abstract class LoginSession {
 
     private final String username;
-    private final PlayerProfile profile;
+    private final StoredProfile profile;
     
     private UUID uuid;
 
     protected boolean registered;
 
-    public LoginSession(String username, boolean registered, PlayerProfile profile) {
+    public LoginSession(String username, boolean registered, StoredProfile profile) {
         this.username = username;
         this.registered = registered;
         this.profile = profile;
@@ -32,7 +32,7 @@ public abstract class LoginSession {
         return !registered;
     }
 
-    public PlayerProfile getProfile() {
+    public StoredProfile getProfile() {
         return profile;
     }
 

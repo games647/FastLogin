@@ -5,17 +5,14 @@ import com.github.games647.fastlogin.bungee.listener.ConnectListener;
 import com.github.games647.fastlogin.bungee.listener.MessageListener;
 import com.github.games647.fastlogin.core.CommonUtil;
 import com.github.games647.fastlogin.core.messages.ChannelMessage;
-import com.github.games647.fastlogin.core.mojang.MojangApiConnector;
 import com.github.games647.fastlogin.core.shared.FastLoginCore;
 import com.github.games647.fastlogin.core.shared.PlatformPlugin;
 import com.google.common.collect.MapMaker;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
-import com.google.common.net.HostAndPort;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 import java.nio.file.Path;
-import java.util.List;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ThreadFactory;
 
@@ -121,10 +118,5 @@ public class FastLoginBungee extends Plugin implements PlatformPlugin<CommandSen
                 .setDaemon(true)
                 .setThreadFactory(new GroupedThreadFactory(this, getName()))
                 .build();
-    }
-
-    @Override
-    public MojangApiConnector makeApiConnector(List<String> addresses, int requests, List<HostAndPort> proxies) {
-        return new MojangApiConnector(logger, addresses, requests, proxies);
     }
 }

@@ -1,7 +1,7 @@
 package com.github.games647.fastlogin.bungee.tasks;
 
 import com.github.games647.fastlogin.bungee.FastLoginBungee;
-import com.github.games647.fastlogin.core.PlayerProfile;
+import com.github.games647.fastlogin.core.StoredProfile;
 import com.github.games647.fastlogin.core.shared.FastLoginCore;
 
 import net.md_5.bungee.api.CommandSender;
@@ -36,7 +36,7 @@ public class AsyncToggleMessage implements Runnable {
     }
 
     private void turnOffPremium() {
-        PlayerProfile playerProfile = core.getStorage().loadProfile(targetPlayer);
+        StoredProfile playerProfile = core.getStorage().loadProfile(targetPlayer);
         //existing player is already cracked
         if (playerProfile.isSaved() && !playerProfile.isPremium()) {
             sendMessage("not-premium");
@@ -50,7 +50,7 @@ public class AsyncToggleMessage implements Runnable {
     }
 
     private void activatePremium() {
-        PlayerProfile playerProfile = core.getStorage().loadProfile(targetPlayer);
+        StoredProfile playerProfile = core.getStorage().loadProfile(targetPlayer);
         if (playerProfile.isPremium()) {
             sendMessage("already-exists");
             return;

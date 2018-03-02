@@ -19,6 +19,11 @@
             <id>luck-repo</id>
             <url>https://ci.lucko.me/plugin/repository/everything</url>
         </repository>
+
+        <repository>
+            <id>codemc-repo</id>
+            <url>https://repo.codemc.org/repository/maven-public/</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -56,6 +61,12 @@
                     <artifactId>*</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.games647</groupId>
+            <artifactId>craftapi</artifactId>
+            <version>0.1</version>
         </dependency>
 
         <!-- APIs we can use because they are available in all platforms (Spigot, Bungee, Cauldron) -->

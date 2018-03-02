@@ -4,7 +4,7 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketEvent;
 import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
-import com.github.games647.fastlogin.core.PlayerProfile;
+import com.github.games647.fastlogin.core.StoredProfile;
 import com.github.games647.fastlogin.core.shared.JoinManagement;
 
 import java.security.PublicKey;
@@ -49,8 +49,8 @@ public class NameCheckTask extends JoinManagement<Player, CommandSender, Protoco
     //Minecraft server implementation
     //https://github.com/bergerkiller/CraftSource/blob/master/net.minecraft.server/LoginListener.java#L161
     @Override
-    public void requestPremiumLogin(ProtocolLibLoginSource source, PlayerProfile profile,
-                                    String username, boolean registered) {
+    public void requestPremiumLogin(ProtocolLibLoginSource source, StoredProfile profile
+            , String username, boolean registered) {
         try {
             source.setOnlineMode();
         } catch (Exception ex) {
@@ -73,7 +73,7 @@ public class NameCheckTask extends JoinManagement<Player, CommandSender, Protoco
     }
 
     @Override
-    public void startCrackedSession(ProtocolLibLoginSource source, PlayerProfile profile, String username) {
+    public void startCrackedSession(ProtocolLibLoginSource source, StoredProfile profile, String username) {
         BukkitLoginSession loginSession = new BukkitLoginSession(username, profile);
         plugin.getLoginSessions().put(player.getAddress().toString(), loginSession);
     }

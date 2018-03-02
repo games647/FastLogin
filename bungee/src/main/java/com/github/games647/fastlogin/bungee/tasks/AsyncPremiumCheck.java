@@ -3,7 +3,7 @@ package com.github.games647.fastlogin.bungee.tasks;
 import com.github.games647.fastlogin.bungee.BungeeLoginSession;
 import com.github.games647.fastlogin.bungee.BungeeLoginSource;
 import com.github.games647.fastlogin.bungee.FastLoginBungee;
-import com.github.games647.fastlogin.core.PlayerProfile;
+import com.github.games647.fastlogin.core.StoredProfile;
 import com.github.games647.fastlogin.core.shared.JoinManagement;
 
 import net.md_5.bungee.api.CommandSender;
@@ -42,7 +42,7 @@ public class AsyncPremiumCheck extends JoinManagement<ProxiedPlayer, CommandSend
     }
 
     @Override
-    public void requestPremiumLogin(BungeeLoginSource source, PlayerProfile profile,
+    public void requestPremiumLogin(BungeeLoginSource source, StoredProfile profile,
                                     String username, boolean registered) {
         source.setOnlineMode();
         plugin.getSession().put(source.getConnection(), new BungeeLoginSession(username, registered, profile));
@@ -52,7 +52,7 @@ public class AsyncPremiumCheck extends JoinManagement<ProxiedPlayer, CommandSend
     }
 
     @Override
-    public void startCrackedSession(BungeeLoginSource source, PlayerProfile profile, String username) {
+    public void startCrackedSession(BungeeLoginSource source, StoredProfile profile, String username) {
         plugin.getSession().put(source.getConnection(), new BungeeLoginSession(username, false, profile));
     }
 }

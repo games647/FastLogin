@@ -1,7 +1,7 @@
 package com.github.games647.fastlogin.core.shared;
 
 import com.github.games647.fastlogin.core.AuthStorage;
-import com.github.games647.fastlogin.core.PlayerProfile;
+import com.github.games647.fastlogin.core.StoredProfile;
 import com.github.games647.fastlogin.core.hooks.AuthPlugin;
 
 public abstract class ForceLoginManagement<P extends C, C, L extends LoginSession, T extends PlatformPlugin<C>>
@@ -25,7 +25,7 @@ public abstract class ForceLoginManagement<P extends C, C, L extends LoginSessio
 
         AuthStorage storage = core.getStorage();
 
-        PlayerProfile playerProfile = session.getProfile();
+        StoredProfile playerProfile = session.getProfile();
         try {
             if (isOnlineMode()) {
                 //premium player

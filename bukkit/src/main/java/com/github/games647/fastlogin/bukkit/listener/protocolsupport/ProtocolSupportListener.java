@@ -1,9 +1,9 @@
 package com.github.games647.fastlogin.bukkit.listener.protocolsupport;
 
+import com.github.games647.craftapi.model.skin.SkinProperty;
 import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
-import com.github.games647.fastlogin.core.PlayerProfile;
-import com.github.games647.fastlogin.core.mojang.SkinProperties;
+import com.github.games647.fastlogin.core.StoredProfile;
 import com.github.games647.fastlogin.core.shared.JoinManagement;
 
 import java.net.InetSocketAddress;
@@ -47,13 +47,13 @@ public class ProtocolSupportListener extends JoinManagement<Player, CommandSende
         BukkitLoginSession session = plugin.getLoginSessions().get(address.toString());
 
         //skin was resolved -> premium player
-        if (propertiesResolveEvent.hasProperty(SkinProperties.TEXTURE_KEY) && session != null) {
+        if (propertiesResolveEvent.hasProperty(SkinProperty.TEXTURE_KEY) && session != null) {
             session.setVerified(true);
         }
     }
 
     @Override
-    public void requestPremiumLogin(ProtocolLoginSource source, PlayerProfile profile, String username
+    public void requestPremiumLogin(ProtocolLoginSource source, StoredProfile profile, String username
             , boolean registered) {
         source.setOnlineMode();
 
@@ -69,7 +69,7 @@ public class ProtocolSupportListener extends JoinManagement<Player, CommandSende
     }
 
     @Override
-    public void startCrackedSession(ProtocolLoginSource source, PlayerProfile profile, String username) {
+    public void startCrackedSession(ProtocolLoginSource source, StoredProfile profile, String username) {
         BukkitLoginSession loginSession = new BukkitLoginSession(username, profile);
         plugin.getLoginSessions().put(source.getAddress().toString(), loginSession);
     }

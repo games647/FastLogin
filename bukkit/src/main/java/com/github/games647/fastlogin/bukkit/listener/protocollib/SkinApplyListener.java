@@ -6,9 +6,9 @@ import com.comphenix.protocol.reflect.accessors.MethodAccessor;
 import com.comphenix.protocol.utility.MinecraftReflection;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
 import com.comphenix.protocol.wrappers.WrappedSignedProperty;
+import com.github.games647.craftapi.model.skin.SkinProperty;
 import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
-import com.github.games647.fastlogin.core.mojang.SkinProperties;
 
 import java.lang.reflect.InvocationTargetException;
 
@@ -54,14 +54,14 @@ public class SkinApplyListener implements Listener {
     private void applySkin(Player player, String skinData, String signature) {
         WrappedGameProfile gameProfile = WrappedGameProfile.fromPlayer(player);
 
-        WrappedSignedProperty skin = WrappedSignedProperty.fromValues(SkinProperties.TEXTURE_KEY, skinData, signature);
+        WrappedSignedProperty skin = WrappedSignedProperty.fromValues(SkinProperty.TEXTURE_KEY, skinData, signature);
         try {
-            gameProfile.getProperties().put(SkinProperties.TEXTURE_KEY, skin);
+            gameProfile.getProperties().put(SkinProperty.TEXTURE_KEY, skin);
         } catch (ClassCastException castException) {
             //Cauldron, MCPC, Thermos, ...
             Object map = GET_PROPERTIES.invoke(gameProfile.getHandle());
             try {
-                MethodUtils.invokeMethod(map, "put", new Object[]{SkinProperties.TEXTURE_KEY, skin.getHandle()});
+                MethodUtils.invokeMethod(map, "put", new Object[]{SkinProperty.TEXTURE_KEY, skin.getHandle()});
             } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException ex) {
                 plugin.getLog().error("Error setting premium skin of: {}", player, ex);
             }
