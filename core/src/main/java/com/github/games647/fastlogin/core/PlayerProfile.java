@@ -7,15 +7,15 @@ public class PlayerProfile {
 
     private String playerName;
 
-    private long userId;
+    private long rowId;
 
     private UUID uuid;
     private boolean premium;
     private String lastIp;
     private Instant lastLogin;
 
-    public PlayerProfile(long userId, UUID uuid, String playerName, boolean premium, String lastIp, Instant lastLogin) {
-        this.userId = userId;
+    public PlayerProfile(long rowId, UUID uuid, String playerName, boolean premium, String lastIp, Instant lastLogin) {
+        this.rowId = rowId;
         this.uuid = uuid;
         this.playerName = playerName;
         this.premium = premium;
@@ -27,6 +27,10 @@ public class PlayerProfile {
         this(-1, uuid, playerName, premium, lastIp, Instant.now());
     }
 
+    public synchronized boolean isSaved() {
+        return rowId >= 0;
+    }
+
     public synchronized String getPlayerName() {
         return playerName;
     }
@@ -35,12 +39,12 @@ public class PlayerProfile {
         this.playerName = playerName;
     }
 
-    public synchronized long getUserId() {
-        return userId;
+    public synchronized long getRowId() {
+        return rowId;
     }
 
-    public synchronized void setUserId(long generatedId) {
-        this.userId = generatedId;
+    public synchronized void setRowId(long generatedId) {
+        this.rowId = generatedId;
     }
 
     //todo: this should be optional
@@ -80,7 +84,7 @@ public class PlayerProfile {
     public String toString() {
         return this.getClass().getSimpleName() + '{' +
                 "playerName='" + playerName + '\'' +
-                ", userId=" + userId +
+                ", rowId=" + rowId +
                 ", uuid=" + uuid +
                 ", premium=" + premium +
                 ", lastIp='" + lastIp + '\'' +

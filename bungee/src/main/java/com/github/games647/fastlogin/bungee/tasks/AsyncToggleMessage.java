@@ -38,7 +38,7 @@ public class AsyncToggleMessage implements Runnable {
     private void turnOffPremium() {
         PlayerProfile playerProfile = core.getStorage().loadProfile(targetPlayer);
         //existing player is already cracked
-        if (playerProfile.getUserId() != -1 && !playerProfile.isPremium()) {
+        if (playerProfile.isSaved() && !playerProfile.isPremium()) {
             sendMessage("not-premium");
             return;
         }

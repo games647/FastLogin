@@ -143,8 +143,23 @@ public class AuthStorage {
     public void save(PlayerProfile playerProfile) {
         try (Connection con = dataSource.getConnection()) {
             UUID uuid = playerProfile.getUuid();
-            
-            if (playerProfile.getUserId() == -1) {
+
+            if (playerProfile.isSaved()) {
+                try (PreparedStatement saveStmt = con.prepareStatement(UPDATE_PROFILE)) {
+                    if (uuid == null) {
+                        saveStmt.setString(1, null);
+                    } else {
+                        saveStmt.setString(1, UUIDTypeAdapter.toMojangId(uuid));
+                    }
+
+                    saveStmt.setString(2, playerProfile.getPlayerName());
+                    saveStmt.setBoolean(3, playerProfile.isPremium());
+                    saveStmt.setString(4, playerProfile.getLastIp());
+
+                    saveStmt.setLong(5, playerProfile.getRowId());
+                    saveStmt.execute();
+                }
+            } else {
                 try (PreparedStatement saveStmt = con.prepareStatement(INSERT_PROFILE, RETURN_GENERATED_KEYS)) {
                     if (uuid == null) {
                         saveStmt.setString(1, null);
@@ -160,24 +175,9 @@ public class AuthStorage {
 
                     try (ResultSet generatedKeys = saveStmt.getGeneratedKeys()) {
                         if (generatedKeys != null && generatedKeys.next()) {
-                            playerProfile.setUserId(generatedKeys.getInt(1));
+                            playerProfile.setRowId(generatedKeys.getInt(1));
                         }
                     }
-                }
-            } else {
-                try (PreparedStatement saveStmt = con.prepareStatement(UPDATE_PROFILE)) {
-                    if (uuid == null) {
-                        saveStmt.setString(1, null);
-                    } else {
-                        saveStmt.setString(1, UUIDTypeAdapter.toMojangId(uuid));
-                    }
-
-                    saveStmt.setString(2, playerProfile.getPlayerName());
-                    saveStmt.setBoolean(3, playerProfile.isPremium());
-                    saveStmt.setString(4, playerProfile.getLastIp());
-
-                    saveStmt.setLong(5, playerProfile.getUserId());
-                    saveStmt.execute();
                 }
             }
 

@@ -29,7 +29,13 @@ public abstract class JoinManagement<P extends C, C, S extends LoginSource> {
         String ip = source.getAddress().getAddress().getHostAddress();
         profile.setLastIp(ip);
         try {
-            if (profile.getUserId() == -1) {
+            if (profile.isSaved()) {
+                if (profile.isPremium()) {
+                    requestPremiumLogin(source, profile, username, true);
+                } else {
+                    startCrackedSession(source, profile, username);
+                }
+            } else {
                 if (core.getPendingLogin().remove(ip + username) != null && config.get("secondAttemptCracked", false)) {
                     core.getPlugin().getLog().info("Second attempt login -> cracked {}", username);
 
@@ -54,10 +60,6 @@ public abstract class JoinManagement<P extends C, C, S extends LoginSource> {
 
                     startCrackedSession(source, profile, username);
                 }
-            } else if (profile.isPremium()) {
-                requestPremiumLogin(source, profile, username, true);
-            } else {
-                startCrackedSession(source, profile, username);
             }
         } catch (Exception ex) {
             core.getPlugin().getLog().error("Failed to check premium state", ex);
