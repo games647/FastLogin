@@ -76,8 +76,8 @@
 
         <!--AuthMe Reloaded and xAuth -->
         <repository>
-            <id>xephi-repo</id>
-            <url>https://ci.codemc.org/plugin/repository/everything/</url>
+            <id>codemc-repo</id>
+            <url>https://repo.codemc.org/repository/maven-public/</url>
         </repository>
 
         <!--GitHub automatic maven builds-->

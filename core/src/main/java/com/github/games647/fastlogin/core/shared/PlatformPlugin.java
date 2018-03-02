@@ -19,7 +19,9 @@ public interface PlatformPlugin<C> {
 
     void sendMessage(C receiver, String message);
 
-    ThreadFactory getThreadFactory();
+    default ThreadFactory getThreadFactory() {
+        return null;
+    }
 
     MojangApiConnector makeApiConnector(List<String> addresses, int requests, List<HostAndPort> proxies);
 }

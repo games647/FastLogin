@@ -1,12 +1,10 @@
 package com.github.games647.fastlogin.bukkit.hooks;
 
-import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 import com.github.games647.fastlogin.core.hooks.AuthPlugin;
 
 import fr.xephi.authme.api.v3.AuthMeApi;
 
 import org.bukkit.entity.Player;
-import org.bukkit.event.Listener;
 
 /**
  * GitHub: https://github.com/Xephi/AuthMeReloaded/
@@ -17,23 +15,16 @@ import org.bukkit.event.Listener;
  * <p>
  * Spigot: https://www.spigotmc.org/resources/authme-reloaded.6269/
  */
-public class AuthMeHook implements AuthPlugin<Player>, Listener {
-
-    private final FastLoginBukkit plugin;
-
-    public AuthMeHook(FastLoginBukkit plugin) {
-        this.plugin = plugin;
-    }
+public class AuthMeHook implements AuthPlugin<Player> {
 
     @Override
     public boolean forceLogin(Player player) {
         //skips registration and login
         if (AuthMeApi.getInstance().isAuthenticated(player)) {
             return false;
-        } else {
-            AuthMeApi.getInstance().forceLogin(player);
         }
 
+        AuthMeApi.getInstance().forceLogin(player);
         return true;
     }
 

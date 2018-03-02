@@ -8,6 +8,7 @@ import com.github.games647.fastlogin.core.messages.ChannelMessage;
 import com.github.games647.fastlogin.core.mojang.MojangApiConnector;
 import com.github.games647.fastlogin.core.shared.FastLoginCore;
 import com.github.games647.fastlogin.core.shared.PlatformPlugin;
+import com.google.common.collect.MapMaker;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import com.google.common.net.HostAndPort;
@@ -15,7 +16,6 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 import java.nio.file.Path;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ThreadFactory;
 
@@ -34,7 +34,7 @@ import org.slf4j.Logger;
  */
 public class FastLoginBungee extends Plugin implements PlatformPlugin<CommandSender> {
 
-    private final ConcurrentMap<PendingConnection, BungeeLoginSession> session = new ConcurrentHashMap<>();
+    private final ConcurrentMap<PendingConnection, BungeeLoginSession> session = new MapMaker().weakKeys().makeMap();
 
     private FastLoginCore<ProxiedPlayer, CommandSender, FastLoginBungee> core;
     private Logger logger;

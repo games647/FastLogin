@@ -23,7 +23,6 @@ import java.security.KeyPair;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.ThreadFactory;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -127,7 +126,6 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
             ChannelMessage message = new ChangePremiumMessage(target, activate, true);
             sendPluginMessage((PluginMessageRecipient) invoker, message);
         } else {
-
             Optional<? extends Player> optPlayer = getServer().getOnlinePlayers().stream().findFirst();
             if (!optPlayer.isPresent()) {
                 logger.info("No player online to send a plugin message to the proxy");
@@ -202,12 +200,6 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
     @Override
     public void sendMessage(CommandSender receiver, String message) {
         receiver.sendMessage(message);
-    }
-
-    @Override
-    public ThreadFactory getThreadFactory() {
-        //not required here to make a custom thread factory
-        return null;
     }
 
     @Override

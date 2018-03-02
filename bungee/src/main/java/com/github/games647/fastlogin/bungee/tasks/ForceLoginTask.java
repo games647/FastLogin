@@ -4,6 +4,7 @@ import com.github.games647.fastlogin.bungee.BungeeLoginSession;
 import com.github.games647.fastlogin.bungee.FastLoginBungee;
 import com.github.games647.fastlogin.core.messages.ChannelMessage;
 import com.github.games647.fastlogin.core.messages.ForceActionMessage;
+import com.github.games647.fastlogin.core.messages.ForceActionMessage.Type;
 import com.github.games647.fastlogin.core.shared.FastLoginCore;
 import com.github.games647.fastlogin.core.shared.ForceLoginManagement;
 import com.github.games647.fastlogin.core.shared.LoginSession;
@@ -59,9 +60,9 @@ public class ForceLoginTask
     @Override
     public void onForceActionSuccess(LoginSession session) {
         //sub channel name
-        String type = "AUTO_LOGIN";
+        Type type = Type.LOGIN;
         if (session.needsRegistration()) {
-            type = "AUTO_REGISTER";
+            type = Type.LOGIN;
         }
 
         UUID proxyId = UUID.fromString(ProxyServer.getInstance().getConfig().getUuid());

@@ -32,7 +32,6 @@
     </modules>
 
     <build>
-        <defaultGoal>install</defaultGoal>
         <!--Just use the project name to replace an old version of the plugin if the user does only copy-paste-->
         <finalName>${project.name}</finalName>
 

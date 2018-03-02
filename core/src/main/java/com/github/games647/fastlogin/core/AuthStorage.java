@@ -1,5 +1,6 @@
 package com.github.games647.fastlogin.core;
 
+import com.github.games647.fastlogin.core.mojang.UUIDTypeAdapter;
 import com.github.games647.fastlogin.core.shared.FastLoginCore;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
@@ -35,6 +36,8 @@ public class AuthStorage {
         this.core = core;
 
         HikariConfig config = new HikariConfig();
+        config.setPoolName(core.getPlugin().getName());
+
         config.setUsername(user);
         config.setPassword(pass);
         config.setDriverClassName(driver);
@@ -97,7 +100,7 @@ public class AuthStorage {
                 if (resultSet.next()) {
                     long userId = resultSet.getInt(1);
 
-                    UUID uuid = CommonUtil.parseId(resultSet.getString(2));
+                    UUID uuid = UUIDTypeAdapter.parseId(resultSet.getString(2));
 
                     boolean premium = resultSet.getBoolean(4);
                     String lastIp = resultSet.getString(5);
@@ -117,7 +120,7 @@ public class AuthStorage {
     public PlayerProfile loadProfile(UUID uuid) {
         try (Connection con = dataSource.getConnection();
              PreparedStatement loadStmt = con.prepareStatement(LOAD_BY_UUID)) {
-            loadStmt.setString(1, CommonUtil.toMojangId(uuid));
+            loadStmt.setString(1, UUIDTypeAdapter.toMojangId(uuid));
 
             try (ResultSet resultSet = loadStmt.executeQuery()) {
                 if (resultSet.next()) {
@@ -146,7 +149,7 @@ public class AuthStorage {
                     if (uuid == null) {
                         saveStmt.setString(1, null);
                     } else {
-                        saveStmt.setString(1, CommonUtil.toMojangId(uuid));
+                        saveStmt.setString(1, UUIDTypeAdapter.toMojangId(uuid));
                     }
 
                     saveStmt.setString(2, playerProfile.getPlayerName());
@@ -166,7 +169,7 @@ public class AuthStorage {
                     if (uuid == null) {
                         saveStmt.setString(1, null);
                     } else {
-                        saveStmt.setString(1, CommonUtil.toMojangId(uuid));
+                        saveStmt.setString(1, UUIDTypeAdapter.toMojangId(uuid));
                     }
 
                     saveStmt.setString(2, playerProfile.getPlayerName());

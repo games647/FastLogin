@@ -30,6 +30,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLSocketFactory;
@@ -98,8 +99,8 @@ public class MojangApiConnector {
 
             if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
                 try (BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
-                    String line = reader.readLine();
-                    return Optional.of(getUUIDFromJson(line));
+                    String content = reader.lines().collect(Collectors.joining());
+                    return Optional.of(getUUIDFromJson(content));
                 }
             } else if (connection.getResponseCode() == RATE_LIMIT_CODE) {
                 logger.info("Mojang's rate-limit reached. The public IPv4 address of this server issued more than 600" +
