@@ -44,11 +44,7 @@ public class SkinApplyListener implements Listener {
             //loginEvent.getAddress is just a InetAddress not InetSocketAddress, so not unique enough
             for (BukkitLoginSession session : plugin.getLoginSessions().values()) {
                 if (session.getUsername().equals(player.getName())) {
-                    SkinProperties skinProperty = session.getSkinProperty();
-                    if (skinProperty != null) {
-                        applySkin(player, skinProperty.getValue(), skinProperty.getSignature());
-                    }
-
+                    session.getSkin().ifPresent(skin -> applySkin(player, skin.getValue(), skin.getSignature()));
                     break;
                 }
             }

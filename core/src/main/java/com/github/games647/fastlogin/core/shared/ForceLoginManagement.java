@@ -49,7 +49,7 @@ public abstract class ForceLoginManagement<P extends C, C, L extends LoginSessio
                     if (success) {
                         //update only on success to prevent corrupt data
                         if (playerProfile != null) {
-                            playerProfile.setUuid(session.getUuid());
+                            playerProfile.setId(session.getUuid());
                             playerProfile.setPremium(true);
                             storage.save(playerProfile);
                         }
@@ -59,7 +59,7 @@ public abstract class ForceLoginManagement<P extends C, C, L extends LoginSessio
                 }
             } else if (playerProfile != null) {
                 //cracked player
-                playerProfile.setUuid(null);
+                playerProfile.setId(null);
                 playerProfile.setPremium(false);
                 storage.save(playerProfile);
             }

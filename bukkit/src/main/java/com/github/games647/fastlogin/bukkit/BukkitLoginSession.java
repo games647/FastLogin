@@ -4,6 +4,8 @@ import com.github.games647.fastlogin.core.PlayerProfile;
 import com.github.games647.fastlogin.core.mojang.SkinProperties;
 import com.github.games647.fastlogin.core.shared.LoginSession;
 
+import java.util.Optional;
+
 import org.apache.commons.lang.ArrayUtils;
 
 /**
@@ -63,8 +65,8 @@ public class BukkitLoginSession extends LoginSession {
     }
 
     //todo: this should be optional for players without a skin at all
-    public synchronized SkinProperties getSkinProperty() {
-        return skinProperty;
+    public synchronized Optional<SkinProperties> getSkin() {
+        return Optional.ofNullable(skinProperty);
     }
 
     /**

@@ -142,16 +142,11 @@ public class AuthStorage {
 
     public void save(PlayerProfile playerProfile) {
         try (Connection con = dataSource.getConnection()) {
-            UUID uuid = playerProfile.getUuid();
+            String uuid = playerProfile.getId().map(UUIDTypeAdapter::toMojangId).orElse(null);
 
             if (playerProfile.isSaved()) {
                 try (PreparedStatement saveStmt = con.prepareStatement(UPDATE_PROFILE)) {
-                    if (uuid == null) {
-                        saveStmt.setString(1, null);
-                    } else {
-                        saveStmt.setString(1, UUIDTypeAdapter.toMojangId(uuid));
-                    }
-
+                    saveStmt.setString(1, uuid);
                     saveStmt.setString(2, playerProfile.getPlayerName());
                     saveStmt.setBoolean(3, playerProfile.isPremium());
                     saveStmt.setString(4, playerProfile.getLastIp());
@@ -161,11 +156,7 @@ public class AuthStorage {
                 }
             } else {
                 try (PreparedStatement saveStmt = con.prepareStatement(INSERT_PROFILE, RETURN_GENERATED_KEYS)) {
-                    if (uuid == null) {
-                        saveStmt.setString(1, null);
-                    } else {
-                        saveStmt.setString(1, UUIDTypeAdapter.toMojangId(uuid));
-                    }
+                    saveStmt.setString(1, uuid);
 
                     saveStmt.setString(2, playerProfile.getPlayerName());
                     saveStmt.setBoolean(3, playerProfile.isPremium());

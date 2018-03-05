@@ -1,6 +1,7 @@
 package com.github.games647.fastlogin.core;
 
 import java.time.Instant;
+import java.util.Optional;
 import java.util.UUID;
 
 public class PlayerProfile {
@@ -48,11 +49,11 @@ public class PlayerProfile {
     }
 
     //todo: this should be optional
-    public synchronized UUID getUuid() {
-        return uuid;
+    public synchronized Optional<UUID> getId() {
+        return Optional.ofNullable(uuid);
     }
 
-    public synchronized void setUuid(UUID uuid) {
+    public synchronized void setId(UUID uuid) {
         this.uuid = uuid;
     }
 
@@ -81,7 +82,7 @@ public class PlayerProfile {
     }
 
     @Override
-    public String toString() {
+    public synchronized String toString() {
         return this.getClass().getSimpleName() + '{' +
                 "playerName='" + playerName + '\'' +
                 ", rowId=" + rowId +

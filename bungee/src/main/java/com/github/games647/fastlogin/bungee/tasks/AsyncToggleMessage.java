@@ -44,7 +44,7 @@ public class AsyncToggleMessage implements Runnable {
         }
 
         playerProfile.setPremium(false);
-        playerProfile.setUuid(null);
+        playerProfile.setId(null);
         core.getStorage().save(playerProfile);
         sendMessage("remove-premium");
     }
