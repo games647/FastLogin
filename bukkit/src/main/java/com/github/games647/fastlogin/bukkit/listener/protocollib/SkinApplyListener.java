@@ -63,7 +63,7 @@ public class SkinApplyListener implements Listener {
             try {
                 MethodUtils.invokeMethod(map, "put", new Object[]{SkinProperties.TEXTURE_KEY, skin.getHandle()});
             } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException ex) {
-                plugin.getLog().error("Error setting premium skin", ex);
+                plugin.getLog().error("Error setting premium skin of: {}", player, ex);
             }
         }
     }

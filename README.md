@@ -26,15 +26,15 @@ So they don't need to enter passwords. This is also called auto login (auto-logi
 ***
 
 ### Commands:
-    * /premium [player] Label the invoker or the argument as paid account
-    * /cracked [player] Label the invoker or the argument as cracked account
+    /premium [player] Label the invoker or the argument as paid account
+    /cracked [player] Label the invoker or the argument as cracked account
 
 ### Permissions:
-    * fastlogin.bukkit.command.premium
-    * fastlogin.bukkit.command.cracked
-    * fastlogin.command.premium.other
-    * fastlogin.command.cracked.other
-    * fastlogin.command.import
+    fastlogin.bukkit.command.premium
+    fastlogin.bukkit.command.cracked
+    fastlogin.command.premium.other
+    fastlogin.command.cracked.other
+    fastlogin.command.import
 
 ### Requirements:
 * Plugin: [ProtocolLib](https://www.spigotmc.org/resources/protocollib.1997/) or 

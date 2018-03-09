@@ -17,7 +17,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -42,7 +41,7 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
     protected final Map<String, String> localeMessages = new ConcurrentHashMap<>();
 
     private final ConcurrentMap<String, Object> pendingLogin = CommonUtil.buildCache(5, -1);
-    private final Set<UUID> pendingConfirms = new HashSet<>();
+    private final Collection<UUID> pendingConfirms = new HashSet<>();
     private final T plugin;
 
     private Configuration config;

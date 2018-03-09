@@ -11,6 +11,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.Instant;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.UUID;
 import java.util.concurrent.ThreadFactory;
@@ -93,25 +94,15 @@ public class AuthStorage {
 
     public PlayerProfile loadProfile(String name) {
         try (Connection con = dataSource.getConnection();
-             PreparedStatement loadStmt = con.prepareStatement(LOAD_BY_NAME)) {
+             PreparedStatement loadStmt = con.prepareStatement(LOAD_BY_NAME)
+        ) {
             loadStmt.setString(1, name);
 
             try (ResultSet resultSet = loadStmt.executeQuery()) {
-                if (resultSet.next()) {
-                    long userId = resultSet.getInt(1);
-
-                    UUID uuid = UUIDTypeAdapter.parseId(resultSet.getString(2));
-
-                    boolean premium = resultSet.getBoolean(4);
-                    String lastIp = resultSet.getString(5);
-                    Instant lastLogin = resultSet.getTimestamp(6).toInstant();
-                    return new PlayerProfile(userId, uuid, name, premium, lastIp, lastLogin);
-                } else {
-                    return new PlayerProfile(null, name, false, "");
-                }
+                return parseResult(resultSet).orElseGet(() -> new PlayerProfile(null, name, false, ""));
             }
         } catch (SQLException sqlEx) {
-            core.getPlugin().getLog().error("Failed to query profile", sqlEx);
+            core.getPlugin().getLog().error("Failed to query profile: {}", name, sqlEx);
         }
 
         return null;
@@ -119,25 +110,34 @@ public class AuthStorage {
 
     public PlayerProfile loadProfile(UUID uuid) {
         try (Connection con = dataSource.getConnection();
-             PreparedStatement loadStmt = con.prepareStatement(LOAD_BY_UUID)) {
+             PreparedStatement loadStmt = con.prepareStatement(LOAD_BY_UUID)
+        ) {
             loadStmt.setString(1, UUIDTypeAdapter.toMojangId(uuid));
 
             try (ResultSet resultSet = loadStmt.executeQuery()) {
-                if (resultSet.next()) {
-                    long userId = resultSet.getInt(1);
-
-                    String name = resultSet.getString(3);
-                    boolean premium = resultSet.getBoolean(4);
-                    String lastIp = resultSet.getString(5);
-                    Instant lastLogin = resultSet.getTimestamp(6).toInstant();
-                    return new PlayerProfile(userId, uuid, name, premium, lastIp, lastLogin);
-                }
+                return parseResult(resultSet).orElse(null);
             }
         } catch (SQLException sqlEx) {
-            core.getPlugin().getLog().error("Failed to query profile", sqlEx);
+            core.getPlugin().getLog().error("Failed to query profile: {}", uuid, sqlEx);
         }
 
         return null;
+    }
+
+    private Optional<PlayerProfile> parseResult(ResultSet resultSet) throws SQLException {
+        if (resultSet.next()) {
+            long userId = resultSet.getInt(1);
+
+            UUID uuid = UUIDTypeAdapter.parseId(resultSet.getString(2));
+
+            String name = resultSet.getString(3);
+            boolean premium = resultSet.getBoolean(4);
+            String lastIp = resultSet.getString(5);
+            Instant lastLogin = resultSet.getTimestamp(6).toInstant();
+            return Optional.of(new PlayerProfile(userId, uuid, name, premium, lastIp, lastLogin));
+        }
+
+        return Optional.empty();
     }
 
     public void save(PlayerProfile playerProfile) {
@@ -163,7 +163,6 @@ public class AuthStorage {
                     saveStmt.setString(4, playerProfile.getLastIp());
 
                     saveStmt.execute();
-
                     try (ResultSet generatedKeys = saveStmt.getGeneratedKeys()) {
                         if (generatedKeys != null && generatedKeys.next()) {
                             playerProfile.setRowId(generatedKeys.getInt(1));
@@ -171,11 +170,9 @@ public class AuthStorage {
                     }
                 }
             }
-
         } catch (SQLException ex) {
-            core.getPlugin().getLog().error("Failed to save playerProfile", ex);
+            core.getPlugin().getLog().error("Failed to save playerProfile {}", playerProfile, ex);
         }
-
     }
 
     public void close() {

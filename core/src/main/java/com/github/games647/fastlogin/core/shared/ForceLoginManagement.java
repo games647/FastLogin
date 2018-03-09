@@ -64,7 +64,7 @@ public abstract class ForceLoginManagement<P extends C, C, L extends LoginSessio
                 storage.save(playerProfile);
             }
         } catch (Exception ex) {
-            core.getPlugin().getLog().warn("ERROR ON FORCE LOGIN", ex);
+            core.getPlugin().getLog().warn("ERROR ON FORCE LOGIN of {}", getName(player), ex);
         }
     }
 

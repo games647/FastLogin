@@ -55,7 +55,7 @@ public abstract class LoginSession {
     }
 
     @Override
-    public String toString() {
+    public synchronized String toString() {
         return this.getClass().getSimpleName() + '{' +
                 "username='" + username + '\'' +
                 ", profile=" + profile +

@@ -5,7 +5,6 @@ import com.github.games647.fastlogin.core.hooks.AuthPlugin;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -45,7 +44,7 @@ public class UltraAuthHook implements AuthPlugin<Player> {
         try {
             return future.get();
         } catch (InterruptedException | ExecutionException ex) {
-            plugin.getLogger().log(Level.SEVERE, "Failed to forceLogin", ex);
+            plugin.getLog().error("Failed to forceLogin player: {}", player, ex);
             return false;
         }
     }

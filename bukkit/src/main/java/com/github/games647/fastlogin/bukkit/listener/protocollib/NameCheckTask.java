@@ -7,6 +7,7 @@ import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 import com.github.games647.fastlogin.core.PlayerProfile;
 import com.github.games647.fastlogin.core.shared.JoinManagement;
 
+import java.security.PublicKey;
 import java.util.Random;
 
 import org.bukkit.command.CommandSender;
@@ -17,6 +18,7 @@ public class NameCheckTask extends JoinManagement<Player, CommandSender, Protoco
 
     private final FastLoginBukkit plugin;
     private final PacketEvent packetEvent;
+    private final PublicKey publicKey;
 
     private final Random random;
 
@@ -24,11 +26,12 @@ public class NameCheckTask extends JoinManagement<Player, CommandSender, Protoco
     private final String username;
 
     public NameCheckTask(FastLoginBukkit plugin, PacketEvent packetEvent, Random random,
-                         Player player, String username) {
+                         Player player, String username, PublicKey publicKey) {
         super(plugin.getCore(), plugin.getCore().getAuthPluginHook());
 
         this.plugin = plugin;
         this.packetEvent = packetEvent;
+        this.publicKey = publicKey;
         this.random = random;
         this.player = player;
         this.username = username;
@@ -37,7 +40,7 @@ public class NameCheckTask extends JoinManagement<Player, CommandSender, Protoco
     @Override
     public void run() {
         try {
-            super.onLogin(username, new ProtocolLibLoginSource(plugin, packetEvent, player, random));
+            super.onLogin(username, new ProtocolLibLoginSource(packetEvent, player, random, publicKey));
         } finally {
             ProtocolLibrary.getProtocolManager().getAsynchronousManager().signalPacketTransmission(packetEvent);
         }
@@ -46,12 +49,12 @@ public class NameCheckTask extends JoinManagement<Player, CommandSender, Protoco
     //Minecraft server implementation
     //https://github.com/bergerkiller/CraftSource/blob/master/net.minecraft.server/LoginListener.java#L161
     @Override
-    public void requestPremiumLogin(ProtocolLibLoginSource source, PlayerProfile profile
-            , String username, boolean registered) {
+    public void requestPremiumLogin(ProtocolLibLoginSource source, PlayerProfile profile,
+                                    String username, boolean registered) {
         try {
             source.setOnlineMode();
         } catch (Exception ex) {
-            plugin.getLog().error("Cannot send encryption packet. Falling back to cracked login", ex);
+            plugin.getLog().error("Cannot send encryption packet. Falling back to cracked login for: {}", profile, ex);
             return;
         }
 

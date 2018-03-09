@@ -8,7 +8,6 @@ import de.luricos.bukkit.xAuth.xAuthPlayer;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -52,7 +51,7 @@ public class xAuthHook implements AuthPlugin<Player> {
         try {
             return future.get();
         } catch (InterruptedException | ExecutionException ex) {
-            plugin.getLogger().log(Level.SEVERE, "Failed to forceLogin", ex);
+            plugin.getLog().error("Failed to forceLogin player: {}", player, ex);
             return false;
         }
     }
@@ -80,7 +79,7 @@ public class xAuthHook implements AuthPlugin<Player> {
             //login in the player after registration
             return future.get() && forceLogin(player);
         } catch (InterruptedException | ExecutionException ex) {
-            plugin.getLogger().log(Level.SEVERE, "Failed to forceLogin", ex);
+            plugin.getLog().error("Failed to forceRegister player: {}", player, ex);
             return false;
         }
     }

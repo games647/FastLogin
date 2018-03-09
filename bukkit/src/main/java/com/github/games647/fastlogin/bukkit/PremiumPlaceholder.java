@@ -24,10 +24,10 @@ public class PremiumPlaceholder extends PlaceholderHook {
                 return "unknown";
             }
 
-            if (!metadata.isEmpty()) {
-                return "premium";
-            } else {
+            if (metadata.isEmpty()) {
                 return "cracked";
+            } else {
+                return "premium";
             }
         }
 

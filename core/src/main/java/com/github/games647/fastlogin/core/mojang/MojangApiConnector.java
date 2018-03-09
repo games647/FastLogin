@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -62,13 +61,13 @@ public class MojangApiConnector {
     protected final Gson gson = new GsonBuilder()
             .registerTypeAdapter(UUID.class, new UUIDTypeAdapter()).create();
 
-    public MojangApiConnector(Logger logger, Collection<String> localAddresses, int rateLimit
+    public MojangApiConnector(Logger logger, Iterable<String> localAddresses, int rateLimit
             , Iterable<HostAndPort> proxies) {
         this.logger = logger;
         this.rateLimit = Math.max(rateLimit, 600);
         this.sslFactory = buildAddresses(logger, localAddresses);
 
-        List<Proxy> proxyBuilder = new ArrayList<>();
+        Collection<Proxy> proxyBuilder = new ArrayList<>();
         for (HostAndPort proxy : proxies) {
             proxyBuilder.add(new Proxy(Type.HTTP, new InetSocketAddress(proxy.getHostText(), proxy.getPort())));
         }

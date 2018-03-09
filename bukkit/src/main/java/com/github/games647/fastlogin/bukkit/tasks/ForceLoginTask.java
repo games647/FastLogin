@@ -55,7 +55,7 @@ public class ForceLoginTask extends ForceLoginManagement<Player, CommandSender, 
             //the player-list isn't thread-safe
             return Bukkit.getScheduler().callSyncMethod(core.getPlugin(), player::isOnline).get();
         } catch (InterruptedException | ExecutionException ex) {
-            core.getPlugin().getLog().error("Failed to perform thread-safe online check", ex);
+            core.getPlugin().getLog().error("Failed to perform thread-safe online check for {}", player, ex);
             return false;
         }
     }

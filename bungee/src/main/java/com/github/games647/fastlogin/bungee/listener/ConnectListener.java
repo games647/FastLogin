@@ -81,7 +81,7 @@ public class ConnectListener implements Listener {
                     idField.setAccessible(true);
                     idField.set(connection, offlineUUID);
                 } catch (NoSuchFieldException | IllegalAccessException ex) {
-                    plugin.getLog().error("Failed to set offline uuid", ex);
+                    plugin.getLog().error("Failed to set offline uuid of {}", username, ex);
                 }
             }
 

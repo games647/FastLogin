@@ -6,7 +6,6 @@ import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.github.games647.fastlogin.bukkit.EncryptionUtil;
-import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 import com.github.games647.fastlogin.core.shared.LoginSource;
 
 import java.lang.reflect.InvocationTargetException;
@@ -23,31 +22,40 @@ import static com.comphenix.protocol.PacketType.Login.Server.ENCRYPTION_BEGIN;
 
 public class ProtocolLibLoginSource implements LoginSource {
 
-    private final FastLoginBukkit plugin;
-
     private final PacketEvent packetEvent;
     private final Player player;
 
     private final Random random;
+    private final PublicKey publicKey;
 
-    private String serverId;
+    private final String serverId = "";
     private byte[] verifyToken;
 
-    public ProtocolLibLoginSource(FastLoginBukkit plugin, PacketEvent packetEvent, Player player, Random random) {
-        this.plugin = plugin;
+    public ProtocolLibLoginSource(PacketEvent packetEvent, Player player, Random random, PublicKey publicKey) {
         this.packetEvent = packetEvent;
         this.player = player;
         this.random = random;
+        this.publicKey = publicKey;
     }
 
     @Override
     public void setOnlineMode() throws Exception {
-        //randomized server id to make sure the request is for our server
-        //this could be relevant https://www.sk89q.com/2011/09/minecraft-name-spoofing-exploit/
-        serverId = Long.toString(random.nextLong(), 16);
         verifyToken = EncryptionUtil.generateVerifyToken(random);
-        
-        sentEncryptionRequest();
+
+        /*
+         * Packet Information: http://wiki.vg/Protocol#Encryption_Request
+         *
+         * ServerID="" (String) key=public server key verifyToken=random 4 byte array
+         */
+        PacketContainer newPacket = new PacketContainer(ENCRYPTION_BEGIN);
+
+        newPacket.getStrings().write(0, serverId);
+        newPacket.getSpecificModifier(PublicKey.class).write(0, publicKey);
+
+        newPacket.getByteArrays().write(0, verifyToken);
+
+        //serverId is a empty string
+        ProtocolLibrary.getProtocolManager().sendServerPacket(player, newPacket);
     }
 
     @Override
@@ -70,24 +78,6 @@ public class ProtocolLibLoginSource implements LoginSource {
     @Override
     public InetSocketAddress getAddress() {
         return packetEvent.getPlayer().getAddress();
-    }
-
-    private void sentEncryptionRequest() throws InvocationTargetException {
-        /*
-         * Packet Information: http://wiki.vg/Protocol#Encryption_Request
-         *
-         * ServerID="" (String) key=public server key verifyToken=random 4 byte array
-         */
-        PacketContainer newPacket = new PacketContainer(ENCRYPTION_BEGIN);
-
-        newPacket.getStrings().write(0, serverId);
-        PublicKey publicKey = plugin.getServerKey().getPublic();
-        newPacket.getSpecificModifier(PublicKey.class).write(0, publicKey);
-
-        newPacket.getByteArrays().write(0, verifyToken);
-
-        //serverId is a empty string
-        ProtocolLibrary.getProtocolManager().sendServerPacket(player, newPacket);
     }
 
     public String getServerId() {

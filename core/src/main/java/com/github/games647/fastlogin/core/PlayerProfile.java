@@ -7,7 +7,6 @@ import java.util.UUID;
 public class PlayerProfile {
 
     private String playerName;
-
     private long rowId;
 
     private UUID uuid;
@@ -48,7 +47,6 @@ public class PlayerProfile {
         this.rowId = generatedId;
     }
 
-    //todo: this should be optional
     public synchronized Optional<UUID> getId() {
         return Optional.ofNullable(uuid);
     }

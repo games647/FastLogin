@@ -19,13 +19,13 @@ import com.google.common.io.ByteStreams;
 import com.google.common.net.HostAndPort;
 
 import java.nio.file.Path;
-import java.security.KeyPair;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentMap;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.messaging.PluginMessageRecipient;
 import org.slf4j.Logger;
@@ -35,8 +35,6 @@ import org.slf4j.Logger;
  */
 public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<CommandSender> {
 
-    //provide a immutable key pair to be thread safe | used for encrypting and decrypting traffic
-    private final KeyPair keyPair = EncryptionUtil.generateKeyPair();
     private final Logger logger = CommonUtil.createLoggerFromJDK(getLogger());
 
     private boolean bungeeCord;
@@ -65,6 +63,7 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
             return;
         }
 
+        PluginManager pluginManager = getServer().getPluginManager();
         if (bungeeCord) {
             setServerStarted();
 
@@ -77,14 +76,11 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
                 return;
             }
 
-            if (getServer().getPluginManager().isPluginEnabled("ProtocolSupport")) {
-                getServer().getPluginManager().registerEvents(new ProtocolSupportListener(this), this);
-            } else if (getServer().getPluginManager().isPluginEnabled("ProtocolLib")) {
-                //they will be created with a static builder, because otherwise it will throw a
-                //NoClassDefFoundError: com/comphenix/protocol/events/PacketListener if only ProtocolSupport was found
+            if (pluginManager.isPluginEnabled("ProtocolSupport")) {
+                pluginManager.registerEvents(new ProtocolSupportListener(this), this);
+            } else if (pluginManager.isPluginEnabled("ProtocolLib")) {
                 ProtocolLibListener.register(this);
-
-                getServer().getPluginManager().registerEvents(new SkinApplyListener(this), this);
+                pluginManager.registerEvents(new SkinApplyListener(this), this);
             } else {
                 logger.warn("Either ProtocolLib or ProtocolSupport have to be installed if you don't use BungeeCord");
             }
@@ -93,13 +89,13 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
         //delay dependency setup because we load the plugin very early where plugins are initialized yet
         getServer().getScheduler().runTaskLater(this, new DelayedAuthHook(this), 5L);
 
-        getServer().getPluginManager().registerEvents(new JoinListener(this), this);
+        pluginManager.registerEvents(new JoinListener(this), this);
 
         //register commands using a unique name
         getCommand("premium").setExecutor(new PremiumCommand(this));
         getCommand("cracked").setExecutor(new CrackedCommand(this));
 
-        if (getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
+        if (pluginManager.isPluginEnabled("PlaceholderAPI")) {
             //prevents NoClassDef errors if it's not available
             PremiumPlaceholder.register(this);
         }
@@ -146,15 +142,6 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
      */
     public ConcurrentMap<String, BukkitLoginSession> getLoginSessions() {
         return loginSession;
-    }
-
-    /**
-     * Gets the server KeyPair. This is used to encrypt or decrypt traffic between the client and server
-     *
-     * @return the server KeyPair
-     */
-    public KeyPair getServerKey() {
-        return keyPair;
     }
 
     public boolean isBungeeCord() {

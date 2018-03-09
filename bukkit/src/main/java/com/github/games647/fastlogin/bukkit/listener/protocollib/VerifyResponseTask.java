@@ -15,8 +15,8 @@ import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.security.GeneralSecurityException;
+import java.security.KeyPair;
 import java.security.PrivateKey;
-import java.security.PublicKey;
 import java.util.Arrays;
 import java.util.UUID;
 
@@ -32,16 +32,19 @@ public class VerifyResponseTask implements Runnable {
 
     private final FastLoginBukkit plugin;
     private final PacketEvent packetEvent;
+    private final KeyPair serverKey;
 
     private final Player player;
 
     private final byte[] sharedSecret;
 
-    public VerifyResponseTask(FastLoginBukkit plugin, PacketEvent packetEvent, Player player, byte[] sharedSecret) {
+    public VerifyResponseTask(FastLoginBukkit plugin, PacketEvent packetEvent, Player player,
+                              byte[] sharedSecret, KeyPair keyPair) {
         this.plugin = plugin;
         this.packetEvent = packetEvent;
         this.player = player;
         this.sharedSecret = Arrays.copyOf(sharedSecret, sharedSecret.length);
+        this.serverKey = keyPair;
     }
 
     @Override
@@ -65,8 +68,7 @@ public class VerifyResponseTask implements Runnable {
     }
 
     private void verifyResponse(BukkitLoginSession session) {
-        PublicKey publicKey = plugin.getServerKey().getPublic();
-        PrivateKey privateKey = plugin.getServerKey().getPrivate();
+        PrivateKey privateKey = serverKey.getPrivate();
 
         Cipher cipher;
         SecretKey loginKey;
@@ -88,10 +90,7 @@ public class VerifyResponseTask implements Runnable {
             return;
         }
 
-        //this makes sure the request from the client is for us
-        //this might be relevant https://www.sk89q.com/2011/09/minecraft-name-spoofing-exploit/
-        String generatedId = session.getServerId();
-        String serverId = EncryptionUtil.getServerIdHashString(generatedId, loginKey, publicKey);
+        String serverId = EncryptionUtil.getServerIdHashString("", loginKey, serverKey.getPublic());
 
         String username = session.getUsername();
         if (plugin.getCore().getApiConnector().hasJoinedServer(session, serverId, player.getAddress())) {
@@ -115,7 +114,7 @@ public class VerifyResponseTask implements Runnable {
                 //https://github.com/bergerkiller/CraftSource/blob/master/net.minecraft.server/NetworkManager.java#L69
                 FieldUtils.writeField(networkManager, "spoofedUUID", premiumUUID, true);
             } catch (Exception exc) {
-                plugin.getLog().error("Error setting premium uuid", exc);
+                plugin.getLog().error("Error setting premium uuid of {}", player, exc);
             }
         }
     }
@@ -188,7 +187,7 @@ public class VerifyResponseTask implements Runnable {
             //tell the server that we want to close the connection
             player.kickPlayer("Disconnect");
         } catch (InvocationTargetException ex) {
-            plugin.getLog().error("Error sending kick packet", ex);
+            plugin.getLog().error("Error sending kick packet for: {}", player, ex);
         }
     }
 
@@ -204,7 +203,7 @@ public class VerifyResponseTask implements Runnable {
             //we don't want to handle our own packets so ignore filters
             ProtocolLibrary.getProtocolManager().recieveClientPacket(player, startPacket, false);
         } catch (InvocationTargetException | IllegalAccessException ex) {
-            plugin.getLog().warn("Failed to fake a new start packet", ex);
+            plugin.getLog().warn("Failed to fake a new start packet for: {}", username, ex);
             //cancel the event in order to prevent the server receiving an invalid packet
             kickPlayer(plugin.getCore().getMessage("error-kick"));
         }

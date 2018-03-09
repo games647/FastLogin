@@ -12,7 +12,6 @@ import de.st_ddt.crazylogin.metadata.Authenticated;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-import java.util.logging.Level;
 
 import org.apache.commons.lang.reflect.FieldUtils;
 import org.bukkit.Bukkit;
@@ -29,11 +28,14 @@ public class CrazyLoginHook implements AuthPlugin<Player> {
 
     private final FastLoginBukkit plugin;
 
-    private final CrazyLogin crazyLoginPlugin = CrazyLogin.getPlugin();
-    private final PlayerListener playerListener = getListener();
+    private final CrazyLogin crazyLoginPlugin;
+    private final PlayerListener playerListener;
 
     public CrazyLoginHook(FastLoginBukkit plugin) {
         this.plugin = plugin;
+
+        crazyLoginPlugin = CrazyLogin.getPlugin();
+        playerListener = getListener();
     }
 
     @Override
@@ -78,7 +80,7 @@ public class CrazyLoginHook implements AuthPlugin<Player> {
                 return true;
             }
         } catch (InterruptedException | ExecutionException ex) {
-            plugin.getLogger().log(Level.SEVERE, "Failed to forceLogin", ex);
+            plugin.getLog().error("Failed to forceLogin player: {}", player, ex);
             return false;
         }
 
@@ -112,7 +114,7 @@ public class CrazyLoginHook implements AuthPlugin<Player> {
         try {
             listener = (PlayerListener) FieldUtils.readField(crazyLoginPlugin, "playerListener", true);
         } catch (IllegalAccessException ex) {
-            plugin.getLogger().log(Level.SEVERE, "Failed to get the listener instance for auto login", ex);
+            plugin.getLog().error("Failed to get the listener instance for auto login", ex);
             listener = null;
         }
 

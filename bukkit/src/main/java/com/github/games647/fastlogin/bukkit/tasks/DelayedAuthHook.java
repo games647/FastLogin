@@ -77,7 +77,7 @@ public class DelayedAuthHook implements Runnable {
                 }
             }
         } catch (ReflectiveOperationException ex) {
-            plugin.getLog().error("Couldn't load the integration class", ex);
+            plugin.getLog().error("Couldn't load the auth hook class", ex);
         }
 
         return null;

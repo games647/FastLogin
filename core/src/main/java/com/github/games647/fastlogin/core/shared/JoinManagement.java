@@ -62,7 +62,7 @@ public abstract class JoinManagement<P extends C, C, S extends LoginSource> {
                 }
             }
         } catch (Exception ex) {
-            core.getPlugin().getLog().error("Failed to check premium state", ex);
+            core.getPlugin().getLog().error("Failed to check premium state of {}", username, ex);
         }
     }
 

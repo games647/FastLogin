@@ -41,19 +41,6 @@ public class BukkitLoginSession extends LoginSession {
     }
 
     /**
-     * Gets the random generated server id. This makes sure the request sent from the client is just for this server.
-     *
-     * See this for details https://www.sk89q.com/2011/09/Minecraft-name-spoofing-exploit/
-     *
-     * Empty if it's a BungeeCord connection
-     *
-     * @return random generated server id
-     */
-    public String getServerId() {
-        return serverId;
-    }
-
-    /**
      * Gets the verify token the server sent to the client.
      *
      * Empty if it's a BungeeCord connection
@@ -64,7 +51,6 @@ public class BukkitLoginSession extends LoginSession {
         return ArrayUtils.clone(verifyToken);
     }
 
-    //todo: this should be optional for players without a skin at all
     public synchronized Optional<SkinProperties> getSkin() {
         return Optional.ofNullable(skinProperty);
     }

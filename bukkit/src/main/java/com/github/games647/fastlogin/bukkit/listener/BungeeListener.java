@@ -99,7 +99,7 @@ public class BungeeListener implements PluginMessageListener {
                         new ForceLoginTask(plugin.getCore(), player).run();
                     }
                 } catch (Exception ex) {
-                    plugin.getLog().error("Failed to query isRegistered", ex);
+                    plugin.getLog().error("Failed to query isRegistered for player: {}", player, ex);
                 }
             }, 20L);
         }
