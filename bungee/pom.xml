@@ -71,7 +71,6 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>fastlogin.core</artifactId>
-            <version>${project.version}</version>
         </dependency>
 
         <!--BungeeCord with also the part outside the API-->

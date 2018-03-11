@@ -1,6 +1,5 @@
 package com.github.games647.fastlogin.bungee.listener;
 
-import com.github.games647.craftapi.UUIDAdapter;
 import com.github.games647.fastlogin.bungee.FastLoginBungee;
 import com.github.games647.fastlogin.bungee.tasks.AsyncPremiumCheck;
 import com.github.games647.fastlogin.bungee.tasks.ForceLoginTask;

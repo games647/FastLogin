@@ -7,7 +7,6 @@ import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -16,52 +15,16 @@ import org.bukkit.entity.Player;
  * the user has access to it's account. So we can make sure that not another
  * person with a paid account and the same username can steal his account.
  */
-public class PremiumCommand implements CommandExecutor {
-
-    private final FastLoginBukkit plugin;
+public class PremiumCommand extends ToggleCommand {
 
     public PremiumCommand(FastLoginBukkit plugin) {
-        this.plugin = plugin;
+        super(plugin);
     }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (args.length == 0) {
-            if (!(sender instanceof Player)) {
-                //console or command block
-                plugin.getCore().sendLocaleMessage("no-console", sender);
-                return true;
-            }
-
-            if (plugin.isBungeeCord()) {
-                plugin.sendBungeeActivateMessage(sender, sender.getName(), true);
-                plugin.getCore().sendLocaleMessage("wait-on-proxy", sender);
-            } else {
-                UUID id = ((Player) sender).getUniqueId();
-                if (plugin.getConfig().getBoolean("premium-warning")
-                        && !plugin.getCore().getPendingConfirms().contains(id)) {
-                    sender.sendMessage(plugin.getCore().getMessage("premium-warning"));
-                    plugin.getCore().getPendingConfirms().add(id);
-                    return true;
-                }
-
-                plugin.getCore().getPendingConfirms().remove(id);
-                //todo: load async
-                StoredProfile profile = plugin.getCore().getStorage().loadProfile(sender.getName());
-                if (profile.isPremium()) {
-                    plugin.getCore().sendLocaleMessage("already-exists", sender);
-                } else {
-                    //todo: resolve uuid
-                    profile.setPremium(true);
-                    Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-                        plugin.getCore().getStorage().save(profile);
-                    });
-
-                    plugin.getCore().sendLocaleMessage("add-premium", sender);
-                }
-            }
-
-            return true;
+            onPremiumSelf(sender, command, args);
         } else {
             onPremiumOther(sender, command, args);
         }
@@ -69,25 +32,27 @@ public class PremiumCommand implements CommandExecutor {
         return true;
     }
 
-    private void onPremiumOther(CommandSender sender, Command command, String[] args) {
-        if (!sender.hasPermission(command.getPermission() + ".other")) {
-            plugin.getCore().sendLocaleMessage("no-permission", sender);
-            return ;
+    private void onPremiumSelf(CommandSender sender, Command cmd, String[] args) {
+        if (isConsole(sender)) {
+            return;
         }
 
-        if (plugin.isBungeeCord()) {
-            plugin.sendBungeeActivateMessage(sender, args[0], true);
-            plugin.getCore().sendLocaleMessage("wait-on-proxy", sender);
-        } else {
-            //todo: load async
-            StoredProfile profile = plugin.getCore().getStorage().loadProfile(args[0]);
-            if (profile == null) {
-                plugin.getCore().sendLocaleMessage("player-unknown", sender);
+        if (forwardPremiumCommand(sender, sender.getName())) {
+            return;
+        }
+
+            UUID id = ((Player) sender).getUniqueId();
+            if (plugin.getConfig().getBoolean("premium-warning") && !plugin.getCore().getPendingConfirms().contains(id)) {
+                sender.sendMessage(plugin.getCore().getMessage("premium-warning"));
+                plugin.getCore().getPendingConfirms().add(id);
                 return;
             }
-            
+
+            plugin.getCore().getPendingConfirms().remove(id);
+            //todo: load async
+            StoredProfile profile = plugin.getCore().getStorage().loadProfile(sender.getName());
             if (profile.isPremium()) {
-                plugin.getCore().sendLocaleMessage("already-exists-other", sender);
+                plugin.getCore().sendLocaleMessage("already-exists", sender);
             } else {
                 //todo: resolve uuid
                 profile.setPremium(true);
@@ -95,8 +60,40 @@ public class PremiumCommand implements CommandExecutor {
                     plugin.getCore().getStorage().save(profile);
                 });
 
-                plugin.getCore().sendLocaleMessage("add-premium-other", sender);
+                plugin.getCore().sendLocaleMessage("add-premium", sender);
             }
+    }
+
+    private void onPremiumOther(CommandSender sender, Command command, String[] args) {
+        if (!hasOtherPermission(sender, command)) {
+            return;
         }
+
+        if (forwardPremiumCommand(sender, args[0])) {
+            return;
+        }
+
+        //todo: load async
+        StoredProfile profile = plugin.getCore().getStorage().loadProfile(args[0]);
+        if (profile == null) {
+            plugin.getCore().sendLocaleMessage("player-unknown", sender);
+            return;
+        }
+
+        if (profile.isPremium()) {
+            plugin.getCore().sendLocaleMessage("already-exists-other", sender);
+        } else {
+            //todo: resolve uuid
+            profile.setPremium(true);
+            Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+                plugin.getCore().getStorage().save(profile);
+            });
+
+            plugin.getCore().sendLocaleMessage("add-premium-other", sender);
+        }
+    }
+
+    private boolean forwardPremiumCommand(CommandSender sender, String target) {
+        return forwardBungeeCommand(sender, target, true);
     }
 }

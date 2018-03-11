@@ -49,4 +49,13 @@ public class ChangePremiumMessage implements ChannelMessage {
         output.writeUTF(playerName);
         output.writeBoolean(isSourceInvoker);
     }
+
+    @Override
+    public String toString() {
+        return this.getClass().getSimpleName() + '{' +
+                "playerName='" + playerName + '\'' +
+                ", willEnable=" + willEnable +
+                ", isSourceInvoker=" + isSourceInvoker +
+                '}';
+    }
 }

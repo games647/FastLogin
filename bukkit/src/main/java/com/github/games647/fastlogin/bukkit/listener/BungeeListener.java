@@ -63,9 +63,12 @@ public class BungeeListener implements PluginMessageListener {
 
         //check if the player is still online or disconnected
         Player checkedPlayer = Bukkit.getPlayerExact(loginMessage.getPlayerName());
+        if (checkedPlayer == null) {
+            return;
+        }
 
         //fail if target player is blacklisted because already authenticated or wrong bungeecord id
-        if (checkedPlayer != null && !checkedPlayer.hasMetadata(plugin.getName())) {
+        if (checkedPlayer.hasMetadata(plugin.getName())) {
             //fail if BungeeCord support is disabled (id = null)
             UUID sourceId = loginMessage.getProxyId();
             if (proxyIds.contains(sourceId)) {
@@ -73,6 +76,8 @@ public class BungeeListener implements PluginMessageListener {
             } else {
                 plugin.getLog().warn("Received proxy id: {} that doesn't exist in the proxy whitelist file", sourceId);
             }
+        } else {
+            plugin.getLog().warn("Received message {} from a blacklisted player {}", loginMessage, checkedPlayer);
         }
     }
 

@@ -38,7 +38,7 @@ public class JoinListener implements Listener {
     public void onPlayerJoin(PlayerJoinEvent joinEvent) {
         Player player = joinEvent.getPlayer();
 
-        if (!plugin.isBungeeCord()) {
+        if (!plugin.isBungeeEnabled()) {
             //Wait before auth plugin and we received a message from BungeeCord initializes the player
             Runnable forceLoginTask = new ForceLoginTask(plugin.getCore(), player);
             Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, forceLoginTask, DELAY_LOGIN);

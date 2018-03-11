@@ -27,7 +27,7 @@ public class DelayedAuthHook implements Runnable {
     @Override
     public void run() {
         boolean hookFound = isHookFound();
-        if (plugin.isBungeeCord()) {
+        if (plugin.isBungeeEnabled()) {
             plugin.getLog().info("BungeeCord setting detected. No auth plugin is required");
         } else if (!hookFound) {
             plugin.getLog().warn("No auth plugin were found by this plugin "

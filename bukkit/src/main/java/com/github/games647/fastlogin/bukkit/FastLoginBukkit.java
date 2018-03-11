@@ -9,7 +9,6 @@ import com.github.games647.fastlogin.bukkit.listener.protocollib.SkinApplyListen
 import com.github.games647.fastlogin.bukkit.listener.protocolsupport.ProtocolSupportListener;
 import com.github.games647.fastlogin.bukkit.tasks.DelayedAuthHook;
 import com.github.games647.fastlogin.core.CommonUtil;
-import com.github.games647.fastlogin.core.messages.ChangePremiumMessage;
 import com.github.games647.fastlogin.core.messages.ChannelMessage;
 import com.github.games647.fastlogin.core.shared.FastLoginCore;
 import com.github.games647.fastlogin.core.shared.PlatformPlugin;
@@ -17,7 +16,6 @@ import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 
 import java.nio.file.Path;
-import java.util.Optional;
 import java.util.concurrent.ConcurrentMap;
 
 import org.bukkit.command.CommandSender;
@@ -114,23 +112,6 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
         return core;
     }
 
-    public void sendBungeeActivateMessage(CommandSender invoker, String target, boolean activate) {
-        if (invoker instanceof PluginMessageRecipient) {
-            ChannelMessage message = new ChangePremiumMessage(target, activate, true);
-            sendPluginMessage((PluginMessageRecipient) invoker, message);
-        } else {
-            Optional<? extends Player> optPlayer = getServer().getOnlinePlayers().stream().findFirst();
-            if (!optPlayer.isPresent()) {
-                logger.info("No player online to send a plugin message to the proxy");
-                return;
-            }
-
-            Player sender = optPlayer.get();
-            ChannelMessage message = new ChangePremiumMessage(target, activate, false);
-            sendPluginMessage(sender, message);
-        }
-    }
-
     /**
      * Gets a thread-safe map about players which are connecting to the server are being checked to be premium (paid
      * account)
@@ -141,7 +122,7 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
         return loginSession;
     }
 
-    public boolean isBungeeCord() {
+    public boolean isBungeeEnabled() {
         return bungeeCord;
     }
 

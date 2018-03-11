@@ -19,4 +19,9 @@ public class SuccessMessage implements ChannelMessage {
     public void writeTo(ByteArrayDataOutput output) {
         //empty
     }
+
+    @Override
+    public String toString() {
+        return this.getClass().getSimpleName() + "{}";
+    }
 }

@@ -39,14 +39,16 @@ public class MessageListener implements Listener {
         //moreover the client shouldn't be able fake a running premium check by sending the result message
         pluginMessageEvent.setCancelled(true);
 
-        //check if the message is sent from the server
-        if (Server.class.isAssignableFrom(pluginMessageEvent.getSender().getClass())) {
-            //so that we can safely process this in the background
-            byte[] data = Arrays.copyOf(pluginMessageEvent.getData(), pluginMessageEvent.getData().length);
-            ProxiedPlayer forPlayer = (ProxiedPlayer) pluginMessageEvent.getReceiver();
-            
-            ProxyServer.getInstance().getScheduler().runAsync(plugin, () -> readMessage(forPlayer, data));
+        if (!(pluginMessageEvent.getSender() instanceof Server)) {
+            //check if the message is sent from the server
+            return;
         }
+
+        //so that we can safely process this in the background
+        byte[] data = Arrays.copyOf(pluginMessageEvent.getData(), pluginMessageEvent.getData().length);
+        ProxiedPlayer forPlayer = (ProxiedPlayer) pluginMessageEvent.getReceiver();
+
+        ProxyServer.getInstance().getScheduler().runAsync(plugin, () -> readMessage(forPlayer, data));
     }
 
     private void readMessage(ProxiedPlayer forPlayer, byte[] data) {

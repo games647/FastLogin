@@ -2,7 +2,6 @@ package com.github.games647.fastlogin.bukkit.tasks;
 
 import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
-import com.github.games647.fastlogin.core.messages.ChannelMessage;
 import com.github.games647.fastlogin.core.messages.SuccessMessage;
 import com.github.games647.fastlogin.core.shared.FastLoginCore;
 import com.github.games647.fastlogin.core.shared.ForceLoginManagement;
@@ -38,9 +37,8 @@ public class ForceLoginTask extends ForceLoginManagement<Player, CommandSender, 
 
     @Override
     public void onForceActionSuccess(LoginSession session) {
-        if (core.getPlugin().isBungeeCord()) {
-            ChannelMessage message = new SuccessMessage();
-            core.getPlugin().sendPluginMessage(player, message);
+        if (core.getPlugin().isBungeeEnabled()) {
+            core.getPlugin().sendPluginMessage(player, new SuccessMessage());
         }
     }
 
