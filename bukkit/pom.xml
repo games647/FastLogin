@@ -97,6 +97,7 @@
         <dependency>
             <groupId>com.github.games647</groupId>
             <artifactId>fastlogin.core</artifactId>
+            <version>${project.version}</version>
         </dependency>
 
         <!--Server API-->

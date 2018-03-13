@@ -1,26 +1,26 @@
-# Eclipse stuff
-/.classpath
-/.project
-/.settings
+# Eclipse
+.classpath
+.project
+.settings/
 
 # NetBeans
-*/nbproject
+nbproject/
 nb-configuration.xml
 
-# maven
-*/target
+# Maven
+target/
 
-# vim
+# Vim
 .*.sw[a-p]
 
 # virtual machine crash logs, see https://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 
 # various other potential build files
-*/build/
-/bin
-/dist
-/manifest.mf
+build/
+bin/
+dist/
+manifest.mf
 *.log
 
 # Mac filesystem dust

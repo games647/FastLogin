@@ -15,6 +15,7 @@ import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Listener;
 
 public class DelayedAuthHook implements Runnable {
 
@@ -51,6 +52,10 @@ public class DelayedAuthHook implements Runnable {
             //run this check for exceptions (errors) and not found plugins
             plugin.getLog().warn("No support offline Auth plugin found. ");
             return false;
+        }
+
+        if (authPluginHook instanceof Listener) {
+            Bukkit.getPluginManager().registerEvents((Listener) authPluginHook, plugin);
         }
 
         if (plugin.getCore().getAuthPluginHook() == null) {

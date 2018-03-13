@@ -49,6 +49,7 @@ public class JoinListener implements Listener {
     public void onPlayerQuit(PlayerQuitEvent quitEvent) {
         Player player = quitEvent.getPlayer();
         player.removeMetadata(plugin.getName(), plugin);
+
         plugin.getCore().getPendingConfirms().remove(player.getUniqueId());
     }
 }

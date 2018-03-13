@@ -1,10 +1,16 @@
 package com.github.games647.fastlogin.bukkit.hooks;
 
+import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
+import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 import com.github.games647.fastlogin.core.hooks.AuthPlugin;
 
 import fr.xephi.authme.api.v3.AuthMeApi;
+import fr.xephi.authme.events.RestoreSessionEvent;
 
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 
 /**
  * GitHub: https://github.com/Xephi/AuthMeReloaded/
@@ -15,7 +21,24 @@ import org.bukkit.entity.Player;
  * <p>
  * Spigot: https://www.spigotmc.org/resources/authme-reloaded.6269/
  */
-public class AuthMeHook implements AuthPlugin<Player> {
+public class AuthMeHook implements AuthPlugin<Player>, Listener {
+
+    private final FastLoginBukkit plugin;
+
+    public AuthMeHook(FastLoginBukkit plugin) {
+        this.plugin = plugin;
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onSessionRestore(RestoreSessionEvent restoreSessionEvent) {
+        Player player = restoreSessionEvent.getPlayer();
+
+        String id = '/' + player.getAddress().getAddress().getHostAddress() + ':' + player.getAddress().getPort();
+        BukkitLoginSession session = plugin.getLoginSessions().get(id);
+        if (session != null && session.isVerified()) {
+            restoreSessionEvent.setCancelled(true);
+        }
+    }
 
     @Override
     public boolean forceLogin(Player player) {
