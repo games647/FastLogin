@@ -127,7 +127,7 @@ public class AuthStorage {
         if (resultSet.next()) {
             long userId = resultSet.getInt(1);
 
-            UUID uuid = UUIDAdapter.parseId(resultSet.getString(2));
+            UUID uuid = Optional.ofNullable(resultSet.getString(2)).map(UUIDAdapter::parseId).orElse(null);
 
             String name = resultSet.getString(3);
             boolean premium = resultSet.getBoolean(4);
