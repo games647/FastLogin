@@ -136,6 +136,19 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
     }
 
     /**
+     * Fetches the premium status of an online player.
+     *
+     * @param onlinePlayer
+     * @return the online status or unknown if an error happened, the player isn't online or BungeeCord doesn't send
+     * us the status message yet (This means you cannot check the login status on the PlayerJoinEvent).
+     * @deprecated this method could be removed in future versions and exists only as a temporarily solution
+     */
+    @Deprecated
+    public PremiumStatus getStatus(UUID onlinePlayer) {
+        return premiumPlayers.getOrDefault(onlinePlayer, PremiumStatus.UNKNOWN);
+    }
+
+    /**
      * Wait before the server is fully started. This is workaround, because connections right on startup are not
      * injected by ProtocolLib
      *
