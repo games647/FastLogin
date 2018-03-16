@@ -17,13 +17,13 @@ import org.bukkit.event.player.PlayerQuitEvent;
  * This listener tells authentication plugins if the player has a premium account and we checked it successfully. So the
  * plugin can skip authentication.
  */
-public class JoinListener implements Listener {
+public class ConnectionListener implements Listener {
 
     private static final long DELAY_LOGIN = 20L / 2;
 
     private final FastLoginBukkit plugin;
 
-    public JoinListener(FastLoginBukkit plugin) {
+    public ConnectionListener(FastLoginBukkit plugin) {
         this.plugin = plugin;
     }
 
@@ -51,5 +51,6 @@ public class JoinListener implements Listener {
         player.removeMetadata(plugin.getName(), plugin);
 
         plugin.getCore().getPendingConfirms().remove(player.getUniqueId());
+        plugin.getPremiumPlayers().remove(player.getUniqueId());
     }
 }

@@ -3,8 +3,8 @@ package com.github.games647.fastlogin.bungee.tasks;
 import com.github.games647.fastlogin.bungee.BungeeLoginSession;
 import com.github.games647.fastlogin.bungee.FastLoginBungee;
 import com.github.games647.fastlogin.core.messages.ChannelMessage;
-import com.github.games647.fastlogin.core.messages.ForceActionMessage;
-import com.github.games647.fastlogin.core.messages.ForceActionMessage.Type;
+import com.github.games647.fastlogin.core.messages.LoginActionMessage;
+import com.github.games647.fastlogin.core.messages.LoginActionMessage.Type;
 import com.github.games647.fastlogin.core.shared.FastLoginCore;
 import com.github.games647.fastlogin.core.shared.ForceLoginManagement;
 import com.github.games647.fastlogin.core.shared.LoginSession;
@@ -66,7 +66,7 @@ public class ForceLoginTask
         }
 
         UUID proxyId = UUID.fromString(ProxyServer.getInstance().getConfig().getUuid());
-        ChannelMessage loginMessage = new ForceActionMessage(type, player.getName(), proxyId);
+        ChannelMessage loginMessage = new LoginActionMessage(type, player.getName(), proxyId);
 
         core.getPlugin().sendPluginMessage(server, loginMessage);
     }

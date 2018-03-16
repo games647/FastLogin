@@ -7,7 +7,7 @@ public class SuccessMessage implements ChannelMessage {
 
     @Override
     public String getChannelName() {
-        return "SUCCESS";
+        return "Success";
     }
 
     @Override

@@ -56,9 +56,9 @@ public class MessageListener implements Listener {
 
         ByteArrayDataInput dataInput = ByteStreams.newDataInput(data);
         String subChannel = dataInput.readUTF();
-        if ("SUCCESS".equals(subChannel)) {
+        if ("Success".equals(subChannel)) {
             onSuccessMessage(forPlayer);
-        } else if ("CHANGE".equals(subChannel)) {
+        } else if ("ChangeStatus".equals(subChannel)) {
             ChangePremiumMessage changeMessage = new ChangePremiumMessage();
             changeMessage.readFrom(dataInput);
 

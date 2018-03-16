@@ -3,12 +3,13 @@ package com.github.games647.fastlogin.bukkit;
 import com.github.games647.fastlogin.bukkit.commands.CrackedCommand;
 import com.github.games647.fastlogin.bukkit.commands.PremiumCommand;
 import com.github.games647.fastlogin.bukkit.listener.BungeeListener;
-import com.github.games647.fastlogin.bukkit.listener.JoinListener;
+import com.github.games647.fastlogin.bukkit.listener.ConnectionListener;
 import com.github.games647.fastlogin.bukkit.listener.protocollib.ProtocolLibListener;
 import com.github.games647.fastlogin.bukkit.listener.protocollib.SkinApplyListener;
 import com.github.games647.fastlogin.bukkit.listener.protocolsupport.ProtocolSupportListener;
 import com.github.games647.fastlogin.bukkit.tasks.DelayedAuthHook;
 import com.github.games647.fastlogin.core.CommonUtil;
+import com.github.games647.fastlogin.core.PremiumStatus;
 import com.github.games647.fastlogin.core.messages.ChannelMessage;
 import com.github.games647.fastlogin.core.shared.FastLoginCore;
 import com.github.games647.fastlogin.core.shared.PlatformPlugin;
@@ -16,6 +17,9 @@ import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 
 import java.nio.file.Path;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import org.bukkit.command.CommandSender;
@@ -30,14 +34,14 @@ import org.slf4j.Logger;
  */
 public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<CommandSender> {
 
-    private final Logger logger = CommonUtil.createLoggerFromJDK(getLogger());
-
-    private boolean bungeeCord;
-    private FastLoginCore<Player, CommandSender, FastLoginBukkit> core;
-    private boolean serverStarted;
-
     //1 minutes should be enough as a timeout for bad internet connection (Server, Client and Mojang)
     private final ConcurrentMap<String, BukkitLoginSession> loginSession = CommonUtil.buildCache(1, -1);
+    private final Logger logger = CommonUtil.createLoggerFromJDK(getLogger());
+    private final Map<UUID, PremiumStatus> premiumPlayers = new ConcurrentHashMap<>();
+
+    private boolean serverStarted;
+    private boolean bungeeCord;
+    private FastLoginCore<Player, CommandSender, FastLoginBukkit> core;
 
     @Override
     public void onEnable() {
@@ -84,7 +88,7 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
         //delay dependency setup because we load the plugin very early where plugins are initialized yet
         getServer().getScheduler().runTaskLater(this, new DelayedAuthHook(this), 5L);
 
-        pluginManager.registerEvents(new JoinListener(this), this);
+        pluginManager.registerEvents(new ConnectionListener(this), this);
 
         //register commands using a unique name
         getCommand("premium").setExecutor(new PremiumCommand(this));
@@ -99,6 +103,7 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
     @Override
     public void onDisable() {
         loginSession.clear();
+        premiumPlayers.clear();
 
         if (core != null) {
             core.close();
@@ -120,6 +125,10 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
      */
     public ConcurrentMap<String, BukkitLoginSession> getLoginSessions() {
         return loginSession;
+    }
+
+    public Map<UUID, PremiumStatus> getPremiumPlayers() {
+        return premiumPlayers;
     }
 
     public boolean isBungeeEnabled() {

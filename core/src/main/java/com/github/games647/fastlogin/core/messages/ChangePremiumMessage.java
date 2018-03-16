@@ -33,7 +33,7 @@ public class ChangePremiumMessage implements ChannelMessage {
 
     @Override
     public String getChannelName() {
-        return "CHANGE";
+        return "ChangeStatus";
     }
 
     @Override

@@ -5,20 +5,20 @@ import com.google.common.io.ByteArrayDataOutput;
 
 import java.util.UUID;
 
-public class ForceActionMessage implements ChannelMessage {
+public class LoginActionMessage implements ChannelMessage {
 
     private Type type;
 
     private String playerName;
     private UUID proxyId;
 
-    public ForceActionMessage(Type type, String playerName, UUID proxyId) {
+    public LoginActionMessage(Type type, String playerName, UUID proxyId) {
         this.type = type;
         this.playerName = playerName;
         this.proxyId = proxyId;
     }
 
-    public ForceActionMessage() {
+    public LoginActionMessage() {
         //reading mode
     }
 
@@ -60,7 +60,7 @@ public class ForceActionMessage implements ChannelMessage {
 
     @Override
     public String getChannelName() {
-        return "FORCE_ACTION";
+        return "LoginAction";
     }
 
     @Override
@@ -76,6 +76,8 @@ public class ForceActionMessage implements ChannelMessage {
 
         LOGIN,
 
-        REGISTER
+        REGISTER,
+
+        CRACKED
     }
 }

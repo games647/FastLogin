@@ -7,30 +7,14 @@
 nbproject/
 nb-configuration.xml
 
-# Maven
-target/
-
-# Vim
-.*.sw[a-p]
-
-# virtual machine crash logs, see https://www.java.com/en/download/help/error_hotspot.xml
-hs_err_pid*
-
-# various other potential build files
-build/
-bin/
-dist/
-manifest.mf
-*.log
-
-# Mac filesystem dust
-.DS_Store
-
 # IntelliJ
 *.iml
 *.ipr
 *.iws
 .idea/
+
+# Maven
+target/
 
 # Gradle
 .gradle
@@ -40,3 +24,20 @@ gradle-app.setting
 
 # Avoid ignoring Gradle wrapper jar file (.jar files are usually ignored)
 !gradle-wrapper.jar
+
+# various other potential build files
+build/
+bin/
+dist/
+manifest.mf
+*.log
+
+# Vim
+.*.sw[a-p]
+
+# virtual machine crash logs, see https://www.java.com/en/download/help/error_hotspot.xml
+hs_err_pid*
+
+# Mac filesystem dust
+.DS_Store
+

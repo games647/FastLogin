@@ -3,9 +3,10 @@ package com.github.games647.fastlogin.bukkit.listener;
 import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 import com.github.games647.fastlogin.bukkit.tasks.ForceLoginTask;
+import com.github.games647.fastlogin.core.PremiumStatus;
 import com.github.games647.fastlogin.core.hooks.AuthPlugin;
-import com.github.games647.fastlogin.core.messages.ForceActionMessage;
-import com.github.games647.fastlogin.core.messages.ForceActionMessage.Type;
+import com.github.games647.fastlogin.core.messages.LoginActionMessage;
+import com.github.games647.fastlogin.core.messages.LoginActionMessage.Type;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteStreams;
 
@@ -51,12 +52,12 @@ public class BungeeListener implements PluginMessageListener {
 
         ByteArrayDataInput dataInput = ByteStreams.newDataInput(message);
         String subChannel = dataInput.readUTF();
-        if (!"FORCE_ACTION".equals(subChannel)) {
+        if (!"LoginAction".equals(subChannel)) {
             plugin.getLog().info("Unknown sub channel {}", subChannel);
             return;
         }
 
-        ForceActionMessage loginMessage = new ForceActionMessage();
+        LoginActionMessage loginMessage = new LoginActionMessage();
         loginMessage.readFrom(dataInput);
 
         plugin.getLog().debug("Received plugin message {}", loginMessage);
@@ -81,18 +82,23 @@ public class BungeeListener implements PluginMessageListener {
         }
     }
 
-    private void readMessage(Player player, ForceActionMessage message) {
+    private void readMessage(Player player, LoginActionMessage message) {
         String playerName = message.getPlayerName();
         Type type = message.getType();
 
         InetSocketAddress address = player.getAddress();
         String id = '/' + address.getAddress().getHostAddress() + ':' + address.getPort();
         if (type == Type.LOGIN) {
+            plugin.getPremiumPlayers().put(player.getUniqueId(), PremiumStatus.PREMIUM);
+
             BukkitLoginSession playerSession = new BukkitLoginSession(playerName, true);
             playerSession.setVerified(true);
             plugin.getLoginSessions().put(id, playerSession);
+
             Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, new ForceLoginTask(plugin.getCore(), player), 20L);
         } else if (type == Type.REGISTER) {
+            plugin.getPremiumPlayers().put(player.getUniqueId(), PremiumStatus.PREMIUM);
+
             Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> {
                 AuthPlugin<Player> authPlugin = plugin.getCore().getAuthPluginHook();
                 try {
@@ -107,6 +113,8 @@ public class BungeeListener implements PluginMessageListener {
                     plugin.getLog().error("Failed to query isRegistered for player: {}", player, ex);
                 }
             }, 20L);
+        } else if (type == Type.CRACKED) {
+            plugin.getPremiumPlayers().put(player.getUniqueId(), PremiumStatus.CRACKED);
         }
     }
 

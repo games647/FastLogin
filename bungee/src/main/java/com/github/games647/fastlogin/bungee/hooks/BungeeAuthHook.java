@@ -22,7 +22,6 @@ public class BungeeAuthHook implements AuthPlugin<ProxiedPlayer> {
     public boolean forceLogin(ProxiedPlayer player) {
         String playerName = player.getName();
         return Main.plonline.contains(playerName) || requestHandler.forceLogin(playerName);
-
     }
 
     @Override
