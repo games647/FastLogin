@@ -12,6 +12,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import protocolsupport.api.events.ConnectionCloseEvent;
 import protocolsupport.api.events.PlayerLoginStartEvent;
 import protocolsupport.api.events.PlayerPropertiesResolveEvent;
 
@@ -39,6 +40,12 @@ public class ProtocolSupportListener extends JoinManagement<Player, CommandSende
         plugin.getLoginSessions().remove(address.toString());
 
         super.onLogin(username, new ProtocolLoginSource(loginStartEvent));
+    }
+
+    @EventHandler
+    public void onConnectionClosed(ConnectionCloseEvent closeEvent) {
+        InetSocketAddress address = closeEvent.getConnection().getAddress();
+        plugin.getLoginSessions().remove(address.toString());
     }
 
     @EventHandler

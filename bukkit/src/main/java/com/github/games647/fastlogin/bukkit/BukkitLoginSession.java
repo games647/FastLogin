@@ -51,12 +51,16 @@ public class BukkitLoginSession extends LoginSession {
         return ArrayUtils.clone(verifyToken);
     }
 
+    /**
+     * @return premium skin if available
+     */
     public synchronized Optional<SkinProperty> getSkin() {
         return Optional.ofNullable(skinProperty);
     }
 
     /**
      * Sets the premium skin property which was retrieved by the session server
+     * @param skinProperty premium skin
      */
     public synchronized void setSkinProperty(SkinProperty skinProperty) {
         this.skinProperty = skinProperty;

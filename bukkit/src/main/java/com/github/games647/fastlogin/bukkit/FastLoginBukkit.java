@@ -152,7 +152,7 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
      * Wait before the server is fully started. This is workaround, because connections right on startup are not
      * injected by ProtocolLib
      *
-     * @return
+     * @return true if ProtocolLib can now intercept packets
      */
     public boolean isServerFullyStarted() {
         return serverStarted;

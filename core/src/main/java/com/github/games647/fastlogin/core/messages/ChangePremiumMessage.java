@@ -23,7 +23,7 @@ public class ChangePremiumMessage implements ChannelMessage {
         return playerName;
     }
 
-    public boolean isWillEnable() {
+    public boolean shouldEnable() {
         return willEnable;
     }
 
@@ -54,7 +54,7 @@ public class ChangePremiumMessage implements ChannelMessage {
     public String toString() {
         return this.getClass().getSimpleName() + '{' +
                 "playerName='" + playerName + '\'' +
-                ", willEnable=" + willEnable +
+                ", shouldEnable=" + willEnable +
                 ", isSourceInvoker=" + isSourceInvoker +
                 '}';
     }
