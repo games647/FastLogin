@@ -6,8 +6,6 @@ import com.github.games647.fastlogin.core.shared.LoginSession;
 
 import java.util.Optional;
 
-import org.apache.commons.lang.ArrayUtils;
-
 /**
  * Represents a client connecting to the server.
  *
@@ -15,40 +13,21 @@ import org.apache.commons.lang.ArrayUtils;
  */
 public class BukkitLoginSession extends LoginSession {
 
-    private final String serverId;
-    private final byte[] verifyToken;
-
+    private SkinProperty skinProperty;
     private boolean verified;
 
-    private SkinProperty skinProperty;
-
-    public BukkitLoginSession(String username, String serverId, byte[] verifyToken, boolean registered
-            , StoredProfile profile) {
+    public BukkitLoginSession(String username, boolean registered, StoredProfile profile) {
         super(username, registered, profile);
-
-        this.serverId = serverId;
-        this.verifyToken = ArrayUtils.clone(verifyToken);
     }
 
     //available for BungeeCord
     public BukkitLoginSession(String username, boolean registered) {
-        this(username, "", ArrayUtils.EMPTY_BYTE_ARRAY, registered, null);
+        this(username, registered, null);
     }
 
     //cracked player
     public BukkitLoginSession(String username, StoredProfile profile) {
-        this(username, "", ArrayUtils.EMPTY_BYTE_ARRAY, false, profile);
-    }
-
-    /**
-     * Gets the verify token the server sent to the client.
-     *
-     * Empty if it's a BungeeCord connection
-     *
-     * @return the verify token from the server
-     */
-    public byte[] getVerifyToken() {
-        return ArrayUtils.clone(verifyToken);
+        this(username, false, profile);
     }
 
     /**

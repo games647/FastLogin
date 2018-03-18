@@ -36,10 +36,6 @@ public class DelayedAuthHook implements Runnable {
                     + "and BungeeCord is deactivated. "
                     + "Either one or both of the checks have to pass in order to use this plugin");
         }
-
-        if (hookFound) {
-            plugin.setServerStarted();
-        }
     }
 
     private boolean isHookFound() {

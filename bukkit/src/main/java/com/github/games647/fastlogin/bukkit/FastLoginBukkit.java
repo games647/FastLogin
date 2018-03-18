@@ -4,8 +4,6 @@ import com.github.games647.fastlogin.bukkit.commands.CrackedCommand;
 import com.github.games647.fastlogin.bukkit.commands.PremiumCommand;
 import com.github.games647.fastlogin.bukkit.listener.BungeeListener;
 import com.github.games647.fastlogin.bukkit.listener.ConnectionListener;
-import com.github.games647.fastlogin.bukkit.listener.protocollib.ProtocolLibListener;
-import com.github.games647.fastlogin.bukkit.listener.protocollib.SkinApplyListener;
 import com.github.games647.fastlogin.bukkit.listener.protocolsupport.ProtocolSupportListener;
 import com.github.games647.fastlogin.bukkit.tasks.DelayedAuthHook;
 import com.github.games647.fastlogin.core.CommonUtil;
@@ -35,7 +33,7 @@ import org.slf4j.Logger;
 public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<CommandSender> {
 
     //1 minutes should be enough as a timeout for bad internet connection (Server, Client and Mojang)
-    private final ConcurrentMap<String, BukkitLoginSession> loginSession = CommonUtil.buildCache(1, -1);
+    private final ConcurrentMap<String, BukkitLoginSession> loginSession = new ConcurrentHashMap<>();
     private final Logger logger = CommonUtil.createLoggerFromJDK(getLogger());
     private final Map<UUID, PremiumStatus> premiumPlayers = new ConcurrentHashMap<>();
 
@@ -64,8 +62,6 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
 
         PluginManager pluginManager = getServer().getPluginManager();
         if (bungeeCord) {
-            setServerStarted();
-
             //check for incoming messages from the bungeecord version of this plugin
             getServer().getMessenger().registerIncomingPluginChannel(this, getName(), new BungeeListener(this));
             getServer().getMessenger().registerOutgoingPluginChannel(this, getName());
@@ -77,11 +73,8 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
 
             if (pluginManager.isPluginEnabled("ProtocolSupport")) {
                 pluginManager.registerEvents(new ProtocolSupportListener(this), this);
-            } else if (pluginManager.isPluginEnabled("ProtocolLib")) {
-                ProtocolLibListener.register(this);
-                pluginManager.registerEvents(new SkinApplyListener(this), this);
             } else {
-                logger.warn("Either ProtocolLib or ProtocolSupport have to be installed if you don't use BungeeCord");
+                logger.warn("ProtocolSupport have to be installed if you don't use BungeeCord");
             }
         }
 
@@ -146,22 +139,6 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
     @Deprecated
     public PremiumStatus getStatus(UUID onlinePlayer) {
         return premiumPlayers.getOrDefault(onlinePlayer, PremiumStatus.UNKNOWN);
-    }
-
-    /**
-     * Wait before the server is fully started. This is workaround, because connections right on startup are not
-     * injected by ProtocolLib
-     *
-     * @return true if ProtocolLib can now intercept packets
-     */
-    public boolean isServerFullyStarted() {
-        return serverStarted;
-    }
-
-    public void setServerStarted() {
-        if (!this.serverStarted) {
-            this.serverStarted = true;
-        }
     }
 
     public void sendPluginMessage(PluginMessageRecipient player, ChannelMessage message) {

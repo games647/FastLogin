@@ -6,11 +6,8 @@ import com.github.games647.fastlogin.bukkit.tasks.ForceLoginTask;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerLoginEvent;
-import org.bukkit.event.player.PlayerLoginEvent.Result;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 /**
@@ -25,13 +22,6 @@ public class ConnectionListener implements Listener {
 
     public ConnectionListener(FastLoginBukkit plugin) {
         this.plugin = plugin;
-    }
-
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void onPlayerLogin(PlayerLoginEvent loginEvent) {
-        if (loginEvent.getResult() == Result.ALLOWED && !plugin.isServerFullyStarted()) {
-            loginEvent.disallow(Result.KICK_OTHER, plugin.getCore().getMessage("not-started"));
-        }
     }
 
     @EventHandler(ignoreCancelled = true)
