@@ -1,14 +1,15 @@
 package com.github.games647.fastlogin.bukkit;
 
-import java.util.List;
+import java.util.stream.Collectors;
 
 import me.clip.placeholderapi.PlaceholderAPI;
-import me.clip.placeholderapi.PlaceholderHook;
+import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 
 import org.bukkit.entity.Player;
-import org.bukkit.metadata.MetadataValue;
 
-public class PremiumPlaceholder extends PlaceholderHook {
+public class PremiumPlaceholder extends PlaceholderExpansion {
+
+    private static final String PLACEHOLDER_VARIABLE = "fastlogin_status";
 
     private final FastLoginBukkit plugin;
 
@@ -16,25 +17,37 @@ public class PremiumPlaceholder extends PlaceholderHook {
         this.plugin = plugin;
     }
 
+    public static void register(FastLoginBukkit plugin) {
+        PremiumPlaceholder placeholderHook = new PremiumPlaceholder(plugin);
+        PlaceholderAPI.registerPlaceholderHook(PLACEHOLDER_VARIABLE, placeholderHook);
+    }
+
     @Override
     public String onPlaceholderRequest(Player player, String variable) {
-        if (player != null && "fastlogin_status".contains(variable)) {
-            List<MetadataValue> metadata = player.getMetadata(plugin.getName());
-            if (metadata == null) {
-                return "unknown";
-            }
-
-            if (metadata.isEmpty()) {
-                return "cracked";
-            } else {
-                return "premium";
-            }
+        if (player != null && PLACEHOLDER_VARIABLE.equals(variable)) {
+            return plugin.getStatus(player.getUniqueId()).name();
         }
 
         return "";
     }
 
-    public static void register(FastLoginBukkit plugin) {
-        PlaceholderAPI.registerPlaceholderHook(plugin, new PremiumPlaceholder(plugin));
+    @Override
+    public String getIdentifier() {
+        return PLACEHOLDER_VARIABLE;
+    }
+
+    @Override
+    public String getPlugin() {
+        return plugin.getName();
+    }
+
+    @Override
+    public String getAuthor() {
+        return plugin.getDescription().getAuthors().stream().collect(Collectors.joining(", "));
+    }
+
+    @Override
+    public String getVersion() {
+        return plugin.getName();
     }
 }
