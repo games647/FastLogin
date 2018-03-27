@@ -24,7 +24,6 @@ public abstract class ForceLoginManagement<P extends C, C, L extends LoginSessio
         }
 
         AuthStorage storage = core.getStorage();
-
         StoredProfile playerProfile = session.getProfile();
         try {
             if (isOnlineMode()) {

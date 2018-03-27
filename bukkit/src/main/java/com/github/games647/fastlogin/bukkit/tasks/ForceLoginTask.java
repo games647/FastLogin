@@ -2,6 +2,7 @@ package com.github.games647.fastlogin.bukkit.tasks;
 
 import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
+import com.github.games647.fastlogin.core.PremiumStatus;
 import com.github.games647.fastlogin.core.messages.SuccessMessage;
 import com.github.games647.fastlogin.core.shared.FastLoginCore;
 import com.github.games647.fastlogin.core.shared.ForceLoginManagement;
@@ -28,9 +29,15 @@ public class ForceLoginTask extends ForceLoginManagement<Player, CommandSender, 
 
     @Override
     public void run() {
-        //blacklist this target player for BungeeCord Id brute force attacks
+        //blacklist this target player for BungeeCord ID brute force attacks
         FastLoginBukkit plugin = core.getPlugin();
         player.setMetadata(core.getPlugin().getName(), new FixedMetadataValue(plugin, true));
+
+        if (isOnlineMode()) {
+            plugin.getPremiumPlayers().put(player.getUniqueId(), PremiumStatus.PREMIUM);
+        } else {
+            plugin.getPremiumPlayers().put(player.getUniqueId(), PremiumStatus.CRACKED);
+        }
 
         super.run();
     }

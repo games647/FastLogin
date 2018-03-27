@@ -89,16 +89,12 @@ public class BungeeListener implements PluginMessageListener {
         InetSocketAddress address = player.getAddress();
         String id = '/' + address.getAddress().getHostAddress() + ':' + address.getPort();
         if (type == Type.LOGIN) {
-            plugin.getPremiumPlayers().put(player.getUniqueId(), PremiumStatus.PREMIUM);
-
             BukkitLoginSession playerSession = new BukkitLoginSession(playerName, true);
             playerSession.setVerified(true);
             plugin.getLoginSessions().put(id, playerSession);
 
             Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, new ForceLoginTask(plugin.getCore(), player), 20L);
         } else if (type == Type.REGISTER) {
-            plugin.getPremiumPlayers().put(player.getUniqueId(), PremiumStatus.PREMIUM);
-
             Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> {
                 AuthPlugin<Player> authPlugin = plugin.getCore().getAuthPluginHook();
                 try {
@@ -114,6 +110,7 @@ public class BungeeListener implements PluginMessageListener {
                 }
             }, 20L);
         } else if (type == Type.CRACKED) {
+            //we don't start a forcelogin task here so update it manually
             plugin.getPremiumPlayers().put(player.getUniqueId(), PremiumStatus.CRACKED);
         }
     }
