@@ -63,6 +63,7 @@
             </exclusions>
         </dependency>
 
+        <!--Common component for contacting the Mojang API-->
         <dependency>
             <groupId>com.github.games647</groupId>
             <artifactId>craftapi</artifactId>

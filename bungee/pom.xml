@@ -68,6 +68,7 @@
     </repositories>
 
     <dependencies>
+        <!--Common plugin component-->
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>fastlogin.core</artifactId>
@@ -82,6 +83,7 @@
             <scope>provided</scope>
         </dependency>
 
+        <!--Login plugin-->
         <dependency>
             <groupId>me.vik1395</groupId>
             <artifactId>BungeeAuth</artifactId>

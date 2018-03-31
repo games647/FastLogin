@@ -94,6 +94,7 @@
     </repositories>
 
     <dependencies>
+        <!--Common plugin component-->
         <dependency>
             <groupId>com.github.games647</groupId>
             <artifactId>fastlogin.core</artifactId>
@@ -116,6 +117,7 @@
             <scope>provided</scope>
         </dependency>
 
+        <!--Changing onlinemode on login process-->
         <dependency>
             <groupId>com.github.ProtocolSupport</groupId>
             <artifactId>ProtocolSupport</artifactId>
@@ -124,6 +126,7 @@
             <scope>provided</scope>
         </dependency>
 
+        <!--Provide premium placeholders-->
         <dependency>
             <groupId>me.clip</groupId>
             <artifactId>placeholderapi</artifactId>

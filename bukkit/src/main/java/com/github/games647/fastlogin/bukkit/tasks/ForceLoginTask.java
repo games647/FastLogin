@@ -33,13 +33,13 @@ public class ForceLoginTask extends ForceLoginManagement<Player, CommandSender, 
         FastLoginBukkit plugin = core.getPlugin();
         player.setMetadata(core.getPlugin().getName(), new FixedMetadataValue(plugin, true));
 
+        super.run();
+
         if (isOnlineMode()) {
             plugin.getPremiumPlayers().put(player.getUniqueId(), PremiumStatus.PREMIUM);
         } else {
             plugin.getPremiumPlayers().put(player.getUniqueId(), PremiumStatus.CRACKED);
         }
-
-        super.run();
     }
 
     @Override

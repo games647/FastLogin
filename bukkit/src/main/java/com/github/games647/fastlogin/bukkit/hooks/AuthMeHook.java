@@ -42,11 +42,11 @@ public class AuthMeHook implements AuthPlugin<Player>, Listener {
 
     @Override
     public boolean forceLogin(Player player) {
-        //skips registration and login
         if (AuthMeApi.getInstance().isAuthenticated(player)) {
             return false;
         }
 
+        //skips registration and login
         AuthMeApi.getInstance().forceLogin(player);
         return true;
     }
@@ -58,7 +58,7 @@ public class AuthMeHook implements AuthPlugin<Player>, Listener {
 
     @Override
     public boolean forceRegister(Player player, String password) {
-        //this automatically registers the player too
+        //this automatically login the player too
         AuthMeApi.getInstance().forceRegister(player, password);
         return true;
     }

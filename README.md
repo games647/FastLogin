@@ -64,8 +64,8 @@ So they don't need to enter passwords. This is also called auto login (auto-logi
 
 #### Bukkit/Spigot/Paper
 
-1. Download and install ProtocolLib
-2. Download and install FastLogin
+1. Download and install ProtocolLib/ProtocolSupport
+2. Download and install FastLogin (or FastLoginBukkit for newer versions)
 3. Set your server in offline mode by setting the value onlinemode in your server.properties to false
 
 #### BungeeCord/Waterfall
@@ -75,7 +75,8 @@ So they don't need to enter passwords. This is also called auto login (auto-logi
 3. Now there is proxy-whitelist file in the FastLogin folder
 Put your stats id from the BungeeCord config into this file
 4. Activate ipForward in your BungeeCord config
-5. Download and Install FastLogin on BungeeCord AND Spigot (on the servers where your login plugin is)
+5. Download and Install FastLogin (or FastLoginBungee in newer versions) on BungeeCord AND Spigot
+(on the servers where your login plugin is or where player should be able to execute the commands of FastLogin)
 6. Check your database settings in the config of FastLogin on BungeeCord
 7. Set your proxy (BungeeCord) in offline mode by setting the value onlinemode in your config.yml to false
 8. You should *always* firewall your Spigot server that it's only accessible through BungeeCord 
