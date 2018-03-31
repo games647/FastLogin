@@ -15,6 +15,7 @@ nb-configuration.xml
 
 # Maven
 target/
+pom.xml.versionsBackup
 
 # Gradle
 .gradle
