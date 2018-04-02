@@ -23,6 +23,17 @@ So they don't need to enter passwords. This is also called auto login (auto-logi
 * Free
 * Open source
 
+## Development builds
+
+Development builds of this project can be acquired at the provided CI (continuous integration) server. It contains the
+latest changes from the Source-Code in preparation for the following release. This means they could contain new
+features, bug fixes and other changes since the last release.
+
+Nevertheless builds are only tested using a small set of automated and minor manual tests. Therefore they **could**
+contain new bugs and are likely to be less stable than released versions.
+
+https://ci.codemc.org/job/Games647/job/FastLogin/changes
+
 ***
 
 ### Commands:
@@ -37,8 +48,9 @@ So they don't need to enter passwords. This is also called auto login (auto-logi
     fastlogin.command.import
 
 ### Requirements:
-* Plugin: [ProtocolLib](https://www.spigotmc.org/resources/protocollib.1997/) or 
-[ProtocolSupport](https://www.spigotmc.org/resources/protocolsupport.7201/)
+* Plugin: 
+    * [ProtocolLib](https://www.spigotmc.org/resources/protocollib.1997/) or 
+    * [ProtocolSupport](https://www.spigotmc.org/resources/protocolsupport.7201/)
 * [Spigot](https://www.spigotmc.org) 1.7+
 * Java 8+
 * Run Spigot and/or BungeeCord/Waterfall in offline mode (see server.properties or config.yml)
