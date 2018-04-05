@@ -1,6 +1,6 @@
 package com.github.games647.fastlogin.bukkit;
 
-import com.github.games647.craftapi.model.skin.SkinProperty;
+import com.github.games647.craftapi.model.skin.Property;
 import com.github.games647.fastlogin.core.StoredProfile;
 import com.github.games647.fastlogin.core.shared.LoginSession;
 
@@ -20,7 +20,7 @@ public class BukkitLoginSession extends LoginSession {
 
     private boolean verified;
 
-    private SkinProperty skinProperty;
+    private Property skinProperty;
 
     public BukkitLoginSession(String username, String serverId, byte[] verifyToken, boolean registered
             , StoredProfile profile) {
@@ -54,7 +54,7 @@ public class BukkitLoginSession extends LoginSession {
     /**
      * @return premium skin if available
      */
-    public synchronized Optional<SkinProperty> getSkin() {
+    public synchronized Optional<Property> getSkin() {
         return Optional.ofNullable(skinProperty);
     }
 
@@ -62,7 +62,7 @@ public class BukkitLoginSession extends LoginSession {
      * Sets the premium skin property which was retrieved by the session server
      * @param skinProperty premium skin
      */
-    public synchronized void setSkinProperty(SkinProperty skinProperty) {
+    public synchronized void setSkinProperty(Property skinProperty) {
         this.skinProperty = skinProperty;
     }
 

@@ -3,7 +3,7 @@
 Checks if a Minecraft player has a paid account (premium). If so, they can skip offline authentication (auth plugins).
 So they don't need to enter passwords. This is also called auto login (auto-login).
 
-### Features:
+## Features
 
 * Detect paid accounts from others
 * Automatically login paid accounts (premium)
@@ -36,18 +36,21 @@ https://ci.codemc.org/job/Games647/job/FastLogin/changes
 
 ***
 
-### Commands:
+## Commands
+
     /premium [player] Label the invoker or the argument as paid account
     /cracked [player] Label the invoker or the argument as cracked account
 
-### Permissions:
+## Permissions
+
     fastlogin.bukkit.command.premium
     fastlogin.bukkit.command.cracked
     fastlogin.command.premium.other
     fastlogin.command.cracked.other
     fastlogin.command.import
 
-### Requirements:
+## Requirements
+
 * Plugin: 
     * [ProtocolLib](https://www.spigotmc.org/resources/protocollib.1997/) or 
     * [ProtocolSupport](https://www.spigotmc.org/resources/protocolsupport.7201/)
@@ -56,7 +59,7 @@ https://ci.codemc.org/job/Games647/job/FastLogin/changes
 * Run Spigot and/or BungeeCord/Waterfall in offline mode (see server.properties or config.yml)
 * An auth plugin. Supported plugins
 
-#### Bukkit/Spigot/Paper
+### Bukkit/Spigot/Paper
 
 * [AuthMe (5.X)](https://dev.bukkit.org/bukkit-plugins/authme-reloaded/)
 * [xAuth](https://dev.bukkit.org/bukkit-plugins/xauth/)
@@ -66,21 +69,21 @@ https://ci.codemc.org/job/Games647/job/FastLogin/changes
 * [LoginSecurity](https://dev.bukkit.org/bukkit-plugins/loginsecurity/)
 * [UltraAuth](https://dev.bukkit.org/bukkit-plugins/ultraauth-aa/)
 
-#### BungeeCord/Waterfall
+### BungeeCord/Waterfall
 
 * [BungeeAuth](https://www.spigotmc.org/resources/bungeeauth.493/)
 
 ***
 
-### How to install
+## How to install
 
-#### Bukkit/Spigot/Paper
+### Bukkit/Spigot/Paper
 
 1. Download and install ProtocolLib/ProtocolSupport
 2. Download and install FastLogin (or FastLoginBukkit for newer versions)
 3. Set your server in offline mode by setting the value onlinemode in your server.properties to false
 
-#### BungeeCord/Waterfall
+### BungeeCord/Waterfall
 
 1. Activate BungeeCord in the Spigot configuration
 2. Restart your server
