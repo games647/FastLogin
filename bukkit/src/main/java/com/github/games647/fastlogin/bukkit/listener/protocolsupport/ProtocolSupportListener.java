@@ -1,6 +1,6 @@
 package com.github.games647.fastlogin.bukkit.listener.protocolsupport;
 
-import com.github.games647.craftapi.model.skin.SkinProperty;
+import com.github.games647.craftapi.model.skin.Property;
 import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 import com.github.games647.fastlogin.core.StoredProfile;
@@ -54,7 +54,7 @@ public class ProtocolSupportListener extends JoinManagement<Player, CommandSende
         BukkitLoginSession session = plugin.getLoginSessions().get(address.toString());
 
         //skin was resolved -> premium player
-        if (propertiesResolveEvent.hasProperty(SkinProperty.TEXTURE_KEY) && session != null) {
+        if (propertiesResolveEvent.hasProperty(Property.TEXTURE_KEY) && session != null) {
             session.setVerified(true);
         }
     }
