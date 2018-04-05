@@ -115,12 +115,12 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
 
         Configuration config;
         try (Reader reader = Files.newBufferedReader(file)) {
-            config = configProvider.load(reader);
+            config = configProvider.load(reader, defaults);
         }
 
         //explicitly add keys here, because Configuration.getKeys doesn't return the keys from the default configuration
         for (String key : defaults.getKeys()) {
-            config.set(key, defaults.get(key));
+            config.set(key, config.get(key));
         }
 
         return config;

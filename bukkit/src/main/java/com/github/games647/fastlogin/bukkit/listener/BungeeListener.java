@@ -93,7 +93,7 @@ public class BungeeListener implements PluginMessageListener {
             playerSession.setVerified(true);
             plugin.getLoginSessions().put(id, playerSession);
 
-            Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, new ForceLoginTask(plugin.getCore(), player), 20L);
+            Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, new ForceLoginTask(plugin.getCore(), player), 10L);
         } else if (type == Type.REGISTER) {
             Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> {
                 AuthPlugin<Player> authPlugin = plugin.getCore().getAuthPluginHook();
@@ -108,7 +108,7 @@ public class BungeeListener implements PluginMessageListener {
                 } catch (Exception ex) {
                     plugin.getLog().error("Failed to query isRegistered for player: {}", player, ex);
                 }
-            }, 20L);
+            }, 10L);
         } else if (type == Type.CRACKED) {
             //we don't start a forcelogin task here so update it manually
             plugin.getPremiumPlayers().put(player.getUniqueId(), PremiumStatus.CRACKED);
