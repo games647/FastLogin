@@ -54,7 +54,6 @@ public class ForceLoginTask
     @Override
     public boolean forceRegister(ProxiedPlayer player) {
         return session.isAlreadyLogged() || super.forceRegister(player);
-
     }
 
     @Override
@@ -62,7 +61,7 @@ public class ForceLoginTask
         //sub channel name
         Type type = Type.LOGIN;
         if (session.needsRegistration()) {
-            type = Type.LOGIN;
+            type = Type.REGISTER;
         }
 
         UUID proxyId = UUID.fromString(ProxyServer.getInstance().getConfig().getUuid());
