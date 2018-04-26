@@ -166,6 +166,7 @@ driver: org.sqlite.JDBC
 database: '{pluginDir}/FastLogin.db'
 
 # MySQL/MariaDB
+# If you want to enable it uncomment only the lines below this not this line.
 #driver: com.mysql.jdbc.Driver
 #host: 127.0.0.1
 #port: 3306
