@@ -1,16 +1,16 @@
 package com.github.games647.fastlogin.bukkit;
 
-import com.github.games647.fastlogin.bukkit.commands.CrackedCommand;
-import com.github.games647.fastlogin.bukkit.commands.PremiumCommand;
+import com.github.games647.fastlogin.bukkit.command.CrackedCommand;
+import com.github.games647.fastlogin.bukkit.command.PremiumCommand;
 import com.github.games647.fastlogin.bukkit.listener.BungeeListener;
 import com.github.games647.fastlogin.bukkit.listener.ConnectionListener;
 import com.github.games647.fastlogin.bukkit.listener.protocollib.ProtocolLibListener;
 import com.github.games647.fastlogin.bukkit.listener.protocollib.SkinApplyListener;
 import com.github.games647.fastlogin.bukkit.listener.protocolsupport.ProtocolSupportListener;
-import com.github.games647.fastlogin.bukkit.tasks.DelayedAuthHook;
+import com.github.games647.fastlogin.bukkit.task.DelayedAuthHook;
 import com.github.games647.fastlogin.core.CommonUtil;
 import com.github.games647.fastlogin.core.PremiumStatus;
-import com.github.games647.fastlogin.core.messages.ChannelMessage;
+import com.github.games647.fastlogin.core.message.ChannelMessage;
 import com.github.games647.fastlogin.core.shared.FastLoginCore;
 import com.github.games647.fastlogin.core.shared.PlatformPlugin;
 import com.google.common.io.ByteArrayDataOutput;

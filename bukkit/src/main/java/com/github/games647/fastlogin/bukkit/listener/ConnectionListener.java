@@ -1,7 +1,7 @@
 package com.github.games647.fastlogin.bukkit.listener;
 
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
-import com.github.games647.fastlogin.bukkit.tasks.ForceLoginTask;
+import com.github.games647.fastlogin.bukkit.task.ForceLoginTask;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;

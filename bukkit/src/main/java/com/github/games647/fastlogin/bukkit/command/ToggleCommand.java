@@ -1,8 +1,8 @@
-package com.github.games647.fastlogin.bukkit.commands;
+package com.github.games647.fastlogin.bukkit.command;
 
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
-import com.github.games647.fastlogin.core.messages.ChangePremiumMessage;
-import com.github.games647.fastlogin.core.messages.ChannelMessage;
+import com.github.games647.fastlogin.core.message.ChangePremiumMessage;
+import com.github.games647.fastlogin.core.message.ChannelMessage;
 
 import java.util.Optional;
 

@@ -2,11 +2,11 @@ package com.github.games647.fastlogin.bukkit.listener;
 
 import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
-import com.github.games647.fastlogin.bukkit.tasks.ForceLoginTask;
+import com.github.games647.fastlogin.bukkit.task.ForceLoginTask;
 import com.github.games647.fastlogin.core.PremiumStatus;
 import com.github.games647.fastlogin.core.hooks.AuthPlugin;
-import com.github.games647.fastlogin.core.messages.LoginActionMessage;
-import com.github.games647.fastlogin.core.messages.LoginActionMessage.Type;
+import com.github.games647.fastlogin.core.message.LoginActionMessage;
+import com.github.games647.fastlogin.core.message.LoginActionMessage.Type;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteStreams;
 

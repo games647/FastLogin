@@ -1,6 +1,5 @@
 package com.github.games647.fastlogin.bukkit.listener.protocolsupport;
 
-import com.github.games647.craftapi.model.skin.Property;
 import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 import com.github.games647.fastlogin.core.StoredProfile;
@@ -13,8 +12,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import protocolsupport.api.events.ConnectionCloseEvent;
+import protocolsupport.api.events.PlayerLoginFinishEvent;
 import protocolsupport.api.events.PlayerLoginStartEvent;
-import protocolsupport.api.events.PlayerPropertiesResolveEvent;
 
 public class ProtocolSupportListener extends JoinManagement<Player, CommandSender, ProtocolLoginSource>
         implements Listener {
@@ -49,12 +48,16 @@ public class ProtocolSupportListener extends JoinManagement<Player, CommandSende
     }
 
     @EventHandler
-    public void onPropertiesResolve(PlayerPropertiesResolveEvent propertiesResolveEvent) {
-        InetSocketAddress address = propertiesResolveEvent.getAddress();
+    public void onPropertiesResolve(PlayerLoginFinishEvent loginFinishEvent) {
+        if (!loginFinishEvent.isOnlineMode()) {
+            return;
+        }
+
+        InetSocketAddress address = loginFinishEvent.getAddress();
         BukkitLoginSession session = plugin.getLoginSessions().get(address.toString());
 
         //skin was resolved -> premium player
-        if (propertiesResolveEvent.hasProperty(Property.TEXTURE_KEY) && session != null) {
+        if (session != null) {
             session.setVerified(true);
         }
     }

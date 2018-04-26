@@ -1,10 +1,10 @@
-package com.github.games647.fastlogin.bungee.tasks;
+package com.github.games647.fastlogin.bungee.task;
 
 import com.github.games647.fastlogin.bungee.BungeeLoginSession;
 import com.github.games647.fastlogin.bungee.FastLoginBungee;
-import com.github.games647.fastlogin.core.messages.ChannelMessage;
-import com.github.games647.fastlogin.core.messages.LoginActionMessage;
-import com.github.games647.fastlogin.core.messages.LoginActionMessage.Type;
+import com.github.games647.fastlogin.core.message.ChannelMessage;
+import com.github.games647.fastlogin.core.message.LoginActionMessage;
+import com.github.games647.fastlogin.core.message.LoginActionMessage.Type;
 import com.github.games647.fastlogin.core.shared.FastLoginCore;
 import com.github.games647.fastlogin.core.shared.ForceLoginManagement;
 import com.github.games647.fastlogin.core.shared.LoginSession;

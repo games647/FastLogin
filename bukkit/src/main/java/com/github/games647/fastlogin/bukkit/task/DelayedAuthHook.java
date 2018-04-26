@@ -1,12 +1,12 @@
-package com.github.games647.fastlogin.bukkit.tasks;
+package com.github.games647.fastlogin.bukkit.task;
 
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
-import com.github.games647.fastlogin.bukkit.hooks.AuthMeHook;
-import com.github.games647.fastlogin.bukkit.hooks.CrazyLoginHook;
-import com.github.games647.fastlogin.bukkit.hooks.LogItHook;
-import com.github.games647.fastlogin.bukkit.hooks.LoginSecurityHook;
-import com.github.games647.fastlogin.bukkit.hooks.UltraAuthHook;
-import com.github.games647.fastlogin.bukkit.hooks.xAuthHook;
+import com.github.games647.fastlogin.bukkit.hook.AuthMeHook;
+import com.github.games647.fastlogin.bukkit.hook.CrazyLoginHook;
+import com.github.games647.fastlogin.bukkit.hook.LogItHook;
+import com.github.games647.fastlogin.bukkit.hook.LoginSecurityHook;
+import com.github.games647.fastlogin.bukkit.hook.UltraAuthHook;
+import com.github.games647.fastlogin.bukkit.hook.xAuthHook;
 import com.github.games647.fastlogin.core.hooks.AuthPlugin;
 
 import java.lang.reflect.Constructor;

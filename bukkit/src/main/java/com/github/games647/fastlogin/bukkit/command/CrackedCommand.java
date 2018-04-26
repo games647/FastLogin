@@ -1,4 +1,4 @@
-package com.github.games647.fastlogin.bukkit.commands;
+package com.github.games647.fastlogin.bukkit.command;
 
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 import com.github.games647.fastlogin.core.StoredProfile;

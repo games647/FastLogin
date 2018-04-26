@@ -1,4 +1,4 @@
-package com.github.games647.fastlogin.bungee.tasks;
+package com.github.games647.fastlogin.bungee.task;
 
 import com.github.games647.fastlogin.bungee.FastLoginBungee;
 import com.github.games647.fastlogin.core.StoredProfile;

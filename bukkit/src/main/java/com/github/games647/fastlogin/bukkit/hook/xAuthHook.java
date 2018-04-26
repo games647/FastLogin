@@ -1,4 +1,4 @@
-package com.github.games647.fastlogin.bukkit.hooks;
+package com.github.games647.fastlogin.bukkit.hook;
 
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 import com.github.games647.fastlogin.core.hooks.AuthPlugin;

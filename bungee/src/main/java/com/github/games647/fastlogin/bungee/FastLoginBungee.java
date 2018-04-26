@@ -1,10 +1,10 @@
 package com.github.games647.fastlogin.bungee;
 
-import com.github.games647.fastlogin.bungee.hooks.BungeeAuthHook;
+import com.github.games647.fastlogin.bungee.hook.BungeeAuthHook;
 import com.github.games647.fastlogin.bungee.listener.ConnectListener;
 import com.github.games647.fastlogin.bungee.listener.MessageListener;
 import com.github.games647.fastlogin.core.CommonUtil;
-import com.github.games647.fastlogin.core.messages.ChannelMessage;
+import com.github.games647.fastlogin.core.message.ChannelMessage;
 import com.github.games647.fastlogin.core.shared.FastLoginCore;
 import com.github.games647.fastlogin.core.shared.PlatformPlugin;
 import com.google.common.collect.MapMaker;

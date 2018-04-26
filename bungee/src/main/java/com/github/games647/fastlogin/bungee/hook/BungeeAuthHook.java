@@ -1,4 +1,4 @@
-package com.github.games647.fastlogin.bungee.hooks;
+package com.github.games647.fastlogin.bungee.hook;
 
 import com.github.games647.fastlogin.core.hooks.AuthPlugin;
 
