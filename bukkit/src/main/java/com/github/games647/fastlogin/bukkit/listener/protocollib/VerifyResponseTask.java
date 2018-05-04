@@ -113,9 +113,10 @@ public class VerifyResponseTask implements Runnable {
                     session.setSkinProperty(properties[0]);
                 }
 
+                session.setUuid(response.get().getId());
                 session.setVerified(true);
-                setPremiumUUID(session.getUuid());
 
+                setPremiumUUID(session.getUuid());
                 receiveFakeStartPacket(username);
             } else {
                 //user tried to fake a authentication
@@ -124,7 +125,7 @@ public class VerifyResponseTask implements Runnable {
                         , session.getUsername(), socketAddress, serverId);
             }
         } catch (IOException ioEx) {
-            disconnect("error-kick", false, "Failed to connect to sessionserver", ioEx);
+            disconnect("error-kick", false, "Failed to connect to session server", ioEx);
         }
     }
 
