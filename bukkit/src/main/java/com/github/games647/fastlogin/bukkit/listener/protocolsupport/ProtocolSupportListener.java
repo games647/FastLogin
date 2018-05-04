@@ -56,7 +56,6 @@ public class ProtocolSupportListener extends JoinManagement<Player, CommandSende
         InetSocketAddress address = loginFinishEvent.getAddress();
         BukkitLoginSession session = plugin.getLoginSessions().get(address.toString());
 
-        //skin was resolved -> premium player
         if (session != null) {
             session.setVerified(true);
         }
