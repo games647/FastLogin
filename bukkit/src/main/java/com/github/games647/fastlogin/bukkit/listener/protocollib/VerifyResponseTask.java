@@ -16,6 +16,7 @@ import com.github.games647.fastlogin.bukkit.EncryptionUtil;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.InetAddress;
@@ -106,14 +107,17 @@ public class VerifyResponseTask implements Runnable {
             InetAddress address = socketAddress.getAddress();
             Optional<Verification> response = resolver.hasJoined(username, serverId, address);
             if (response.isPresent()) {
-                plugin.getLog().info("GameProfile {} has a verified premium account", username);
+                Verification verification = response.get();
+                UUID id = verification.getId();
 
-                Property[] properties = response.get().getProperties();
+                plugin.getLog().info("GameProfile {} with {} has a verified premium account", username, id);
+
+                Property[] properties = verification.getProperties();
                 if (properties.length > 0) {
                     session.setSkinProperty(properties[0]);
                 }
 
-                session.setUuid(response.get().getId());
+                session.setUuid(id);
                 session.setVerified(true);
 
                 setPremiumUUID(session.getUuid());
@@ -130,7 +134,19 @@ public class VerifyResponseTask implements Runnable {
     }
 
     private void setPremiumUUID(UUID premiumUUID) {
-        if (plugin.getConfig().getBoolean("premiumUuid") && premiumUUID != null) {
+        boolean uuidEnabled = plugin.getConfig().getBoolean("premiumUuid");
+        plugin.getLog().info("Setting UUID {} based on config: {}", premiumUUID, uuidEnabled);
+        try {
+            Object networkManager = getNetworkManager();
+            Field uuidField = FieldUtils.getField(networkManager.getClass(), "spoofedUUID");
+            Object oldValue = uuidField.get(player);
+
+            plugin.getLog().info("spoofed UUID field exits? {} with {}", uuidField, oldValue);
+        } catch (ReflectiveOperationException e) {
+            plugin.getLog().error("Failed to query field of {}", player);
+        }
+
+        if (uuidEnabled && premiumUUID != null) {
             try {
                 Object networkManager = getNetworkManager();
                 //https://github.com/bergerkiller/CraftSource/blob/master/net.minecraft.server/NetworkManager.java#L69
