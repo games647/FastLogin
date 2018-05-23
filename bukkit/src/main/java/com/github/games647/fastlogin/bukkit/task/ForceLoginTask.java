@@ -35,11 +35,12 @@ public class ForceLoginTask extends ForceLoginManagement<Player, CommandSender, 
 
         super.run();
 
+        PremiumStatus status = PremiumStatus.CRACKED;
         if (isOnlineMode()) {
-            plugin.getPremiumPlayers().put(player.getUniqueId(), PremiumStatus.PREMIUM);
-        } else {
-            plugin.getPremiumPlayers().put(player.getUniqueId(), PremiumStatus.CRACKED);
+            status = PremiumStatus.PREMIUM;
         }
+
+        plugin.getPremiumPlayers().put(player.getUniqueId(), status);
     }
 
     @Override
@@ -67,6 +68,10 @@ public class ForceLoginTask extends ForceLoginManagement<Player, CommandSender, 
 
     @Override
     public boolean isOnlineMode() {
+        if (session == null) {
+            return false;
+        }
+
         return session.isVerified() && player.getName().equals(session.getUsername());
     }
 }

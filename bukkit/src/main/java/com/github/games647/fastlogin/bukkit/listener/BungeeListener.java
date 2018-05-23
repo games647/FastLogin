@@ -110,7 +110,7 @@ public class BungeeListener implements PluginMessageListener {
                 }
             }, 10L);
         } else if (type == Type.CRACKED) {
-            //we don't start a forcelogin task here so update it manually
+            //we don't start a force login task here so update it manually
             plugin.getPremiumPlayers().put(player.getUniqueId(), PremiumStatus.CRACKED);
         }
     }
