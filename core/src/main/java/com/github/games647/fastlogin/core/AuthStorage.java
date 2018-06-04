@@ -32,16 +32,10 @@ public class AuthStorage {
     private final FastLoginCore<?, ?, ?> core;
     private final HikariDataSource dataSource;
 
-    public AuthStorage(FastLoginCore<?, ?, ?> core, String driver, String host, int port, String databasePath
-            , String user, String pass, boolean useSSL) {
+    public AuthStorage(FastLoginCore<?, ?, ?> core, String host, int port, String databasePath,
+                       HikariConfig config, boolean useSSL) {
         this.core = core;
-
-        HikariConfig config = new HikariConfig();
         config.setPoolName(core.getPlugin().getName());
-
-        config.setUsername(user);
-        config.setPassword(pass);
-        config.setDriverClassName(driver);
 
         //a try to fix https://www.spigotmc.org/threads/fastlogin.101192/page-26#post-1874647
         Properties properties = new Properties();
@@ -55,7 +49,7 @@ public class AuthStorage {
         }
 
         String jdbcUrl = "jdbc:";
-        if (driver.contains("sqlite")) {
+        if (config.getDriverClassName().contains("sqlite")) {
             String pluginFolder = core.getPlugin().getPluginFolder().toAbsolutePath().toString();
             databasePath = databasePath.replace("{pluginDir}", pluginFolder);
 

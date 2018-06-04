@@ -8,6 +8,7 @@ import com.github.games647.fastlogin.core.hooks.AuthPlugin;
 import com.github.games647.fastlogin.core.hooks.DefaultPasswordGenerator;
 import com.github.games647.fastlogin.core.hooks.PasswordGenerator;
 import com.google.common.net.HostAndPort;
+import com.zaxxer.hikari.HikariConfig;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -150,8 +151,9 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
     }
 
     public boolean setupDatabase() {
-        String driver = config.getString("driver");
-        if (!checkDriver(driver)) {
+        HikariConfig databaseConfig = new HikariConfig();
+        databaseConfig.setDriverClassName(config.getString("driver"));
+        if (!checkDriver(databaseConfig.getDriverClassName())) {
             return false;
         }
 
@@ -159,12 +161,15 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
         int port = config.get("port", 3306);
         String database = config.getString("database");
 
-        String user = config.get("username", "");
-        String password = config.get("password", "");
-
         boolean useSSL = config.get("useSSL", false);
 
-        storage = new AuthStorage(this, driver, host, port, database, user, password, useSSL);
+        databaseConfig.setUsername(config.get("username", ""));
+        databaseConfig.setPassword(config.get("password", ""));
+
+        databaseConfig.setConnectionTimeout(config.getInt("timeout", 30) * 1000);
+        databaseConfig.setMaxLifetime(config.getInt("lifetime", 30) * 1000);
+
+        storage = new AuthStorage(this, host, port, database, databaseConfig, useSSL);
         try {
             storage.createTables();
             return true;
