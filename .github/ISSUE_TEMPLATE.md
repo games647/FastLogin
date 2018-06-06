@@ -21,8 +21,10 @@
 [//]: # (This can be found by running `/version plugin-name`.)
 
 ### Error Log:
+[//]: # (No images please - only the textual representation)
 [Hastebin](https://hastebin.com/) / [Gist](https://gist.github.com/) link of the error or stacktrace (if any)
 
 ### Configuration:
+[//]: # (No images please - only the textual representation)
 [//]: # (remember to delete any sensitive data)
 [Hastebin](https://hastebin.com/) / [Gist](https://gist.github.com/) link of your config.yml file 

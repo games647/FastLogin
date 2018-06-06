@@ -71,7 +71,7 @@
         <!--ProtocolLib-->
         <repository>
             <id>dmulloy2-repo</id>
-            <url>http://repo.dmulloy2.net/nexus/groups/public/</url>
+            <url>http://repo.dmulloy2.net/nexus/repository/public/</url>
         </repository>
 
         <!--AuthMe Reloaded and xAuth -->
