@@ -59,7 +59,7 @@ public class VerifyResponseTask implements Runnable {
         try {
             BukkitLoginSession session = plugin.getLoginSessions().get(player.getAddress().toString());
             if (session == null) {
-                disconnect(plugin.getCore().getMessage("invalid-request"), true
+                disconnect("invalid-request", true
                         , "GameProfile {0} tried to send encryption response at invalid state", player.getAddress());
             } else {
                 verifyResponse(session);
@@ -120,7 +120,7 @@ public class VerifyResponseTask implements Runnable {
                 receiveFakeStartPacket(username);
             } else {
                 //user tried to fake a authentication
-                disconnect(plugin.getCore().getMessage("invalid-session"), true
+                disconnect("invalid-session", true
                         , "GameProfile {0} ({1}) tried to log in with an invalid session ServerId: {2}"
                         , session.getUsername(), socketAddress, serverId);
             }
@@ -150,7 +150,7 @@ public class VerifyResponseTask implements Runnable {
         //https://github.com/bergerkiller/CraftSource/blob/master/net.minecraft.server/LoginListener.java#L182
         if (!Arrays.equals(requestVerify, EncryptionUtil.decrypt(cipher, privateKey, responseVerify))) {
             //check if the verify token are equal to the server sent one
-            disconnect(plugin.getCore().getMessage("invalid-verify-token"), true
+            disconnect("invalid-verify-token", true
                     , "GameProfile {0} ({1}) tried to login with an invalid verify token. Server: {2} Client: {3}"
                     , session.getUsername(), packetEvent.getPlayer().getAddress(), requestVerify, responseVerify);
             return false;
@@ -189,14 +189,14 @@ public class VerifyResponseTask implements Runnable {
         return true;
     }
 
-    private void disconnect(String kickReason, boolean debug, String logMessage, Object... arguments) {
+    private void disconnect(String reasonKey, boolean debug, String logMessage, Object... arguments) {
         if (debug) {
             plugin.getLog().debug(logMessage, arguments);
         } else {
             plugin.getLog().error(logMessage, arguments);
         }
 
-        kickPlayer(plugin.getCore().getMessage(kickReason));
+        kickPlayer(plugin.getCore().getMessage(reasonKey));
     }
 
     private void kickPlayer(String reason) {
