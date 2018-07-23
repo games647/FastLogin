@@ -4,7 +4,9 @@ import com.github.games647.fastlogin.bungee.hook.BungeeAuthHook;
 import com.github.games647.fastlogin.bungee.listener.ConnectListener;
 import com.github.games647.fastlogin.bungee.listener.MessageListener;
 import com.github.games647.fastlogin.core.CommonUtil;
+import com.github.games647.fastlogin.core.message.ChangePremiumMessage;
 import com.github.games647.fastlogin.core.message.ChannelMessage;
+import com.github.games647.fastlogin.core.message.SuccessMessage;
 import com.github.games647.fastlogin.core.shared.FastLoginCore;
 import com.github.games647.fastlogin.core.shared.PlatformPlugin;
 import com.google.common.collect.MapMaker;
@@ -50,8 +52,9 @@ public class FastLoginBungee extends Plugin implements PlatformPlugin<CommandSen
         getProxy().getPluginManager().registerListener(this, new ConnectListener(this));
         getProxy().getPluginManager().registerListener(this, new MessageListener(this));
 
-        //this is required to listen to messages from the server
-        getProxy().registerChannel(getName());
+        //this is required to listen to incoming messages from the server
+        getProxy().registerChannel(getName() + ':' + ChangePremiumMessage.CHANGE_CHANNEL);
+        getProxy().registerChannel(getName() + ':' + SuccessMessage.SUCCESS_CHANNEL);
 
         registerHook();
     }
@@ -82,10 +85,8 @@ public class FastLoginBungee extends Plugin implements PlatformPlugin<CommandSen
     public void sendPluginMessage(Server server, ChannelMessage message) {
         if (server != null) {
             ByteArrayDataOutput dataOutput = ByteStreams.newDataOutput();
-            dataOutput.writeUTF(message.getChannelName());
-
             message.writeTo(dataOutput);
-            server.sendData(core.getPlugin().getName(), dataOutput.toByteArray());
+            server.sendData(core.getPlugin().getName() + ':' + message.getChannelName(), dataOutput.toByteArray());
         }
     }
 

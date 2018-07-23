@@ -11,6 +11,7 @@ import com.github.games647.fastlogin.bukkit.task.DelayedAuthHook;
 import com.github.games647.fastlogin.core.CommonUtil;
 import com.github.games647.fastlogin.core.PremiumStatus;
 import com.github.games647.fastlogin.core.message.ChannelMessage;
+import com.github.games647.fastlogin.core.message.LoginActionMessage;
 import com.github.games647.fastlogin.core.shared.FastLoginCore;
 import com.github.games647.fastlogin.core.shared.PlatformPlugin;
 import com.google.common.io.ByteArrayDataOutput;
@@ -28,6 +29,9 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.messaging.PluginMessageRecipient;
 import org.slf4j.Logger;
+
+import static com.github.games647.fastlogin.core.message.ChangePremiumMessage.CHANGE_CHANNEL;
+import static com.github.games647.fastlogin.core.message.SuccessMessage.SUCCESS_CHANNEL;
 
 /**
  * This plugin checks if a player has a paid account and if so tries to skip offline mode authentication.
@@ -66,9 +70,13 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
         if (bungeeCord) {
             setServerStarted();
 
-            //check for incoming messages from the bungeecord version of this plugin
-            getServer().getMessenger().registerIncomingPluginChannel(this, getName(), new BungeeListener(this));
-            getServer().getMessenger().registerOutgoingPluginChannel(this, getName());
+            // check for incoming messages from the bungeecord version of this plugin
+            String forceChannel = getName() + ':' + LoginActionMessage.FORCE_CHANNEL;
+            getServer().getMessenger().registerIncomingPluginChannel(this, forceChannel, new BungeeListener(this));
+
+            // outgoing
+            getServer().getMessenger().registerOutgoingPluginChannel(this, getName() + ':' + SUCCESS_CHANNEL);
+            getServer().getMessenger().registerOutgoingPluginChannel(this, getName() + ':' + CHANGE_CHANNEL);
         } else {
             if (!core.setupDatabase()) {
                 setEnabled(false);
@@ -167,10 +175,9 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
     public void sendPluginMessage(PluginMessageRecipient player, ChannelMessage message) {
         if (player != null) {
             ByteArrayDataOutput dataOutput = ByteStreams.newDataOutput();
-            dataOutput.writeUTF(message.getChannelName());
-
             message.writeTo(dataOutput);
-            player.sendPluginMessage(this, this.getName(), dataOutput.toByteArray());
+            String channel = this.getName() + ':' + message.getChannelName();
+            player.sendPluginMessage(this, channel, dataOutput.toByteArray());
         }
     }
 

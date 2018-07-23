@@ -5,6 +5,7 @@ import com.github.games647.fastlogin.bungee.FastLoginBungee;
 import com.github.games647.fastlogin.bungee.task.AsyncToggleMessage;
 import com.github.games647.fastlogin.core.StoredProfile;
 import com.github.games647.fastlogin.core.message.ChangePremiumMessage;
+import com.github.games647.fastlogin.core.message.SuccessMessage;
 import com.github.games647.fastlogin.core.shared.FastLoginCore;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteStreams;
@@ -24,14 +25,20 @@ public class MessageListener implements Listener {
 
     private final FastLoginBungee plugin;
 
+    private final String successChannel;
+    private final String changeChannel;
+
     public MessageListener(FastLoginBungee plugin) {
         this.plugin = plugin;
+
+        this.successChannel = plugin.getName() + ':' + SuccessMessage.SUCCESS_CHANNEL;
+        this.changeChannel = plugin.getName() + ':' + ChangePremiumMessage.CHANGE_CHANNEL;
     }
 
     @EventHandler
     public void onPluginMessage(PluginMessageEvent pluginMessageEvent) {
         String channel = pluginMessageEvent.getTag();
-        if (pluginMessageEvent.isCancelled() || !plugin.getName().equals(channel)) {
+        if (pluginMessageEvent.isCancelled() || !channel.startsWith(plugin.getName())) {
             return;
         }
 
@@ -48,17 +55,16 @@ public class MessageListener implements Listener {
         byte[] data = Arrays.copyOf(pluginMessageEvent.getData(), pluginMessageEvent.getData().length);
         ProxiedPlayer forPlayer = (ProxiedPlayer) pluginMessageEvent.getReceiver();
 
-        ProxyServer.getInstance().getScheduler().runAsync(plugin, () -> readMessage(forPlayer, data));
+        ProxyServer.getInstance().getScheduler().runAsync(plugin, () -> readMessage(forPlayer, channel, data));
     }
 
-    private void readMessage(ProxiedPlayer forPlayer, byte[] data) {
+    private void readMessage(ProxiedPlayer forPlayer, String channel, byte[] data) {
         FastLoginCore<ProxiedPlayer, CommandSender, FastLoginBungee> core = plugin.getCore();
 
         ByteArrayDataInput dataInput = ByteStreams.newDataInput(data);
-        String subChannel = dataInput.readUTF();
-        if ("Success".equals(subChannel)) {
+        if (successChannel.equals(channel)) {
             onSuccessMessage(forPlayer);
-        } else if ("ChangeStatus".equals(subChannel)) {
+        } else if (changeChannel.equals(channel)) {
             ChangePremiumMessage changeMessage = new ChangePremiumMessage();
             changeMessage.readFrom(dataInput);
 

@@ -5,6 +5,8 @@ import com.google.common.io.ByteArrayDataOutput;
 
 public class ChangePremiumMessage implements ChannelMessage {
 
+    public static final String CHANGE_CHANNEL = "ChStatus";
+
     private String playerName;
     private boolean willEnable;
     private boolean isSourceInvoker;
@@ -33,7 +35,7 @@ public class ChangePremiumMessage implements ChannelMessage {
 
     @Override
     public String getChannelName() {
-        return "ChangeStatus";
+        return CHANGE_CHANNEL;
     }
 
     @Override

@@ -7,6 +7,8 @@ import java.util.UUID;
 
 public class LoginActionMessage implements ChannelMessage {
 
+    public static final String FORCE_CHANNEL = "ForceAct";
+
     private Type type;
 
     private String playerName;
@@ -60,7 +62,7 @@ public class LoginActionMessage implements ChannelMessage {
 
     @Override
     public String getChannelName() {
-        return "LoginAction";
+        return FORCE_CHANNEL;
     }
 
     @Override
