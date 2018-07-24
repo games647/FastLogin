@@ -12,6 +12,7 @@ import com.github.games647.fastlogin.core.CommonUtil;
 import com.github.games647.fastlogin.core.PremiumStatus;
 import com.github.games647.fastlogin.core.message.ChannelMessage;
 import com.github.games647.fastlogin.core.message.LoginActionMessage;
+import com.github.games647.fastlogin.core.message.NamespaceKey;
 import com.github.games647.fastlogin.core.shared.FastLoginCore;
 import com.github.games647.fastlogin.core.shared.PlatformPlugin;
 import com.google.common.io.ByteArrayDataOutput;
@@ -71,12 +72,14 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
             setServerStarted();
 
             // check for incoming messages from the bungeecord version of this plugin
-            String forceChannel = getName() + ':' + LoginActionMessage.FORCE_CHANNEL;
+            String forceChannel = new NamespaceKey(getName(), LoginActionMessage.FORCE_CHANNEL).getCombinedName();
             getServer().getMessenger().registerIncomingPluginChannel(this, forceChannel, new BungeeListener(this));
 
             // outgoing
-            getServer().getMessenger().registerOutgoingPluginChannel(this, getName() + ':' + SUCCESS_CHANNEL);
-            getServer().getMessenger().registerOutgoingPluginChannel(this, getName() + ':' + CHANGE_CHANNEL);
+            String successChannel = new NamespaceKey(getName(), SUCCESS_CHANNEL).getCombinedName();
+            String changeChannel = new NamespaceKey(getName(), CHANGE_CHANNEL).getCombinedName();
+            getServer().getMessenger().registerOutgoingPluginChannel(this, successChannel);
+            getServer().getMessenger().registerOutgoingPluginChannel(this, changeChannel);
         } else {
             if (!core.setupDatabase()) {
                 setEnabled(false);
@@ -176,8 +179,9 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
         if (player != null) {
             ByteArrayDataOutput dataOutput = ByteStreams.newDataOutput();
             message.writeTo(dataOutput);
-            String channel = this.getName() + ':' + message.getChannelName();
-            player.sendPluginMessage(this, channel, dataOutput.toByteArray());
+
+            NamespaceKey channel = new NamespaceKey(getName(), message.getChannelName());
+            player.sendPluginMessage(this, channel.getCombinedName(), dataOutput.toByteArray());
         }
     }
 

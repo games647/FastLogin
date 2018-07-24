@@ -7,7 +7,7 @@ import java.util.UUID;
 
 public class LoginActionMessage implements ChannelMessage {
 
-    public static final String FORCE_CHANNEL = "ForceAct";
+    public static final String FORCE_CHANNEL = "force-act";
 
     private Type type;
 

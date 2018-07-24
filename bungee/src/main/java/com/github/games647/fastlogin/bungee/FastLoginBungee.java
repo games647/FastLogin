@@ -2,10 +2,11 @@ package com.github.games647.fastlogin.bungee;
 
 import com.github.games647.fastlogin.bungee.hook.BungeeAuthHook;
 import com.github.games647.fastlogin.bungee.listener.ConnectListener;
-import com.github.games647.fastlogin.bungee.listener.MessageListener;
+import com.github.games647.fastlogin.bungee.listener.PluginMessageListener;
 import com.github.games647.fastlogin.core.CommonUtil;
 import com.github.games647.fastlogin.core.message.ChangePremiumMessage;
 import com.github.games647.fastlogin.core.message.ChannelMessage;
+import com.github.games647.fastlogin.core.message.NamespaceKey;
 import com.github.games647.fastlogin.core.message.SuccessMessage;
 import com.github.games647.fastlogin.core.shared.FastLoginCore;
 import com.github.games647.fastlogin.core.shared.PlatformPlugin;
@@ -50,11 +51,11 @@ public class FastLoginBungee extends Plugin implements PlatformPlugin<CommandSen
 
         //events
         getProxy().getPluginManager().registerListener(this, new ConnectListener(this));
-        getProxy().getPluginManager().registerListener(this, new MessageListener(this));
+        getProxy().getPluginManager().registerListener(this, new PluginMessageListener(this));
 
         //this is required to listen to incoming messages from the server
-        getProxy().registerChannel(getName() + ':' + ChangePremiumMessage.CHANGE_CHANNEL);
-        getProxy().registerChannel(getName() + ':' + SuccessMessage.SUCCESS_CHANNEL);
+        getProxy().registerChannel(new NamespaceKey(getName(), ChangePremiumMessage.CHANGE_CHANNEL).getCombinedName());
+        getProxy().registerChannel(new NamespaceKey(getName(), SuccessMessage.SUCCESS_CHANNEL).getCombinedName());
 
         registerHook();
     }
@@ -86,7 +87,9 @@ public class FastLoginBungee extends Plugin implements PlatformPlugin<CommandSen
         if (server != null) {
             ByteArrayDataOutput dataOutput = ByteStreams.newDataOutput();
             message.writeTo(dataOutput);
-            server.sendData(core.getPlugin().getName() + ':' + message.getChannelName(), dataOutput.toByteArray());
+
+            NamespaceKey channel = new NamespaceKey(getName(), message.getChannelName());
+            server.sendData(channel.getCombinedName(), dataOutput.toByteArray());
         }
     }
 
@@ -114,7 +117,7 @@ public class FastLoginBungee extends Plugin implements PlatformPlugin<CommandSen
     @SuppressWarnings("deprecation")
     public ThreadFactory getThreadFactory() {
         return new ThreadFactoryBuilder()
-                .setNameFormat(core.getPlugin().getName() + " Database Pool Thread #%1$d")
+                .setNameFormat(getName() + " Database Pool Thread #%1$d")
                 //Hikari create daemons by default
                 .setDaemon(true)
                 .setThreadFactory(new GroupedThreadFactory(this, getName()))

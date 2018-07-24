@@ -5,7 +5,7 @@ import com.google.common.io.ByteArrayDataOutput;
 
 public class ChangePremiumMessage implements ChannelMessage {
 
-    public static final String CHANGE_CHANNEL = "ChStatus";
+    public static final String CHANGE_CHANNEL = "ch-status";
 
     private String playerName;
     private boolean willEnable;

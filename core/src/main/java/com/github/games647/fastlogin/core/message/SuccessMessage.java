@@ -5,7 +5,7 @@ import com.google.common.io.ByteArrayDataOutput;
 
 public class SuccessMessage implements ChannelMessage {
 
-    public static final String SUCCESS_CHANNEL = "Success";
+    public static final String SUCCESS_CHANNEL = "success";
 
     @Override
     public String getChannelName() {

@@ -5,6 +5,7 @@ import com.github.games647.fastlogin.bungee.FastLoginBungee;
 import com.github.games647.fastlogin.bungee.task.AsyncToggleMessage;
 import com.github.games647.fastlogin.core.StoredProfile;
 import com.github.games647.fastlogin.core.message.ChangePremiumMessage;
+import com.github.games647.fastlogin.core.message.NamespaceKey;
 import com.github.games647.fastlogin.core.message.SuccessMessage;
 import com.github.games647.fastlogin.core.shared.FastLoginCore;
 import com.google.common.io.ByteArrayDataInput;
@@ -21,24 +22,24 @@ import net.md_5.bungee.api.event.PluginMessageEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 
-public class MessageListener implements Listener {
+public class PluginMessageListener implements Listener {
 
     private final FastLoginBungee plugin;
 
     private final String successChannel;
     private final String changeChannel;
 
-    public MessageListener(FastLoginBungee plugin) {
+    public PluginMessageListener(FastLoginBungee plugin) {
         this.plugin = plugin;
 
-        this.successChannel = plugin.getName() + ':' + SuccessMessage.SUCCESS_CHANNEL;
-        this.changeChannel = plugin.getName() + ':' + ChangePremiumMessage.CHANGE_CHANNEL;
+        this.successChannel = new NamespaceKey(plugin.getName(), SuccessMessage.SUCCESS_CHANNEL).getCombinedName();
+        this.changeChannel = new NamespaceKey(plugin.getName(), ChangePremiumMessage.CHANGE_CHANNEL).getCombinedName();
     }
 
     @EventHandler
     public void onPluginMessage(PluginMessageEvent pluginMessageEvent) {
         String channel = pluginMessageEvent.getTag();
-        if (pluginMessageEvent.isCancelled() || !channel.startsWith(plugin.getName())) {
+        if (pluginMessageEvent.isCancelled() || !channel.startsWith(plugin.getName().toLowerCase())) {
             return;
         }
 

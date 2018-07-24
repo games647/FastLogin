@@ -46,16 +46,7 @@ public class BungeeListener implements PluginMessageListener {
 
     @Override
     public void onPluginMessageReceived(String channel, Player player, byte[] message) {
-        if (!channel.equals(plugin.getName())) {
-            return;
-        }
-
         ByteArrayDataInput dataInput = ByteStreams.newDataInput(message);
-        String subChannel = dataInput.readUTF();
-        if (!"LoginAction".equals(subChannel)) {
-            plugin.getLog().info("Unknown sub channel {}", subChannel);
-            return;
-        }
 
         LoginActionMessage loginMessage = new LoginActionMessage();
         loginMessage.readFrom(dataInput);
