@@ -11,7 +11,7 @@ public class NamespaceKey {
         this.namespace = namespace.toLowerCase();
         this.key = key.toLowerCase();
 
-        this.combined = namespace + ':' + key;
+        this.combined = this.namespace + ':' + this.key;
     }
 
     public String getCombinedName()  {
