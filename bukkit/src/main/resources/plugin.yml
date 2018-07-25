@@ -14,6 +14,9 @@ dev-url: ${project.url}
 # Load the plugin as early as possible to inject it for all players
 load: STARTUP
 
+# This plugin don't have to be transformed for compatibility with Minecraft >= 1.13
+api-version: 1.13
+
 softdepend:
     # We depend either ProtocolLib or ProtocolSupport
     - ProtocolSupport
