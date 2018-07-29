@@ -9,7 +9,7 @@ import com.comphenix.protocol.reflect.FuzzyReflection;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
 import com.github.games647.craftapi.model.auth.Verification;
-import com.github.games647.craftapi.model.skin.Property;
+import com.github.games647.craftapi.model.skin.SkinProperty;
 import com.github.games647.craftapi.resolver.MojangResolver;
 import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
 import com.github.games647.fastlogin.bukkit.EncryptionUtil;
@@ -108,7 +108,7 @@ public class VerifyResponseTask implements Runnable {
             if (response.isPresent()) {
                 plugin.getLog().info("GameProfile {} has a verified premium account", username);
 
-                Property[] properties = response.get().getProperties();
+                SkinProperty[] properties = response.get().getProperties();
                 if (properties.length > 0) {
                     session.setSkinProperty(properties[0]);
                 }
