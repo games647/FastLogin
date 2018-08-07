@@ -2,6 +2,8 @@ package com.github.games647.fastlogin.core.message;
 
 public class NamespaceKey {
 
+    private static final char SEPARATOR_CHAR = ':';
+
     private final String namespace;
     private final String key;
 
@@ -11,7 +13,7 @@ public class NamespaceKey {
         this.namespace = namespace.toLowerCase();
         this.key = key.toLowerCase();
 
-        this.combined = this.namespace + ':' + this.key;
+        this.combined = this.namespace + SEPARATOR_CHAR + this.key;
     }
 
     public String getCombinedName()  {
