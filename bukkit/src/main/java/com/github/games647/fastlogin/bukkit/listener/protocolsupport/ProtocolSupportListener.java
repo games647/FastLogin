@@ -32,7 +32,7 @@ public class ProtocolSupportListener extends JoinManagement<Player, CommandSende
             return;
         }
 
-        String username = loginStartEvent.getName();
+        String username = loginStartEvent.getConnection().getProfile().getName();
         InetSocketAddress address = loginStartEvent.getAddress();
 
         //remove old data every time on a new login in order to keep the session only for one person
@@ -73,7 +73,7 @@ public class ProtocolSupportListener extends JoinManagement<Player, CommandSende
                 , registered, profile);
         plugin.getLoginSessions().put(source.getAddress().toString(), playerSession);
         if (plugin.getConfig().getBoolean("premiumUuid")) {
-            source.getLoginStartEvent().setUseOnlineModeUUID(true);
+            source.getLoginStartEvent().setOnlineMode(true);
         }
     }
 

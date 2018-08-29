@@ -121,8 +121,8 @@
         <dependency>
             <groupId>com.github.ProtocolSupport</groupId>
             <artifactId>ProtocolSupport</artifactId>
-            <!--4.25.dev-->
-            <version>a4f060dc46</version>
+            <!--4.29.dev-->
+            <version>a030da05d5</version>
             <scope>provided</scope>
         </dependency>
 
