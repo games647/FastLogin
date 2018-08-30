@@ -1,19 +1,21 @@
 package com.github.games647.fastlogin.bukkit.listener.protocolsupport;
 
+import com.github.games647.craftapi.UUIDAdapter;
 import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 import com.github.games647.fastlogin.core.StoredProfile;
 import com.github.games647.fastlogin.core.shared.JoinManagement;
 
 import java.net.InetSocketAddress;
+import java.util.Optional;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import protocolsupport.api.events.ConnectionCloseEvent;
-import protocolsupport.api.events.PlayerLoginFinishEvent;
 import protocolsupport.api.events.PlayerLoginStartEvent;
+import protocolsupport.api.events.PlayerProfileCompleteEvent;
 
 public class ProtocolSupportListener extends JoinManagement<Player, CommandSender, ProtocolLoginSource>
         implements Listener {
@@ -48,16 +50,18 @@ public class ProtocolSupportListener extends JoinManagement<Player, CommandSende
     }
 
     @EventHandler
-    public void onPropertiesResolve(PlayerLoginFinishEvent loginFinishEvent) {
-        if (!loginFinishEvent.isOnlineMode()) {
-            return;
-        }
-
-        InetSocketAddress address = loginFinishEvent.getAddress();
+    public void onPropertiesResolve(PlayerProfileCompleteEvent profileCompleteEvent) {
+        InetSocketAddress address = profileCompleteEvent.getAddress();
         BukkitLoginSession session = plugin.getLoginSessions().get(address.toString());
 
-        if (session != null) {
+        if (session != null && profileCompleteEvent.getConnection().getProfile().isOnlineMode()) {
             session.setVerified(true);
+
+            if (!plugin.getConfig().getBoolean("premiumUuid")) {
+                String username = Optional.ofNullable(profileCompleteEvent.getForcedName())
+                        .orElse(profileCompleteEvent.getConnection().getProfile().getName());
+                profileCompleteEvent.setForcedUUID(UUIDAdapter.generateOfflineId(username));
+            }
         }
     }
 
