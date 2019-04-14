@@ -6,8 +6,14 @@ sudo: false
 # This is a java project
 language: java
 
+# Compile the project and run unit tests
 script: mvn test -B
 
 jdk:
   - oraclejdk8
-  - oraclejdk9
+  - openjdk11
+
+# Cache Maven dependencies
+cache:
+  directories:
+    - '$HOME/.m2/repository'
