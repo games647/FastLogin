@@ -70,6 +70,13 @@ https://ci.codemc.org/job/Games647/job/FastLogin/changes
 
 * [BungeeAuth](https://www.spigotmc.org/resources/bungeeauth.493/)
 
+## Network requests
+
+This plugin performs network requests to:
+
+* https://api.mojang.com - retrieving uuid data to decide if we should activate premium login
+* https://sessionserver.mojang.com - verify if the player is the owner of that account
+
 ***
 
 ## How to install
