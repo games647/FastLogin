@@ -192,7 +192,6 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
         return false;
     }
 
-
     public Configuration getConfig() {
         return config;
     }
