@@ -164,7 +164,7 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
         boolean useSSL = config.get("useSSL", false);
 
         databaseConfig.setUsername(config.get("username", ""));
-        databaseConfig.setPassword(config.get("password", ""));
+        databaseConfig.setPassword(config.getString("password"));
 
         databaseConfig.setConnectionTimeout(config.getInt("timeout", 30) * 1000);
         databaseConfig.setMaxLifetime(config.getInt("lifetime", 30) * 1000);
