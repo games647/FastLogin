@@ -14,7 +14,6 @@ import java.security.PublicKey;
 import java.util.Arrays;
 import java.util.Random;
 
-import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.entity.Player;
 
 import static com.comphenix.protocol.PacketType.Login.Server.DISCONNECT;
@@ -85,7 +84,7 @@ public class ProtocolLibLoginSource implements LoginSource {
     }
 
     public byte[] getVerifyToken() {
-        return ArrayUtils.clone(verifyToken);
+        return verifyToken.clone();
     }
 
     @Override

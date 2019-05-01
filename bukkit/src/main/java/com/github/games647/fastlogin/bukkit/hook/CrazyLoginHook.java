@@ -1,5 +1,6 @@
 package com.github.games647.fastlogin.bukkit.hook;
 
+import com.comphenix.protocol.reflect.FieldUtils;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 import com.github.games647.fastlogin.core.hooks.AuthPlugin;
 
@@ -13,7 +14,6 @@ import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
-import org.apache.commons.lang.reflect.FieldUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
