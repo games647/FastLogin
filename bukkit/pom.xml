@@ -56,37 +56,31 @@
     </build>
 
     <repositories>
-        <!--Bukkit-Server-API -->
+        <!-- Bukkit-Server-API -->
         <repository>
             <id>spigot-repo</id>
             <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
         </repository>
 
-        <!--CodeMC: LoginSecurity-->
-        <repository>
-            <id>codemc-repo</id>
-            <url>https://repo.codemc.org/repository/maven-public/</url>
-        </repository>
-
-        <!--ProtocolLib-->
+        <!-- ProtocolLib -->
         <repository>
             <id>dmulloy2-repo</id>
             <url>http://repo.dmulloy2.net/nexus/repository/public/</url>
         </repository>
 
-        <!--AuthMe Reloaded and xAuth -->
+        <!-- AuthMe Reloaded, xAuth and LoginSecurity -->
         <repository>
             <id>codemc-repo</id>
             <url>https://repo.codemc.org/repository/maven-public/</url>
         </repository>
 
-        <!--GitHub automatic maven builds-->
+        <!-- GitHub automatic maven builds -->
         <repository>
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>
         </repository>
 
-        <!--PlaceholderAPI -->
+        <!-- PlaceholderAPI -->
         <repository>
             <id>placeholderapi</id>
             <url>http://repo.extendedclip.com/content/repositories/placeholderapi/</url>
