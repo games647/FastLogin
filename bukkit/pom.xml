@@ -62,10 +62,10 @@
             <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
         </repository>
 
-        <!--LoginSecurity-->
+        <!--CodeMC: LoginSecurity-->
         <repository>
-            <id>lenis0012-repo</id>
-            <url>http://ci.lenis0012.com/plugin/repository/everything/</url>
+            <id>codemc-repo</id>
+            <url>https://repo.codemc.org/repository/maven-public/</url>
         </repository>
 
         <!--ProtocolLib-->
@@ -159,7 +159,7 @@
         <dependency>
             <groupId>com.lenis0012.bukkit</groupId>
             <artifactId>loginsecurity</artifactId>
-            <version>2.1.7</version>
+            <version>2.1.9</version>
             <scope>provided</scope>
             <optional>true</optional>
             <exclusions>
