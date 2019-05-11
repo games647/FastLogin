@@ -40,6 +40,11 @@ public class BukkitLoginSession extends LoginSession {
         this(username, "", EMPTY_ARRAY, false, profile);
     }
 
+    //ProtocolSupport
+    public BukkitLoginSession(String username, boolean registered, StoredProfile profile) {
+        this(username, "", EMPTY_ARRAY, registered, profile);
+    }
+
     /**
      * Gets the verify token the server sent to the client.
      *
