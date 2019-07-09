@@ -33,14 +33,14 @@
         <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
-            <version>3.0.0</version>
+            <version>3.3.1</version>
         </dependency>
 
         <!--Logging framework implements slf4j which is required by hikari-->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-jdk14</artifactId>
-            <version>1.7.25</version>
+            <version>1.7.26</version>
         </dependency>
 
         <!--GSON is not at the right position for Minecraft 1.7-->
