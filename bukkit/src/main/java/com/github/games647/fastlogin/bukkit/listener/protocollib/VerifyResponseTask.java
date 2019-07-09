@@ -81,8 +81,9 @@ public class VerifyResponseTask implements Runnable {
         SecretKey loginKey;
         try {
             cipher = Cipher.getInstance(privateKey.getAlgorithm());
+            cipher.init(Cipher.DECRYPT_MODE, privateKey);
 
-            loginKey = EncryptionUtil.decryptSharedKey(cipher, privateKey, sharedSecret);
+            loginKey = EncryptionUtil.decryptSharedKey(cipher, sharedSecret);
         } catch (GeneralSecurityException securityEx) {
             disconnect("error-kick", false, "Cannot decrypt received contents", securityEx);
             return;
@@ -148,7 +149,7 @@ public class VerifyResponseTask implements Runnable {
         byte[] responseVerify = packetEvent.getPacket().getByteArrays().read(1);
 
         //https://github.com/bergerkiller/CraftSource/blob/master/net.minecraft.server/LoginListener.java#L182
-        if (!Arrays.equals(requestVerify, EncryptionUtil.decrypt(cipher, privateKey, responseVerify))) {
+        if (!Arrays.equals(requestVerify, EncryptionUtil.decrypt(cipher, responseVerify))) {
             //check if the verify token are equal to the server sent one
             disconnect("invalid-verify-token", true
                     , "GameProfile {0} ({1}) tried to login with an invalid verify token. Server: {2} Client: {3}"

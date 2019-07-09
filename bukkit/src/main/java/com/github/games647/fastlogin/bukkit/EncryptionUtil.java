@@ -8,7 +8,6 @@ import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.Random;
 
@@ -83,28 +82,24 @@ public class EncryptionUtil {
     /**
      * Decrypts the content and extracts the key spec.
      *
-     * @param cipher     decryption cipher
-     * @param privateKey private key of the server
+     * @param cipher     decryption cipher initialized with the private key
      * @param sharedKey  the encrypted shared key
      * @return shared secret key
-     * @throws GeneralSecurityException
+     * @throws GeneralSecurityException if it fails to decrypt the data
      */
-    public static SecretKey decryptSharedKey(Cipher cipher, PrivateKey privateKey, byte[] sharedKey)
-            throws GeneralSecurityException {
-        return new SecretKeySpec(decrypt(cipher, privateKey, sharedKey), "AES");
+    public static SecretKey decryptSharedKey(Cipher cipher, byte[] sharedKey) throws GeneralSecurityException {
+        return new SecretKeySpec(decrypt(cipher, sharedKey), "AES");
     }
 
     /**
      * Decrypted the given data using the cipher.
      *
-     * @param cipher decryption cypher
-     * @param key    server private key
+     * @param cipher decryption cypher initialized with the private key
      * @param data   the encrypted data
      * @return clear text data
-     * @throws GeneralSecurityException if it fails to initialize and decrypt the data
+     * @throws GeneralSecurityException if it fails to decrypt the data
      */
-    public static byte[] decrypt(Cipher cipher, PrivateKey key, byte[] data) throws GeneralSecurityException {
-        cipher.init(Cipher.DECRYPT_MODE, key);
+    public static byte[] decrypt(Cipher cipher, byte[] data) throws GeneralSecurityException {
         return cipher.doFinal(data);
     }
 
