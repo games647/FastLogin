@@ -161,18 +161,18 @@ autoLogin: true
 # Recommended is the use of MariaDB (a better version of MySQL)
 
 # Single file SQLite database
-driver: org.sqlite.JDBC
+driver: 'org.sqlite.JDBC'
 # File location
 database: '{pluginDir}/FastLogin.db'
 
 # MySQL/MariaDB
 # If you want to enable it uncomment only the lines below this not this line.
-#driver: com.mysql.jdbc.Driver
-#host: 127.0.0.1
+#driver: 'com.mysql.jdbc.Driver'
+#host: '127.0.0.1'
 #port: 3306
-#database: fastlogin
-#username: myUser
-#password: myPassword
+#database: 'fastlogin'
+#username: 'myUser'
+#password: 'myPassword'
 
 # Advanced Connection Pool settings in seconds
 #timeout: 30
