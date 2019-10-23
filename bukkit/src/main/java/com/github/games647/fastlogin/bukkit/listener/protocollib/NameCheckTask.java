@@ -4,12 +4,14 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketEvent;
 import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
+import com.github.games647.fastlogin.bukkit.event.BukkitFastLoginPreLoginEvent;
 import com.github.games647.fastlogin.core.StoredProfile;
 import com.github.games647.fastlogin.core.shared.JoinManagement;
 
 import java.security.PublicKey;
 import java.util.Random;
 
+import com.github.games647.fastlogin.core.shared.event.FastLoginPreLoginEvent;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -44,6 +46,13 @@ public class NameCheckTask extends JoinManagement<Player, CommandSender, Protoco
         } finally {
             ProtocolLibrary.getProtocolManager().getAsynchronousManager().signalPacketTransmission(packetEvent);
         }
+    }
+
+    @Override
+    public FastLoginPreLoginEvent callFastLoginPreLoginEvent(String username, ProtocolLibLoginSource source, StoredProfile profile) {
+        BukkitFastLoginPreLoginEvent event = new BukkitFastLoginPreLoginEvent(username, source, profile);
+        plugin.getServer().getPluginManager().callEvent(event);
+        return event;
     }
 
     //Minecraft server implementation

@@ -3,12 +3,14 @@ package com.github.games647.fastlogin.bukkit.listener.protocolsupport;
 import com.github.games647.craftapi.UUIDAdapter;
 import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
+import com.github.games647.fastlogin.bukkit.event.BukkitFastLoginPreLoginEvent;
 import com.github.games647.fastlogin.core.StoredProfile;
 import com.github.games647.fastlogin.core.shared.JoinManagement;
 
 import java.net.InetSocketAddress;
 import java.util.Optional;
 
+import com.github.games647.fastlogin.core.shared.event.FastLoginPreLoginEvent;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -63,6 +65,13 @@ public class ProtocolSupportListener extends JoinManagement<Player, CommandSende
                 profileCompleteEvent.setForcedUUID(UUIDAdapter.generateOfflineId(username));
             }
         }
+    }
+
+    @Override
+    public FastLoginPreLoginEvent callFastLoginPreLoginEvent(String username, ProtocolLoginSource source, StoredProfile profile) {
+        BukkitFastLoginPreLoginEvent event = new BukkitFastLoginPreLoginEvent(username, source, profile);
+        plugin.getServer().getPluginManager().callEvent(event);
+        return event;
     }
 
     @Override

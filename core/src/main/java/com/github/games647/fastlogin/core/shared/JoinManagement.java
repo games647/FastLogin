@@ -7,6 +7,7 @@ import com.github.games647.fastlogin.core.hooks.AuthPlugin;
 
 import java.util.Optional;
 
+import com.github.games647.fastlogin.core.shared.event.FastLoginPreLoginEvent;
 import net.md_5.bungee.config.Configuration;
 
 public abstract class JoinManagement<P extends C, C, S extends LoginSource> {
@@ -24,6 +25,8 @@ public abstract class JoinManagement<P extends C, C, S extends LoginSource> {
         if (profile == null) {
             return;
         }
+
+        callFastLoginPreLoginEvent(username, source, profile);
 
         Configuration config = core.getConfig();
 
@@ -100,6 +103,8 @@ public abstract class JoinManagement<P extends C, C, S extends LoginSource> {
 
         return false;
     }
+
+    public abstract FastLoginPreLoginEvent callFastLoginPreLoginEvent(String username, S source, StoredProfile profile);
 
     public abstract void requestPremiumLogin(S source, StoredProfile profile, String username, boolean registered);
 

@@ -3,6 +3,7 @@ package com.github.games647.fastlogin.core.shared;
 import com.github.games647.fastlogin.core.AuthStorage;
 import com.github.games647.fastlogin.core.StoredProfile;
 import com.github.games647.fastlogin.core.hooks.AuthPlugin;
+import com.github.games647.fastlogin.core.shared.event.FastLoginAutoLoginEvent;
 
 public abstract class ForceLoginManagement<P extends C, C, L extends LoginSession, T extends PlatformPlugin<C>>
         implements Runnable {
@@ -40,7 +41,7 @@ public abstract class ForceLoginManagement<P extends C, C, L extends LoginSessio
                                 || (core.getConfig().get("auto-register-unknown", false)
                                 && !authPlugin.isRegistered(playerName))) {
                             success = forceRegister(player);
-                        } else {
+                        } else if (!callFastLoginAutoLoginEvent(session, playerProfile).isCancelled()) {
                             success = forceLogin(player);
                         }
                     }
@@ -92,6 +93,8 @@ public abstract class ForceLoginManagement<P extends C, C, L extends LoginSessio
 
         return success;
     }
+
+    public abstract FastLoginAutoLoginEvent callFastLoginAutoLoginEvent(LoginSession session, StoredProfile profile);
 
     public abstract void onForceActionSuccess(LoginSession session);
 

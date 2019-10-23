@@ -2,7 +2,9 @@ package com.github.games647.fastlogin.bukkit.task;
 
 import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
+import com.github.games647.fastlogin.bukkit.event.BukkitFastLoginAutoLoginEvent;
 import com.github.games647.fastlogin.core.PremiumStatus;
+import com.github.games647.fastlogin.core.StoredProfile;
 import com.github.games647.fastlogin.core.message.SuccessMessage;
 import com.github.games647.fastlogin.core.shared.FastLoginCore;
 import com.github.games647.fastlogin.core.shared.ForceLoginManagement;
@@ -10,6 +12,7 @@ import com.github.games647.fastlogin.core.shared.LoginSession;
 
 import java.util.concurrent.ExecutionException;
 
+import com.github.games647.fastlogin.core.shared.event.FastLoginAutoLoginEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -41,6 +44,13 @@ public class ForceLoginTask extends ForceLoginManagement<Player, CommandSender, 
         }
 
         plugin.getPremiumPlayers().put(player.getUniqueId(), status);
+    }
+
+    @Override
+    public FastLoginAutoLoginEvent callFastLoginAutoLoginEvent(LoginSession session, StoredProfile profile) {
+        BukkitFastLoginAutoLoginEvent event = new BukkitFastLoginAutoLoginEvent(session, profile);
+        core.getPlugin().getServer().getPluginManager().callEvent(event);
+        return event;
     }
 
     @Override

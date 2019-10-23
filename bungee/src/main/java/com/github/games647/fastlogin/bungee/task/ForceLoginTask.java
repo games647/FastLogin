@@ -2,6 +2,8 @@ package com.github.games647.fastlogin.bungee.task;
 
 import com.github.games647.fastlogin.bungee.BungeeLoginSession;
 import com.github.games647.fastlogin.bungee.FastLoginBungee;
+import com.github.games647.fastlogin.bungee.event.BungeeFastLoginAutoLoginEvent;
+import com.github.games647.fastlogin.core.StoredProfile;
 import com.github.games647.fastlogin.core.message.ChannelMessage;
 import com.github.games647.fastlogin.core.message.LoginActionMessage;
 import com.github.games647.fastlogin.core.message.LoginActionMessage.Type;
@@ -11,6 +13,7 @@ import com.github.games647.fastlogin.core.shared.LoginSession;
 
 import java.util.UUID;
 
+import com.github.games647.fastlogin.core.shared.event.FastLoginAutoLoginEvent;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -49,6 +52,12 @@ public class ForceLoginTask
 
         session.setAlreadyLogged(true);
         return super.forceLogin(player);
+    }
+
+    @Override
+    public FastLoginAutoLoginEvent callFastLoginAutoLoginEvent(LoginSession session, StoredProfile profile) {
+        return core.getPlugin().getProxy().getPluginManager()
+                .callEvent(new BungeeFastLoginAutoLoginEvent(session, profile));
     }
 
     @Override
