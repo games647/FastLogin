@@ -56,10 +56,12 @@
     </build>
 
     <repositories>
+        <!-- Offline
         <repository>
             <id>vik1395-repo</id>
             <url>https://vik1395.github.io/repo.vik1395.me/repositories</url>
         </repository>
+        -->
 
         <repository>
             <id>codemc-repo</id>
@@ -88,13 +90,16 @@
             <groupId>me.vik1395</groupId>
             <artifactId>BungeeAuth</artifactId>
             <version>1.4</version>
-            <scope>provided</scope>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/BungeeAuth-1.4.jar</systemPath>
+            <!--
             <exclusions>
                 <exclusion>
                     <groupId>*</groupId>
                     <artifactId>*</artifactId>
                 </exclusion>
             </exclusions>
+            -->
         </dependency>
     </dependencies>
 </project>
