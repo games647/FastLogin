@@ -15,6 +15,12 @@ public interface PlatformPlugin<C> {
 
     void sendMessage(C receiver, String message);
 
+    default void sendMultiLineMessage(C receiver, String message) {
+        for (String line : message.split("%nl%")) {
+            sendMessage(receiver, line);
+        }
+    }
+
     default ThreadFactory getThreadFactory() {
         return null;
     }
