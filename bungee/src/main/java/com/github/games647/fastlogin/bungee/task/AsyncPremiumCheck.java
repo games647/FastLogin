@@ -3,9 +3,11 @@ package com.github.games647.fastlogin.bungee.task;
 import com.github.games647.fastlogin.bungee.BungeeLoginSession;
 import com.github.games647.fastlogin.bungee.BungeeLoginSource;
 import com.github.games647.fastlogin.bungee.FastLoginBungee;
+import com.github.games647.fastlogin.bungee.event.BungeeFastLoginPreLoginEvent;
 import com.github.games647.fastlogin.core.StoredProfile;
 import com.github.games647.fastlogin.core.shared.JoinManagement;
 
+import com.github.games647.fastlogin.core.shared.event.FastLoginPreLoginEvent;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.PendingConnection;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -39,6 +41,13 @@ public class AsyncPremiumCheck extends JoinManagement<ProxiedPlayer, CommandSend
         } finally {
             preLoginEvent.completeIntent(plugin);
         }
+    }
+
+    @Override
+    public FastLoginPreLoginEvent callFastLoginPreLoginEvent(String username, BungeeLoginSource source,
+                                                             StoredProfile profile) {
+        return plugin.getProxy().getPluginManager()
+                .callEvent(new BungeeFastLoginPreLoginEvent(username, source, profile));
     }
 
     @Override
