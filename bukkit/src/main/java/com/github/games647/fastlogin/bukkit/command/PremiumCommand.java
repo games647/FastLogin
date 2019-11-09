@@ -1,10 +1,12 @@
 package com.github.games647.fastlogin.bukkit.command;
 
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
+import com.github.games647.fastlogin.bukkit.event.BukkitFastLoginPremiumToggleEvent;
 import com.github.games647.fastlogin.core.StoredProfile;
 
 import java.util.UUID;
 
+import com.github.games647.fastlogin.core.shared.event.PremiumToggleReason;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -41,27 +43,29 @@ public class PremiumCommand extends ToggleCommand {
             return;
         }
 
-            UUID id = ((Player) sender).getUniqueId();
-            if (plugin.getConfig().getBoolean("premium-warning") && !plugin.getCore().getPendingConfirms().contains(id)) {
-                sender.sendMessage(plugin.getCore().getMessage("premium-warning"));
-                plugin.getCore().getPendingConfirms().add(id);
-                return;
-            }
+        UUID id = ((Player) sender).getUniqueId();
+        if (plugin.getConfig().getBoolean("premium-warning") && !plugin.getCore().getPendingConfirms().contains(id)) {
+            sender.sendMessage(plugin.getCore().getMessage("premium-warning"));
+            plugin.getCore().getPendingConfirms().add(id);
+            return;
+        }
 
-            plugin.getCore().getPendingConfirms().remove(id);
-            //todo: load async
-            StoredProfile profile = plugin.getCore().getStorage().loadProfile(sender.getName());
-            if (profile.isPremium()) {
-                plugin.getCore().sendLocaleMessage("already-exists", sender);
-            } else {
-                //todo: resolve uuid
-                profile.setPremium(true);
-                Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-                    plugin.getCore().getStorage().save(profile);
-                });
+        plugin.getCore().getPendingConfirms().remove(id);
+        //todo: load async
+        StoredProfile profile = plugin.getCore().getStorage().loadProfile(sender.getName());
+        if (profile.isPremium()) {
+            plugin.getCore().sendLocaleMessage("already-exists", sender);
+        } else {
+            //todo: resolve uuid
+            profile.setPremium(true);
+            Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+                plugin.getCore().getStorage().save(profile);
+                plugin.getServer().getPluginManager().callEvent(
+                        new BukkitFastLoginPremiumToggleEvent(profile, PremiumToggleReason.COMMAND_SELF));
+            });
 
-                plugin.getCore().sendLocaleMessage("add-premium", sender);
-            }
+            plugin.getCore().sendLocaleMessage("add-premium", sender);
+        }
     }
 
     private void onPremiumOther(CommandSender sender, Command command, String[] args) {
@@ -87,6 +91,8 @@ public class PremiumCommand extends ToggleCommand {
             profile.setPremium(true);
             Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
                 plugin.getCore().getStorage().save(profile);
+                plugin.getServer().getPluginManager().callEvent(
+                        new BukkitFastLoginPremiumToggleEvent(profile, PremiumToggleReason.COMMAND_OTHER));
             });
 
             plugin.getCore().sendLocaleMessage("add-premium-other", sender);
