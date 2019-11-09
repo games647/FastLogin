@@ -15,6 +15,7 @@ public class BukkitFastLoginAutoLoginEvent extends Event implements FastLoginAut
     private boolean cancelled;
 
     public BukkitFastLoginAutoLoginEvent(LoginSession session, StoredProfile profile) {
+        super(true);
         this.session = session;
         this.profile = profile;
     }
