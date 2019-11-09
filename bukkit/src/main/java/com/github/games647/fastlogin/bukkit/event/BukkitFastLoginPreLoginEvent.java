@@ -15,6 +15,7 @@ public class BukkitFastLoginPreLoginEvent extends Event implements FastLoginPreL
 
     public BukkitFastLoginPreLoginEvent(String username, LoginSource source, StoredProfile profile) {
         super(true);
+
         this.username = username;
         this.source = source;
         this.profile = profile;
