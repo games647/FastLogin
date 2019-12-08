@@ -116,7 +116,7 @@
             <groupId>com.github.ProtocolSupport</groupId>
             <artifactId>ProtocolSupport</artifactId>
             <!--4.29.dev after commit about API improvements-->
-            <version>3a80c661fe</version>
+            <version>03cd0161f6</version>
             <scope>provided</scope>
         </dependency>
 
