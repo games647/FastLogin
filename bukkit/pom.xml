@@ -20,7 +20,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.1.1</version>
+                <version>3.2.0</version>
                 <configuration>
                     <createDependencyReducedPom>false</createDependencyReducedPom>
                     <shadedArtifactAttached>false</shadedArtifactAttached>
@@ -107,7 +107,7 @@
         <dependency>
             <groupId>com.comphenix.protocol</groupId>
             <artifactId>ProtocolLib</artifactId>
-            <version>4.4.0</version>
+            <version>4.44.0</version>
             <scope>provided</scope>
         </dependency>
 
@@ -153,7 +153,7 @@
         <dependency>
             <groupId>com.lenis0012.bukkit</groupId>
             <artifactId>loginsecurity</artifactId>
-            <version>2.1.9</version>
+            <version>3.0.1</version>
             <scope>provided</scope>
             <optional>true</optional>
             <exclusions>

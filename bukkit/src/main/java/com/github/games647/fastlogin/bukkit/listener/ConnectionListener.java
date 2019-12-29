@@ -38,6 +38,7 @@ public class ConnectionListener implements Listener {
     public void onPlayerJoin(PlayerJoinEvent joinEvent) {
         Player player = joinEvent.getPlayer();
 
+        removeBlacklistStatus(player);
         if (!plugin.isBungeeEnabled()) {
             //Wait before auth plugin and we received a message from BungeeCord initializes the player
             Runnable forceLoginTask = new ForceLoginTask(plugin.getCore(), player);
@@ -48,9 +49,13 @@ public class ConnectionListener implements Listener {
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent quitEvent) {
         Player player = quitEvent.getPlayer();
-        player.removeMetadata(plugin.getName(), plugin);
+        removeBlacklistStatus(player);
 
         plugin.getCore().getPendingConfirms().remove(player.getUniqueId());
         plugin.getPremiumPlayers().remove(player.getUniqueId());
+    }
+
+    private void removeBlacklistStatus(Player player) {
+        player.removeMetadata(plugin.getName(), plugin);
     }
 }
