@@ -8,14 +8,10 @@ import com.lenis0012.bukkit.loginsecurity.session.PlayerSession;
 import com.lenis0012.bukkit.loginsecurity.session.action.LoginAction;
 import com.lenis0012.bukkit.loginsecurity.session.action.RegisterAction;
 
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 /**
- * GitHub: https://github.com/lenis0012/LoginSecurity-2 
+ * GitHub: https://github.com/lenis0012/LoginSecurity-2
  * <p>
  * Project page:
  * <p>
@@ -33,18 +29,9 @@ public class LoginSecurityHook implements AuthPlugin<Player> {
 
     @Override
     public boolean forceLogin(Player player) {
-        Future<Boolean> future = Bukkit.getScheduler().callSyncMethod(plugin, () -> {
-            PlayerSession session = LoginSecurity.getSessionManager().getPlayerSession(player);
-            return session.isAuthorized()
-                    || session.performAction(new LoginAction(AuthService.PLUGIN, plugin)).isSuccess();
-        });
-
-        try {
-            return future.get();
-        } catch (InterruptedException | ExecutionException ex) {
-            plugin.getLog().error("Failed to forceLogin player: {}", player, ex);
-            return false;
-        }
+        PlayerSession session = LoginSecurity.getSessionManager().getPlayerSession(player);
+        return session.isAuthorized()
+                || session.performAction(new LoginAction(AuthService.PLUGIN, plugin)).isSuccess();
     }
 
     @Override
@@ -55,16 +42,7 @@ public class LoginSecurityHook implements AuthPlugin<Player> {
 
     @Override
     public boolean forceRegister(Player player, String password) {
-        Future<Boolean> future = Bukkit.getScheduler().callSyncMethod(plugin, () -> {
-            PlayerSession session = LoginSecurity.getSessionManager().getPlayerSession(player);
-            return session.performAction(new RegisterAction(AuthService.PLUGIN, plugin, password)).isSuccess();
-        });
-
-        try {
-            return future.get();
-        } catch (InterruptedException | ExecutionException ex) {
-            plugin.getLog().error("Failed to forceLogin player: {}", player, ex);
-            return false;
-        }
+        PlayerSession session = LoginSecurity.getSessionManager().getPlayerSession(player);
+        return session.performAction(new RegisterAction(AuthService.PLUGIN, plugin, password)).isSuccess();
     }
 }
