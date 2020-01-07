@@ -6,13 +6,16 @@ import java.net.InetSocketAddress;
 
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.PendingConnection;
+import net.md_5.bungee.api.event.PreLoginEvent;
 
 public class BungeeLoginSource implements LoginSource {
 
     private final PendingConnection connection;
+    private final PreLoginEvent preLoginEvent;
 
-    public BungeeLoginSource(PendingConnection connection) {
+    public BungeeLoginSource(PendingConnection connection, PreLoginEvent preLoginEvent) {
         this.connection = connection;
+        this.preLoginEvent = preLoginEvent;
     }
 
     @Override
@@ -22,7 +25,10 @@ public class BungeeLoginSource implements LoginSource {
 
     @Override
     public void kick(String message) {
-        connection.disconnect(TextComponent.fromLegacyText(message));
+        preLoginEvent.setCancelled(true);
+
+        if (message != null)
+            preLoginEvent.setCancelReason(TextComponent.fromLegacyText(message));
     }
 
     @Override
