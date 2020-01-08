@@ -4,6 +4,8 @@ import com.github.games647.fastlogin.core.shared.LoginSource;
 
 import java.net.InetSocketAddress;
 
+import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.PendingConnection;
 import net.md_5.bungee.api.event.PreLoginEvent;
@@ -29,6 +31,8 @@ public class BungeeLoginSource implements LoginSource {
 
         if (message != null)
             preLoginEvent.setCancelReason(TextComponent.fromLegacyText(message));
+        else
+            preLoginEvent.setCancelReason(new ComponentBuilder("Kicked").color(ChatColor.WHITE).create());
     }
 
     @Override
