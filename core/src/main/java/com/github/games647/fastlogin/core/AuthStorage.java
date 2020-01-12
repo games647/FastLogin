@@ -5,11 +5,7 @@ import com.github.games647.fastlogin.core.shared.FastLoginCore;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.time.Instant;
 import java.util.Optional;
 import java.util.Properties;
@@ -126,7 +122,7 @@ public class AuthStorage {
             String name = resultSet.getString(3);
             boolean premium = resultSet.getBoolean(4);
             String lastIp = resultSet.getString(5);
-            Instant lastLogin = resultSet.getTimestamp(6).toInstant();
+            Instant lastLogin = Optional.ofNullable(resultSet.getTimestamp(6)).map(Timestamp::toInstant).orElse(Instant.now());
             return Optional.of(new StoredProfile(userId, uuid, name, premium, lastIp, lastLogin));
         }
 
