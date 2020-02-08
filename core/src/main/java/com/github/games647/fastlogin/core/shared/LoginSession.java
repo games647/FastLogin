@@ -28,7 +28,7 @@ public abstract class LoginSession {
      *
      * @return
      */
-    public boolean needsRegistration() {
+    public synchronized boolean needsRegistration() {
         return !registered;
     }
 

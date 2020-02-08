@@ -1,7 +1,5 @@
 package com.github.games647.fastlogin.bukkit;
 
-import java.util.stream.Collectors;
-
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 
@@ -43,7 +41,7 @@ public class PremiumPlaceholder extends PlaceholderExpansion {
 
     @Override
     public String getAuthor() {
-        return plugin.getDescription().getAuthors().stream().collect(Collectors.joining(", "));
+        return String.join(", ", plugin.getDescription().getAuthors());
     }
 
     @Override

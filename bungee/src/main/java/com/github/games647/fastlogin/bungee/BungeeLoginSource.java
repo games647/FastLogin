@@ -29,10 +29,11 @@ public class BungeeLoginSource implements LoginSource {
     public void kick(String message) {
         preLoginEvent.setCancelled(true);
 
-        if (message != null)
-            preLoginEvent.setCancelReason(TextComponent.fromLegacyText(message));
-        else
+        if (message == null) {
             preLoginEvent.setCancelReason(new ComponentBuilder("Kicked").color(ChatColor.WHITE).create());
+        } else {
+            preLoginEvent.setCancelReason(TextComponent.fromLegacyText(message));
+        }
     }
 
     @Override

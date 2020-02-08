@@ -23,6 +23,7 @@ import java.nio.file.Path;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -231,7 +232,7 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
             Path configFile = dataFolder.resolve(fileName);
             if (Files.notExists(configFile)) {
                 try (InputStream defaultStream = getClass().getClassLoader().getResourceAsStream(fileName)) {
-                    Files.copy(defaultStream, configFile);
+                    Files.copy(Objects.requireNonNull(defaultStream), configFile);
                 }
             }
         } catch (IOException ioExc) {
