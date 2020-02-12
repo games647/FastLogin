@@ -166,8 +166,8 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
         databaseConfig.setUsername(config.get("username", ""));
         databaseConfig.setPassword(config.getString("password"));
 
-        databaseConfig.setConnectionTimeout(config.getInt("timeout", 30) * 1000);
-        databaseConfig.setMaxLifetime(config.getInt("lifetime", 30) * 1000);
+        databaseConfig.setConnectionTimeout(config.getInt("timeout", 30) * 1_000L);
+        databaseConfig.setMaxLifetime(config.getInt("lifetime", 30) * 1_000L);
 
         storage = new AuthStorage(this, host, port, database, databaseConfig, useSSL);
         try {

@@ -42,7 +42,7 @@ public class ProtocolLibLoginSource implements LoginSource {
         verifyToken = EncryptionUtil.generateVerifyToken(random);
 
         /*
-         * Packet Information: http://wiki.vg/Protocol#Encryption_Request
+         * Packet Information: https://wiki.vg/Protocol#Encryption_Request
          *
          * ServerID="" (String) key=public server key verifyToken=random 4 byte array
          */
