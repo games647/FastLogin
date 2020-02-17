@@ -12,28 +12,28 @@ public class BungeeLoginSession extends LoginSession {
         super(username, registered, profile);
     }
 
-    public void setRegistered(boolean registered) {
+    public synchronized void setRegistered(boolean registered) {
         this.registered = registered;
     }
 
-    public boolean isAlreadySaved() {
+    public synchronized boolean isAlreadySaved() {
         return alreadySaved;
     }
 
-    public void setAlreadySaved(boolean alreadySaved) {
+    public synchronized void setAlreadySaved(boolean alreadySaved) {
         this.alreadySaved = alreadySaved;
     }
 
-    public boolean isAlreadyLogged() {
+    public synchronized boolean isAlreadyLogged() {
         return alreadyLogged;
     }
 
-    public void setAlreadyLogged(boolean alreadyLogged) {
+    public synchronized void setAlreadyLogged(boolean alreadyLogged) {
         this.alreadyLogged = alreadyLogged;
     }
 
     @Override
-    public String toString() {
+    public synchronized String toString() {
         return this.getClass().getSimpleName() + '{' +
                 "alreadySaved=" + alreadySaved +
                 ", alreadyLogged=" + alreadyLogged +

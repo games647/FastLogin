@@ -52,7 +52,7 @@ public class BukkitLoginSession extends LoginSession {
      *
      * @return the verify token from the server
      */
-    public byte[] getVerifyToken() {
+    public synchronized byte[] getVerifyToken() {
         return verifyToken.clone();
     }
 

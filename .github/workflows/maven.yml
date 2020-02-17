@@ -1,0 +1,31 @@
+# Human readable name
+name: Java CI
+
+# Build on every push and pull request regardless of the branch
+# Wiki: https://help.github.com/en/actions/reference/events-that-trigger-workflows
+on:
+    - push
+    - pull_request
+
+jobs:
+  # job id
+  build_and_test:
+
+    # Environment image - always newest OS
+    runs-on: ubuntu-latest
+
+    # Run steps
+    steps:
+    # Pull changes
+    - uses: actions/checkout@v2
+    # Setup Java
+    - name: Set up JDK
+      uses: actions/setup-java@v1.3
+      with:
+        # Use Java 8, because it's minimum required version
+        java-version: 8
+    # Build and test (included in package)
+    - name: Build with Maven and test
+    # Run non-interactive, package (with compile+test),
+    # ignore snapshot updates, because they are likely to have breaking changes, enforce checksums to validate posssible errors in depdendencies
+      run: mvn --batch-mode package --no-snapshot-updates --strict-checksums --file pom.xml
