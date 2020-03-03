@@ -1,5 +1,5 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
@@ -56,16 +56,9 @@
     </build>
 
     <repositories>
-        <!-- Offline
-        <repository>
-            <id>vik1395-repo</id>
-            <url>https://vik1395.github.io/repo.vik1395.me/repositories</url>
-        </repository>
-        -->
-
         <repository>
             <id>codemc-repo</id>
-            <url>https://repo.codemc.org/repository/maven-public/</url>
+            <url>https://repo.codemc.io/repository/maven-public/</url>
         </repository>
     </repositories>
 
@@ -92,14 +85,6 @@
             <version>1.4</version>
             <scope>system</scope>
             <systemPath>${project.basedir}/lib/BungeeAuth-1.4.jar</systemPath>
-            <!--
-            <exclusions>
-                <exclusion>
-                    <groupId>*</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-            </exclusions>
-            -->
         </dependency>
     </dependencies>
 </project>
