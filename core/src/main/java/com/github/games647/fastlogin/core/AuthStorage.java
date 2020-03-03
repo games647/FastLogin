@@ -42,7 +42,6 @@ public class AuthStorage {
         properties.setProperty("date_string_format", "yyyy-MM-dd HH:mm:ss");
         properties.setProperty("useSSL", String.valueOf(useSSL));
         config.setDataSourceProperties(properties);
-
         ThreadFactory platformThreadFactory = core.getPlugin().getThreadFactory();
         if (platformThreadFactory != null) {
             config.setThreadFactory(platformThreadFactory);
@@ -58,6 +57,13 @@ public class AuthStorage {
             config.setMaximumPoolSize(1);
         } else {
             jdbcUrl += "mysql://" + host + ':' + port + '/' + databasePath;
+            // enable MySQL specific optimizations
+            // default prepStmtCacheSize 25 - amount of cached statements - enough for us
+            // default prepStmtCacheSqlLimit 256 - length of SQL - our queries are not longer
+            // disabled by default - will return the same prepared statement instance
+            config.addDataSourceProperty("cachePrepStmts", true);
+            // default false - available in newer versions caches the statements server-side
+            config.addDataSourceProperty("useServerPrepStmts", true);
         }
 
         config.setJdbcUrl(jdbcUrl);
