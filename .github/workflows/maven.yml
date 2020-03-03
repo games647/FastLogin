@@ -18,6 +18,17 @@ jobs:
     steps:
     # Pull changes
     - uses: actions/checkout@v2
+    # Cache artifacts - however this has the downside that we don't get notified of
+    # artifact resolution failures like invalid repository
+    # Nevertheless the repositories should be more stable and it makes no sense to pull
+    # a same version every time
+    # A dry run would make more sense
+    - uses: actions/cache@v1
+      with:
+        path: ~/.m2/repository
+        key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+        restore-keys: |
+          ${{ runner.os }}-maven-
     # Setup Java
     - name: Set up JDK
       uses: actions/setup-java@v1.3.0
