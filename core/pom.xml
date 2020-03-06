@@ -83,7 +83,7 @@
             <artifactId>guava</artifactId>
             <!-- The Uranium project (fork of Cauldron) uses 17.0 like Spigot 1.8 as experimental feature -->
             <!-- Project url: https://github.com/UraniumMC/Uranium -->
-            <version>10.0.1</version>
+            <version>23.0</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
