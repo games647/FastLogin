@@ -22,12 +22,13 @@ public class AuthStorage {
 
     private static final String PREMIUM_TABLE = "premium";
 
-    private static final String LOAD_BY_NAME = "SELECT * FROM " + PREMIUM_TABLE + " WHERE Name=? LIMIT 1";
-    private static final String LOAD_BY_UUID = "SELECT * FROM " + PREMIUM_TABLE + " WHERE UUID=? LIMIT 1";
-    private static final String INSERT_PROFILE = "INSERT INTO " + PREMIUM_TABLE + " (UUID, Name, Premium, LastIp) "
-            + "VALUES (?, ?, ?, ?) ";
-    private static final String UPDATE_PROFILE = "UPDATE " + PREMIUM_TABLE
-            + " SET UUID=?, Name=?, Premium=?, LastIp=?, LastLogin=CURRENT_TIMESTAMP WHERE UserID=?";
+    private static final String LOAD_BY_NAME = "SELECT * FROM `" + PREMIUM_TABLE + "` WHERE `Name`=? LIMIT 1";
+    private static final String LOAD_BY_UUID = "SELECT * FROM `" + PREMIUM_TABLE + "` WHERE `UUID`=? LIMIT 1";
+    private static final String INSERT_PROFILE = "INSERT INTO `" + PREMIUM_TABLE
+            + "` (`UUID`, `Name`, `Premium`, `LastIp`) " + "VALUES (?, ?, ?, ?) ";
+    // limit not necessary here, because it's unique
+    private static final String UPDATE_PROFILE = "UPDATE `" + PREMIUM_TABLE
+            + "` SET `UUID`=?, `Name`=?, `Premium`=?, `LastIp`=?, `LastLogin`=CURRENT_TIMESTAMP WHERE `UserID`=?";
 
     private final FastLoginCore<?, ?, ?> core;
     private final HikariDataSource dataSource;
@@ -71,23 +72,24 @@ public class AuthStorage {
     }
 
     public void createTables() throws SQLException {
+        String createDataStmt = "CREATE TABLE IF NOT EXISTS `" + PREMIUM_TABLE + "` ("
+                + "`UserID` INTEGER PRIMARY KEY AUTO_INCREMENT, "
+                + "`UUID` CHAR(36), "
+                + "`Name` VARCHAR(16) NOT NULL, "
+                + "`Premium` BOOLEAN NOT NULL, "
+                + "`LastIp` VARCHAR(255) NOT NULL, "
+                + "`LastLogin` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
+                //the premium shouldn't steal the cracked account by changing the name
+                + "UNIQUE (`Name`) "
+                + ')';
+
+        if (dataSource.getJdbcUrl().contains("sqlite")) {
+            createDataStmt = createDataStmt.replace("AUTO_INCREMENT", "AUTOINCREMENT");
+        }
+
+        //todo: add uuid index usage
         try (Connection con = dataSource.getConnection();
              Statement createStmt = con.createStatement()) {
-            String createDataStmt = "CREATE TABLE IF NOT EXISTS " + PREMIUM_TABLE + " ("
-                    + "UserID INTEGER PRIMARY KEY AUTO_INCREMENT, "
-                    + "UUID CHAR(36), "
-                    + "Name VARCHAR(16) NOT NULL, "
-                    + "Premium BOOLEAN NOT NULL, "
-                    + "LastIp VARCHAR(255) NOT NULL, "
-                    + "LastLogin TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
-                    //the premium shouldn't steal the cracked account by changing the name
-                    + "UNIQUE (Name) "
-                    + ')';
-
-            if (dataSource.getJdbcUrl().contains("sqlite")) {
-                createDataStmt = createDataStmt.replace("AUTO_INCREMENT", "AUTOINCREMENT");
-            }
-
             createStmt.executeUpdate(createDataStmt);
         }
     }
