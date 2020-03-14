@@ -10,7 +10,6 @@ import com.github.games647.fastlogin.core.shared.LoginSession;
 import java.lang.reflect.Field;
 import java.util.UUID;
 
-import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.PendingConnection;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.connection.Server;
@@ -48,7 +47,7 @@ public class ConnectListener implements Listener {
 
         PendingConnection connection = preLoginEvent.getConnection();
         Runnable asyncPremiumCheck = new AsyncPremiumCheck(plugin, preLoginEvent, connection);
-        ProxyServer.getInstance().getScheduler().runAsync(plugin, asyncPremiumCheck);
+        plugin.getCore().getAsyncScheduler().runAsync(asyncPremiumCheck);
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -101,7 +100,7 @@ public class ConnectListener implements Listener {
         Server server = serverConnectedEvent.getServer();
 
         Runnable loginTask = new ForceLoginTask(plugin.getCore(), player, server);
-        ProxyServer.getInstance().getScheduler().runAsync(plugin, loginTask);
+        plugin.getCore().getAsyncScheduler().runAsync(loginTask);
     }
 
     @EventHandler

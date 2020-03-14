@@ -5,7 +5,6 @@ import com.github.games647.fastlogin.core.StoredProfile;
 
 import java.util.UUID;
 
-import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -56,7 +55,7 @@ public class PremiumCommand extends ToggleCommand {
             } else {
                 //todo: resolve uuid
                 profile.setPremium(true);
-                Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+                plugin.getCore().getAsyncScheduler().runAsync(() -> {
                     plugin.getCore().getStorage().save(profile);
                 });
 
@@ -85,7 +84,7 @@ public class PremiumCommand extends ToggleCommand {
         } else {
             //todo: resolve uuid
             profile.setPremium(true);
-            Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            plugin.getCore().getAsyncScheduler().runAsync(() -> {
                 plugin.getCore().getStorage().save(profile);
             });
 

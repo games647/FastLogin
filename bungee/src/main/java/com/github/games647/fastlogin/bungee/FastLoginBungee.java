@@ -117,7 +117,7 @@ public class FastLoginBungee extends Plugin implements PlatformPlugin<CommandSen
     @SuppressWarnings("deprecation")
     public ThreadFactory getThreadFactory() {
         return new ThreadFactoryBuilder()
-                .setNameFormat(getName() + " Database Pool Thread #%1$d")
+                .setNameFormat(getName() + " Pool Thread #%1$d")
                 //Hikari create daemons by default
                 .setDaemon(true)
                 .setThreadFactory(new GroupedThreadFactory(this, getName()))

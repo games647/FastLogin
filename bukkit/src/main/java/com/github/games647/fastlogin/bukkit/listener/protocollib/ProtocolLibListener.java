@@ -11,7 +11,6 @@ import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 import java.security.KeyPair;
 import java.security.SecureRandom;
 
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import static com.comphenix.protocol.PacketType.Login.Client.ENCRYPTION_BEGIN;
@@ -67,7 +66,7 @@ public class ProtocolLibListener extends PacketAdapter {
 
         packetEvent.getAsyncMarker().incrementProcessingDelay();
         Runnable verifyTask = new VerifyResponseTask(plugin, packetEvent, sender, sharedSecret, keyPair);
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, verifyTask);
+        plugin.getCore().getAsyncScheduler().runAsync(verifyTask);
     }
 
     private void onLogin(PacketEvent packetEvent, Player player) {
@@ -85,6 +84,6 @@ public class ProtocolLibListener extends PacketAdapter {
 
         packetEvent.getAsyncMarker().incrementProcessingDelay();
         Runnable nameCheckTask = new NameCheckTask(plugin, packetEvent, random, player, username, keyPair.getPublic());
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, nameCheckTask);
+        plugin.getCore().getAsyncScheduler().runAsync(nameCheckTask);
     }
 }

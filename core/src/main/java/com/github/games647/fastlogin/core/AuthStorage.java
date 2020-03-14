@@ -72,6 +72,9 @@ public class AuthStorage {
     }
 
     public void createTables() throws SQLException {
+        // choose surrogate PK(ID), because UUID can be null for offline players
+        // if UUID is always Premium UUID we would have to update offline player entries on insert
+        // name cannot be PK, because it can be changed for premium players
         String createDataStmt = "CREATE TABLE IF NOT EXISTS `" + PREMIUM_TABLE + "` ("
                 + "`UserID` INTEGER PRIMARY KEY AUTO_INCREMENT, "
                 + "`UUID` CHAR(36), "
@@ -87,7 +90,7 @@ public class AuthStorage {
             createDataStmt = createDataStmt.replace("AUTO_INCREMENT", "AUTOINCREMENT");
         }
 
-        //todo: add uuid index usage
+        //todo: add unique uuid index usage
         try (Connection con = dataSource.getConnection();
              Statement createStmt = con.createStatement()) {
             createStmt.executeUpdate(createDataStmt);

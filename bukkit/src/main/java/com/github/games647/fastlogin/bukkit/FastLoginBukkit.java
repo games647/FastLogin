@@ -26,6 +26,7 @@ import java.util.concurrent.ConcurrentMap;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.messaging.PluginMessageRecipient;
@@ -68,6 +69,14 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
         }
 
         PluginManager pluginManager = getServer().getPluginManager();
+        Plugin protocolLib = pluginManager.getPlugin("ProtocolLib");
+        if (protocolLib != null && !protocolLib.isEnabled()) {
+            logger.warn("Dependency graph issue. ProtocolLib should be loaded first.");
+            logger.warn(getDescription().getSoftDepend().toString());
+            logger.warn(getDescription().getDepend().toString());
+            logger.warn(getDescription().getLoadBefore().toString());
+        }
+
         if (bungeeCord) {
             setServerStarted();
 

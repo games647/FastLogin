@@ -3,7 +3,6 @@ package com.github.games647.fastlogin.bukkit.command;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 import com.github.games647.fastlogin.core.StoredProfile;
 
-import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
@@ -44,7 +43,7 @@ public class CrackedCommand extends ToggleCommand {
 
                 profile.setPremium(false);
                 profile.setId(null);
-                Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+                plugin.getCore().getAsyncScheduler().runAsync(() -> {
                     plugin.getCore().getStorage().save(profile);
                 });
             } else {
@@ -76,7 +75,7 @@ public class CrackedCommand extends ToggleCommand {
             plugin.getCore().sendLocaleMessage("remove-premium", sender);
 
             profile.setPremium(false);
-            Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            plugin.getCore().getAsyncScheduler().runAsync(() -> {
                 plugin.getCore().getStorage().save(profile);
             });
         }

@@ -14,7 +14,6 @@ import com.google.common.io.ByteStreams;
 import java.util.Arrays;
 
 import net.md_5.bungee.api.CommandSender;
-import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.connection.Server;
@@ -56,7 +55,7 @@ public class PluginMessageListener implements Listener {
         byte[] data = Arrays.copyOf(pluginMessageEvent.getData(), pluginMessageEvent.getData().length);
         ProxiedPlayer forPlayer = (ProxiedPlayer) pluginMessageEvent.getReceiver();
 
-        ProxyServer.getInstance().getScheduler().runAsync(plugin, () -> readMessage(forPlayer, channel, data));
+        plugin.getCore().getAsyncScheduler().runAsync(() -> readMessage(forPlayer, channel, data));
     }
 
     private void readMessage(ProxiedPlayer forPlayer, String channel, byte[] data) {
@@ -82,10 +81,10 @@ public class PluginMessageListener implements Listener {
 
                 core.getPendingConfirms().remove(forPlayer.getUniqueId());
                 Runnable task = new AsyncToggleMessage(core, forPlayer, playerName, true, isSourceInvoker);
-                ProxyServer.getInstance().getScheduler().runAsync(plugin, task);
+                plugin.getCore().getAsyncScheduler().runAsync(task);
             } else {
                 Runnable task = new AsyncToggleMessage(core, forPlayer, playerName, false, isSourceInvoker);
-                ProxyServer.getInstance().getScheduler().runAsync(plugin, task);
+                plugin.getCore().getAsyncScheduler().runAsync(task);
             }
         }
     }
