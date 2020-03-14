@@ -45,13 +45,6 @@
             <version>1.7.30</version>
         </dependency>
 
-        <!--GSON is not at the right position for Minecraft 1.7-->
-        <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-            <version>2.2.4</version>
-        </dependency>
-
         <!-- snakeyaml is present in Bungee, Spigot, Cauldron and so we could use this independent implementation -->
         <dependency>
             <groupId>net.md-5</groupId>
@@ -69,17 +62,21 @@
         <dependency>
             <groupId>com.github.games647</groupId>
             <artifactId>craftapi</artifactId>
-            <version>0.3</version>
+            <version>0.4</version>
         </dependency>
 
-        <!-- APIs we can use because they are available in all platforms (Spigot, Bungee, Cauldron) -->
+        <!-- APIs we can use because they are available in all platforms (Spigot, Bungee) -->
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <!-- The Uranium project (fork of Cauldron) uses 17.0 like Spigot 1.8 as experimental feature -->
-            <!-- Project url: https://github.com/UraniumMC/Uranium -->
-            <version>10.0.1</version>
+            <version>17.0</version>
             <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.2.4</version>
         </dependency>
     </dependencies>
 </project>

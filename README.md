@@ -51,7 +51,7 @@ https://ci.codemc.org/job/Games647/job/FastLogin/changes
 * Plugin: 
     * [ProtocolLib](https://www.spigotmc.org/resources/protocollib.1997/) or 
     * [ProtocolSupport](https://www.spigotmc.org/resources/protocolsupport.7201/)
-* [Spigot](https://www.spigotmc.org) 1.7.10+
+* [Spigot](https://www.spigotmc.org) 1.8.8+
 * Java 8+
 * Run Spigot and/or BungeeCord/Waterfall in offline mode (see server.properties or config.yml)
 * An auth plugin. Supported plugins
