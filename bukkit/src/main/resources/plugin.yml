@@ -11,14 +11,21 @@ description: |
 website: ${project.url}
 dev-url: ${project.url}
 
-# Load the plugin as early as possible to inject it for all players
-load: STARTUP
-
 # This plugin don't have to be transformed for compatibility with Minecraft >= 1.13
 api-version: '1.13'
 
-# We depend either ProtocolLib or ProtocolSupport
-depend: [ProtocolLib]
+softdepend:
+    # We depend either ProtocolLib or ProtocolSupport
+    - ProtocolSupport
+    - ProtocolLib
+    - PlaceholderAPI
+    # Auth plugins
+    - AuthMe
+    - LoginSecurity
+    - xAuth
+    - LogIt
+    - UltraAuth
+    - CrazyLogin
 
 commands:
     ${project.parent.name}:
