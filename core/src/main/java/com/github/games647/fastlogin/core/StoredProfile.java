@@ -6,8 +6,6 @@ import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 
-import javax.annotation.Nullable;
-
 public class StoredProfile extends Profile {
 
     private long rowId;
@@ -45,7 +43,7 @@ public class StoredProfile extends Profile {
         this.rowId = generatedId;
     }
 
-    @Nullable
+    // can be null
     public synchronized UUID getId() {
         return id;
     }
