@@ -55,7 +55,7 @@ public class PluginMessageListener implements Listener {
         byte[] data = Arrays.copyOf(pluginMessageEvent.getData(), pluginMessageEvent.getData().length);
         ProxiedPlayer forPlayer = (ProxiedPlayer) pluginMessageEvent.getReceiver();
 
-        plugin.getCore().getAsyncScheduler().runAsync(() -> readMessage(forPlayer, channel, data));
+        plugin.getScheduler().runAsync(() -> readMessage(forPlayer, channel, data));
     }
 
     private void readMessage(ProxiedPlayer forPlayer, String channel, byte[] data) {
@@ -81,10 +81,10 @@ public class PluginMessageListener implements Listener {
 
                 core.getPendingConfirms().remove(forPlayer.getUniqueId());
                 Runnable task = new AsyncToggleMessage(core, forPlayer, playerName, true, isSourceInvoker);
-                plugin.getCore().getAsyncScheduler().runAsync(task);
+                plugin.getScheduler().runAsync(task);
             } else {
                 Runnable task = new AsyncToggleMessage(core, forPlayer, playerName, false, isSourceInvoker);
-                plugin.getCore().getAsyncScheduler().runAsync(task);
+                plugin.getScheduler().runAsync(task);
             }
         }
     }

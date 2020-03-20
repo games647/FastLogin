@@ -3,6 +3,7 @@ package com.github.games647.fastlogin.bungee;
 import com.github.games647.fastlogin.bungee.hook.BungeeAuthHook;
 import com.github.games647.fastlogin.bungee.listener.ConnectListener;
 import com.github.games647.fastlogin.bungee.listener.PluginMessageListener;
+import com.github.games647.fastlogin.core.AsyncScheduler;
 import com.github.games647.fastlogin.core.CommonUtil;
 import com.github.games647.fastlogin.core.message.ChangePremiumMessage;
 import com.github.games647.fastlogin.core.message.ChannelMessage;
@@ -37,11 +38,13 @@ public class FastLoginBungee extends Plugin implements PlatformPlugin<CommandSen
     private final ConcurrentMap<PendingConnection, BungeeLoginSession> session = new MapMaker().weakKeys().makeMap();
 
     private FastLoginCore<ProxiedPlayer, CommandSender, FastLoginBungee> core;
+    private AsyncScheduler scheduler;
     private Logger logger;
 
     @Override
     public void onEnable() {
         logger = CommonUtil.createLoggerFromJDK(getLogger());
+        scheduler = new AsyncScheduler(logger, getThreadFactory());
 
         core = new FastLoginCore<>(this);
         core.load();
@@ -54,8 +57,8 @@ public class FastLoginBungee extends Plugin implements PlatformPlugin<CommandSen
         getProxy().getPluginManager().registerListener(this, new PluginMessageListener(this));
 
         //this is required to listen to incoming messages from the server
-        getProxy().registerChannel(new NamespaceKey(getName(), ChangePremiumMessage.CHANGE_CHANNEL).getCombinedName());
-        getProxy().registerChannel(new NamespaceKey(getName(), SuccessMessage.SUCCESS_CHANNEL).getCombinedName());
+        getProxy().registerChannel(NamespaceKey.getCombined(getName(), ChangePremiumMessage.CHANGE_CHANNEL));
+        getProxy().registerChannel(NamespaceKey.getCombined(getName(), SuccessMessage.SUCCESS_CHANNEL));
 
         registerHook();
     }
@@ -122,5 +125,10 @@ public class FastLoginBungee extends Plugin implements PlatformPlugin<CommandSen
                 .setDaemon(true)
                 .setThreadFactory(new GroupedThreadFactory(this, getName()))
                 .build();
+    }
+
+    @Override
+    public AsyncScheduler getScheduler() {
+        return scheduler;
     }
 }

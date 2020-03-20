@@ -47,7 +47,7 @@ public class ConnectListener implements Listener {
 
         PendingConnection connection = preLoginEvent.getConnection();
         Runnable asyncPremiumCheck = new AsyncPremiumCheck(plugin, preLoginEvent, connection);
-        plugin.getCore().getAsyncScheduler().runAsync(asyncPremiumCheck);
+        plugin.getScheduler().runAsync(asyncPremiumCheck);
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -100,7 +100,7 @@ public class ConnectListener implements Listener {
         Server server = serverConnectedEvent.getServer();
 
         Runnable loginTask = new ForceLoginTask(plugin.getCore(), player, server);
-        plugin.getCore().getAsyncScheduler().runAsync(loginTask);
+        plugin.getScheduler().runAsync(loginTask);
     }
 
     @EventHandler

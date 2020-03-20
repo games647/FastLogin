@@ -41,17 +41,24 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
 
     //1 minutes should be enough as a timeout for bad internet connection (Server, Client and Mojang)
     private final ConcurrentMap<String, BukkitLoginSession> loginSession = CommonUtil.buildCache(1, -1);
-    private final Logger logger = CommonUtil.createLoggerFromJDK(getLogger());
     private final Map<UUID, PremiumStatus> premiumPlayers = new ConcurrentHashMap<>();
+    private final Logger logger;
 
     private boolean serverStarted;
     private boolean bungeeCord;
+    private final BukkitScheduler scheduler;
     private FastLoginCore<Player, CommandSender, FastLoginBukkit> core;
+
+    public FastLoginBukkit() {
+        this.logger = CommonUtil.createLoggerFromJDK(getLogger());
+        this.scheduler = new BukkitScheduler(this, logger, getThreadFactory());
+    }
 
     @Override
     public void onEnable() {
         core = new FastLoginCore<>(this);
         core.load();
+
         try {
             bungeeCord = Class.forName("org.spigotmc.SpigotConfig").getDeclaredField("bungee").getBoolean(null);
         } catch (ClassNotFoundException notFoundEx) {
@@ -72,7 +79,7 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
             setServerStarted();
 
             // check for incoming messages from the bungeecord version of this plugin
-            String forceChannel = new NamespaceKey(getName(), LoginActionMessage.FORCE_CHANNEL).getCombinedName();
+            String forceChannel = NamespaceKey.getCombined(getName(), LoginActionMessage.FORCE_CHANNEL);
             getServer().getMessenger().registerIncomingPluginChannel(this, forceChannel, new BungeeListener(this));
 
             // outgoing
@@ -193,6 +200,11 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
     @Override
     public Logger getLog() {
         return logger;
+    }
+
+    @Override
+    public BukkitScheduler getScheduler() {
+        return scheduler;
     }
 
     @Override

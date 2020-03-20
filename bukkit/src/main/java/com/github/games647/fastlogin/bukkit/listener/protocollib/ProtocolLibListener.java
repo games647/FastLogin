@@ -66,7 +66,7 @@ public class ProtocolLibListener extends PacketAdapter {
 
         packetEvent.getAsyncMarker().incrementProcessingDelay();
         Runnable verifyTask = new VerifyResponseTask(plugin, packetEvent, sender, sharedSecret, keyPair);
-        plugin.getCore().getAsyncScheduler().runAsync(verifyTask);
+        plugin.getScheduler().runAsync(verifyTask);
     }
 
     private void onLogin(PacketEvent packetEvent, Player player) {
@@ -84,6 +84,6 @@ public class ProtocolLibListener extends PacketAdapter {
 
         packetEvent.getAsyncMarker().incrementProcessingDelay();
         Runnable nameCheckTask = new NameCheckTask(plugin, packetEvent, random, player, username, keyPair.getPublic());
-        plugin.getCore().getAsyncScheduler().runAsync(nameCheckTask);
+        plugin.getScheduler().runAsync(nameCheckTask);
     }
 }

@@ -43,7 +43,7 @@ public class CrackedCommand extends ToggleCommand {
 
                 profile.setPremium(false);
                 profile.setId(null);
-                plugin.getCore().getAsyncScheduler().runAsync(() -> {
+                plugin.getScheduler().runAsync(() -> {
                     plugin.getCore().getStorage().save(profile);
                 });
             } else {
@@ -75,7 +75,7 @@ public class CrackedCommand extends ToggleCommand {
             plugin.getCore().sendLocaleMessage("remove-premium", sender);
 
             profile.setPremium(false);
-            plugin.getCore().getAsyncScheduler().runAsync(() -> {
+            plugin.getScheduler().runAsync(() -> {
                 plugin.getCore().getStorage().save(profile);
             });
         }

@@ -4,7 +4,6 @@ import com.github.games647.craftapi.resolver.MojangResolver;
 import com.github.games647.craftapi.resolver.http.RotatingProxySelector;
 import com.github.games647.fastlogin.core.AuthStorage;
 import com.github.games647.fastlogin.core.CommonUtil;
-import com.github.games647.fastlogin.core.AsyncScheduler;
 import com.github.games647.fastlogin.core.hooks.AuthPlugin;
 import com.github.games647.fastlogin.core.hooks.DefaultPasswordGenerator;
 import com.github.games647.fastlogin.core.hooks.PasswordGenerator;
@@ -52,7 +51,6 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
     private final T plugin;
 
     private final MojangResolver resolver = new MojangResolver();
-    private final AsyncScheduler scheduler;
 
     private Configuration config;
     private AuthStorage storage;
@@ -61,7 +59,6 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
 
     public FastLoginCore(T plugin) {
         this.plugin = plugin;
-        this.scheduler = new AsyncScheduler(plugin.getThreadFactory());
     }
 
     public void load() {
@@ -242,13 +239,9 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
         }
     }
 
-    public AsyncScheduler getAsyncScheduler() {
-        return scheduler;
-    }
-
     public void close() {
         plugin.getLog().info("Safely shutting down scheduler. This could take up to one minute.");
-        scheduler.shutdown();
+        plugin.getScheduler().shutdown();
 
         if (storage != null) {
             storage.close();

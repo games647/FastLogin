@@ -55,7 +55,7 @@ public class PremiumCommand extends ToggleCommand {
             } else {
                 //todo: resolve uuid
                 profile.setPremium(true);
-                plugin.getCore().getAsyncScheduler().runAsync(() -> {
+                plugin.getScheduler().runAsync(() -> {
                     plugin.getCore().getStorage().save(profile);
                 });
 
@@ -84,7 +84,7 @@ public class PremiumCommand extends ToggleCommand {
         } else {
             //todo: resolve uuid
             profile.setPremium(true);
-            plugin.getCore().getAsyncScheduler().runAsync(() -> {
+            plugin.getScheduler().runAsync(() -> {
                 plugin.getCore().getStorage().save(profile);
             });
 

@@ -1,5 +1,6 @@
 package com.github.games647.fastlogin.core.shared;
 
+import com.github.games647.fastlogin.core.AsyncScheduler;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 import java.nio.file.Path;
@@ -16,6 +17,8 @@ public interface PlatformPlugin<C> {
     Logger getLog();
 
     void sendMessage(C receiver, String message);
+
+    AsyncScheduler getScheduler();
 
     default void sendMultiLineMessage(C receiver, String message) {
         for (String line : message.split("%nl%")) {
