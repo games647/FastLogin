@@ -4,6 +4,7 @@ import com.github.games647.craftapi.resolver.MojangResolver;
 import com.github.games647.craftapi.resolver.http.RotatingProxySelector;
 import com.github.games647.fastlogin.core.AuthStorage;
 import com.github.games647.fastlogin.core.CommonUtil;
+import com.github.games647.fastlogin.core.ConfirmationState;
 import com.github.games647.fastlogin.core.hooks.AuthPlugin;
 import com.github.games647.fastlogin.core.hooks.DefaultPasswordGenerator;
 import com.github.games647.fastlogin.core.hooks.PasswordGenerator;
@@ -24,7 +25,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -47,7 +47,7 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
 
     private final Map<String, String> localeMessages = new ConcurrentHashMap<>();
     private final ConcurrentMap<String, Object> pendingLogin = CommonUtil.buildCache(5, -1);
-    private final Collection<UUID> pendingConfirms = new HashSet<>();
+    private final ConcurrentMap<String, ConfirmationState> pendingConfirms = CommonUtil.buildCache(1, 1024);
     private final T plugin;
 
     private final MojangResolver resolver = new MojangResolver();
@@ -204,11 +204,18 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
         this.passwordGenerator = passwordGenerator;
     }
 
+    /**
+     * @return list of player names that are currently during the login process and might fail and so could be used
+     * for second attempt logins
+     */
     public ConcurrentMap<String, Object> getPendingLogin() {
         return pendingLogin;
     }
 
-    public Collection<UUID> getPendingConfirms() {
+    /**
+     * @return list of player names that request onlinemode authentication but are not yet approved
+     */
+    public ConcurrentMap<String, ConfirmationState> getPendingConfirms() {
         return pendingConfirms;
     }
 

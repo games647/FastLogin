@@ -2,6 +2,7 @@ package com.github.games647.fastlogin.core.shared;
 
 import com.github.games647.craftapi.model.Profile;
 import com.github.games647.craftapi.resolver.RateLimitException;
+import com.github.games647.fastlogin.core.ConfirmationState;
 import com.github.games647.fastlogin.core.StoredProfile;
 import com.github.games647.fastlogin.core.hooks.AuthPlugin;
 import com.github.games647.fastlogin.core.shared.event.FastLoginPreLoginEvent;
@@ -37,7 +38,14 @@ public abstract class JoinManagement<P extends C, C, S extends LoginSource> {
                 if (profile.isPremium()) {
                     requestPremiumLogin(source, profile, username, true);
                 } else {
-                    startCrackedSession(source, profile, username);
+                    ConfirmationState confirmationState = core.getPendingConfirms().get(username);
+                    if (confirmationState == ConfirmationState.REQUIRE_RELOGIN) {
+                        core.getPendingConfirms().put(username, ConfirmationState.REQUIRE_AUTH_PLUGIN_LOGIN);
+                        requestPremiumLogin(source, profile, username, true);
+                    } else {
+                        // cracked player, but wants to change to premium
+                        startCrackedSession(source, profile, username);
+                    }
                 }
             } else {
                 if (core.getPendingLogin().remove(ip + username) != null && config.get("secondAttemptCracked", false)) {
@@ -107,6 +115,8 @@ public abstract class JoinManagement<P extends C, C, S extends LoginSource> {
     public abstract FastLoginPreLoginEvent callFastLoginPreLoginEvent(String username, S source, StoredProfile profile);
 
     public abstract void requestPremiumLogin(S source, StoredProfile profile, String username, boolean registered);
+
+    public abstract void requestConfirmationLogin(S source, StoredProfile profile, String username);
 
     public abstract void startCrackedSession(S source, StoredProfile profile, String username);
 }

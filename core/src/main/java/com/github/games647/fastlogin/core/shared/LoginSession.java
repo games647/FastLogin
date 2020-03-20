@@ -13,10 +13,17 @@ public abstract class LoginSession {
 
     protected boolean registered;
 
+    protected boolean confirmationLogin;
+
     public LoginSession(String username, boolean registered, StoredProfile profile) {
         this.username = username;
         this.registered = registered;
         this.profile = profile;
+    }
+
+    public LoginSession(String username, StoredProfile profile) {
+        this(username, true, profile);
+        this.confirmationLogin = true;
     }
 
     public String getUsername() {
@@ -52,6 +59,10 @@ public abstract class LoginSession {
      */
     public synchronized void setUuid(UUID uuid) {
         this.uuid = uuid;
+    }
+
+    public synchronized boolean isConfirmationPending() {
+        return confirmationLogin;
     }
 
     @Override

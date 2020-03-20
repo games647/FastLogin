@@ -28,10 +28,16 @@ public abstract class ForceLoginManagement<P extends C, C, L extends LoginSessio
         StoredProfile playerProfile = session.getProfile();
         try {
             if (isOnlineMode()) {
+                if (session.isConfirmationPending()) {
+                    // do not perform force actions, because this confirmation login we have to verify that it's the
+                    // owner of the account
+                    return;
+                }
+
                 //premium player
                 AuthPlugin<P> authPlugin = core.getAuthPluginHook();
                 if (authPlugin == null) {
-                    //maybe only bungeecord plugin
+                    //maybe only bungeecord plugin without any auth plugins on Bungee
                     onForceActionSuccess(session);
                 } else {
                     boolean success = true;

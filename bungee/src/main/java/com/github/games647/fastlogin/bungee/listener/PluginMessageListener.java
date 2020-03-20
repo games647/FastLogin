@@ -3,6 +3,7 @@ package com.github.games647.fastlogin.bungee.listener;
 import com.github.games647.fastlogin.bungee.BungeeLoginSession;
 import com.github.games647.fastlogin.bungee.FastLoginBungee;
 import com.github.games647.fastlogin.bungee.task.AsyncToggleMessage;
+import com.github.games647.fastlogin.core.ConfirmationState;
 import com.github.games647.fastlogin.core.StoredProfile;
 import com.github.games647.fastlogin.core.message.ChangePremiumMessage;
 import com.github.games647.fastlogin.core.message.NamespaceKey;
@@ -14,7 +15,6 @@ import com.google.common.io.ByteStreams;
 import java.util.Arrays;
 
 import net.md_5.bungee.api.CommandSender;
-import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.connection.Server;
 import net.md_5.bungee.api.event.PluginMessageEvent;
@@ -58,35 +58,52 @@ public class PluginMessageListener implements Listener {
         plugin.getScheduler().runAsync(() -> readMessage(forPlayer, channel, data));
     }
 
-    private void readMessage(ProxiedPlayer forPlayer, String channel, byte[] data) {
-        FastLoginCore<ProxiedPlayer, CommandSender, FastLoginBungee> core = plugin.getCore();
-
+    private void readMessage(ProxiedPlayer fromPlayer, String channel, byte[] data) {
         ByteArrayDataInput dataInput = ByteStreams.newDataInput(data);
         if (successChannel.equals(channel)) {
-            onSuccessMessage(forPlayer);
+            onSuccessMessage(fromPlayer);
         } else if (changeChannel.equals(channel)) {
             ChangePremiumMessage changeMessage = new ChangePremiumMessage();
             changeMessage.readFrom(dataInput);
 
             String playerName = changeMessage.getPlayerName();
             boolean isSourceInvoker = changeMessage.isSourceInvoker();
-            if (changeMessage.shouldEnable()) {
-                if (playerName.equals(forPlayer.getName()) && plugin.getCore().getConfig().get("premium-warning", true)
-                        && !core.getPendingConfirms().contains(forPlayer.getUniqueId())) {
-                    String message = core.getMessage("premium-warning");
-                    forPlayer.sendMessage(TextComponent.fromLegacyText(message));
-                    core.getPendingConfirms().add(forPlayer.getUniqueId());
-                    return;
-                }
-
-                core.getPendingConfirms().remove(forPlayer.getUniqueId());
-                Runnable task = new AsyncToggleMessage(core, forPlayer, playerName, true, isSourceInvoker);
-                plugin.getScheduler().runAsync(task);
-            } else {
-                Runnable task = new AsyncToggleMessage(core, forPlayer, playerName, false, isSourceInvoker);
-                plugin.getScheduler().runAsync(task);
-            }
+            onChangeMessage(fromPlayer, changeMessage.shouldEnable(), playerName, isSourceInvoker);
         }
+    }
+
+    private void onChangeMessage(ProxiedPlayer fromPlayer, boolean shouldEnable, String playerName, boolean isSourceInvoker) {
+        FastLoginCore<ProxiedPlayer, CommandSender, FastLoginBungee> core = plugin.getCore();
+        if (shouldEnable) {
+            if (!isSourceInvoker) {
+                // fromPlayer is not the target player
+                activePremiumLogin(fromPlayer, playerName, false);
+                return;
+            }
+
+            if (plugin.getCore().getConfig().getBoolean("premium-confirm", true)) {
+                ConfirmationState state = plugin.getCore().getPendingConfirms().get(playerName);
+                if (state == null) {
+                    // no pending confirmation
+                    core.sendLocaleMessage("premium-confirm", fromPlayer);
+                    core.getPendingConfirms().put(playerName, ConfirmationState.REQUIRE_RELOGIN);
+                } else if (state == ConfirmationState.REQUIRE_AUTH_PLUGIN_LOGIN) {
+                    // player logged in successful using premium authentication
+                    activePremiumLogin(fromPlayer, playerName, true);
+                }
+            } else {
+                activePremiumLogin(fromPlayer, playerName, true);
+            }
+        } else {
+            Runnable task = new AsyncToggleMessage(core, fromPlayer, playerName, false, isSourceInvoker);
+            plugin.getScheduler().runAsync(task);
+        }
+    }
+
+    private void activePremiumLogin(ProxiedPlayer fromPlayer, String playerName, boolean isSourceInvoker) {
+        plugin.getCore().getPendingConfirms().remove(playerName);
+        Runnable task = new AsyncToggleMessage(plugin.getCore(), fromPlayer, playerName, true, isSourceInvoker);
+        plugin.getScheduler().runAsync(task);
     }
 
     private void onSuccessMessage(ProxiedPlayer forPlayer) {
@@ -98,9 +115,12 @@ public class PluginMessageListener implements Listener {
             loginSession.setRegistered(true);
 
             if (!loginSession.isAlreadySaved()) {
-                playerProfile.setPremium(true);
-                plugin.getCore().getStorage().save(playerProfile);
                 loginSession.setAlreadySaved(true);
+
+                playerProfile.setId(loginSession.getUuid());
+                playerProfile.setPremium(true);
+
+                plugin.getCore().getStorage().save(playerProfile);
             }
         }
     }

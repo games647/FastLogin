@@ -7,11 +7,11 @@ import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 import com.github.games647.fastlogin.bukkit.event.BukkitFastLoginPreLoginEvent;
 import com.github.games647.fastlogin.core.StoredProfile;
 import com.github.games647.fastlogin.core.shared.JoinManagement;
+import com.github.games647.fastlogin.core.shared.event.FastLoginPreLoginEvent;
 
 import java.security.PublicKey;
 import java.util.Random;
 
-import com.github.games647.fastlogin.core.shared.event.FastLoginPreLoginEvent;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -74,6 +74,26 @@ public class NameCheckTask extends JoinManagement<Player, CommandSender, Protoco
         byte[] verify = source.getVerifyToken();
 
         BukkitLoginSession playerSession = new BukkitLoginSession(username, serverId, verify, registered, profile);
+        plugin.getLoginSessions().put(player.getAddress().toString(), playerSession);
+        //cancel only if the player has a paid account otherwise login as normal offline player
+        synchronized (packetEvent.getAsyncMarker().getProcessingLock()) {
+            packetEvent.setCancelled(true);
+        }
+    }
+
+    @Override
+    public void requestConfirmationLogin(ProtocolLibLoginSource source, StoredProfile profile, String username) {
+        try {
+            source.setOnlineMode();
+        } catch (Exception ex) {
+            plugin.getLog().error("Cannot send encryption packet. Falling back to cracked login for: {}", profile, ex);
+            return;
+        }
+
+        String serverId = source.getServerId();
+        byte[] verify = source.getVerifyToken();
+
+        BukkitLoginSession playerSession = new BukkitLoginSession(username, serverId, verify, profile);
         plugin.getLoginSessions().put(player.getAddress().toString(), playerSession);
         //cancel only if the player has a paid account otherwise login as normal offline player
         synchronized (packetEvent.getAsyncMarker().getProcessingLock()) {

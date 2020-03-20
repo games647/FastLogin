@@ -12,6 +12,10 @@ public class BungeeLoginSession extends LoginSession {
         super(username, registered, profile);
     }
 
+    public BungeeLoginSession(String username, StoredProfile profile) {
+        super(username, profile);
+    }
+
     public synchronized void setRegistered(boolean registered) {
         this.registered = registered;
     }
@@ -22,6 +26,7 @@ public class BungeeLoginSession extends LoginSession {
 
     public synchronized void setAlreadySaved(boolean alreadySaved) {
         this.alreadySaved = alreadySaved;
+        this.confirmationLogin = false;
     }
 
     public synchronized boolean isAlreadyLogged() {

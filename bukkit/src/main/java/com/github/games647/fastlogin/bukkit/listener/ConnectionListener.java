@@ -51,7 +51,6 @@ public class ConnectionListener implements Listener {
         Player player = quitEvent.getPlayer();
         removeBlacklistStatus(player);
 
-        plugin.getCore().getPendingConfirms().remove(player.getUniqueId());
         plugin.getPremiumPlayers().remove(player.getUniqueId());
     }
 

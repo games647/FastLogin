@@ -1,9 +1,8 @@
 package com.github.games647.fastlogin.bukkit.command;
 
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
+import com.github.games647.fastlogin.core.ConfirmationState;
 import com.github.games647.fastlogin.core.StoredProfile;
-
-import java.util.UUID;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -36,31 +35,44 @@ public class PremiumCommand extends ToggleCommand {
             return;
         }
 
-        if (forwardPremiumCommand(sender, sender.getName())) {
+        Player player = (Player) sender;
+        String playerName = sender.getName();
+        if (forwardPremiumCommand(sender, playerName)) {
             return;
         }
 
-            UUID id = ((Player) sender).getUniqueId();
-            if (plugin.getConfig().getBoolean("premium-warning") && !plugin.getCore().getPendingConfirms().contains(id)) {
-                sender.sendMessage(plugin.getCore().getMessage("premium-warning"));
-                plugin.getCore().getPendingConfirms().add(id);
-                return;
+        // non-bungee mode
+        if (plugin.getConfig().getBoolean("premium-confirm")) {
+            ConfirmationState state = plugin.getCore().getPendingConfirms().get(playerName);
+            if (state == null) {
+                // no pending confirmation
+                plugin.getCore().getPendingConfirms().put(playerName, ConfirmationState.REQUIRE_RELOGIN);
+                player.kickPlayer(plugin.getCore().getMessage("premium-confirm"));
+            } else if (state == ConfirmationState.REQUIRE_AUTH_PLUGIN_LOGIN) {
+                // player logged in successful using premium authentication
+                activate(sender, playerName);
             }
+        } else {
+            activate(sender, playerName);
+        }
+    }
 
-            plugin.getCore().getPendingConfirms().remove(id);
-            //todo: load async
-            StoredProfile profile = plugin.getCore().getStorage().loadProfile(sender.getName());
-            if (profile.isPremium()) {
-                plugin.getCore().sendLocaleMessage("already-exists", sender);
-            } else {
-                //todo: resolve uuid
-                profile.setPremium(true);
-                plugin.getScheduler().runAsync(() -> {
-                    plugin.getCore().getStorage().save(profile);
-                });
+    private void activate(CommandSender sender, String playerName) {
+        plugin.getCore().getPendingConfirms().remove(playerName);
 
-                plugin.getCore().sendLocaleMessage("add-premium", sender);
-            }
+        //todo: load async
+        StoredProfile profile = plugin.getCore().getStorage().loadProfile(playerName);
+        if (profile.isPremium()) {
+            plugin.getCore().sendLocaleMessage("already-exists", sender);
+        } else {
+            //todo: resolve uuid
+            profile.setPremium(true);
+            plugin.getScheduler().runAsync(() -> {
+                plugin.getCore().getStorage().save(profile);
+            });
+
+            plugin.getCore().sendLocaleMessage("add-premium", sender);
+        }
     }
 
     private void onPremiumOther(CommandSender sender, Command command, String[] args) {

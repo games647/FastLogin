@@ -29,6 +29,9 @@ public class ChangePremiumMessage implements ChannelMessage {
         return willEnable;
     }
 
+    /**
+     * @return true if the player invoker = target
+     */
     public boolean isSourceInvoker() {
         return isSourceInvoker;
     }

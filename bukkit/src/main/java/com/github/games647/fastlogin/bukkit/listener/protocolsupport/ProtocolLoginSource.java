@@ -29,10 +29,6 @@ public class ProtocolLoginSource implements LoginSource {
         return loginStartEvent.getAddress();
     }
 
-    public PlayerLoginStartEvent getLoginStartEvent() {
-        return loginStartEvent;
-    }
-
     @Override
     public String toString() {
         return this.getClass().getSimpleName() + '{' +

@@ -89,9 +89,9 @@ invalid-requst: '&4Invalid request'
 # Message if the Bukkit isn't fully started to inject the packets
 not-started: '&cServer is not fully started yet. Please retry'
 
-# Warning message if a user invoked /premium command
-premium-warning: '&c&lWARNING: &6This command should &lonly&6 be invoked if you are the owner of this paid Minecraft account
-Type &a/premium&6 again to confirm'
+# Premium confirmation message if the player tries to activate the command
+premium-confirm: '&6Please relogin and type the command again to apply the changes.
+If the request fails or you wait to long, it will fallback to offlinemode.'
 
 # ========= Bungee/Waterfall only ================================
 

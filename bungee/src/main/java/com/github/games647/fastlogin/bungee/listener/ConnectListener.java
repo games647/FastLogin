@@ -4,6 +4,7 @@ import com.github.games647.craftapi.UUIDAdapter;
 import com.github.games647.fastlogin.bungee.FastLoginBungee;
 import com.github.games647.fastlogin.bungee.task.AsyncPremiumCheck;
 import com.github.games647.fastlogin.bungee.task.ForceLoginTask;
+import com.github.games647.fastlogin.core.ConfirmationState;
 import com.github.games647.fastlogin.core.StoredProfile;
 import com.github.games647.fastlogin.core.shared.LoginSession;
 
@@ -107,6 +108,6 @@ public class ConnectListener implements Listener {
     public void onDisconnect(PlayerDisconnectEvent disconnectEvent) {
         ProxiedPlayer player = disconnectEvent.getPlayer();
         plugin.getSession().remove(player.getPendingConnection());
-        plugin.getCore().getPendingConfirms().remove(player.getUniqueId());
+        plugin.getCore().getPendingConfirms().remove(player.getName(), ConfirmationState.REQUIRE_AUTH_PLUGIN_LOGIN);
     }
 }

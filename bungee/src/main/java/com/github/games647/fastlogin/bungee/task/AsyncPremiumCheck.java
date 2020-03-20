@@ -61,6 +61,12 @@ public class AsyncPremiumCheck extends JoinManagement<ProxiedPlayer, CommandSend
     }
 
     @Override
+    public void requestConfirmationLogin(BungeeLoginSource source, StoredProfile profile, String username) {
+        source.setOnlineMode();
+        plugin.getSession().put(source.getConnection(), new BungeeLoginSession(username, profile));
+    }
+
+    @Override
     public void startCrackedSession(BungeeLoginSource source, StoredProfile profile, String username) {
         plugin.getSession().put(source.getConnection(), new BungeeLoginSession(username, false, profile));
     }

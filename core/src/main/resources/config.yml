@@ -115,11 +115,11 @@ nameChangeCheck: false
 # ChangeSkin, SkinRestorer, ...
 forwardSkin: true
 
-# Displays a warning message that this message SHOULD only be invoked by
-# users who actually are the owner of this account. So not by cracked players
-#
-# If they still want to invoke the command, they have to invoke /premium again
-premium-warning: true
+# Players have to rejoin to verify that they can join through onlinemode authentication.
+# After that they have to confirm again using the /premium command that they are also the owner of the auth plugin
+# account.
+# If the onlinemode authentication fails or the player waits to long, it will fallback to offlinemode authentication.
+premium-confirm: true
 
 # If you have autoRegister or nameChangeCheck enabled, you could be rate-limited by Mojang.
 # The requests of the both options will be only made by FastLogin if the username is unknown to the server

@@ -30,6 +30,14 @@ public class BukkitLoginSession extends LoginSession {
         this.verifyToken = verifyToken.clone();
     }
 
+    public BukkitLoginSession(String username, String serverId, byte[] verifyToken, StoredProfile profile) {
+        // confirmation login
+        super(username, profile);
+
+        this.serverId = serverId;
+        this.verifyToken = verifyToken.clone();
+    }
+
     //available for BungeeCord
     public BukkitLoginSession(String username, boolean registered) {
         this(username, "", EMPTY_ARRAY, registered, null);
