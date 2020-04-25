@@ -6,11 +6,11 @@ import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 import com.github.games647.fastlogin.bukkit.event.BukkitFastLoginPreLoginEvent;
 import com.github.games647.fastlogin.core.StoredProfile;
 import com.github.games647.fastlogin.core.shared.JoinManagement;
+import com.github.games647.fastlogin.core.shared.event.FastLoginPreLoginEvent;
 
 import java.net.InetSocketAddress;
 import java.util.Optional;
 
-import com.github.games647.fastlogin.core.shared.event.FastLoginPreLoginEvent;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -40,7 +40,7 @@ public class ProtocolSupportListener extends JoinManagement<Player, CommandSende
         InetSocketAddress address = loginStartEvent.getAddress();
 
         //remove old data every time on a new login in order to keep the session only for one person
-        plugin.getLoginSessions().remove(address.toString());
+        plugin.removeSession(address);
 
         super.onLogin(username, new ProtocolLoginSource(loginStartEvent));
     }
@@ -48,13 +48,13 @@ public class ProtocolSupportListener extends JoinManagement<Player, CommandSende
     @EventHandler
     public void onConnectionClosed(ConnectionCloseEvent closeEvent) {
         InetSocketAddress address = closeEvent.getConnection().getAddress();
-        plugin.getLoginSessions().remove(address.toString());
+        plugin.removeSession(address);
     }
 
     @EventHandler
     public void onPropertiesResolve(PlayerProfileCompleteEvent profileCompleteEvent) {
         InetSocketAddress address = profileCompleteEvent.getAddress();
-        BukkitLoginSession session = plugin.getLoginSessions().get(address.toString());
+        BukkitLoginSession session = plugin.getSession(address);
 
         if (session != null && profileCompleteEvent.getConnection().getProfile().isOnlineMode()) {
             session.setVerified(true);
@@ -83,7 +83,7 @@ public class ProtocolSupportListener extends JoinManagement<Player, CommandSende
         plugin.getCore().getPendingLogin().put(ip + username, new Object());
 
         BukkitLoginSession playerSession = new BukkitLoginSession(username, registered, profile);
-        plugin.getLoginSessions().put(source.getAddress().toString(), playerSession);
+        plugin.putSession(source.getAddress(), playerSession);
         if (plugin.getConfig().getBoolean("premiumUuid")) {
             source.getLoginStartEvent().setOnlineMode(true);
         }
@@ -92,6 +92,6 @@ public class ProtocolSupportListener extends JoinManagement<Player, CommandSende
     @Override
     public void startCrackedSession(ProtocolLoginSource source, StoredProfile profile, String username) {
         BukkitLoginSession loginSession = new BukkitLoginSession(username, profile);
-        plugin.getLoginSessions().put(source.getAddress().toString(), loginSession);
+        plugin.putSession(source.getAddress(), loginSession);
     }
 }

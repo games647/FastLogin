@@ -7,11 +7,11 @@ import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 import com.github.games647.fastlogin.bukkit.event.BukkitFastLoginPreLoginEvent;
 import com.github.games647.fastlogin.core.StoredProfile;
 import com.github.games647.fastlogin.core.shared.JoinManagement;
+import com.github.games647.fastlogin.core.shared.event.FastLoginPreLoginEvent;
 
 import java.security.PublicKey;
 import java.util.Random;
 
-import com.github.games647.fastlogin.core.shared.event.FastLoginPreLoginEvent;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -74,7 +74,7 @@ public class NameCheckTask extends JoinManagement<Player, CommandSender, Protoco
         byte[] verify = source.getVerifyToken();
 
         BukkitLoginSession playerSession = new BukkitLoginSession(username, serverId, verify, registered, profile);
-        plugin.getLoginSessions().put(player.getAddress().toString(), playerSession);
+        plugin.putSession(player.getAddress(), playerSession);
         //cancel only if the player has a paid account otherwise login as normal offline player
         synchronized (packetEvent.getAsyncMarker().getProcessingLock()) {
             packetEvent.setCancelled(true);
@@ -84,6 +84,6 @@ public class NameCheckTask extends JoinManagement<Player, CommandSender, Protoco
     @Override
     public void startCrackedSession(ProtocolLibLoginSource source, StoredProfile profile, String username) {
         BukkitLoginSession loginSession = new BukkitLoginSession(username, profile);
-        plugin.getLoginSessions().put(player.getAddress().toString(), loginSession);
+        plugin.putSession(player.getAddress(), loginSession);
     }
 }

@@ -74,7 +74,7 @@ public class ProtocolLibListener extends PacketAdapter {
         String sessionKey = player.getAddress().toString();
 
         //remove old data every time on a new login in order to keep the session only for one person
-        plugin.getLoginSessions().remove(sessionKey);
+        plugin.removeSession(player.getAddress());
 
         //player.getName() won't work at this state
         PacketContainer packet = packetEvent.getPacket();

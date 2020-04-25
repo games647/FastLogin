@@ -40,7 +40,7 @@ public class SkinApplyListener implements Listener {
         Player player = loginEvent.getPlayer();
 
         if (plugin.getConfig().getBoolean("forwardSkin")) {
-            //go through every session, because player.getAddress is null 
+            //go through every session, because player.getAddress is null
             //loginEvent.getAddress is just a InetAddress not InetSocketAddress, so not unique enough
             for (BukkitLoginSession session : plugin.getLoginSessions().values()) {
                 if (session.getUsername().equals(player.getName())) {

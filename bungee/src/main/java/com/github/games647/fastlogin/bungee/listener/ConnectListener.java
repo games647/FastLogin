@@ -74,8 +74,9 @@ public class ConnectListener implements Listener {
                 try {
                     UUID offlineUUID = UUIDAdapter.generateOfflineId(username);
 
-                    //bungeecord doesn't support overriding the premium uuid
-                    //so we have to do it with reflection
+                    // BungeeCord only allows setting the UUID in PreLogin events and before requesting online mode
+                    // However if online mode is requested, it will override previous values
+                    // So we have to do it with reflection
                     Field idField = InitialHandler.class.getDeclaredField("uniqueId");
                     idField.setAccessible(true);
                     idField.set(connection, offlineUUID);
@@ -85,7 +86,7 @@ public class ConnectListener implements Listener {
             }
 
             if (!plugin.getCore().getConfig().get("forwardSkin", true)) {
-                //this is null on offline mode
+                // this is null on offline mode
                 LoginResult loginProfile = initialHandler.getLoginProfile();
                 if (loginProfile != null) {
                     loginProfile.setProperties(emptyProperties);

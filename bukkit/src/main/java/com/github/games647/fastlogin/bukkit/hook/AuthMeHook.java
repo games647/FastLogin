@@ -33,8 +33,7 @@ public class AuthMeHook implements AuthPlugin<Player>, Listener {
     public void onSessionRestore(RestoreSessionEvent restoreSessionEvent) {
         Player player = restoreSessionEvent.getPlayer();
 
-        String id = '/' + player.getAddress().getAddress().getHostAddress() + ':' + player.getAddress().getPort();
-        BukkitLoginSession session = plugin.getLoginSessions().get(id);
+        BukkitLoginSession session = plugin.getSession(player.getAddress());
         if (session != null && session.isVerified()) {
             restoreSessionEvent.setCancelled(true);
         }

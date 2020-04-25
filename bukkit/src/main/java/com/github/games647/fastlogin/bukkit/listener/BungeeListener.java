@@ -78,11 +78,10 @@ public class BungeeListener implements PluginMessageListener {
         Type type = message.getType();
 
         InetSocketAddress address = player.getAddress();
-        String id = '/' + address.getAddress().getHostAddress() + ':' + address.getPort();
         if (type == Type.LOGIN) {
             BukkitLoginSession playerSession = new BukkitLoginSession(playerName, true);
             playerSession.setVerified(true);
-            plugin.getLoginSessions().put(id, playerSession);
+            plugin.putSession(address, playerSession);
 
             Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, new ForceLoginTask(plugin.getCore(), player), 10L);
         } else if (type == Type.REGISTER) {
@@ -93,7 +92,7 @@ public class BungeeListener implements PluginMessageListener {
                     if (authPlugin == null || !authPlugin.isRegistered(playerName)) {
                         BukkitLoginSession playerSession = new BukkitLoginSession(playerName, false);
                         playerSession.setVerified(true);
-                        plugin.getLoginSessions().put(id, playerSession);
+                        plugin.putSession(address, playerSession);
                         new ForceLoginTask(plugin.getCore(), player).run();
                     }
                 } catch (Exception ex) {

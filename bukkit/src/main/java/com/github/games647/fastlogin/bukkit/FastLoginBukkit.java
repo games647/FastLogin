@@ -18,6 +18,7 @@ import com.github.games647.fastlogin.core.shared.PlatformPlugin;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 
+import java.net.InetSocketAddress;
 import java.nio.file.Path;
 import java.util.Map;
 import java.util.UUID;
@@ -143,6 +144,21 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
      */
     public ConcurrentMap<String, BukkitLoginSession> getLoginSessions() {
         return loginSession;
+    }
+
+    public BukkitLoginSession getSession(InetSocketAddress addr) {
+        String id = addr.getAddress().getHostAddress() + ':' + addr.getPort();
+        return loginSession.get(id);
+    }
+
+    public void putSession(InetSocketAddress addr, BukkitLoginSession session) {
+        String id = addr.getAddress().getHostAddress() + ':' + addr.getPort();
+        loginSession.put(id, session);
+    }
+
+    public void removeSession(InetSocketAddress addr) {
+        String id = addr.getAddress().getHostAddress() + ':' + addr.getPort();
+        loginSession.remove(id);
     }
 
     public Map<UUID, PremiumStatus> getPremiumPlayers() {

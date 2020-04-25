@@ -57,7 +57,7 @@ public class VerifyResponseTask implements Runnable {
     @Override
     public void run() {
         try {
-            BukkitLoginSession session = plugin.getLoginSessions().get(player.getAddress().toString());
+            BukkitLoginSession session = plugin.getSession(player.getAddress());
             if (session == null) {
                 disconnect("invalid-request", true
                         , "GameProfile {0} tried to send encryption response at invalid state", player.getAddress());
