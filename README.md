@@ -11,15 +11,20 @@ So they don't need to enter passwords. This is also called auto login (auto-logi
 * Cauldron support
 * Forge/Sponge message support
 * Premium UUID support
-* Forwards Skins
+* Forward skins
 * Detect user name changed and will update the existing database record
 * BungeeCord support
 * Auto register new premium players
 * Plugin: ProtocolSupport is supported and can be used as an alternative to ProtocolLib
 * No client modifications needed
-* Good performance by using async non blocking operations
+* Good performance by using async operations
 * Locale messages
 * Import the database from similar plugins
+
+## Issues
+
+Please use issues for bug reports, suggestions, questions and more. Please check for existing issues. Existing issues 
+can be upvoted by adding up vote to the original post.
 
 ## Development builds
 
@@ -27,9 +32,10 @@ Development builds of this project can be acquired at the provided CI (continuou
 latest changes from the Source-Code in preparation for the following release. This means they could contain new
 features, bug fixes and other changes since the last release.
 
-Nevertheless builds are only tested using a small set of automated and a few manual tests. Therefore they **could**
-contain new bugs and are likely to be less stable than released versions.
+They **could** contain new bugs and are likely to be less stable than released versions.
 
+Specific builds can be grabbed by clicking on the build number on the left side or by clicking on status to retrieve the
+latest build.
 https://ci.codemc.org/job/Games647/job/FastLogin/changes
 
 ***
@@ -97,7 +103,7 @@ Put your stats id from the BungeeCord config into this file
 5. Download and Install FastLogin (or FastLoginBungee in newer versions) on BungeeCord AND Spigot
 (on the servers where your login plugin is or where player should be able to execute the commands of FastLogin)
 6. Check your database settings in the config of FastLogin on BungeeCord
-7. Set your proxy (BungeeCord) in offline mode by setting the value onlinemode in your config.yml to false
+7. Set proxy and Spigot in offline mode by setting the value onlinemode in your config.yml to false
 8. You should *always* firewall your Spigot server that it's only accessible through BungeeCord 
     * https://www.spigotmc.org/wiki/bungeecord-installation/#post-installation
     * BungeeCord doesn't support SQLite per default, so you should change the configuration to MySQL or MariaDB
