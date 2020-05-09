@@ -5,7 +5,6 @@ import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
-import com.github.games647.fastlogin.bukkit.EncryptionUtil;
 import com.github.games647.fastlogin.core.shared.LoginSource;
 
 import java.lang.reflect.InvocationTargetException;
@@ -19,7 +18,7 @@ import org.bukkit.entity.Player;
 import static com.comphenix.protocol.PacketType.Login.Server.DISCONNECT;
 import static com.comphenix.protocol.PacketType.Login.Server.ENCRYPTION_BEGIN;
 
-public class ProtocolLibLoginSource implements LoginSource {
+class ProtocolLibLoginSource implements LoginSource {
 
     private final PacketEvent packetEvent;
     private final Player player;

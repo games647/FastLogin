@@ -5,7 +5,6 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
-import com.github.games647.fastlogin.bukkit.EncryptionUtil;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 
 import java.security.KeyPair;

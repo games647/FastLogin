@@ -20,8 +20,9 @@ import org.bukkit.metadata.FixedMetadataValue;
 
 public class ForceLoginTask extends ForceLoginManagement<Player, CommandSender, BukkitLoginSession, FastLoginBukkit> {
 
-    public ForceLoginTask(FastLoginCore<Player, CommandSender, FastLoginBukkit> core, Player player) {
-        super(core, player, core.getPlugin().getSession(player.getAddress()));
+    public ForceLoginTask(FastLoginCore<Player, CommandSender, FastLoginBukkit> core, Player player,
+                          BukkitLoginSession session) {
+        super(core, player, session);
     }
 
     @Override
@@ -49,8 +50,8 @@ public class ForceLoginTask extends ForceLoginManagement<Player, CommandSender, 
 
     @Override
     public void onForceActionSuccess(LoginSession session) {
-        if (core.getPlugin().isBungeeEnabled()) {
-            core.getPlugin().sendPluginMessage(player, new SuccessMessage());
+        if (core.getPlugin().getBungeeManager().isEnabled()) {
+            core.getPlugin().getBungeeManager().sendPluginMessage(player, new SuccessMessage());
         }
     }
 

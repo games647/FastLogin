@@ -2,7 +2,6 @@ package com.github.games647.fastlogin.bukkit;
 
 import com.github.games647.fastlogin.bukkit.command.CrackedCommand;
 import com.github.games647.fastlogin.bukkit.command.PremiumCommand;
-import com.github.games647.fastlogin.bukkit.listener.BungeeListener;
 import com.github.games647.fastlogin.bukkit.listener.ConnectionListener;
 import com.github.games647.fastlogin.bukkit.listener.protocollib.ProtocolLibListener;
 import com.github.games647.fastlogin.bukkit.listener.protocollib.SkinApplyListener;
@@ -10,13 +9,8 @@ import com.github.games647.fastlogin.bukkit.listener.protocolsupport.ProtocolSup
 import com.github.games647.fastlogin.bukkit.task.DelayedAuthHook;
 import com.github.games647.fastlogin.core.CommonUtil;
 import com.github.games647.fastlogin.core.PremiumStatus;
-import com.github.games647.fastlogin.core.message.ChannelMessage;
-import com.github.games647.fastlogin.core.message.LoginActionMessage;
-import com.github.games647.fastlogin.core.message.NamespaceKey;
 import com.github.games647.fastlogin.core.shared.FastLoginCore;
 import com.github.games647.fastlogin.core.shared.PlatformPlugin;
-import com.google.common.io.ByteArrayDataOutput;
-import com.google.common.io.ByteStreams;
 
 import java.net.InetSocketAddress;
 import java.nio.file.Path;
@@ -29,11 +23,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.plugin.messaging.PluginMessageRecipient;
 import org.slf4j.Logger;
-
-import static com.github.games647.fastlogin.core.message.ChangePremiumMessage.CHANGE_CHANNEL;
-import static com.github.games647.fastlogin.core.message.SuccessMessage.SUCCESS_CHANNEL;
 
 /**
  * This plugin checks if a player has a paid account and if so tries to skip offline mode authentication.
@@ -46,7 +36,7 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
     private final Logger logger;
 
     private boolean serverStarted;
-    private boolean bungeeCord;
+    private BungeeManager bungeeManager;
     private final BukkitScheduler scheduler;
     private FastLoginCore<Player, CommandSender, FastLoginBukkit> core;
 
@@ -60,34 +50,19 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
         core = new FastLoginCore<>(this);
         core.load();
 
-        try {
-            bungeeCord = Class.forName("org.spigotmc.SpigotConfig").getDeclaredField("bungee").getBoolean(null);
-        } catch (ClassNotFoundException notFoundEx) {
-            //ignore server has no bungee support
-        } catch (Exception ex) {
-            logger.warn("Cannot check bungeecord support. You use a non-Spigot build", ex);
-        }
-
         if (getServer().getOnlineMode()) {
             //we need to require offline to prevent a loginSession request for a offline player
-            logger.error("Server have to be in offline mode");
+            logger.error("Server has to be in offline mode");
             setEnabled(false);
             return;
         }
 
+        bungeeManager = new BungeeManager(this);
+        bungeeManager.initialize();
+        
         PluginManager pluginManager = getServer().getPluginManager();
-        if (bungeeCord) {
+        if (bungeeManager.isEnabled()) {
             setServerStarted();
-
-            // check for incoming messages from the bungeecord version of this plugin
-            String forceChannel = NamespaceKey.getCombined(getName(), LoginActionMessage.FORCE_CHANNEL);
-            getServer().getMessenger().registerIncomingPluginChannel(this, forceChannel, new BungeeListener(this));
-
-            // outgoing
-            String successChannel = new NamespaceKey(getName(), SUCCESS_CHANNEL).getCombinedName();
-            String changeChannel = new NamespaceKey(getName(), CHANGE_CHANNEL).getCombinedName();
-            getServer().getMessenger().registerOutgoingPluginChannel(this, successChannel);
-            getServer().getMessenger().registerOutgoingPluginChannel(this, changeChannel);
         } else {
             if (!core.setupDatabase()) {
                 setEnabled(false);
@@ -128,8 +103,7 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
             core.close();
         }
 
-        //remove old blacklists
-        getServer().getOnlinePlayers().forEach(player -> player.removeMetadata(getName(), this));
+        bungeeManager.cleanup();
     }
 
     public FastLoginCore<Player, CommandSender, FastLoginBukkit> getCore() {
@@ -165,10 +139,6 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
         return premiumPlayers;
     }
 
-    public boolean isBungeeEnabled() {
-        return bungeeCord;
-    }
-
     /**
      * Fetches the premium status of an online player.
      *
@@ -198,14 +168,8 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
         }
     }
 
-    public void sendPluginMessage(PluginMessageRecipient player, ChannelMessage message) {
-        if (player != null) {
-            ByteArrayDataOutput dataOutput = ByteStreams.newDataOutput();
-            message.writeTo(dataOutput);
-
-            NamespaceKey channel = new NamespaceKey(getName(), message.getChannelName());
-            player.sendPluginMessage(this, channel.getCombinedName(), dataOutput.toByteArray());
-        }
+    public BungeeManager getBungeeManager() {
+        return bungeeManager;
     }
 
     @Override

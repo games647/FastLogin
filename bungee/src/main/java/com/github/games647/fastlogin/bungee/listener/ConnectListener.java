@@ -9,9 +9,7 @@ import com.github.games647.fastlogin.core.shared.LoginSession;
 
 import java.lang.reflect.Field;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
-import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.PendingConnection;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.connection.Server;
@@ -106,7 +104,7 @@ public class ConnectListener implements Listener {
         // In this case it means that the force command (plugin message) is already received and processed while
         // player is still in the login phase and reported to be offline.
         Runnable loginTask = new ForceLoginTask(plugin.getCore(), player, server);
-        ProxyServer.getInstance().getScheduler().schedule(plugin, loginTask, 500, TimeUnit.MILLISECONDS);
+        plugin.getScheduler().runAsync(loginTask);
     }
 
     @EventHandler

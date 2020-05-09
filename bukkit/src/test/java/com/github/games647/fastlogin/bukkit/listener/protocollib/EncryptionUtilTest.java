@@ -1,4 +1,4 @@
-package com.github.games647.fastlogin.bukkit;
+package com.github.games647.fastlogin.bukkit.listener.protocollib;
 
 import java.security.SecureRandom;
 

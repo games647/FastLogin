@@ -32,7 +32,7 @@ public class CrackedCommand extends ToggleCommand {
             return;
         }
 
-        if (plugin.isBungeeEnabled()) {
+        if (plugin.getBungeeManager().isEnabled()) {
             sendBungeeActivateMessage(sender, sender.getName(), false);
             plugin.getCore().sendLocaleMessage("wait-on-proxy", sender);
         } else {

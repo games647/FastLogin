@@ -12,7 +12,6 @@ import com.github.games647.craftapi.model.auth.Verification;
 import com.github.games647.craftapi.model.skin.SkinProperty;
 import com.github.games647.craftapi.resolver.MojangResolver;
 import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
-import com.github.games647.fastlogin.bukkit.EncryptionUtil;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 
 import java.io.IOException;

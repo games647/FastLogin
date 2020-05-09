@@ -1,5 +1,6 @@
 package com.github.games647.fastlogin.bukkit.listener;
 
+import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 import com.github.games647.fastlogin.bukkit.task.ForceLoginTask;
 
@@ -29,6 +30,7 @@ public class ConnectionListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerLogin(PlayerLoginEvent loginEvent) {
+        removeBlacklistStatus(loginEvent.getPlayer());
         if (loginEvent.getResult() == Result.ALLOWED && !plugin.isServerFullyStarted()) {
             loginEvent.disallow(Result.KICK_OTHER, plugin.getCore().getMessage("not-started"));
         }
@@ -38,21 +40,30 @@ public class ConnectionListener implements Listener {
     public void onPlayerJoin(PlayerJoinEvent joinEvent) {
         Player player = joinEvent.getPlayer();
 
-        removeBlacklistStatus(player);
-        if (!plugin.isBungeeEnabled()) {
-            //Wait before auth plugin and we received a message from BungeeCord initializes the player
-            Runnable forceLoginTask = new ForceLoginTask(plugin.getCore(), player);
-            Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, forceLoginTask, DELAY_LOGIN);
-        }
+        Bukkit.getScheduler().runTaskLater(plugin, () -> {
+            // session exists so the player is ready for force login
+            // cases: Paper (firing BungeeCord message before PlayerJoinEvent) or not running BungeeCord and already
+            // having the login session from the login process
+            BukkitLoginSession session = plugin.getSession(player.getAddress());
+            if (session != null) {
+                Runnable forceLoginTask = new ForceLoginTask(plugin.getCore(), player, session);
+                Bukkit.getScheduler().runTaskAsynchronously(plugin, forceLoginTask);
+            }
+
+            plugin.getBungeeManager().markJoinEventFired(player);
+            // delay the login process to let auth plugins initialize the player
+            // Magic number however as there is no direct event from those plugins
+        }, DELAY_LOGIN);
     }
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent quitEvent) {
         Player player = quitEvent.getPlayer();
-        removeBlacklistStatus(player);
 
+        removeBlacklistStatus(player);
         plugin.getCore().getPendingConfirms().remove(player.getUniqueId());
         plugin.getPremiumPlayers().remove(player.getUniqueId());
+        plugin.getBungeeManager().cleanup(player);
     }
 
     private void removeBlacklistStatus(Player player) {

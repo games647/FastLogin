@@ -10,20 +10,12 @@ import com.github.games647.fastlogin.core.message.LoginActionMessage.Type;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteStreams;
 
-import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Collections;
-import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Stream;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
-
-import static java.util.stream.Collectors.toSet;
 
 /**
  * Responsible for receiving messages from a BungeeCord instance.
@@ -33,15 +25,10 @@ import static java.util.stream.Collectors.toSet;
  */
 public class BungeeListener implements PluginMessageListener {
 
-    private static final String FILE_NAME = "proxy-whitelist.txt";
-
     private final FastLoginBukkit plugin;
-    //null if whitelist is empty so bungeecord support is disabled
-    private final Set<UUID> proxyIds;
 
     public BungeeListener(FastLoginBukkit plugin) {
         this.plugin = plugin;
-        this.proxyIds = loadBungeeCordIds();
     }
 
     @Override
@@ -53,20 +40,23 @@ public class BungeeListener implements PluginMessageListener {
 
         plugin.getLog().debug("Received plugin message {}", loginMessage);
 
-        //check if the player is still online or disconnected
-        Player checkedPlayer = Bukkit.getPlayerExact(loginMessage.getPlayerName());
-        if (checkedPlayer == null) {
+        Player targetPlayer = player;
+        if (!loginMessage.getPlayerName().equals(player.getName())) {
+            targetPlayer = Bukkit.getPlayerExact(loginMessage.getPlayerName());;
+        }
+
+        if (targetPlayer == null) {
+            plugin.getLog().warn("Force action player {} not found", loginMessage.getPlayerName());
             return;
         }
 
-        //fail if target player is blacklisted because already authenticated or wrong bungeecord id
-        if (checkedPlayer.hasMetadata(plugin.getName())) {
-            plugin.getLog().warn("Received message {} from a blacklisted player {}", loginMessage, checkedPlayer);
+        // fail if target player is blacklisted because already authenticated or wrong bungeecord id
+        if (targetPlayer.hasMetadata(plugin.getName())) {
+            plugin.getLog().warn("Received message {} from a blacklisted player {}", loginMessage, targetPlayer);
         } else {
-            //fail if BungeeCord support is disabled (id = null)
             UUID sourceId = loginMessage.getProxyId();
-            if (proxyIds.contains(sourceId)) {
-                readMessage(checkedPlayer, loginMessage);
+            if (plugin.getBungeeManager().isProxyAllowed(sourceId)) {
+                readMessage(targetPlayer, loginMessage);
             } else {
                 plugin.getLog().warn("Received proxy id: {} that doesn't exist in the proxy whitelist file", sourceId);
             }
@@ -79,50 +69,43 @@ public class BungeeListener implements PluginMessageListener {
 
         InetSocketAddress address = player.getAddress();
         if (type == Type.LOGIN) {
-            BukkitLoginSession playerSession = new BukkitLoginSession(playerName, true);
-            playerSession.setVerified(true);
-            plugin.putSession(address, playerSession);
-
-            Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, new ForceLoginTask(plugin.getCore(), player), 10L);
+            onLoginMessage(player, playerName, address);
         } else if (type == Type.REGISTER) {
-            Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> {
-                AuthPlugin<Player> authPlugin = plugin.getCore().getAuthPluginHook();
-                try {
-                    //we need to check if the player is registered on Bukkit too
-                    if (authPlugin == null || !authPlugin.isRegistered(playerName)) {
-                        BukkitLoginSession playerSession = new BukkitLoginSession(playerName, false);
-                        playerSession.setVerified(true);
-                        plugin.putSession(address, playerSession);
-                        new ForceLoginTask(plugin.getCore(), player).run();
-                    }
-                } catch (Exception ex) {
-                    plugin.getLog().error("Failed to query isRegistered for player: {}", player, ex);
-                }
-            }, 10L);
+            onRegisterMessage(player, playerName, address);
         } else if (type == Type.CRACKED) {
             //we don't start a force login task here so update it manually
             plugin.getPremiumPlayers().put(player.getUniqueId(), PremiumStatus.CRACKED);
         }
     }
 
-    public Set<UUID> loadBungeeCordIds() {
-        Path whitelistFile = plugin.getPluginFolder().resolve(FILE_NAME);
-        try {
-            if (Files.notExists(whitelistFile)) {
-                Files.createFile(whitelistFile);
-            }
+    private void onLoginMessage(Player player, String playerName, InetSocketAddress address) {
+        BukkitLoginSession playerSession = new BukkitLoginSession(playerName, true);
+        startLoginTaskIfReady(player, playerSession);
+    }
 
-            try (Stream<String> lines = Files.lines(whitelistFile)) {
-                return lines.map(String::trim)
-                        .map(UUID::fromString)
-                        .collect(toSet());
+    private void onRegisterMessage(Player player, String playerName, InetSocketAddress address) {
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            AuthPlugin<Player> authPlugin = plugin.getCore().getAuthPluginHook();
+            try {
+                //we need to check if the player is registered on Bukkit too
+                if (authPlugin == null || !authPlugin.isRegistered(playerName)) {
+                    BukkitLoginSession playerSession = new BukkitLoginSession(playerName, false);
+                    startLoginTaskIfReady(player, playerSession);
+                }
+            } catch (Exception ex) {
+                plugin.getLog().error("Failed to query isRegistered for player: {}", player, ex);
             }
-        } catch (IOException ex) {
-            plugin.getLog().error("Failed to create file for Proxy whitelist", ex);
-        } catch (Exception ex) {
-            plugin.getLog().error("Failed to retrieve proxy Id. Disabling BungeeCord support", ex);
+        });
+    }
+
+    private void startLoginTaskIfReady(Player player, BukkitLoginSession session) {
+        session.setVerified(true);
+        plugin.putSession(player.getAddress(), session);
+
+        // only start a new login task if the join event fired earlier. This event then didn
+        if (plugin.getBungeeManager().didJoinEventFired(player)) {
+            Runnable forceLoginTask = new ForceLoginTask(plugin.getCore(), player, session);
+            Bukkit.getScheduler().runTaskAsynchronously(plugin, forceLoginTask);
         }
-
-        return Collections.emptySet();
     }
 }
