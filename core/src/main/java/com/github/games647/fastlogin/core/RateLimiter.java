@@ -21,8 +21,8 @@ public class RateLimiter {
      * @return true if allowed
      */
     public boolean tryAcquire() {
-        // currentTime millis could be expensive on some systems
-        long now = System.currentTimeMillis();
+        // current time millis is not monotonic - it can jump back depending on user choice or NTP
+        long now = System.nanoTime() / 1_000_000;
 
         // after this the request should be expired
         long toBeExpired = now - expireTime;

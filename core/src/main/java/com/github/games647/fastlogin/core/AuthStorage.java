@@ -70,7 +70,7 @@ public class AuthStorage {
 
             // adding paranoid hides hostname, username, version and so
             // could be useful for hiding server details
-            config.addDataSourceProperty("paranoid", "true");
+            config.addDataSourceProperty("paranoid", true);
 
             // enable MySQL specific optimizations
             // disabled by default - will return the same prepared statement instance
