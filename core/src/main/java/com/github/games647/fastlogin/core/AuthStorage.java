@@ -12,7 +12,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.Instant;
 import java.util.Optional;
-import java.util.Properties;
 import java.util.UUID;
 import java.util.concurrent.ThreadFactory;
 
@@ -38,11 +37,6 @@ public class AuthStorage {
         this.core = core;
         config.setPoolName(core.getPlugin().getName());
 
-        //a try to fix https://www.spigotmc.org/threads/fastlogin.101192/page-26#post-1874647
-        Properties properties = new Properties();
-        properties.setProperty("date_string_format", "yyyy-MM-dd HH:mm:ss");
-        properties.setProperty("useSSL", String.valueOf(useSSL));
-        config.setDataSourceProperties(properties);
         ThreadFactory platformThreadFactory = core.getPlugin().getThreadFactory();
         if (platformThreadFactory != null) {
             config.setThreadFactory(platformThreadFactory);
@@ -59,12 +53,34 @@ public class AuthStorage {
         } else {
             jdbcUrl += "mysql://" + host + ':' + port + '/' + databasePath;
             // enable MySQL specific optimizations
-            // default prepStmtCacheSize 25 - amount of cached statements - enough for us
-            // default prepStmtCacheSqlLimit 256 - length of SQL - our queries are not longer
             // disabled by default - will return the same prepared statement instance
             config.addDataSourceProperty("cachePrepStmts", true);
+            // default prepStmtCacheSize 25 - amount of cached statements
+            config.addDataSourceProperty("prepStmtCacheSize", 250);
+            // default prepStmtCacheSqlLimit 256 - length of SQL
+            config.addDataSourceProperty("prepStmtCacheSqlLimit", 2048);
             // default false - available in newer versions caches the statements server-side
             config.addDataSourceProperty("useServerPrepStmts", true);
+            // default false - prefer use of local values for autocommit and
+            // transaction isolation (alwaysSendSetIsolation) should only be enabled if always use the set* methods
+            // instead of raw SQL
+            // https://forums.mysql.com/read.php?39,626495,626512
+            config.addDataSourceProperty("useLocalSessionState", true);
+            // rewrite batched statements to a single statement, adding them behind each other
+            // only useful for addBatch statements and inserts
+            config.addDataSourceProperty("rewriteBatchedStatements", true);
+            // cache result metadata
+            config.addDataSourceProperty("cacheResultSetMetadata", true);
+            // cache results of show variables and collation per URL
+            config.addDataSourceProperty("cacheServerConfiguration", true);
+            // default false - set auto commit only if not matching
+            config.addDataSourceProperty("elideSetAutoCommits", true);
+
+            // default true - internal timers for idle calculation -> removes System.getCurrentTimeMillis call per query
+            // Some platforms are slow on this and it could affect the throughput about 3% according to MySQL
+            // performance gems presentation
+            // In our case it can be useful to see the time in error messages
+            // config.addDataSourceProperty("maintainTimeStats", false);
         }
 
         config.setJdbcUrl(jdbcUrl);
