@@ -50,8 +50,24 @@ public class AuthStorage {
             jdbcUrl += "sqlite://" + databasePath;
             config.setConnectionTestQuery("SELECT 1");
             config.setMaximumPoolSize(1);
+
+            //a try to fix https://www.spigotmc.org/threads/fastlogin.101192/page-26#post-1874647
+            // format strings retrieved by the timestamp column to match them from MySQL
+            config.addDataSourceProperty("date_string_format", "yyyy-MM-dd HH:mm:ss");
+
+            // TODO: test first for compatibility
+            // config.addDataSourceProperty("date_precision", "seconds");
         } else {
             jdbcUrl += "mysql://" + host + ':' + port + '/' + databasePath;
+
+            // Require SSL on the server if requested in config - this will also verify certificate
+            // Those values are deprecated in favor of sslMode
+            config.addDataSourceProperty("useSSL", useSSL);
+            config.addDataSourceProperty("requireSSL", useSSL);
+
+            // prefer encrypted if possible
+            config.addDataSourceProperty("sslMode", "PREFERRED");
+
             // enable MySQL specific optimizations
             // disabled by default - will return the same prepared statement instance
             config.addDataSourceProperty("cachePrepStmts", true);
