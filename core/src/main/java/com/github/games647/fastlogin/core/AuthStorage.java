@@ -68,6 +68,10 @@ public class AuthStorage {
             // prefer encrypted if possible
             config.addDataSourceProperty("sslMode", "PREFERRED");
 
+            // adding paranoid hides hostname, username, version and so
+            // could be useful for hiding server details
+            config.addDataSourceProperty("paranoid", "true");
+
             // enable MySQL specific optimizations
             // disabled by default - will return the same prepared statement instance
             config.addDataSourceProperty("cachePrepStmts", true);
