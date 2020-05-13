@@ -87,8 +87,8 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
             return;
         }
 
-        int maxCon = config.getInt("anti-bot.connections");
-        int expireTime = config.getInt("anti-bot.expire");
+        int maxCon = config.getInt("anti-bot.connections", 200);
+        int expireTime = config.getInt("anti-bot.expire", 5);
         rateLimiter = new RateLimiter(maxCon, expireTime * 60 * 1_000);
         Set<Proxy> proxies = config.getStringList("proxies")
                 .stream()
