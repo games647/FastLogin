@@ -10,10 +10,10 @@ import com.github.games647.fastlogin.core.message.LoginActionMessage.Type;
 import com.github.games647.fastlogin.core.shared.FastLoginCore;
 import com.github.games647.fastlogin.core.shared.ForceLoginManagement;
 import com.github.games647.fastlogin.core.shared.LoginSession;
+import com.github.games647.fastlogin.core.shared.event.FastLoginAutoLoginEvent;
 
 import java.util.UUID;
 
-import com.github.games647.fastlogin.core.shared.event.FastLoginAutoLoginEvent;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -25,8 +25,8 @@ public class ForceLoginTask
     private final Server server;
 
     public ForceLoginTask(FastLoginCore<ProxiedPlayer, CommandSender, FastLoginBungee> core,
-             ProxiedPlayer player, Server server) {
-        super(core, player, core.getPlugin().getSession().get(player.getPendingConnection()));
+                          ProxiedPlayer player, Server server, BungeeLoginSession session) {
+        super(core, player, session);
 
         this.server = server;
     }

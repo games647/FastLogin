@@ -5,6 +5,19 @@
 # You can access the newest config here:
 # https://github.com/games647/FastLogin/blob/master/core/src/main/resources/config.yml
 
+# This a **very** simple anti bot protection. Recommendation is to use a a dedicated program to approach this
+# problem. Low level firewalls like iptables, ufw are more efficient than a Minecraft plugin. TCP reverse
+# proxies could also be used and offload some work even to different host.
+#
+# The settings wil limit how many connections this plugin will handle. After hitting this limit. FastLogin will
+# completely ignore incoming connections. Effectively there will be no database requests and network requests.
+# Therefore auto logins won't be possible.
+anti-bot:
+  # Total number of connections
+  connections: 200
+  # Amount of time after the first connection will expire and made available
+  expire: 5
+
 # Request a premium login without forcing the player to type a command
 #
 # If you activate autoRegister, this plugin will check/do these points on login:

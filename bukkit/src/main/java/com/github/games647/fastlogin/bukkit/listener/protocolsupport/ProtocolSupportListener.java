@@ -4,6 +4,7 @@ import com.github.games647.craftapi.UUIDAdapter;
 import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 import com.github.games647.fastlogin.bukkit.event.BukkitFastLoginPreLoginEvent;
+import com.github.games647.fastlogin.core.RateLimiter;
 import com.github.games647.fastlogin.core.StoredProfile;
 import com.github.games647.fastlogin.core.shared.JoinManagement;
 import com.github.games647.fastlogin.core.shared.event.FastLoginPreLoginEvent;
@@ -23,16 +24,23 @@ public class ProtocolSupportListener extends JoinManagement<Player, CommandSende
         implements Listener {
 
     private final FastLoginBukkit plugin;
+    private final RateLimiter rateLimiter;
 
-    public ProtocolSupportListener(FastLoginBukkit plugin) {
+    public ProtocolSupportListener(FastLoginBukkit plugin, RateLimiter rateLimiter) {
         super(plugin.getCore(), plugin.getCore().getAuthPluginHook());
 
         this.plugin = plugin;
+        this.rateLimiter = rateLimiter;
     }
 
     @EventHandler
     public void onLoginStart(PlayerLoginStartEvent loginStartEvent) {
         if (loginStartEvent.isLoginDenied() || plugin.getCore().getAuthPluginHook() == null) {
+            return;
+        }
+
+        if (!rateLimiter.tryAcquire()) {
+            plugin.getLog().warn("Rate Limit hit - Ignoring player {}", loginStartEvent.getConnection());
             return;
         }
 

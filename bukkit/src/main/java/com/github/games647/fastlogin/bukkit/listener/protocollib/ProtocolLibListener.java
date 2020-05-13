@@ -6,6 +6,7 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
+import com.github.games647.fastlogin.core.RateLimiter;
 
 import java.security.KeyPair;
 import java.security.SecureRandom;
@@ -24,8 +25,9 @@ public class ProtocolLibListener extends PacketAdapter {
     //just create a new once on plugin enable. This used for verify token generation
     private final SecureRandom random = new SecureRandom();
     private final KeyPair keyPair = EncryptionUtil.generateKeyPair();
+    private final RateLimiter rateLimiter;
 
-    public ProtocolLibListener(FastLoginBukkit plugin) {
+    public ProtocolLibListener(FastLoginBukkit plugin, RateLimiter rateLimiter) {
         //run async in order to not block the server, because we are making api calls to Mojang
         super(params()
                 .plugin(plugin)
@@ -33,13 +35,14 @@ public class ProtocolLibListener extends PacketAdapter {
                 .optionAsync());
 
         this.plugin = plugin;
+        this.rateLimiter = rateLimiter;
     }
 
-    public static void register(FastLoginBukkit plugin) {
+    public static void register(FastLoginBukkit plugin, RateLimiter rateLimiter) {
         //they will be created with a static builder, because otherwise it will throw a NoClassDefFoundError
         ProtocolLibrary.getProtocolManager()
                 .getAsynchronousManager()
-                .registerAsyncHandler(new ProtocolLibListener(plugin))
+                .registerAsyncHandler(new ProtocolLibListener(plugin, rateLimiter))
                 .start(WORKER_THREADS);
     }
 
@@ -54,6 +57,11 @@ public class ProtocolLibListener extends PacketAdapter {
         Player sender = packetEvent.getPlayer();
         PacketType packetType = packetEvent.getPacketType();
         if (packetType == START) {
+            if (!rateLimiter.tryAcquire()) {
+                plugin.getLog().warn("Rate Limit hit - Ignoring player {}", sender);
+                return;
+            }
+
             onLogin(packetEvent, sender);
         } else {
             onEncryptionBegin(packetEvent, sender);

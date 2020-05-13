@@ -70,9 +70,9 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
             }
 
             if (pluginManager.isPluginEnabled("ProtocolSupport")) {
-                pluginManager.registerEvents(new ProtocolSupportListener(this), this);
+                pluginManager.registerEvents(new ProtocolSupportListener(this, core.getRateLimiter()), this);
             } else if (pluginManager.isPluginEnabled("ProtocolLib")) {
-                ProtocolLibListener.register(this);
+                ProtocolLibListener.register(this, core.getRateLimiter());
                 pluginManager.registerEvents(new SkinApplyListener(this), this);
             } else {
                 logger.warn("Either ProtocolLib or ProtocolSupport have to be installed if you don't use BungeeCord");

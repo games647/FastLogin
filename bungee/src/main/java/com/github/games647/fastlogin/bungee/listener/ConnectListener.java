@@ -1,9 +1,11 @@
 package com.github.games647.fastlogin.bungee.listener;
 
 import com.github.games647.craftapi.UUIDAdapter;
+import com.github.games647.fastlogin.bungee.BungeeLoginSession;
 import com.github.games647.fastlogin.bungee.FastLoginBungee;
 import com.github.games647.fastlogin.bungee.task.AsyncPremiumCheck;
 import com.github.games647.fastlogin.bungee.task.ForceLoginTask;
+import com.github.games647.fastlogin.core.RateLimiter;
 import com.github.games647.fastlogin.core.StoredProfile;
 import com.github.games647.fastlogin.core.shared.LoginSession;
 
@@ -33,8 +35,11 @@ public class ConnectListener implements Listener {
     private final FastLoginBungee plugin;
     private final Property[] emptyProperties = {};
 
-    public ConnectListener(FastLoginBungee plugin) {
+    private final RateLimiter rateLimiter;
+
+    public ConnectListener(FastLoginBungee plugin, RateLimiter rateLimiter) {
         this.plugin = plugin;
+        this.rateLimiter = rateLimiter;
     }
 
     @EventHandler
@@ -43,9 +48,14 @@ public class ConnectListener implements Listener {
             return;
         }
 
+        PendingConnection connection = preLoginEvent.getConnection();
+        if (!rateLimiter.tryAcquire()) {
+            plugin.getLog().warn("Rate Limit hit - Ignoring player {}", connection);
+            return;
+        }
+
         preLoginEvent.registerIntent(plugin);
 
-        PendingConnection connection = preLoginEvent.getConnection();
         Runnable asyncPremiumCheck = new AsyncPremiumCheck(plugin, preLoginEvent, connection);
         plugin.getScheduler().runAsync(asyncPremiumCheck);
     }
@@ -100,10 +110,15 @@ public class ConnectListener implements Listener {
         ProxiedPlayer player = serverConnectedEvent.getPlayer();
         Server server = serverConnectedEvent.getServer();
 
+        BungeeLoginSession session = plugin.getSession().get(player.getPendingConnection());
+        if (session == null) {
+            return;
+        }
+
         // delay sending force command, because Paper will process the login event asynchronously
         // In this case it means that the force command (plugin message) is already received and processed while
         // player is still in the login phase and reported to be offline.
-        Runnable loginTask = new ForceLoginTask(plugin.getCore(), player, server);
+        Runnable loginTask = new ForceLoginTask(plugin.getCore(), player, server, session);
         plugin.getScheduler().runAsync(loginTask);
     }
 

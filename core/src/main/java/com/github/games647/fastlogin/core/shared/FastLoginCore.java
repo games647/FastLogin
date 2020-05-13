@@ -4,6 +4,7 @@ import com.github.games647.craftapi.resolver.MojangResolver;
 import com.github.games647.craftapi.resolver.http.RotatingProxySelector;
 import com.github.games647.fastlogin.core.AuthStorage;
 import com.github.games647.fastlogin.core.CommonUtil;
+import com.github.games647.fastlogin.core.RateLimiter;
 import com.github.games647.fastlogin.core.hooks.AuthPlugin;
 import com.github.games647.fastlogin.core.hooks.DefaultPasswordGenerator;
 import com.github.games647.fastlogin.core.hooks.PasswordGenerator;
@@ -55,6 +56,7 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
 
     private Configuration config;
     private AuthStorage storage;
+    private RateLimiter rateLimiter;
     private PasswordGenerator<P> passwordGenerator = new DefaultPasswordGenerator<>();
     private AuthPlugin<P> authPlugin;
 
@@ -82,8 +84,12 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
                     });
         } catch (IOException ioEx) {
             plugin.getLog().error("Failed to load yaml files", ioEx);
+            return;
         }
 
+        int maxCon = config.getInt("anti-bot.connections");
+        int expireTime = config.getInt("anti-bot.expire");
+        rateLimiter = new RateLimiter(maxCon, expireTime * 60 * 1_000);
         Set<Proxy> proxies = config.getStringList("proxies")
                 .stream()
                 .map(HostAndPort::fromString)
@@ -215,6 +221,10 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
 
     public AuthPlugin<P> getAuthPluginHook() {
         return authPlugin;
+    }
+
+    public RateLimiter getRateLimiter() {
+        return rateLimiter;
     }
 
     public void setAuthPluginHook(AuthPlugin<P> authPlugin) {
