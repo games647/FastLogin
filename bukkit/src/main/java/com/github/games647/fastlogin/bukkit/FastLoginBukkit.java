@@ -103,6 +103,9 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
         }
 
         bungeeManager.cleanup();
+        if (getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
+            PremiumPlaceholder.unregisterAll(this);
+        }
     }
 
     public FastLoginCore<Player, CommandSender, FastLoginBukkit> getCore() {

@@ -1,5 +1,6 @@
 package com.github.games647.fastlogin.bukkit;
 
+import me.clip.placeholderapi.PlaceholderAPI;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 
 import org.bukkit.entity.Player;
@@ -12,6 +13,10 @@ public class PremiumPlaceholder extends PlaceholderExpansion {
 
     public PremiumPlaceholder(FastLoginBukkit plugin) {
         this.plugin = plugin;
+    }
+
+    public static void unregisterAll(FastLoginBukkit plugin) {
+        PlaceholderAPI.unregisterPlaceholderHook(plugin.getName());
     }
 
     @Override
