@@ -89,8 +89,7 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
         getCommand("cracked").setExecutor(new CrackedCommand(this));
 
         if (pluginManager.isPluginEnabled("PlaceholderAPI")) {
-            //prevents NoClassDef errors if it's not available
-            PremiumPlaceholder.register(this);
+            new PremiumPlaceholder(this).register();
         }
     }
 

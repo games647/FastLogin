@@ -18,7 +18,7 @@ public class RateLimiter {
     /**
      * Ask if access is allowed. If so register the request.
      *
-     * @return true if allowed
+     * @return true if allowed - false otherwise without any side effects
      */
     public boolean tryAcquire() {
         // current time millis is not monotonic - it can jump back depending on user choice or NTP

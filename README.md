@@ -52,6 +52,15 @@ https://ci.codemc.org/job/Games647/job/FastLogin/changes
     fastlogin.command.premium.other
     fastlogin.command.cracked.other
 
+## Placeholder
+
+This plugin supports `PlaceholderAPI` on `Spigot`. It exports the following variable 
+`%fastlogin_status%`. In BungeeCord environments, the status of a player will be delivered with a delay after the player 
+already successful joined the server. This takes about a couple of milliseconds. In this case the value
+will be `Unknown`. 
+
+Possible values: `Premium`, `Cracked`, `Unknown` 
+
 ## Requirements
 
 * Plugin: 
@@ -59,7 +68,7 @@ https://ci.codemc.org/job/Games647/job/FastLogin/changes
     * [ProtocolSupport](https://www.spigotmc.org/resources/protocolsupport.7201/)
 * [Spigot](https://www.spigotmc.org) 1.8.8+
 * Java 8+
-* Run Spigot and/or BungeeCord/Waterfall in offline mode (see server.properties or config.yml)
+* Run Spigot (or a fork e.g. Paper) and/or BungeeCord (or a fork e.g. Waterfall) in offline mode
 * An auth plugin. Supported plugins
 
 ### Bukkit/Spigot/Paper
