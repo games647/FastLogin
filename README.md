@@ -24,7 +24,8 @@ So they don't need to enter passwords. This is also called auto login (auto-logi
 ## Issues
 
 Please use issues for bug reports, suggestions, questions and more. Please check for existing issues. Existing issues 
-can be upvoted by adding up vote to the original post.
+can be voted up by adding up vote to the original post. Closing issues means that they are marked as resolved. Comments
+are still allowed and it could be re-opened.
 
 ## Development builds
 
