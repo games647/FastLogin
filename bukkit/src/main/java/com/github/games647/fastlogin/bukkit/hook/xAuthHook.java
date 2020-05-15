@@ -35,7 +35,8 @@ public class xAuthHook implements AuthPlugin<Player> {
             xAuthPlayer xAuthPlayer = xAuthPlugin.getPlayerManager().getPlayer(player);
             if (xAuthPlayer != null) {
                 if (xAuthPlayer.isAuthenticated()) {
-                    return true;
+                    plugin.getLog().warn("Player {} is already authenticated", player);
+                    return false;
                 }
 
                 //we checked that the player is premium (paid account)

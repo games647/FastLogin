@@ -1,5 +1,6 @@
 package com.github.games647.fastlogin.bukkit.hook;
 
+import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 import com.github.games647.fastlogin.core.hooks.AuthPlugin;
 
 import io.github.lucaseasedup.logit.CancelledState;
@@ -22,11 +23,21 @@ import org.bukkit.entity.Player;
  */
 public class LogItHook implements AuthPlugin<Player> {
 
+    private final FastLoginBukkit plugin;
+
+    public LogItHook(FastLoginBukkit plugin) {
+        this.plugin = plugin;
+    }
+
     @Override
     public boolean forceLogin(Player player) {
         SessionManager sessionManager = LogItCore.getInstance().getSessionManager();
-        return sessionManager.isSessionAlive(player)
-                || sessionManager.startSession(player) == CancelledState.NOT_CANCELLED;
+        if (sessionManager.isSessionAlive(player)) {
+            plugin.getLog().warn(ALREADY_AUTHENTICATED, player);
+            return false;
+        }
+
+        return sessionManager.startSession(player) == CancelledState.NOT_CANCELLED;
     }
 
     @Override

@@ -8,6 +8,8 @@ package com.github.games647.fastlogin.core.hooks;
  */
 public interface AuthPlugin<P> {
 
+    String ALREADY_AUTHENTICATED = "Player {} is already authenticated. Cancelling force login.";
+
     /**
      * Login the premium (paid account) player after the player joined successfully the server.
      *

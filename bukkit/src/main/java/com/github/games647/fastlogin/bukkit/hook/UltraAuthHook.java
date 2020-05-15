@@ -34,7 +34,7 @@ public class UltraAuthHook implements AuthPlugin<Player> {
         //not thread-safe
         Future<Boolean> future = Bukkit.getScheduler().callSyncMethod(plugin, () -> {
             if (UltraAuthAPI.isAuthenticated(player)) {
-                return true;
+                return false;
             }
 
             UltraAuthAPI.authenticatedPlayer(player);

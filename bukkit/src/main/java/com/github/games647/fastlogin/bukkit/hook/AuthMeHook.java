@@ -42,6 +42,7 @@ public class AuthMeHook implements AuthPlugin<Player>, Listener {
     @Override
     public boolean forceLogin(Player player) {
         if (AuthMeApi.getInstance().isAuthenticated(player)) {
+            plugin.getLog().warn(ALREADY_AUTHENTICATED, player);
             return false;
         }
 
