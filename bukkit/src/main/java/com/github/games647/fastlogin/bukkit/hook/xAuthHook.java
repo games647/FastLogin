@@ -35,7 +35,7 @@ public class xAuthHook implements AuthPlugin<Player> {
             xAuthPlayer xAuthPlayer = xAuthPlugin.getPlayerManager().getPlayer(player);
             if (xAuthPlayer != null) {
                 if (xAuthPlayer.isAuthenticated()) {
-                    plugin.getLog().warn("Player {} is already authenticated", player);
+                    plugin.getLog().warn(ALREADY_AUTHENTICATED, player);
                     return false;
                 }
 
