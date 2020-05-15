@@ -68,10 +68,10 @@ public class ConnectListener implements Listener {
 
         //use the login event instead of the post login event in order to send the login success packet to the client
         //with the offline uuid this makes it possible to set the skin then
-        PendingConnection connection = loginEvent.getConnection();
+        final PendingConnection connection = loginEvent.getConnection();
         InitialHandler initialHandler = (InitialHandler) connection;
 
-        String username = initialHandler.getLoginRequest().getData();
+        final String username = initialHandler.getLoginRequest().getData();
         if (connection.isOnlineMode()) {
             LoginSession session = plugin.getSession().get(connection);
             session.setUuid(connection.getUniqueId());
@@ -82,8 +82,8 @@ public class ConnectListener implements Listener {
             //bungeecord will do this automatically so override it on disabled option
             if (!plugin.getCore().getConfig().get("premiumUuid", true)) {
                 try {
-                    UUID oldPremiumId = connection.getUniqueId();
-                    UUID offlineUUID = UUIDAdapter.generateOfflineId(username);
+                    final UUID oldPremiumId = connection.getUniqueId();
+                    final UUID offlineUUID = UUIDAdapter.generateOfflineId(username);
 
                     // BungeeCord only allows setting the UUID in PreLogin events and before requesting online mode
                     // However if online mode is requested, it will override previous values
@@ -92,7 +92,8 @@ public class ConnectListener implements Listener {
                     idField.setAccessible(true);
                     idField.set(connection, offlineUUID);
 
-                    plugin.getLog().info("Overriding UUID to {} from {} on {}", offlineUUID, oldPremiumId, connection);
+                    final String format = "Overriding UUID from {} to {} (based of {}) on {}";
+                    plugin.getLog().info(format, oldPremiumId, offlineUUID, username, connection);
                 } catch (NoSuchFieldException | IllegalAccessException ex) {
                     plugin.getLog().error("Failed to set offline uuid of {}", username, ex);
                 }
