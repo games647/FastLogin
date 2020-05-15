@@ -69,7 +69,7 @@ public class ConnectListener implements Listener {
         //use the login event instead of the post login event in order to send the login success packet to the client
         //with the offline uuid this makes it possible to set the skin then
         final PendingConnection connection = loginEvent.getConnection();
-        InitialHandler initialHandler = (InitialHandler) connection;
+        final InitialHandler initialHandler = (InitialHandler) connection;
 
         final String username = initialHandler.getLoginRequest().getData();
         if (connection.isOnlineMode()) {
@@ -92,8 +92,17 @@ public class ConnectListener implements Listener {
                     idField.setAccessible(true);
                     idField.set(connection, offlineUUID);
 
-                    final String format = "Overriding UUID from {} to {} (based of {}) on {}";
+                    String format = "Overridden UUID from {} to {} (based of {}) on {}";
                     plugin.getLog().info(format, oldPremiumId, offlineUUID, username, connection);
+
+                    // check if the field was actually set correctly
+                    UUID offlineResult = (UUID) idField.get(connection);
+                    UUID connectionResult = connection.getUniqueId();
+                    if (!offlineUUID.equals(offlineResult)
+                            || !offlineUUID.equals(connectionResult)) {
+                        throw new RuntimeException("Inconsistent UUIDs: expected " + offlineUUID
+                                + " got (Reflection, Connection)" + offlineResult + " and " + connection);
+                    }
                 } catch (NoSuchFieldException | IllegalAccessException ex) {
                     plugin.getLog().error("Failed to set offline uuid of {}", username, ex);
                 }
