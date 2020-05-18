@@ -104,7 +104,7 @@ public class ConnectListener implements Listener {
 
             //bungeecord will do this automatically so override it on disabled option
             if (!plugin.getCore().getConfig().get("premiumUuid", true)) {
-                setOfflineId(connection, username);
+                setOfflineId(initialHandler, username);
             }
 
             if (!plugin.getCore().getConfig().get("forwardSkin", true)) {
@@ -117,7 +117,7 @@ public class ConnectListener implements Listener {
         }
     }
 
-    private void setOfflineId(PendingConnection connection, String username) {
+    private void setOfflineId(InitialHandler connection, String username) {
         try {
             final UUID oldPremiumId = connection.getUniqueId();
             final UUID offlineUUID = UUIDAdapter.generateOfflineId(username);
@@ -125,13 +125,13 @@ public class ConnectListener implements Listener {
             // BungeeCord only allows setting the UUID in PreLogin events and before requesting online mode
             // However if online mode is requested, it will override previous values
             // So we have to do it with reflection
-            uniqueIdSetter.invoke(connection, offlineUUID);
+            uniqueIdSetter.invokeExact(connection, offlineUUID);
 
             String format = "Overridden UUID from {} to {} (based of {}) on {}";
             plugin.getLog().info(format, oldPremiumId, offlineUUID, username, connection);
 
             // check if the field was actually set correctly
-            UUID offlineResult = (UUID) uniqueIdGetter.invoke(connection);
+            UUID offlineResult = (UUID) uniqueIdGetter.invokeExact(connection);
             UUID connectionResult = connection.getUniqueId();
             if (!offlineUUID.equals(offlineResult)
                     || !offlineUUID.equals(connectionResult)) {
