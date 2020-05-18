@@ -8,8 +8,11 @@ import com.github.games647.fastlogin.bungee.task.ForceLoginTask;
 import com.github.games647.fastlogin.core.RateLimiter;
 import com.github.games647.fastlogin.core.StoredProfile;
 import com.github.games647.fastlogin.core.shared.LoginSession;
+import com.google.common.base.Throwables;
 
-import java.lang.reflect.Field;
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodHandles.Lookup;
 import java.util.UUID;
 
 import net.md_5.bungee.api.connection.PendingConnection;
@@ -36,6 +39,26 @@ public class ConnectListener implements Listener {
     private final Property[] emptyProperties = {};
 
     private final RateLimiter rateLimiter;
+
+    private static final MethodHandle uniqueIdSetter;
+    private static final MethodHandle uniqueIdGetter;
+
+    private static final String UUID_FIELD_NAME = "uniqueId";
+
+    static {
+        MethodHandle setHandle = null;
+        MethodHandle getHandle = null;
+        try {
+            final Lookup lookup = MethodHandles.lookup();
+            setHandle = lookup.findSetter(InitialHandler.class, UUID_FIELD_NAME, UUID.class);
+            getHandle = lookup.findGetter(InitialHandler.class, UUID_FIELD_NAME, UUID.class);
+        } catch (ReflectiveOperationException reflectiveOperationException) {
+            reflectiveOperationException.printStackTrace();
+        }
+
+        uniqueIdSetter = setHandle;
+        uniqueIdGetter = getHandle;
+    }
 
     public ConnectListener(FastLoginBungee plugin, RateLimiter rateLimiter) {
         this.plugin = plugin;
@@ -81,31 +104,7 @@ public class ConnectListener implements Listener {
 
             //bungeecord will do this automatically so override it on disabled option
             if (!plugin.getCore().getConfig().get("premiumUuid", true)) {
-                try {
-                    final UUID oldPremiumId = connection.getUniqueId();
-                    final UUID offlineUUID = UUIDAdapter.generateOfflineId(username);
-
-                    // BungeeCord only allows setting the UUID in PreLogin events and before requesting online mode
-                    // However if online mode is requested, it will override previous values
-                    // So we have to do it with reflection
-                    Field idField = InitialHandler.class.getDeclaredField("uniqueId");
-                    idField.setAccessible(true);
-                    idField.set(connection, offlineUUID);
-
-                    String format = "Overridden UUID from {} to {} (based of {}) on {}";
-                    plugin.getLog().info(format, oldPremiumId, offlineUUID, username, connection);
-
-                    // check if the field was actually set correctly
-                    UUID offlineResult = (UUID) idField.get(connection);
-                    UUID connectionResult = connection.getUniqueId();
-                    if (!offlineUUID.equals(offlineResult)
-                            || !offlineUUID.equals(connectionResult)) {
-                        throw new RuntimeException("Inconsistent UUIDs: expected " + offlineUUID
-                                + " got (Reflection, Connection)" + offlineResult + " and " + connection);
-                    }
-                } catch (NoSuchFieldException | IllegalAccessException ex) {
-                    plugin.getLog().error("Failed to set offline uuid of {}", username, ex);
-                }
+                setOfflineId(connection, username);
             }
 
             if (!plugin.getCore().getConfig().get("forwardSkin", true)) {
@@ -115,6 +114,35 @@ public class ConnectListener implements Listener {
                     loginProfile.setProperties(emptyProperties);
                 }
             }
+        }
+    }
+
+    private void setOfflineId(PendingConnection connection, String username) {
+        try {
+            final UUID oldPremiumId = connection.getUniqueId();
+            final UUID offlineUUID = UUIDAdapter.generateOfflineId(username);
+
+            // BungeeCord only allows setting the UUID in PreLogin events and before requesting online mode
+            // However if online mode is requested, it will override previous values
+            // So we have to do it with reflection
+            uniqueIdSetter.invoke(connection, offlineUUID);
+
+            String format = "Overridden UUID from {} to {} (based of {}) on {}";
+            plugin.getLog().info(format, oldPremiumId, offlineUUID, username, connection);
+
+            // check if the field was actually set correctly
+            UUID offlineResult = (UUID) uniqueIdGetter.invoke(connection);
+            UUID connectionResult = connection.getUniqueId();
+            if (!offlineUUID.equals(offlineResult)
+                    || !offlineUUID.equals(connectionResult)) {
+                throw new RuntimeException("Inconsistent UUIDs: expected " + offlineUUID
+                        + " got (Reflection, Connection)" + offlineResult + " and " + connection);
+            }
+        } catch (Exception ex) {
+            plugin.getLog().error("Failed to set offline uuid of {}", username, ex);
+        } catch (Throwable throwable) {
+            // throw remaining exceptions like outofmemory that we shouldn't handle ourself
+            Throwables.throwIfUnchecked(throwable);
         }
     }
 
