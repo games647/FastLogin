@@ -40,27 +40,27 @@ public class PremiumCommand extends ToggleCommand {
             return;
         }
 
-            UUID id = ((Player) sender).getUniqueId();
-            if (plugin.getConfig().getBoolean("premium-warning") && !plugin.getCore().getPendingConfirms().contains(id)) {
-                sender.sendMessage(plugin.getCore().getMessage("premium-warning"));
-                plugin.getCore().getPendingConfirms().add(id);
-                return;
-            }
+        UUID id = ((Player) sender).getUniqueId();
+        if (plugin.getConfig().getBoolean("premium-warning") && !plugin.getCore().getPendingConfirms().contains(id)) {
+            sender.sendMessage(plugin.getCore().getMessage("premium-warning"));
+            plugin.getCore().getPendingConfirms().add(id);
+            return;
+        }
 
-            plugin.getCore().getPendingConfirms().remove(id);
-            //todo: load async
-            StoredProfile profile = plugin.getCore().getStorage().loadProfile(sender.getName());
-            if (profile.isPremium()) {
-                plugin.getCore().sendLocaleMessage("already-exists", sender);
-            } else {
-                //todo: resolve uuid
-                profile.setPremium(true);
-                plugin.getScheduler().runAsync(() -> {
-                    plugin.getCore().getStorage().save(profile);
-                });
+        plugin.getCore().getPendingConfirms().remove(id);
+        //todo: load async
+        StoredProfile profile = plugin.getCore().getStorage().loadProfile(sender.getName());
+        if (profile.isPremium()) {
+            plugin.getCore().sendLocaleMessage("already-exists", sender);
+        } else {
+            //todo: resolve uuid
+            profile.setPremium(true);
+            plugin.getScheduler().runAsync(() -> {
+                plugin.getCore().getStorage().save(profile);
+            });
 
-                plugin.getCore().sendLocaleMessage("add-premium", sender);
-            }
+            plugin.getCore().sendLocaleMessage("add-premium", sender);
+        }
     }
 
     private void onPremiumOther(CommandSender sender, Command command, String[] args) {

@@ -184,31 +184,36 @@ public class AuthStorage {
         try (Connection con = dataSource.getConnection()) {
             String uuid = playerProfile.getOptId().map(UUIDAdapter::toMojangId).orElse(null);
 
-            if (playerProfile.isSaved()) {
-                try (PreparedStatement saveStmt = con.prepareStatement(UPDATE_PROFILE)) {
-                    saveStmt.setString(1, uuid);
-                    saveStmt.setString(2, playerProfile.getName());
-                    saveStmt.setBoolean(3, playerProfile.isPremium());
-                    saveStmt.setString(4, playerProfile.getLastIp());
+            playerProfile.getSaveLock().lock();
+            try {
+                if (playerProfile.isSaved()) {
+                    try (PreparedStatement saveStmt = con.prepareStatement(UPDATE_PROFILE)) {
+                        saveStmt.setString(1, uuid);
+                        saveStmt.setString(2, playerProfile.getName());
+                        saveStmt.setBoolean(3, playerProfile.isPremium());
+                        saveStmt.setString(4, playerProfile.getLastIp());
 
-                    saveStmt.setLong(5, playerProfile.getRowId());
-                    saveStmt.execute();
-                }
-            } else {
-                try (PreparedStatement saveStmt = con.prepareStatement(INSERT_PROFILE, RETURN_GENERATED_KEYS)) {
-                    saveStmt.setString(1, uuid);
+                        saveStmt.setLong(5, playerProfile.getRowId());
+                        saveStmt.execute();
+                    }
+                } else {
+                    try (PreparedStatement saveStmt = con.prepareStatement(INSERT_PROFILE, RETURN_GENERATED_KEYS)) {
+                        saveStmt.setString(1, uuid);
 
-                    saveStmt.setString(2, playerProfile.getName());
-                    saveStmt.setBoolean(3, playerProfile.isPremium());
-                    saveStmt.setString(4, playerProfile.getLastIp());
+                        saveStmt.setString(2, playerProfile.getName());
+                        saveStmt.setBoolean(3, playerProfile.isPremium());
+                        saveStmt.setString(4, playerProfile.getLastIp());
 
-                    saveStmt.execute();
-                    try (ResultSet generatedKeys = saveStmt.getGeneratedKeys()) {
-                        if (generatedKeys != null && generatedKeys.next()) {
-                            playerProfile.setRowId(generatedKeys.getInt(1));
+                        saveStmt.execute();
+                        try (ResultSet generatedKeys = saveStmt.getGeneratedKeys()) {
+                            if (generatedKeys != null && generatedKeys.next()) {
+                                playerProfile.setRowId(generatedKeys.getInt(1));
+                            }
                         }
                     }
                 }
+            } finally {
+                playerProfile.getSaveLock().unlock();
             }
         } catch (SQLException ex) {
             core.getPlugin().getLog().error("Failed to save playerProfile {}", playerProfile, ex);

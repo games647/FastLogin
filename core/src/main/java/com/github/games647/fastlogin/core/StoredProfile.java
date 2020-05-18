@@ -5,10 +5,12 @@ import com.github.games647.craftapi.model.Profile;
 import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class StoredProfile extends Profile {
 
     private long rowId;
+    private final ReentrantLock saveLock = new ReentrantLock();
 
     private boolean premium;
     private String lastIp;
@@ -25,6 +27,10 @@ public class StoredProfile extends Profile {
 
     public StoredProfile(UUID uuid, String playerName, boolean premium, String lastIp) {
         this(-1, uuid, playerName, premium, lastIp, Instant.now());
+    }
+
+    public ReentrantLock getSaveLock() {
+        return saveLock;
     }
 
     public synchronized boolean isSaved() {
