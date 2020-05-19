@@ -13,6 +13,7 @@ import com.google.common.base.Throwables;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
+import java.lang.reflect.Field;
 import java.util.UUID;
 
 import net.md_5.bungee.api.connection.PendingConnection;
@@ -49,9 +50,12 @@ public class ConnectListener implements Listener {
         MethodHandle setHandle = null;
         MethodHandle getHandle = null;
         try {
-            final Lookup lookup = MethodHandles.lookup();
-            setHandle = lookup.findSetter(InitialHandler.class, UUID_FIELD_NAME, UUID.class);
-            getHandle = lookup.findGetter(InitialHandler.class, UUID_FIELD_NAME, UUID.class);
+            Lookup lookup = MethodHandles.lookup();
+
+            Field uuidField = InitialHandler.class.getDeclaredField(UUID_FIELD_NAME);
+            uuidField.setAccessible(true);
+            setHandle = lookup.unreflectSetter(uuidField);
+            getHandle = lookup.unreflectGetter(uuidField);
         } catch (ReflectiveOperationException reflectiveOperationException) {
             reflectiveOperationException.printStackTrace();
         }
