@@ -26,7 +26,6 @@ import java.util.Arrays;
 import java.util.Optional;
 import java.util.UUID;
 
-import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 
 import org.bukkit.entity.Player;
@@ -76,20 +75,16 @@ public class VerifyResponseTask implements Runnable {
     private void verifyResponse(BukkitLoginSession session) {
         PrivateKey privateKey = serverKey.getPrivate();
 
-        Cipher cipher;
         SecretKey loginKey;
         try {
-            cipher = Cipher.getInstance(privateKey.getAlgorithm());
-            cipher.init(Cipher.DECRYPT_MODE, privateKey);
-
-            loginKey = EncryptionUtil.decryptSharedKey(cipher, sharedSecret);
+            loginKey = EncryptionUtil.decryptSharedKey(privateKey, sharedSecret);
         } catch (GeneralSecurityException securityEx) {
             disconnect("error-kick", false, "Cannot decrypt received contents", securityEx);
             return;
         }
 
         try {
-            if (!checkVerifyToken(session, cipher, privateKey) || !encryptConnection(loginKey)) {
+            if (!checkVerifyToken(session) || !enableEncryption(loginKey)) {
                 return;
             }
         } catch (Exception ex) {
@@ -141,14 +136,13 @@ public class VerifyResponseTask implements Runnable {
         }
     }
 
-    private boolean checkVerifyToken(BukkitLoginSession session, Cipher cipher, PrivateKey privateKey)
-            throws GeneralSecurityException {
+    private boolean checkVerifyToken(BukkitLoginSession session) throws GeneralSecurityException {
         byte[] requestVerify = session.getVerifyToken();
         //encrypted verify token
         byte[] responseVerify = packetEvent.getPacket().getByteArrays().read(1);
 
         //https://github.com/bergerkiller/CraftSource/blob/master/net.minecraft.server/LoginListener.java#L182
-        if (!Arrays.equals(requestVerify, EncryptionUtil.decrypt(cipher, responseVerify))) {
+        if (!Arrays.equals(requestVerify, EncryptionUtil.decrypt(serverKey.getPrivate(), responseVerify))) {
             //check if the verify token are equal to the server sent one
             disconnect("invalid-verify-token", true
                     , "GameProfile {0} ({1}) tried to login with an invalid verify token. Server: {2} Client: {3}"
@@ -169,7 +163,7 @@ public class VerifyResponseTask implements Runnable {
         return FieldUtils.readField(rawInjector, "networkManager", true);
     }
 
-    private boolean encryptConnection(SecretKey loginKey) throws IllegalArgumentException {
+    private boolean enableEncryption(SecretKey loginKey) throws IllegalArgumentException {
         try {
             //get the NMS connection handle of this player
             Object networkManager = getNetworkManager();
