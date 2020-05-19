@@ -18,8 +18,6 @@ import static com.comphenix.protocol.PacketType.Login.Client.START;
 
 public class ProtocolLibListener extends PacketAdapter {
 
-    private static final int WORKER_THREADS = 3;
-
     private final FastLoginBukkit plugin;
 
     //just create a new once on plugin enable. This used for verify token generation
@@ -43,7 +41,7 @@ public class ProtocolLibListener extends PacketAdapter {
         ProtocolLibrary.getProtocolManager()
                 .getAsynchronousManager()
                 .registerAsyncHandler(new ProtocolLibListener(plugin, rateLimiter))
-                .start(WORKER_THREADS);
+                .start();
     }
 
     @Override
