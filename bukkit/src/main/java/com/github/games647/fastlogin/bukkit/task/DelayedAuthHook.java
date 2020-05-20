@@ -38,7 +38,7 @@ public class DelayedAuthHook implements Runnable {
         }
 
         if (hookFound) {
-            plugin.setServerStarted();
+            plugin.markInitialized();
         }
     }
 

@@ -62,7 +62,7 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
         
         PluginManager pluginManager = getServer().getPluginManager();
         if (bungeeManager.isEnabled()) {
-            setServerStarted();
+            markInitialized();
         } else {
             if (!core.setupDatabase()) {
                 setEnabled(false);
@@ -164,10 +164,8 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
         return serverStarted;
     }
 
-    public void setServerStarted() {
-        if (!this.serverStarted) {
-            this.serverStarted = true;
-        }
+    public void markInitialized() {
+        this.serverStarted = true;
     }
 
     public BungeeManager getBungeeManager() {

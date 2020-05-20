@@ -35,6 +35,7 @@ public abstract class JoinManagement<P extends C, C, S extends LoginSource> {
         try {
             if (profile.isSaved()) {
                 if (profile.isPremium()) {
+                    core.getPlugin().getLog().info("Requesting premium login for registered player: {}", username);
                     requestPremiumLogin(source, profile, username, true);
                 } else {
                     startCrackedSession(source, profile, username);
