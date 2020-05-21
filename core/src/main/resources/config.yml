@@ -13,9 +13,11 @@
 # completely ignore incoming connections. Effectively there will be no database requests and network requests.
 # Therefore auto logins won't be possible.
 anti-bot:
+  # Image the following like bucket. The following is total amount that is allowed in this bucket, while expire
+  # means how long it takes for every entry to expire.
   # Total number of connections
   connections: 200
-  # Amount of time after the first connection will expire and made available
+  # Amount of minutes after the first connection will expire and made available
   expire: 5
 
 # Request a premium login without forcing the player to type a command
