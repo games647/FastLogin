@@ -68,6 +68,7 @@ public class BungeeListener implements PluginMessageListener {
         Type type = message.getType();
 
         InetSocketAddress address = player.getAddress();
+        plugin.getLog().info("Player info {} command for {} from proxy", type, playerName);
         if (type == Type.LOGIN) {
             onLoginMessage(player, playerName, address);
         } else if (type == Type.REGISTER) {
@@ -103,7 +104,9 @@ public class BungeeListener implements PluginMessageListener {
         plugin.putSession(player.getAddress(), session);
 
         // only start a new login task if the join event fired earlier. This event then didn
-        if (plugin.getBungeeManager().didJoinEventFired(player)) {
+        boolean result = plugin.getBungeeManager().didJoinEventFired(player);
+        plugin.getLog().info("Delaying force login until join event fired?: {}", result);
+        if (result) {
             Runnable forceLoginTask = new ForceLoginTask(plugin.getCore(), player, session);
             Bukkit.getScheduler().runTaskAsynchronously(plugin, forceLoginTask);
         }

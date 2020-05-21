@@ -46,7 +46,8 @@ public class ConnectionListener implements Listener {
             // having the login session from the login process
             BukkitLoginSession session = plugin.getSession(player.getAddress());
             if (session == null) {
-                plugin.getLog().info("No on-going login session for player: {}", player);
+                String sessionId = plugin.getSessionId(player.getAddress());
+                plugin.getLog().info("No on-going login session for player: {} with ID {}", player, sessionId);
             } else {
                 Runnable forceLoginTask = new ForceLoginTask(plugin.getCore(), player, session);
                 Bukkit.getScheduler().runTaskAsynchronously(plugin, forceLoginTask);

@@ -20,7 +20,13 @@ public abstract class ForceLoginManagement<P extends C, C, L extends LoginSessio
 
     @Override
     public void run() {
-        if (!isOnline(player) || session == null) {
+        if (!isOnline(player)) {
+            core.getPlugin().getLog().info("Player {} disconnected", player);
+            return;
+        }
+
+        if (session == null) {
+            core.getPlugin().getLog().info("No valid session found for {}", player);
             return;
         }
 

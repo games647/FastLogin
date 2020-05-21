@@ -123,17 +123,21 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
     }
 
     public BukkitLoginSession getSession(InetSocketAddress addr) {
-        String id = addr.getAddress().getHostAddress() + ':' + addr.getPort();
+        String id = getSessionId(addr);
         return loginSession.get(id);
     }
 
+    public String getSessionId(InetSocketAddress addr) {
+        return addr.getAddress().getHostAddress() + ':' + addr.getPort();
+    }
+
     public void putSession(InetSocketAddress addr, BukkitLoginSession session) {
-        String id = addr.getAddress().getHostAddress() + ':' + addr.getPort();
+        String id = getSessionId(addr);
         loginSession.put(id, session);
     }
 
     public void removeSession(InetSocketAddress addr) {
-        String id = addr.getAddress().getHostAddress() + ':' + addr.getPort();
+        String id = getSessionId(addr);
         loginSession.remove(id);
     }
 
