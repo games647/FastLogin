@@ -6,7 +6,7 @@
 # https://github.com/games647/FastLogin/blob/master/core/src/main/resources/config.yml
 
 # This a **very** simple anti bot protection. Recommendation is to use a a dedicated program to approach this
-# problem. Low level firewalls like iptables, ufw are more efficient than a Minecraft plugin. TCP reverse
+# problem. Low level firewalls like uwf (or iptables direct) are more efficient than a Minecraft plugin. TCP reverse
 # proxies could also be used and offload some work even to different host.
 #
 # The settings wil limit how many connections this plugin will handle. After hitting this limit. FastLogin will

@@ -21,6 +21,7 @@ public abstract class JoinManagement<P extends C, C, S extends LoginSource> {
     }
 
     public void onLogin(String username, S source) {
+        core.getPlugin().getLog().info("Handling player {}", username);
         StoredProfile profile = core.getStorage().loadProfile(username);
         if (profile == null) {
             return;

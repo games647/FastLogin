@@ -72,7 +72,7 @@ Possible values: `Premium`, `Cracked`, `Unknown`
 * Run Spigot (or a fork e.g. Paper) and/or BungeeCord (or a fork e.g. Waterfall) in offline mode
 * An auth plugin. Supported plugins
 
-### Bukkit/Spigot/Paper
+### Spigot/Paper
 
 * [AuthMe (5.X)](https://dev.bukkit.org/bukkit-plugins/authme-reloaded/)
 * [xAuth](https://dev.bukkit.org/bukkit-plugins/xauth/)
@@ -97,7 +97,7 @@ This plugin performs network requests to:
 
 ## How to install
 
-### Bukkit/Spigot/Paper
+### Spigot/Paper
 
 1. Download and install ProtocolLib/ProtocolSupport
 2. Download and install FastLogin (or FastLoginBukkit for newer versions)

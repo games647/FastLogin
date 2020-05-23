@@ -81,8 +81,11 @@ public class ConnectListener implements Listener {
             return;
         }
 
-        preLoginEvent.registerIntent(plugin);
+        InitialHandler initialHandler = (InitialHandler) connection;
+        String username = initialHandler.getLoginRequest().getData();
+        plugin.getLog().info("Incoming login request for {} from {}", username, initialHandler.getAddress());
 
+        preLoginEvent.registerIntent(plugin);
         Runnable asyncPremiumCheck = new AsyncPremiumCheck(plugin, preLoginEvent, connection);
         plugin.getScheduler().runAsync(asyncPremiumCheck);
     }
