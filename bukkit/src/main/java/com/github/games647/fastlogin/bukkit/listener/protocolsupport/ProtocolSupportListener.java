@@ -92,9 +92,6 @@ public class ProtocolSupportListener extends JoinManagement<Player, CommandSende
 
         BukkitLoginSession playerSession = new BukkitLoginSession(username, registered, profile);
         plugin.putSession(source.getAddress(), playerSession);
-        if (plugin.getConfig().getBoolean("premiumUuid")) {
-            source.getLoginStartEvent().setOnlineMode(true);
-        }
     }
 
     @Override

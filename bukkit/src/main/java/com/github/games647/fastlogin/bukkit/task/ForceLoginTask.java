@@ -31,6 +31,12 @@ public class ForceLoginTask extends ForceLoginManagement<Player, CommandSender, 
         FastLoginBukkit plugin = core.getPlugin();
         player.setMetadata(core.getPlugin().getName(), new FixedMetadataValue(plugin, true));
 
+        if (session != null && !session.getUsername().equals(player.getName())) {
+            String playerName = player.getName();
+            plugin.getLog().warn("Player username {} is not matching session {}", playerName, session.getUsername());
+            return;
+        }
+
         super.run();
 
         PremiumStatus status = PremiumStatus.CRACKED;
@@ -73,10 +79,6 @@ public class ForceLoginTask extends ForceLoginManagement<Player, CommandSender, 
 
     @Override
     public boolean isOnlineMode() {
-        if (session == null) {
-            return false;
-        }
-
-        return session.isVerified() && player.getName().equals(session.getUsername());
+        return session.isVerified();
     }
 }

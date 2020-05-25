@@ -94,30 +94,36 @@ public class VerifyResponseTask implements Runnable {
 
         String serverId = EncryptionUtil.getServerIdHashString("", loginKey, serverKey.getPublic());
 
-        String username = session.getUsername();
+        String requestedUsername = session.getRequestUsername();
         InetSocketAddress socketAddress = player.getAddress();
         try {
             MojangResolver resolver = plugin.getCore().getResolver();
             InetAddress address = socketAddress.getAddress();
-            Optional<Verification> response = resolver.hasJoined(username, serverId, address);
+            Optional<Verification> response = resolver.hasJoined(requestedUsername, serverId, address);
             if (response.isPresent()) {
-                plugin.getLog().info("GameProfile {} has a verified premium account", username);
+                plugin.getLog().info("GameProfile {} has a verified premium account", requestedUsername);
+                String realUsername = response.get().getName();
+                if (realUsername == null) {
+                    disconnect("invalid-session", true, "Username field null for {}", requestedUsername);
+                    return;
+                }
 
                 SkinProperty[] properties = response.get().getProperties();
                 if (properties.length > 0) {
                     session.setSkinProperty(properties[0]);
                 }
 
+                session.setVerifiedUsername(realUsername);
                 session.setUuid(response.get().getId());
                 session.setVerified(true);
 
                 setPremiumUUID(session.getUuid());
-                receiveFakeStartPacket(username);
+                receiveFakeStartPacket(realUsername);
             } else {
                 //user tried to fake a authentication
                 disconnect("invalid-session", true
                         , "GameProfile {0} ({1}) tried to log in with an invalid session ServerId: {2}"
-                        , session.getUsername(), socketAddress, serverId);
+                        , session.getRequestUsername(), socketAddress, serverId);
             }
         } catch (IOException ioEx) {
             disconnect("error-kick", false, "Failed to connect to session server", ioEx);
@@ -146,7 +152,7 @@ public class VerifyResponseTask implements Runnable {
             //check if the verify token are equal to the server sent one
             disconnect("invalid-verify-token", true
                     , "GameProfile {0} ({1}) tried to login with an invalid verify token. Server: {2} Client: {3}"
-                    , session.getUsername(), packetEvent.getPlayer().getAddress(), requestVerify, responseVerify);
+                    , session.getRequestUsername(), packetEvent.getPlayer().getAddress(), requestVerify, responseVerify);
             return false;
         }
 

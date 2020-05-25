@@ -101,25 +101,26 @@ public class ConnectListener implements Listener {
         final PendingConnection connection = loginEvent.getConnection();
         final InitialHandler initialHandler = (InitialHandler) connection;
 
-        final String username = initialHandler.getLoginRequest().getData();
         if (connection.isOnlineMode()) {
             LoginSession session = plugin.getSession().get(connection);
-            session.setUuid(connection.getUniqueId());
+            LoginResult loginProfile = initialHandler.getLoginProfile();
+
+            UUID verifiedUUID = connection.getUniqueId();
+            session.setUuid(verifiedUUID);
+            session.setVerifiedUsername(loginProfile.getName());
 
             StoredProfile playerProfile = session.getProfile();
-            playerProfile.setId(connection.getUniqueId());
+            playerProfile.setId(verifiedUUID);
 
             //bungeecord will do this automatically so override it on disabled option
             if (!plugin.getCore().getConfig().get("premiumUuid", true)) {
+                String username = loginProfile.getName();
                 setOfflineId(initialHandler, username);
             }
 
             if (!plugin.getCore().getConfig().get("forwardSkin", true)) {
                 // this is null on offline mode
-                LoginResult loginProfile = initialHandler.getLoginProfile();
-                if (loginProfile != null) {
-                    loginProfile.setProperties(emptyProperties);
-                }
+                loginProfile.setProperties(emptyProperties);
             }
         }
     }
