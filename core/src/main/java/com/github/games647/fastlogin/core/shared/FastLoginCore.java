@@ -158,11 +158,12 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
     }
 
     public boolean setupDatabase() {
-        HikariConfig databaseConfig = new HikariConfig();
-        databaseConfig.setDriverClassName(config.getString("driver"));
-        if (!checkDriver(databaseConfig.getDriverClassName())) {
+        if (!checkDriver(config.getString("driver"))) {
             return false;
         }
+
+        HikariConfig databaseConfig = new HikariConfig();
+        databaseConfig.setDriverClassName(config.getString("driver"));
 
         String host = config.get("host", "");
         int port = config.get("port", 3306);
