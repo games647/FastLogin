@@ -42,26 +42,22 @@ public class ConnectListener implements Listener {
     private final RateLimiter rateLimiter;
 
     private static final MethodHandle uniqueIdSetter;
-    private static final MethodHandle uniqueIdGetter;
 
     private static final String UUID_FIELD_NAME = "uniqueId";
 
     static {
         MethodHandle setHandle = null;
-        MethodHandle getHandle = null;
         try {
             Lookup lookup = MethodHandles.lookup();
 
             Field uuidField = InitialHandler.class.getDeclaredField(UUID_FIELD_NAME);
             uuidField.setAccessible(true);
             setHandle = lookup.unreflectSetter(uuidField);
-            getHandle = lookup.unreflectGetter(uuidField);
         } catch (ReflectiveOperationException reflectiveOperationException) {
             reflectiveOperationException.printStackTrace();
         }
 
         uniqueIdSetter = setHandle;
-        uniqueIdGetter = getHandle;
     }
 
     public ConnectListener(FastLoginBungee plugin, RateLimiter rateLimiter) {
@@ -137,15 +133,6 @@ public class ConnectListener implements Listener {
 
             String format = "Overridden UUID from {} to {} (based of {}) on {}";
             plugin.getLog().info(format, oldPremiumId, offlineUUID, username, connection);
-
-            // check if the field was actually set correctly
-            UUID offlineResult = (UUID) uniqueIdGetter.invokeExact(connection);
-            UUID connectionResult = connection.getUniqueId();
-            if (!offlineUUID.equals(offlineResult)
-                    || !offlineUUID.equals(connectionResult)) {
-                throw new RuntimeException("Inconsistent UUIDs: expected " + offlineUUID
-                        + " got (Reflection, Connection)" + offlineResult + " and " + connection);
-            }
         } catch (Exception ex) {
             plugin.getLog().error("Failed to set offline uuid of {}", username, ex);
         } catch (Throwable throwable) {

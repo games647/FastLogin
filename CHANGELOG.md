@@ -1,5 +1,7 @@
 ### 1.11
 
+* TODO: Replace reflection with methodhandles
+
 * Use direct proxies instead of ssl factories for multiple IP-addresses
 * Remove local address check for multiple IP-addresses
 * Fix parsing of local IP-addresses
