@@ -60,6 +60,11 @@
             <id>codemc-repo</id>
             <url>https://repo.codemc.io/repository/maven-public/</url>
         </repository>
+
+        <repository>
+            <id>nukkitx-repo</id>
+            <url>https://repo.nukkitx.com/maven-snapshots/</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -75,6 +80,14 @@
             <groupId>net.md-5</groupId>
             <artifactId>bungeecord-proxy</artifactId>
             <version>1.15-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Bedrock player bridge -->
+        <dependency>
+            <groupId>org.geysermc</groupId>
+            <artifactId>floodgate-bungee</artifactId>
+            <version>1.0-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
 

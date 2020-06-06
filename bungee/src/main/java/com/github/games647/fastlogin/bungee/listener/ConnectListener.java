@@ -30,6 +30,8 @@ import net.md_5.bungee.connection.LoginResult.Property;
 import net.md_5.bungee.event.EventHandler;
 import net.md_5.bungee.event.EventPriority;
 
+import org.geysermc.floodgate.FloodgateAPI;
+
 /**
  * Enables online mode logins for specified users and sends plugin message to the Bukkit version of this plugin in
  * order to clear that the connection is online mode.
@@ -37,13 +39,14 @@ import net.md_5.bungee.event.EventPriority;
 public class ConnectListener implements Listener {
 
     private final FastLoginBungee plugin;
-    private final Property[] emptyProperties = {};
-
     private final RateLimiter rateLimiter;
 
-    private static final MethodHandle uniqueIdSetter;
+    private final Property[] emptyProperties = {};
+    private final boolean floodGateAvailable;
+
 
     private static final String UUID_FIELD_NAME = "uniqueId";
+    private static final MethodHandle uniqueIdSetter;
 
     static {
         MethodHandle setHandle = null;
@@ -60,14 +63,15 @@ public class ConnectListener implements Listener {
         uniqueIdSetter = setHandle;
     }
 
-    public ConnectListener(FastLoginBungee plugin, RateLimiter rateLimiter) {
+    public ConnectListener(FastLoginBungee plugin, RateLimiter rateLimiter, boolean floodgateAvailable) {
         this.plugin = plugin;
         this.rateLimiter = rateLimiter;
+        this.floodGateAvailable = floodgateAvailable;
     }
 
     @EventHandler
     public void onPreLogin(PreLoginEvent preLoginEvent) {
-        if (preLoginEvent.isCancelled()) {
+        if (preLoginEvent.isCancelled() || isBedrockPlayer(preLoginEvent.getConnection().getUniqueId())) {
             return;
         }
 
@@ -163,5 +167,12 @@ public class ConnectListener implements Listener {
         ProxiedPlayer player = disconnectEvent.getPlayer();
         plugin.getSession().remove(player.getPendingConnection());
         plugin.getCore().getPendingConfirms().remove(player.getUniqueId());
+    }
+
+    private boolean isBedrockPlayer(UUID correctedUUID) {
+        // Floodgate will set a correct UUID at the beginning of the PreLoginEvent
+        // and will cancel the online mode login for those players
+        // Therefore we just ignore those
+        return floodGateAvailable && FloodgateAPI.isBedrockPlayer(correctedUUID);
     }
 }

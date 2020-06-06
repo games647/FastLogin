@@ -26,6 +26,7 @@ import net.md_5.bungee.api.connection.PendingConnection;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.connection.Server;
 import net.md_5.bungee.api.plugin.Plugin;
+import net.md_5.bungee.api.plugin.PluginManager;
 import net.md_5.bungee.api.scheduler.GroupedThreadFactory;
 
 import org.slf4j.Logger;
@@ -53,9 +54,12 @@ public class FastLoginBungee extends Plugin implements PlatformPlugin<CommandSen
         }
 
         //events
-        ConnectListener connectListener = new ConnectListener(this, core.getRateLimiter());
-        getProxy().getPluginManager().registerListener(this, connectListener);
-        getProxy().getPluginManager().registerListener(this, new PluginMessageListener(this));
+        PluginManager pluginManager = getProxy().getPluginManager();
+        boolean floodgateAvail = pluginManager.getPlugin("floodgate") != null;
+        ConnectListener connectListener = new ConnectListener(this, core.getRateLimiter(), floodgateAvail);
+
+        pluginManager.registerListener(this, connectListener);
+        pluginManager.registerListener(this, new PluginMessageListener(this));
 
         //this is required to listen to incoming messages from the server
         getProxy().registerChannel(NamespaceKey.getCombined(getName(), ChangePremiumMessage.CHANGE_CHANNEL));

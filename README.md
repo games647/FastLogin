@@ -19,7 +19,7 @@ So they don't need to enter passwords. This is also called auto login (auto-logi
 * No client modifications needed
 * Good performance by using async operations
 * Locale messages
-* Import the database from similar plugins
+* Support for Bedrock players proxied through FloodGate
 
 ## Issues
 
