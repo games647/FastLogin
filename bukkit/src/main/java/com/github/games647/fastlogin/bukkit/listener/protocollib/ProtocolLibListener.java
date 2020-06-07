@@ -53,8 +53,7 @@ public class ProtocolLibListener extends PacketAdapter {
         }
 
         Player sender = packetEvent.getPlayer();
-        PacketType packetType = packetEvent.getPacketType();
-        if (packetType == START) {
+        if (isPacketLoginInStart(packetEvent.getPacket())) {
             if (!rateLimiter.tryAcquire()) {
                 plugin.getLog().warn("Rate Limit hit - Ignoring player {}", sender);
                 return;
@@ -64,6 +63,11 @@ public class ProtocolLibListener extends PacketAdapter {
         } else {
             onEncryptionBegin(packetEvent, sender);
         }
+    }
+
+    private boolean isPacketLoginInStart(PacketContainer packet) {
+        // Workaround for ProtocolLib issues on CatServer / Magma servers.
+        return packet.getGameProfiles().size() > 0;
     }
 
     private void onEncryptionBegin(PacketEvent packetEvent, Player sender) {
