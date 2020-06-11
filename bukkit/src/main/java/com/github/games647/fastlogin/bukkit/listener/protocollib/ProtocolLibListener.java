@@ -56,7 +56,7 @@ public class ProtocolLibListener extends PacketAdapter {
         PacketType packetType = packetEvent.getPacketType();
         if (packetType == START) {
             if (!rateLimiter.tryAcquire()) {
-                plugin.getLog().warn("Rate Limit hit - Ignoring player {}", sender);
+                plugin.getLog().warn("Join limit hit - Ignoring player {}", sender);
                 return;
             }
 

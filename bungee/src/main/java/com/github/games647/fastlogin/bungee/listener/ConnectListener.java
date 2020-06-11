@@ -77,7 +77,7 @@ public class ConnectListener implements Listener {
 
         PendingConnection connection = preLoginEvent.getConnection();
         if (!rateLimiter.tryAcquire()) {
-            plugin.getLog().warn("Rate Limit hit - Ignoring player {}", connection);
+            plugin.getLog().warn("Join limit hit - Ignoring player {}", connection);
             return;
         }
 

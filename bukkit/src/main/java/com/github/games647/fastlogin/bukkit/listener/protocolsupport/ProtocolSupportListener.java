@@ -40,7 +40,7 @@ public class ProtocolSupportListener extends JoinManagement<Player, CommandSende
         }
 
         if (!rateLimiter.tryAcquire()) {
-            plugin.getLog().warn("Rate Limit hit - Ignoring player {}", loginStartEvent.getConnection());
+            plugin.getLog().warn("Join limit hit - Ignoring player {}", loginStartEvent.getConnection());
             return;
         }
 
