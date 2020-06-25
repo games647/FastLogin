@@ -1,10 +1,14 @@
 package com.github.games647.fastlogin.bukkit.command;
 
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
+import com.github.games647.fastlogin.bukkit.event.BukkitFastLoginPremiumToggleEvent;
 import com.github.games647.fastlogin.core.StoredProfile;
 
+import com.github.games647.fastlogin.core.shared.event.FastLoginPremiumToggleEvent;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+
+import static com.github.games647.fastlogin.core.shared.event.FastLoginPremiumToggleEvent.*;
 
 public class CrackedCommand extends ToggleCommand {
 
@@ -45,6 +49,8 @@ public class CrackedCommand extends ToggleCommand {
                 profile.setId(null);
                 plugin.getScheduler().runAsync(() -> {
                     plugin.getCore().getStorage().save(profile);
+                    plugin.getServer().getPluginManager().callEvent(
+                            new BukkitFastLoginPremiumToggleEvent(profile, PremiumToggleReason.COMMAND_OTHER));
                 });
             } else {
                 plugin.getCore().sendLocaleMessage("not-premium", sender);
@@ -77,6 +83,8 @@ public class CrackedCommand extends ToggleCommand {
             profile.setPremium(false);
             plugin.getScheduler().runAsync(() -> {
                 plugin.getCore().getStorage().save(profile);
+                plugin.getServer().getPluginManager().callEvent(
+                        new BukkitFastLoginPremiumToggleEvent(profile, PremiumToggleReason.COMMAND_OTHER));
             });
         }
     }

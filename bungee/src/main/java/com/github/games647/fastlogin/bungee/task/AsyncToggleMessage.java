@@ -1,9 +1,12 @@
 package com.github.games647.fastlogin.bungee.task;
 
 import com.github.games647.fastlogin.bungee.FastLoginBungee;
+import com.github.games647.fastlogin.bungee.event.BungeeFastLoginPremiumToggleEvent;
 import com.github.games647.fastlogin.core.StoredProfile;
 import com.github.games647.fastlogin.core.shared.FastLoginCore;
 
+import com.github.games647.fastlogin.core.shared.event.FastLoginPremiumToggleEvent;
+import com.github.games647.fastlogin.core.shared.event.FastLoginPremiumToggleEvent.PremiumToggleReason;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -46,6 +49,10 @@ public class AsyncToggleMessage implements Runnable {
         playerProfile.setPremium(false);
         playerProfile.setId(null);
         core.getStorage().save(playerProfile);
+        PremiumToggleReason reason = (!isPlayerSender || !sender.getName().equalsIgnoreCase(playerProfile.getName())) ?
+                PremiumToggleReason.COMMAND_OTHER : PremiumToggleReason.COMMAND_SELF;
+        core.getPlugin().getProxy().getPluginManager().callEvent(
+                new BungeeFastLoginPremiumToggleEvent(playerProfile, reason));
         sendMessage("remove-premium");
     }
 
@@ -58,6 +65,10 @@ public class AsyncToggleMessage implements Runnable {
 
         playerProfile.setPremium(true);
         core.getStorage().save(playerProfile);
+        PremiumToggleReason reason = (!isPlayerSender || !sender.getName().equalsIgnoreCase(playerProfile.getName())) ?
+                PremiumToggleReason.COMMAND_OTHER : PremiumToggleReason.COMMAND_SELF;
+        core.getPlugin().getProxy().getPluginManager().callEvent(
+                new BungeeFastLoginPremiumToggleEvent(playerProfile, reason));
         sendMessage("add-premium");
     }
 
