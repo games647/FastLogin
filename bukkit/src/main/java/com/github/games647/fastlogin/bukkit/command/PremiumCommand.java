@@ -1,10 +1,13 @@
 package com.github.games647.fastlogin.bukkit.command;
 
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
+import com.github.games647.fastlogin.bukkit.event.BukkitFastLoginPremiumToggleEvent;
 import com.github.games647.fastlogin.core.StoredProfile;
 
 import java.util.UUID;
 
+import com.github.games647.fastlogin.core.shared.event.FastLoginPremiumToggleEvent;
+import com.github.games647.fastlogin.core.shared.event.FastLoginPremiumToggleEvent.PremiumToggleReason;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -57,6 +60,8 @@ public class PremiumCommand extends ToggleCommand {
             profile.setPremium(true);
             plugin.getScheduler().runAsync(() -> {
                 plugin.getCore().getStorage().save(profile);
+                plugin.getServer().getPluginManager().callEvent(
+                        new BukkitFastLoginPremiumToggleEvent(profile, PremiumToggleReason.COMMAND_SELF));
             });
 
             plugin.getCore().sendLocaleMessage("add-premium", sender);
@@ -86,6 +91,8 @@ public class PremiumCommand extends ToggleCommand {
             profile.setPremium(true);
             plugin.getScheduler().runAsync(() -> {
                 plugin.getCore().getStorage().save(profile);
+                plugin.getServer().getPluginManager().callEvent(
+                        new BukkitFastLoginPremiumToggleEvent(profile, PremiumToggleReason.COMMAND_OTHER));
             });
 
             plugin.getCore().sendLocaleMessage("add-premium-other", sender);
