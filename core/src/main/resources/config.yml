@@ -47,7 +47,8 @@ secondAttemptCracked: false
 # New cracked players will be kicked from server. Good if you want switch from offline-mode to online-mode without
 # losing players!
 #
-# Existing cracked and premium players could still join your server. Moreover you could add playernames to a whitelist.
+# Existing cracked and premium players could still join your server. Moreover you could add playernames to a
+# allowlist.
 # So that these cracked players could join too although they are new players.
 switchMode: false
 

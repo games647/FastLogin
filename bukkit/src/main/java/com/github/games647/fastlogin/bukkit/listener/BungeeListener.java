@@ -50,15 +50,15 @@ public class BungeeListener implements PluginMessageListener {
             return;
         }
 
-        // fail if target player is blacklisted because already authenticated or wrong bungeecord id
+        // fail if target player is blocked because already authenticated or wrong bungeecord id
         if (targetPlayer.hasMetadata(plugin.getName())) {
-            plugin.getLog().warn("Received message {} from a blacklisted player {}", loginMessage, targetPlayer);
+            plugin.getLog().warn("Received message {} from a blocked player {}", loginMessage, targetPlayer);
         } else {
             UUID sourceId = loginMessage.getProxyId();
             if (plugin.getBungeeManager().isProxyAllowed(sourceId)) {
                 readMessage(targetPlayer, loginMessage);
             } else {
-                plugin.getLog().warn("Received proxy id: {} that doesn't exist in the proxy whitelist file", sourceId);
+                plugin.getLog().warn("Received proxy id: {} that doesn't exist in the proxy file", sourceId);
             }
         }
     }

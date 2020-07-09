@@ -27,9 +27,10 @@ import static java.util.stream.Collectors.toSet;
 
 public class BungeeManager {
 
-    private static final String FILE_NAME = "proxy-whitelist.txt";
+    private static final String LEGACY_FILE_NAME = "proxy-whitelist.txt";
+    private static final String FILE_NAME = "allowed-proxies.txt";
 
-    //null if whitelist is empty so bungeecord support is disabled
+    //null if proxies allowed list is empty so bungeecord support is disabled
     private Set<UUID> proxyIds;
 
     private final FastLoginBukkit plugin;
@@ -42,7 +43,7 @@ public class BungeeManager {
     }
 
     public void cleanup() {
-        //remove old blacklists
+        //remove old blocked status
         Bukkit.getOnlinePlayers().forEach(player -> player.removeMetadata(plugin.getName(), plugin));
     }
 
@@ -101,19 +102,27 @@ public class BungeeManager {
     }
 
     private Set<UUID> loadBungeeCordIds() {
-        Path whitelistFile = plugin.getPluginFolder().resolve(FILE_NAME);
+        Path proxiesFile = plugin.getPluginFolder().resolve(FILE_NAME);
+        Path legacyFile = plugin.getPluginFolder().resolve(LEGACY_FILE_NAME);
         try {
-            if (Files.notExists(whitelistFile)) {
-                Files.createFile(whitelistFile);
+            Path readFile = proxiesFile;
+            if (Files.notExists(proxiesFile)) {
+                if (Files.exists(legacyFile)) {
+                    readFile = legacyFile;
+                }
+
+                if (Files.notExists(legacyFile)) {
+                    Files.createFile(proxiesFile);
+                }
             }
 
-            try (Stream<String> lines = Files.lines(whitelistFile)) {
+            try (Stream<String> lines = Files.lines(readFile)) {
                 return lines.map(String::trim)
                         .map(UUID::fromString)
                         .collect(toSet());
             }
         } catch (IOException ex) {
-            plugin.getLog().error("Failed to read proxy whitelist", ex);
+            plugin.getLog().error("Failed to read proxies", ex);
         } catch (Exception ex) {
             plugin.getLog().error("Failed to retrieve proxy Id. Disabling BungeeCord support", ex);
         }

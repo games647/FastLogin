@@ -21,8 +21,8 @@
 
 # ========= Shared (BungeeCord and Bukkit)   ============
 
-# Switch mode is activated and a new (non-whitelist) cracked player tries to join
-switch-kick-message: '&4Only paid Minecraft whitelisted accounts are allowed to join this server'
+# Switch mode is activated and a new cracked player tries to join, who is not namely allowed
+switch-kick-message: '&4Only paid Minecraft allowed accounts are allowed to join this server'
 
 # GameProfile activated premium login in order to skip offline authentication
 add-premium: '&2Added to the list of premium players'

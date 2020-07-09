@@ -30,7 +30,7 @@ public class ConnectionListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerLogin(PlayerLoginEvent loginEvent) {
-        removeBlacklistStatus(loginEvent.getPlayer());
+        removeBlockedStatus(loginEvent.getPlayer());
         if (loginEvent.getResult() == Result.ALLOWED && !plugin.isServerFullyStarted()) {
             loginEvent.disallow(Result.KICK_OTHER, plugin.getCore().getMessage("not-started"));
         }
@@ -63,13 +63,13 @@ public class ConnectionListener implements Listener {
     public void onPlayerQuit(PlayerQuitEvent quitEvent) {
         Player player = quitEvent.getPlayer();
 
-        removeBlacklistStatus(player);
+        removeBlockedStatus(player);
         plugin.getCore().getPendingConfirms().remove(player.getUniqueId());
         plugin.getPremiumPlayers().remove(player.getUniqueId());
         plugin.getBungeeManager().cleanup(player);
     }
 
-    private void removeBlacklistStatus(Player player) {
+    private void removeBlockedStatus(Player player) {
         player.removeMetadata(plugin.getName(), plugin);
     }
 }

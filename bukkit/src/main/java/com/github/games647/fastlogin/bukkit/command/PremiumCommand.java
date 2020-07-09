@@ -15,7 +15,7 @@ import org.bukkit.entity.Player;
 /**
  * Let users activate fast login by command. This only be accessible if
  * the user has access to it's account. So we can make sure that not another
- * person with a paid account and the same username can steal his account.
+ * person with a paid account and the same username can steal their account.
  */
 public class PremiumCommand extends ToggleCommand {
 

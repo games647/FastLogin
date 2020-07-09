@@ -36,7 +36,7 @@ commands:
         permission: ${project.artifactId}.command.premium
 
     cracked:
-        description: 'Label the invoker or the player specified as cracked if he was marked premium before'
+        description: 'Label the invoker or the player specified as cracked if marked premium before'
         aliases: [unpremium]
         usage: /<command> [player]
         permission: ${project.artifactId}.command.cracked

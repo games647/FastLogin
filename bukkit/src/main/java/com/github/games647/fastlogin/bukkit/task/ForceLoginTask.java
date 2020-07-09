@@ -27,7 +27,7 @@ public class ForceLoginTask extends ForceLoginManagement<Player, CommandSender, 
 
     @Override
     public void run() {
-        //blacklist this target player for BungeeCord ID brute force attacks
+        // block this target player for BungeeCord ID brute force attacks
         FastLoginBukkit plugin = core.getPlugin();
         player.setMetadata(core.getPlugin().getName(), new FixedMetadataValue(plugin, true));
 
