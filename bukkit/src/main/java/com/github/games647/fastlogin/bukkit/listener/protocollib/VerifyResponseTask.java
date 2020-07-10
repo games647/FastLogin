@@ -101,20 +101,21 @@ public class VerifyResponseTask implements Runnable {
             InetAddress address = socketAddress.getAddress();
             Optional<Verification> response = resolver.hasJoined(requestedUsername, serverId, address);
             if (response.isPresent()) {
-                plugin.getLog().info("GameProfile {} has a verified premium account", requestedUsername);
-                String realUsername = response.get().getName();
+                Verification verification = response.get();
+                plugin.getLog().info("Profile {} has a verified premium account: {}", requestedUsername, verification);
+                String realUsername = verification.getName();
                 if (realUsername == null) {
                     disconnect("invalid-session", true, "Username field null for {}", requestedUsername);
                     return;
                 }
 
-                SkinProperty[] properties = response.get().getProperties();
+                SkinProperty[] properties = verification.getProperties();
                 if (properties.length > 0) {
                     session.setSkinProperty(properties[0]);
                 }
 
                 session.setVerifiedUsername(realUsername);
-                session.setUuid(response.get().getId());
+                session.setUuid(verification.getId());
                 session.setVerified(true);
 
                 setPremiumUUID(session.getUuid());
