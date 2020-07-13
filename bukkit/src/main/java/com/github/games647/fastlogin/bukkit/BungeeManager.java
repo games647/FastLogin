@@ -105,10 +105,9 @@ public class BungeeManager {
         Path proxiesFile = plugin.getPluginFolder().resolve(FILE_NAME);
         Path legacyFile = plugin.getPluginFolder().resolve(LEGACY_FILE_NAME);
         try {
-            Path readFile = proxiesFile;
             if (Files.notExists(proxiesFile)) {
                 if (Files.exists(legacyFile)) {
-                    readFile = legacyFile;
+                    Files.move(legacyFile, proxiesFile);
                 }
 
                 if (Files.notExists(legacyFile)) {
@@ -116,7 +115,7 @@ public class BungeeManager {
                 }
             }
 
-            try (Stream<String> lines = Files.lines(readFile)) {
+            try (Stream<String> lines = Files.lines(proxiesFile)) {
                 return lines.map(String::trim)
                         .map(UUID::fromString)
                         .collect(toSet());
