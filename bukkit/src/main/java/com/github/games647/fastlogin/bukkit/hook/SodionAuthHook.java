@@ -7,6 +7,15 @@ import red.mohist.sodionauth.bukkit.implementation.BukkitPlayer;
 import red.mohist.sodionauth.core.SodionAuthApi;
 import red.mohist.sodionauth.core.exception.AuthenticatedException;
 
+/**
+ * GitHub: https://github.com/Mohist-Community/SodionAuth
+ * <p>
+ * Project page:
+ * <p>
+ * Bukkit: Unknown
+ * <p>
+ * Spigot: Unknown
+ */
 public class SodionAuthHook implements AuthPlugin<Player> {
 
     private final FastLoginBukkit plugin;
