@@ -235,9 +235,9 @@
         </dependency>
 
         <dependency>
-            <groupId>com.github.Mohist-Community</groupId>
-            <artifactId>SodionAuth</artifactId>
-            <version>e3395df27a</version>
+            <groupId>com.github.Mohist-Community.SodionAuth</groupId>
+            <artifactId>SodionAuth-Bukkit</artifactId>
+            <version>b74392aa34</version>
             <optional>true</optional>
             <scope>provided</scope>
         </dependency>
