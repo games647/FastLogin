@@ -37,13 +37,17 @@ public class SodionAuthHook implements AuthPlugin<Player> {
 
     @Override
     public boolean forceRegister(Player player, String password) {
-        plugin.getLog().warn("AutoRegister is not implemented by SodionAuth yet.");
-        plugin.getLog().warn("Disable it to prevent further issue!");
-        return false;
+        try{
+            return SodionAuthApi.register(new BukkitPlayer(player), password);
+        } catch (UnsupportedOperationException e){
+            plugin.getLog().warn("Currently SodionAuth is not accepting forceRegister, " +
+                    "It may be caused by unsupported AuthBackend");
+            return false;
+        }
     }
 
     @Override
     public boolean isRegistered(String playerName) {
-        return SodionAuthApi.isRegister(playerName);
+        return SodionAuthApi.isRegistered(playerName);
     }
 }

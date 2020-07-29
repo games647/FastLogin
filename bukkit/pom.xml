@@ -235,12 +235,11 @@
         </dependency>
 
         <dependency>
-            <groupId>red.mohist.sodionauth</groupId>
-            <artifactId>SodionAuth-Bukkit</artifactId>
-            <version>2.0-SNAPSHOT</version>
+            <groupId>com.github.Mohist-Community</groupId>
+            <artifactId>SodionAuth</artifactId>
+            <version>e3395df27a</version>
             <optional>true</optional>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/lib/SodionAuth-Bukkit-2.0-API-only.jar</systemPath>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 </project>
