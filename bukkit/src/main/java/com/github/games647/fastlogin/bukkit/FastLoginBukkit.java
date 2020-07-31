@@ -40,6 +40,8 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
     private final BukkitScheduler scheduler;
     private FastLoginCore<Player, CommandSender, FastLoginBukkit> core;
 
+    private PremiumPlaceholder premiumPlaceholder;
+
     public FastLoginBukkit() {
         this.logger = CommonUtil.createLoggerFromJDK(getLogger());
         this.scheduler = new BukkitScheduler(this, logger, getThreadFactory());
@@ -89,7 +91,8 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
         getCommand("cracked").setExecutor(new CrackedCommand(this));
 
         if (pluginManager.isPluginEnabled("PlaceholderAPI")) {
-            new PremiumPlaceholder(this).register();
+            premiumPlaceholder = new PremiumPlaceholder(this);
+            premiumPlaceholder.register();
         }
     }
 
@@ -103,8 +106,8 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
         }
 
         bungeeManager.cleanup();
-        if (getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
-            PremiumPlaceholder.unregisterAll(this);
+        if (getServer().getPluginManager().isPluginEnabled("PlaceholderAPI") && premiumPlaceholder != null) {
+            premiumPlaceholder.unregister();
         }
     }
 
@@ -151,9 +154,7 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
      * @param onlinePlayer
      * @return the online status or unknown if an error happened, the player isn't online or BungeeCord doesn't send
      * us the status message yet (This means you cannot check the login status on the PlayerJoinEvent).
-     * @deprecated this method could be removed in future versions and exists only as a temporarily solution
      */
-    @Deprecated
     public PremiumStatus getStatus(UUID onlinePlayer) {
         return premiumPlayers.getOrDefault(onlinePlayer, PremiumStatus.UNKNOWN);
     }

@@ -1,9 +1,8 @@
 package com.github.games647.fastlogin.bukkit;
 
-import me.clip.placeholderapi.PlaceholderAPI;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 
-import org.bukkit.entity.Player;
+import org.bukkit.OfflinePlayer;
 
 public class PremiumPlaceholder extends PlaceholderExpansion {
 
@@ -15,12 +14,8 @@ public class PremiumPlaceholder extends PlaceholderExpansion {
         this.plugin = plugin;
     }
 
-    public static void unregisterAll(FastLoginBukkit plugin) {
-        PlaceholderAPI.unregisterPlaceholderHook(plugin.getName());
-    }
-
     @Override
-    public String onPlaceholderRequest(Player player, String identifier) {
+    public String onRequest(OfflinePlayer player, String identifier) {
         // player is null if offline
         if (player != null && PLACEHOLDER_VARIABLE.equals(identifier)) {
             return plugin.getStatus(player.getUniqueId()).getReadableName();
