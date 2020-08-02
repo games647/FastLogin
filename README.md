@@ -81,6 +81,7 @@ Possible values: `Premium`, `Cracked`, `Unknown`
 * [CrazyLogin](https://dev.bukkit.org/bukkit-plugins/crazylogin/)
 * [LoginSecurity](https://dev.bukkit.org/bukkit-plugins/loginsecurity/)
 * [UltraAuth](https://dev.bukkit.org/bukkit-plugins/ultraauth-aa/)
+* [SodionAuth (2.0+)](https://github.com/Mohist-Community/SodionAuth)
 
 ### BungeeCord/Waterfall
 

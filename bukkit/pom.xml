@@ -233,5 +233,19 @@
             <scope>system</scope>
             <systemPath>${project.basedir}/lib/UltraAuth v2.1.2.jar</systemPath>
         </dependency>
+
+        <dependency>
+            <groupId>com.github.Mohist-Community.SodionAuth</groupId>
+            <artifactId>SodionAuth-Bukkit</artifactId>
+            <version>b74392aa34</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.github.Mohist-Community.SodionAuth</groupId>
+                    <artifactId>SodionAuth-Libs</artifactId>
+                </exclusion>
+            </exclusions>
+            <optional>true</optional>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 </project>
