@@ -106,12 +106,12 @@ public class BungeeManager {
         Path legacyFile = plugin.getPluginFolder().resolve(LEGACY_FILE_NAME);
         try {
             if (Files.notExists(proxiesFile)) {
-                if (Files.exists(legacyFile)) {
-                    Files.move(legacyFile, proxiesFile);
-                }
-
                 if (Files.notExists(legacyFile)) {
                     Files.createFile(proxiesFile);
+                }
+
+                if (Files.exists(legacyFile)) {
+                    Files.move(legacyFile, proxiesFile);
                 }
             }
 
