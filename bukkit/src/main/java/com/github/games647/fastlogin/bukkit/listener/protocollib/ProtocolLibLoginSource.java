@@ -4,6 +4,7 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
+import com.comphenix.protocol.reflect.StructureModifier;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.github.games647.fastlogin.core.shared.LoginSource;
 
@@ -48,9 +49,17 @@ class ProtocolLibLoginSource implements LoginSource {
         PacketContainer newPacket = new PacketContainer(ENCRYPTION_BEGIN);
 
         newPacket.getStrings().write(0, serverId);
-        newPacket.getSpecificModifier(PublicKey.class).write(0, publicKey);
+        StructureModifier<PublicKey> keyModifier = newPacket.getSpecificModifier(PublicKey.class);
+        int verifyField = 0;
+        if (keyModifier.getFields().isEmpty()) {
+            // Since 1.16.4 this is now a byte field
+            newPacket.getByteArrays().write(0, publicKey.getEncoded());
+            verifyField++;
+        } else {
+            keyModifier.write(0, publicKey);
+        }
 
-        newPacket.getByteArrays().write(0, verifyToken);
+        newPacket.getByteArrays().write(verifyField, verifyToken);
 
         //serverId is a empty string
         ProtocolLibrary.getProtocolManager().sendServerPacket(player, newPacket);
