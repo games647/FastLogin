@@ -6,6 +6,7 @@ import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.injector.server.TemporaryPlayerFactory;
 import com.comphenix.protocol.reflect.FieldUtils;
 import com.comphenix.protocol.reflect.FuzzyReflection;
+import com.comphenix.protocol.utility.MinecraftReflection;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
 import com.github.games647.craftapi.model.auth.Verification;
@@ -13,7 +14,6 @@ import com.github.games647.craftapi.model.skin.SkinProperty;
 import com.github.games647.craftapi.resolver.MojangResolver;
 import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import javax.crypto.Cipher;
@@ -43,6 +43,9 @@ public class VerifyResponseTask implements Runnable {
     private final Player player;
 
     private final byte[] sharedSecret;
+
+    private static Method encryptMethod;
+    private static Method cipherMethod;
 
     public VerifyResponseTask(FastLoginBukkit plugin, PacketEvent packetEvent, Player player,
                               byte[] sharedSecret, KeyPair keyPair) {
@@ -172,33 +175,31 @@ public class VerifyResponseTask implements Runnable {
     }
 
     private boolean enableEncryption(SecretKey loginKey) throws IllegalArgumentException {
-        try {
-            //get the NMS connection handle of this player
-            Object networkManager = getNetworkManager();
+        if (encryptMethod == null) {
+            Class<?> networkManagerClass = MinecraftReflection.getNetworkManagerClass();
 
             try {
-                //try to detect the method by parameters
-                Method encryptMethod = FuzzyReflection
-                        .fromObject(networkManager).getMethodByParameters("a", SecretKey.class);
+                encryptMethod = FuzzyReflection.fromClass(networkManagerClass)
+                        .getMethodByParameters("a", SecretKey.class);
+            } catch (IllegalArgumentException exception) {
+                encryptMethod = FuzzyReflection.fromClass(networkManagerClass)
+                        .getMethodByParameters("a", Cipher.class, Cipher.class);
 
-                //encrypt/decrypt following packets
-                //the client expects this behaviour
+                Class<?> encryptionClass = MinecraftReflection.getMinecraftClass("MinecraftEncryption");
+                cipherMethod = FuzzyReflection.fromClass(encryptionClass)
+                        .getMethodByParameters("a", int.class, Key.class);
+            }
+        }
+
+        try {
+            Object networkManager = this.getNetworkManager();
+
+            if (cipherMethod == null) {
                 encryptMethod.invoke(networkManager, loginKey);
-            } catch (Exception ex) {
-                //try to detect the method by parameters
-                Method encryptMethod = FuzzyReflection
-                        .fromObject(networkManager).getMethodByParameters("a", Cipher.class, Cipher.class);
-
-                //change Key instance into two Cipher instances
-                String ver = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
-                Class<?> encryptionClass = Class.forName("net.minecraft.server." + ver + ".MinecraftEncryption");
-                Method cipherMethod = encryptionClass.getMethod("a", int.class, Key.class);
-
+            } else {
                 Object cipher = cipherMethod.invoke(null, 2, loginKey);
                 Object cipher1 = cipherMethod.invoke(null, 1, loginKey);
 
-                //encrypt/decrypt following packets
-                //the client expects this behaviour
                 encryptMethod.invoke(networkManager, cipher, cipher1);
             }
         } catch (Exception ex) {
