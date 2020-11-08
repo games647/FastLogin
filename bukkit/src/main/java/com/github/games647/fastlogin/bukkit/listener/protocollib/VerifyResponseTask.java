@@ -13,22 +13,23 @@ import com.github.games647.craftapi.model.skin.SkinProperty;
 import com.github.games647.craftapi.resolver.MojangResolver;
 import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 
+import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.security.GeneralSecurityException;
+import java.security.Key;
 import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.UUID;
-
-import javax.crypto.SecretKey;
-
-import org.bukkit.entity.Player;
 
 import static com.comphenix.protocol.PacketType.Login.Client.START;
 import static com.comphenix.protocol.PacketType.Login.Server.DISCONNECT;
@@ -175,13 +176,31 @@ public class VerifyResponseTask implements Runnable {
             //get the NMS connection handle of this player
             Object networkManager = getNetworkManager();
 
-            //try to detect the method by parameters
-            Method encryptMethod = FuzzyReflection
-                    .fromObject(networkManager).getMethodByParameters("a", SecretKey.class);
+            try {
+                //try to detect the method by parameters
+                Method encryptMethod = FuzzyReflection
+                        .fromObject(networkManager).getMethodByParameters("a", SecretKey.class);
 
-            //encrypt/decrypt following packets
-            //the client expects this behaviour
-            encryptMethod.invoke(networkManager, loginKey);
+                //encrypt/decrypt following packets
+                //the client expects this behaviour
+                encryptMethod.invoke(networkManager, loginKey);
+            } catch (Exception ex) {
+                //try to detect the method by parameters
+                Method encryptMethod = FuzzyReflection
+                        .fromObject(networkManager).getMethodByParameters("a", Cipher.class, Cipher.class);
+
+                //change Key instance into two Cipher instances
+                String ver = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
+                Class<?> encryptionClass = Class.forName("net.minecraft.server." + ver + ".MinecraftEncryption");
+                Method cipherMethod = encryptionClass.getMethod("a", int.class, Key.class);
+
+                Object cipher = cipherMethod.invoke(null, 2, loginKey);
+                Object cipher1 = cipherMethod.invoke(null, 1, loginKey);
+
+                //encrypt/decrypt following packets
+                //the client expects this behaviour
+                encryptMethod.invoke(networkManager, cipher, cipher1);
+            }
         } catch (Exception ex) {
             disconnect("error-kick", false, "Couldn't enable encryption", ex);
             return false;
