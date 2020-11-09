@@ -6,6 +6,7 @@ import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.injector.server.TemporaryPlayerFactory;
 import com.comphenix.protocol.reflect.FieldUtils;
 import com.comphenix.protocol.reflect.FuzzyReflection;
+import com.comphenix.protocol.utility.MinecraftReflection;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
 import com.github.games647.craftapi.model.auth.Verification;
@@ -13,22 +14,22 @@ import com.github.games647.craftapi.model.skin.SkinProperty;
 import com.github.games647.craftapi.resolver.MojangResolver;
 import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
+import org.bukkit.entity.Player;
 
+import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.security.GeneralSecurityException;
+import java.security.Key;
 import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.UUID;
-
-import javax.crypto.SecretKey;
-
-import org.bukkit.entity.Player;
 
 import static com.comphenix.protocol.PacketType.Login.Client.START;
 import static com.comphenix.protocol.PacketType.Login.Server.DISCONNECT;
@@ -42,6 +43,9 @@ public class VerifyResponseTask implements Runnable {
     private final Player player;
 
     private final byte[] sharedSecret;
+
+    private static Method encryptMethod;
+    private static Method cipherMethod;
 
     public VerifyResponseTask(FastLoginBukkit plugin, PacketEvent packetEvent, Player player,
                               byte[] sharedSecret, KeyPair keyPair) {
@@ -171,17 +175,41 @@ public class VerifyResponseTask implements Runnable {
     }
 
     private boolean enableEncryption(SecretKey loginKey) throws IllegalArgumentException {
+        // Initialize method reflections
+        if (encryptMethod == null) {
+            Class<?> networkManagerClass = MinecraftReflection.getNetworkManagerClass();
+
+            try {
+                // Try to get the old (pre MC 1.16.4) encryption method
+                encryptMethod = FuzzyReflection.fromClass(networkManagerClass)
+                        .getMethodByParameters("a", SecretKey.class);
+            } catch (IllegalArgumentException exception) {
+                // Get the new encryption method
+                encryptMethod = FuzzyReflection.fromClass(networkManagerClass)
+                        .getMethodByParameters("a", Cipher.class, Cipher.class);
+
+                // Get the needed Cipher helper method (used to generate ciphers from login key)
+                Class<?> encryptionClass = MinecraftReflection.getMinecraftClass("MinecraftEncryption");
+                cipherMethod = FuzzyReflection.fromClass(encryptionClass)
+                        .getMethodByParameters("a", int.class, Key.class);
+            }
+        }
+
         try {
-            //get the NMS connection handle of this player
-            Object networkManager = getNetworkManager();
+            Object networkManager = this.getNetworkManager();
 
-            //try to detect the method by parameters
-            Method encryptMethod = FuzzyReflection
-                    .fromObject(networkManager).getMethodByParameters("a", SecretKey.class);
+            // If cipherMethod is null - use old encryption (pre MC 1.16.4), otherwise use the new cipher one
+            if (cipherMethod == null) {
+                // Encrypt/decrypt packet flow, this behaviour is expected by the client
+                encryptMethod.invoke(networkManager, loginKey);
+            } else {
+                // Create ciphers from login key
+                Object decryptionCipher = cipherMethod.invoke(null, Cipher.DECRYPT_MODE, loginKey);
+                Object encryptionCipher = cipherMethod.invoke(null, Cipher.ENCRYPT_MODE, loginKey);
 
-            //encrypt/decrypt following packets
-            //the client expects this behaviour
-            encryptMethod.invoke(networkManager, loginKey);
+                // Encrypt/decrypt packet flow, this behaviour is expected by the client
+                encryptMethod.invoke(networkManager, decryptionCipher, encryptionCipher);
+            }
         } catch (Exception ex) {
             disconnect("error-kick", false, "Couldn't enable encryption", ex);
             return false;
