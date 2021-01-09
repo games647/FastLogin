@@ -89,6 +89,11 @@ public class FastLoginBungee extends Plugin implements PlatformPlugin<CommandSen
             core.setAuthPluginHook(new BungeeAuthHook());
             logger.info("Hooked into BungeeAuth");
         }
+        Plugin plugin2 = getProxy().getPluginManager().getPlugin("BungeeCordAuthenticatorBungee");
+        if (plugin2 != null) {
+            core.setAuthPluginHook(new BungeeCordAuthenticatorHook(plugin2));
+            logger.info("Hooked into BungeeCordAuthenticator");
+        }
     }
 
     public void sendPluginMessage(Server server, ChannelMessage message) {
