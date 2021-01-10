@@ -65,6 +65,12 @@
             <id>nukkitx-repo</id>
             <url>https://repo.nukkitx.com/maven-snapshots/</url>
         </repository>
+             
+        <repository>
+            <id>spigotplugins-repo</id>
+            <url>https://xxschrandxx.github.io/SpigotPlugins/mvn-repo/</url>
+        </repository>
+        
     </repositories>
 
     <dependencies>
@@ -103,8 +109,6 @@
             <groupId>de.xxschrandxx.bca</groupId>
             <artifactId>BungeeCordAuthenticator</artifactId>
             <version>0.0.1</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/lib/BungeeCordAuthenticator-0.0.1.jar</systemPath> <!-- Download: https://xxschrandxx.github.io/SpigotPlugins/BungeeCordAuthenticator/0.0.1/BungeeCordAuthenticator-0.0.1.jar -->
         </dependency>
     </dependencies>
 </project>
