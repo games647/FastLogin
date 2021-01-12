@@ -66,7 +66,8 @@ public class PremiumCommand extends ToggleCommand {
         if (profile.isPremium()) {
             plugin.getCore().sendLocaleMessage("already-exists", sender);
         } else {
-            //todo: resolve uuid
+            String uuidPremium = getUUIDPremiumByMojang(args[0]);
+            if (hasUUID != null) profile.setId(UUID.fromString(uuidPremium));
             profile.setPremium(true);
             plugin.getScheduler().runAsync(() -> {
                 plugin.getCore().getStorage().save(profile);
@@ -98,7 +99,7 @@ public class PremiumCommand extends ToggleCommand {
             plugin.getCore().sendLocaleMessage("already-exists-other", sender);
         } else {
             String uuidPremium = getUUIDPremiumByMojang(args[0]);
-            if (hasUUID != null) profile.setUID(UUID.fromString(uuidPremium));
+            if (hasUUID != null) profile.setId(UUID.fromString(uuidPremium));
             profile.setPremium(true);
             plugin.getScheduler().runAsync(() -> {
                 plugin.getCore().getStorage().save(profile);
