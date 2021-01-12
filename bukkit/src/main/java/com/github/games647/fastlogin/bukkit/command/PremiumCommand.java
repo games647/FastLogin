@@ -52,8 +52,8 @@ public class PremiumCommand extends ToggleCommand {
         if (forwardPremiumCommand(sender, sender.getName())) {
             return;
         }
-
-        UUID id = ((Player) sender).getUniqueId();
+        Player player = ((Player) sender);
+        UUID id = player.getUniqueId();
         if (plugin.getConfig().getBoolean("premium-warning") && !plugin.getCore().getPendingConfirms().contains(id)) {
             sender.sendMessage(plugin.getCore().getMessage("premium-warning"));
             plugin.getCore().getPendingConfirms().add(id);
@@ -66,7 +66,7 @@ public class PremiumCommand extends ToggleCommand {
         if (profile.isPremium()) {
             plugin.getCore().sendLocaleMessage("already-exists", sender);
         } else {
-            String uuidPremium = getUUIDPremiumByMojang(args[0]);
+            String uuidPremium = getUUIDPremiumByMojang(player.getName());
             if (hasUUID != null) profile.setId(UUID.fromString(uuidPremium));
             profile.setPremium(true);
             plugin.getScheduler().runAsync(() -> {
