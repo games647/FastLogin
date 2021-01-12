@@ -4,13 +4,21 @@ import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 import com.github.games647.fastlogin.bukkit.event.BukkitFastLoginPremiumToggleEvent;
 import com.github.games647.fastlogin.core.StoredProfile;
 
-import java.util.UUID;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import com.github.games647.fastlogin.core.shared.event.FastLoginPremiumToggleEvent;
 import com.github.games647.fastlogin.core.shared.event.FastLoginPremiumToggleEvent.PremiumToggleReason;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.UUID;
+import java.net.URL;
+import java.net.URLConnection;
 
 /**
  * Let users activate fast login by command. This only be accessible if
@@ -19,6 +27,8 @@ import org.bukkit.entity.Player;
  */
 public class PremiumCommand extends ToggleCommand {
 
+    private static String mojangURL = "https://api.mojang.com/users/profiles/minecraft/{username}";
+    
     public PremiumCommand(FastLoginBukkit plugin) {
         super(plugin);
     }
@@ -87,7 +97,8 @@ public class PremiumCommand extends ToggleCommand {
         if (profile.isPremium()) {
             plugin.getCore().sendLocaleMessage("already-exists-other", sender);
         } else {
-            //todo: resolve uuid
+            String uuidPremium = getUUIDPremiumByMojang(args[0]);
+            if (hasUUID != null) profile.setUID(UUID.fromString(uuidPremium));
             profile.setPremium(true);
             plugin.getScheduler().runAsync(() -> {
                 plugin.getCore().getStorage().save(profile);
@@ -102,4 +113,20 @@ public class PremiumCommand extends ToggleCommand {
     private boolean forwardPremiumCommand(CommandSender sender, String target) {
         return forwardBungeeCommand(sender, target, true);
     }
+    
+    private String getUUIDPremiumByMojang(String username) {
+         try {
+            mojangRequest = mojangURL.replace("{username}", "doctaenkoda");
+            URL url = new URL(sURL);
+            URLConnection request = url.openConnection();
+            request.connect();
+            JsonParser jp = new JsonParser();
+            JsonElement root = jp.parse(new InputStreamReader((InputStream) request.getContent()));
+            JsonObject rootobj = root.getAsJsonObject();
+            return rootobj.get("id").getAsString();
+        }  catch (Exception exception) {
+            return null;
+        }
+    }
+    
 }
