@@ -117,7 +117,7 @@ public class PremiumCommand extends ToggleCommand {
     
     private String getUUIDPremiumByMojang(String username) {
          try {
-            String mojangRequest = mojangURL.replace("{username}", "doctaenkoda");
+            String mojangRequest = mojangURL.replace("{username}", username);
             URL url = new URL(mojangRequest);
             URLConnection request = url.openConnection();
             request.connect();
