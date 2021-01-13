@@ -66,10 +66,10 @@ public class PremiumCommand extends ToggleCommand {
         if (profile.isPremium()) {
             plugin.getCore().sendLocaleMessage("already-exists", sender);
         } else {
-            String uuidPremium = getUUIDPremiumByMojang(player.getName());
-            if (uuidPremium != null) profile.setId(UUID.fromString(uuidPremium));
             profile.setPremium(true);
             plugin.getScheduler().runAsync(() -> {
+                String uuidPremium = getUUIDPremiumByMojang(player.getName());
+                if (uuidPremium != null) profile.setId(UUID.fromString(uuidPremium));
                 plugin.getCore().getStorage().save(profile);
                 plugin.getServer().getPluginManager().callEvent(
                         new BukkitFastLoginPremiumToggleEvent(profile, PremiumToggleReason.COMMAND_SELF));
@@ -98,10 +98,10 @@ public class PremiumCommand extends ToggleCommand {
         if (profile.isPremium()) {
             plugin.getCore().sendLocaleMessage("already-exists-other", sender);
         } else {
-            String uuidPremium = getUUIDPremiumByMojang(args[0]);
-            if (uuidPremium != null) profile.setId(UUID.fromString(uuidPremium));
             profile.setPremium(true);
             plugin.getScheduler().runAsync(() -> {
+                String uuidPremium = getUUIDPremiumByMojang(args[0]);
+                if (uuidPremium != null) profile.setId(UUID.fromString(uuidPremium));
                 plugin.getCore().getStorage().save(profile);
                 plugin.getServer().getPluginManager().callEvent(
                         new BukkitFastLoginPremiumToggleEvent(profile, PremiumToggleReason.COMMAND_OTHER));
