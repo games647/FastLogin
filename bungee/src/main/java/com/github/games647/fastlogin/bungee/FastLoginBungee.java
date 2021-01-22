@@ -17,7 +17,6 @@ import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
-import java.net.HttpCookie;
 import java.nio.file.Path;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ThreadFactory;
