@@ -42,3 +42,6 @@ hs_err_pid*
 # Mac filesystem dust
 .DS_Store
 
+#lib
+lib/
+.factorypath

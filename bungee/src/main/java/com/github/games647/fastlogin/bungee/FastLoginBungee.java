@@ -1,6 +1,7 @@
 package com.github.games647.fastlogin.bungee;
 
 import com.github.games647.fastlogin.bungee.hook.BungeeAuthHook;
+import com.github.games647.fastlogin.bungee.hook.BungeeCordAuthenticatorHook;
 import com.github.games647.fastlogin.bungee.listener.ConnectListener;
 import com.github.games647.fastlogin.bungee.listener.PluginMessageListener;
 import com.github.games647.fastlogin.core.AsyncScheduler;
@@ -16,6 +17,7 @@ import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
+import java.net.HttpCookie;
 import java.nio.file.Path;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ThreadFactory;
@@ -84,10 +86,21 @@ public class FastLoginBungee extends Plugin implements PlatformPlugin<CommandSen
     }
 
     private void registerHook() {
-        Plugin plugin = getProxy().getPluginManager().getPlugin("BungeeAuth");
-        if (plugin != null) {
+        Plugin plugin1 = getProxy().getPluginManager().getPlugin("BungeeAuth");
+        if (plugin1 != null) {
             core.setAuthPluginHook(new BungeeAuthHook());
             logger.info("Hooked into BungeeAuth");
+        }
+        Plugin plugin2 = getProxy().getPluginManager().getPlugin("BungeeCordAuthenticatorBungee");
+        if (plugin2 != null) {
+            BungeeCordAuthenticatorHook hook = new BungeeCordAuthenticatorHook();
+            if (hook.register(plugin2, logger)) {
+                core.setAuthPluginHook(hook);
+                logger.info("Hooked into BungeeCordAuthenticatorBungee");
+            }
+            else {
+                logger.warn("BungeeCordAuthenticatorBungeeHook failed...");
+            }
         }
     }
 
