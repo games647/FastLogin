@@ -1,6 +1,5 @@
 package com.github.games647.fastlogin.bungee.hook;
 
-import java.io.IOException;
 import java.sql.SQLException;
 
 import com.github.games647.fastlogin.core.hooks.AuthPlugin;
@@ -9,6 +8,7 @@ import org.slf4j.Logger;
 
 import de.xxschrandxx.bca.bungee.BungeeCordAuthenticatorBungee;
 import de.xxschrandxx.bca.bungee.api.BungeeCordAuthenticatorBungeeAPI;
+
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Plugin;
 
@@ -22,29 +22,12 @@ import net.md_5.bungee.api.plugin.Plugin;
  */
 public class BungeeCordAuthenticatorHook implements AuthPlugin<ProxiedPlayer> {
 
-    public BungeeCordAuthenticatorBungeeAPI api;
+    public final BungeeCordAuthenticatorBungeeAPI api;
 
-    public boolean register(Plugin plugin, Logger log) {
-        if (plugin instanceof BungeeCordAuthenticatorBungee) {
-            BungeeCordAuthenticatorBungee bcab = (BungeeCordAuthenticatorBungee) plugin;
-            if (bcab != null) {
-                api = bcab.getAPI();
-            }
-        } else {
-            log.warn("BungeeCordAuthenticatorBungee is null!");
-            BungeeCordAuthenticatorBungee bcab = BungeeCordAuthenticatorBungee.getInstance();
-            if (bcab != null) {
-                api = bcab.getAPI();
-            } else {
-                log.warn("BungeeCordAuthenticatorBungee is null, again!");
-            }
-        }
-        if (api == null) {
-            return false;
-        }
-        else {
-            return true;
-        }
+    public BungeeCordAuthenticatorHook(Plugin plugin, Logger logger) {
+        BungeeCordAuthenticatorBungee bcab = (BungeeCordAuthenticatorBungee) plugin;
+        api = bcab.getAPI();
+        logger.info("BungeeCordAuthenticatorHook | Hooked successful!");
     }
 
     @Override
