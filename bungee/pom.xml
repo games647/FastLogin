@@ -30,6 +30,7 @@
                             <!--Those classes are already present in BungeeCord version-->
                             <exclude>net.md-5:bungeecord-config</exclude>
                             <exclude>com.google.code.gson:gson</exclude>
+                            <execlude>de.xxschrandxx.bca:BungeeCordAuthenticator</execlude>
                         </excludes>
                     </artifactSet>
                     <relocations>
