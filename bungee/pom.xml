@@ -68,21 +68,6 @@
             <url>https://repo.nukkitx.com/maven-snapshots/</url>
         </repository>
 
-        <repository>
-            <id>spigotplugins-repo</id>
-            <url>http://xxschrandxx.github.io/SpigotPlugins/mvn-repo/</url>
-            <releases>
-                <enabled>true</enabled>
-                <updatePolicy>always</updatePolicy>
-                <checksumPolicy>ignore</checksumPolicy>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-                <updatePolicy>always</updatePolicy>
-                <checksumPolicy>ignore</checksumPolicy>
-            </snapshots>
-        </repository>
-
     </repositories>
 
     <dependencies>
@@ -121,6 +106,8 @@
             <groupId>de.xxschrandxx.bca</groupId>
             <artifactId>BungeeCordAuthenticator</artifactId>
             <version>0.0.2-SNAPSHOT</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/BungeeCordAuthenticator-0.0.2-SNAPSHOT.jar</systemPath>
         </dependency>
     </dependencies>
 </project>
