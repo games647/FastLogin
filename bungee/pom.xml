@@ -72,9 +72,11 @@
             <id>spigotplugins-repo</id>
             <url>https://xxschrandxx.github.io/SpigotPlugins/mvn-repo/</url>
             <releases>
+                <enabled>true</enabled>
                 <checksumPolicy>ignore</checksumPolicy>
             </releases>
             <snapshots>
+                <enabled>true</enabled>
                 <checksumPolicy>ignore</checksumPolicy>
             </snapshots>
         </repository>
