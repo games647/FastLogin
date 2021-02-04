@@ -76,7 +76,7 @@
                 <checksumPolicy>warn</checksumPolicy>
             </releases>
             <snapshots>
-                <enabled>false</enabled>
+                <enabled>true</enabled>
                 <checksumPolicy>warn</checksumPolicy>
             </snapshots>
         </repository>
