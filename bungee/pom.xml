@@ -68,11 +68,6 @@
             <url>https://repo.nukkitx.com/maven-snapshots/</url>
         </repository>
 
-        <repository>
-            <id>spigot-plugins</id>
-            <url>https://maven.pkg.github.com/xXSchrandXx/SpigotPlugins</url>
-        </repository>
-
     </repositories>
 
     <dependencies>
