@@ -30,7 +30,6 @@
                             <!--Those classes are already present in BungeeCord version-->
                             <exclude>net.md-5:bungeecord-config</exclude>
                             <exclude>com.google.code.gson:gson</exclude>
-                            <execlude>de.xxschrandxx.bca:BungeeCordAuthenticator</execlude>
                         </excludes>
                     </artifactSet>
                     <relocations>
@@ -66,6 +65,11 @@
         <repository>
             <id>nukkitx-repo</id>
             <url>https://repo.nukkitx.com/maven-snapshots/</url>
+        </repository>
+
+        <repository>
+            <id>spigot-plugins</id>
+            <url>https://maven.pkg.github.com/xXSchrandXx/SpigotPlugins</url>
         </repository>
 
     </repositories>
