@@ -106,6 +106,7 @@
             <scope>system</scope>
             <systemPath>${project.basedir}/lib/BungeeAuth-1.4.jar</systemPath>
         </dependency>
+
         <dependency>
             <groupId>de.xxschrandxx.bca</groupId>
             <artifactId>BungeeCordAuthenticator</artifactId>
