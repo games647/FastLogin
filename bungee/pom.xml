@@ -68,8 +68,8 @@
         </repository>
 
 		<repository>
-		    <id>jitpack.io</id>
-		    <url>https://jitpack.io</url>
+		    <id>spigotplugins-repo</id>
+		    <url>https://maven.gamestrike.de/</url>
 		</repository>
 
     </repositories>
@@ -107,9 +107,9 @@
             <systemPath>${project.basedir}/lib/BungeeAuth-1.4.jar</systemPath>
         </dependency>
         <dependency>
-            <groupId>com.github.xXSchrandXx</groupId>
-            <artifactId>SpigotPlugins</artifactId>
-            <version>master-SNAPSHOT</version>
+            <groupId>de.xxschrandxx.bca</groupId>
+            <artifactId>BungeeCordAuthenticator</artifactId>
+            <version>0.0.2-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
