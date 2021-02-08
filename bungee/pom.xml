@@ -67,10 +67,10 @@
             <url>https://repo.nukkitx.com/maven-snapshots/</url>
         </repository>
 
-        <repository>
-            <id>spigot-plugins</id>
-            <url>https://maven.pkg.github.com/xXSchrandXx/SpigotPlugins</url>
-        </repository>
+		<repository>
+		    <id>jitpack.io</id>
+		    <url>https://jitpack.io</url>
+		</repository>
 
     </repositories>
 
@@ -107,9 +107,9 @@
             <systemPath>${project.basedir}/lib/BungeeAuth-1.4.jar</systemPath>
         </dependency>
         <dependency>
-            <groupId>de.xxschrandxx.bca</groupId>
-            <artifactId>bungeecordauthenticator</artifactId>
-            <version>0.0.2-SNAPSHOT</version>
+            <groupId>com.github.xXSchrandXx</groupId>
+            <artifactId>SpigotPlugins</artifactId>
+            <version>master-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
