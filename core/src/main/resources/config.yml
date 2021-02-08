@@ -127,6 +127,9 @@ nameChangeCheck: false
 # the skin data is included in the Auth-Verification-Response sent by Mojang. If you want to use for other
 # players like cracked player, you have to use other plugins.
 #
+# If you use PaperSpigot - FastLogin will always try to set the skin, even if forwardSkin is set to false
+# It is needed to allow premium name change to work correctly
+#
 # If you want to use skins for your cracked player, you need an additional plugin like
 # ChangeSkin, SkinRestorer, ...
 forwardSkin: true

@@ -41,6 +41,10 @@
                             <pattern>com.google.gson</pattern>
                             <shadedPattern>fastlogin.gson</shadedPattern>
                         </relocation>
+                        <relocation>
+                            <pattern>io.papermc.lib</pattern>
+                            <shadedPattern>fastlogin.paperlib</shadedPattern>
+                        </relocation>
                     </relocations>
                 </configuration>
                 <executions>
@@ -56,14 +60,10 @@
     </build>
 
     <repositories>
-        <!-- Bukkit-Server-API -->
+        <!-- PaperSpigot API and PaperLib -->
         <repository>
-            <id>spigot-repo</id>
-            <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
-            <!-- Disable snapshot release policy to speed up, when finding a artifact -->
-            <releases>
-                <enabled>false</enabled>
-            </releases>
+            <id>papermc</id>
+            <url>https://papermc.io/repo/repository/maven-public/</url>
         </repository>
 
         <!-- ProtocolLib -->
@@ -108,12 +108,20 @@
             <version>${project.version}</version>
         </dependency>
 
-        <!--Server API-->
+        <!-- PaperSpigot API for correcting usercache usage -->
         <dependency>
-            <groupId>org.spigotmc</groupId>
-            <artifactId>spigot-api</artifactId>
+            <groupId>com.destroystokyo.paper</groupId>
+            <artifactId>paper-api</artifactId>
             <version>1.15.2-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
+        </dependency>
+
+        <!-- PaperLib for checking if server uses PaperSpigot -->
+        <dependency>
+            <groupId>io.papermc</groupId>
+            <artifactId>paperlib</artifactId>
+            <version>1.0.6</version>
+            <scope>compile</scope>
         </dependency>
 
         <!--Library for listening and sending Minecraft packets-->

@@ -3,6 +3,7 @@ package com.github.games647.fastlogin.bukkit;
 import com.github.games647.fastlogin.bukkit.command.CrackedCommand;
 import com.github.games647.fastlogin.bukkit.command.PremiumCommand;
 import com.github.games647.fastlogin.bukkit.listener.ConnectionListener;
+import com.github.games647.fastlogin.bukkit.listener.PaperPreLoginListener;
 import com.github.games647.fastlogin.bukkit.listener.protocollib.ProtocolLibListener;
 import com.github.games647.fastlogin.bukkit.listener.protocollib.SkinApplyListener;
 import com.github.games647.fastlogin.bukkit.listener.protocolsupport.ProtocolSupportListener;
@@ -11,6 +12,12 @@ import com.github.games647.fastlogin.core.CommonUtil;
 import com.github.games647.fastlogin.core.PremiumStatus;
 import com.github.games647.fastlogin.core.shared.FastLoginCore;
 import com.github.games647.fastlogin.core.shared.PlatformPlugin;
+import io.papermc.lib.PaperLib;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.java.JavaPlugin;
+import org.slf4j.Logger;
 
 import java.net.InetSocketAddress;
 import java.nio.file.Path;
@@ -18,12 +25,6 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.PluginManager;
-import org.bukkit.plugin.java.JavaPlugin;
-import org.slf4j.Logger;
 
 /**
  * This plugin checks if a player has a paid account and if so tries to skip offline mode authentication.
@@ -75,7 +76,11 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
                 pluginManager.registerEvents(new ProtocolSupportListener(this, core.getRateLimiter()), this);
             } else if (pluginManager.isPluginEnabled("ProtocolLib")) {
                 ProtocolLibListener.register(this, core.getRateLimiter());
-                pluginManager.registerEvents(new SkinApplyListener(this), this);
+
+                //if server is using paper - we need to set the skin at pre login anyway, so no need for this listener
+                if (!PaperLib.isPaper() && getConfig().getBoolean("forwardSkin")) {
+                    pluginManager.registerEvents(new SkinApplyListener(this), this);
+                }
             } else {
                 logger.warn("Either ProtocolLib or ProtocolSupport have to be installed if you don't use BungeeCord");
             }
@@ -85,6 +90,11 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
         getServer().getScheduler().runTaskLater(this, new DelayedAuthHook(this), 5L);
 
         pluginManager.registerEvents(new ConnectionListener(this), this);
+
+        //if server is using paper - we need to add one more listener to correct the usercache usage
+        if (PaperLib.isPaper()) {
+            pluginManager.registerEvents(new PaperPreLoginListener(this), this);
+        }
 
         //register commands using a unique name
         getCommand("premium").setExecutor(new PremiumCommand(this));

@@ -9,15 +9,14 @@ import com.comphenix.protocol.wrappers.WrappedSignedProperty;
 import com.github.games647.craftapi.model.skin.Textures;
 import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
-
-import java.lang.reflect.InvocationTargetException;
-
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerLoginEvent.Result;
+
+import java.lang.reflect.InvocationTargetException;
 
 public class SkinApplyListener implements Listener {
 
@@ -39,14 +38,12 @@ public class SkinApplyListener implements Listener {
 
         Player player = loginEvent.getPlayer();
 
-        if (plugin.getConfig().getBoolean("forwardSkin")) {
-            //go through every session, because player.getAddress is null
-            //loginEvent.getAddress is just a InetAddress not InetSocketAddress, so not unique enough
-            for (BukkitLoginSession session : plugin.getLoginSessions().values()) {
-                if (session.getUsername().equals(player.getName())) {
-                    session.getSkin().ifPresent(skin -> applySkin(player, skin.getValue(), skin.getSignature()));
-                    break;
-                }
+        //go through every session, because player.getAddress is null
+        //loginEvent.getAddress is just a InetAddress not InetSocketAddress, so not unique enough
+        for (BukkitLoginSession session : plugin.getLoginSessions().values()) {
+            if (session.getUsername().equals(player.getName())) {
+                session.getSkin().ifPresent(skin -> applySkin(player, skin.getValue(), skin.getSignature()));
+                break;
             }
         }
     }
