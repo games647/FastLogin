@@ -38,7 +38,7 @@ public class PluginMessageListener implements Listener {
     @EventHandler
     public void onPluginMessage(PluginMessageEvent pluginMessageEvent) {
         String channel = pluginMessageEvent.getTag();
-        if (pluginMessageEvent.isCancelled() || !channel.startsWith(plugin.getName().toLowerCase())) {
+        if (pluginMessageEvent.isCancelled() || !channel.startsWith(plugin.getName())) {
             return;
         }
 
@@ -47,7 +47,7 @@ public class PluginMessageListener implements Listener {
         pluginMessageEvent.setCancelled(true);
 
         if (!(pluginMessageEvent.getSender() instanceof Server)) {
-            //check if the message is sent from the server
+            //check if the message is sent really from the server and not a malicious client
             return;
         }
 
