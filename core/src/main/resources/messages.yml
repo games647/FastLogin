@@ -53,10 +53,10 @@ player-unknown: '&4Player not in the database'
 # The user skipped the authentication, because it was a premium player
 auto-login: '&2Auto logged in'
 
-# The user was auto registered on the first join. The user account will be registered to protect it from cracked players
+# FastLogin attempted to auto register user. The user account is registered to protect it from cracked players
+# If FastLogin is respecting auth plugin IP limit - the registration may have failed, however the message is still displayed
 # The password can be used if the mojang servers are down and you still want your premium users to login (PLANNED)
-auto-register: '&2Auto registered with password: %password
-You may want change it?'
+auto-register: '&2Tried auto registering with password: &7%password&2. You may want change it?'
 
 # GameProfile is not able to toggle the premium state of other players
 no-permission: '&4Not enough permissions'
