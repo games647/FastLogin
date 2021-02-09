@@ -67,10 +67,10 @@
             <url>https://repo.nukkitx.com/maven-snapshots/</url>
         </repository>
 
-		<repository>
-		    <id>spigotplugins-repo</id>
-		    <url>https://maven.gamestrike.de/mvn/</url>
-		</repository>
+        <repository>
+            <id>spigotplugins-repo</id>
+            <url>https://maven.gamestrike.de/mvn/</url>
+        </repository>
 
     </repositories>
 
