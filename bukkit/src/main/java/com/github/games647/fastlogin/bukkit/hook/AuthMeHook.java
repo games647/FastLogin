@@ -84,6 +84,6 @@ public class AuthMeHook implements AuthPlugin<Player>, Listener {
             authmeAPI.forceRegister(player, password);
         }
 
-        return authmeAPI.isRegistered(player.getName());
+        return true;
     }
 }
