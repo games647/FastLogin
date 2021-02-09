@@ -1,6 +1,7 @@
 package com.github.games647.fastlogin.bungee;
 
 import com.github.games647.fastlogin.bungee.hook.BungeeAuthHook;
+import com.github.games647.fastlogin.bungee.hook.BungeeCordAuthenticatorHook;
 import com.github.games647.fastlogin.bungee.listener.ConnectListener;
 import com.github.games647.fastlogin.bungee.listener.PluginMessageListener;
 import com.github.games647.fastlogin.core.AsyncScheduler;
@@ -84,10 +85,16 @@ public class FastLoginBungee extends Plugin implements PlatformPlugin<CommandSen
     }
 
     private void registerHook() {
-        Plugin plugin = getProxy().getPluginManager().getPlugin("BungeeAuth");
-        if (plugin != null) {
+        Plugin BungeeAuth = getProxy().getPluginManager().getPlugin("BungeeAuth");
+        if (BungeeAuth != null) {
             core.setAuthPluginHook(new BungeeAuthHook());
             logger.info("Hooked into BungeeAuth");
+        }
+        Plugin BungeeCordAuthenticatorBungee = getProxy().getPluginManager().getPlugin("BungeeCordAuthenticatorBungee");
+        if (BungeeCordAuthenticatorBungee != null) {
+            logger.info("Try to hook into BungeeCordAuthenticatorBungee...");
+            BungeeCordAuthenticatorHook hook = new BungeeCordAuthenticatorHook(BungeeCordAuthenticatorBungee, logger);
+            core.setAuthPluginHook(hook);
         }
     }
 

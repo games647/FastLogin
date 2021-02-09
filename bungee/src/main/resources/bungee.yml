@@ -11,6 +11,7 @@ author: games647, https://github.com/games647/FastLogin/graphs/contributors
 softDepends:
     # BungeeCord auth plugins
     - BungeeAuth
+    - BungeeCordAuthenticatorBungee
 
 description: |
     ${project.description}

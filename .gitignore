@@ -42,3 +42,5 @@ hs_err_pid*
 # Mac filesystem dust
 .DS_Store
 
+# Factorypath from Visual Studio Code
+.factorypath
