@@ -69,7 +69,7 @@
 
 		<repository>
 		    <id>spigotplugins-repo</id>
-		    <url>http://maven.gamestrike.de/mvn/</url>
+		    <url>https://maven.gamestrike.de/mvn/</url>
 		</repository>
 
     </repositories>
