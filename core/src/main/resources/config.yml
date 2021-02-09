@@ -36,6 +36,15 @@ anti-bot:
 # For more information: https://github.com/games647/FastLogin#why-do-players-have-to-invoke-a-command
 autoRegister: false
 
+# Should FastLogin respect per IP limit of registrations (e.g. in AuthMe)
+# Because most auth plugins do their stuff async - FastLogin will still think the player was registered
+# To work best - you also need to enable auto-register-unknown
+#
+# If set to true - FastLogin will always attempt to register the player, even if the limit is exceeded
+# It is up to the auth plugin to handle the excessive registration
+# https://github.com/games647/FastLogin/issues/458
+respectIpLimit: false
+
 # This is extra configuration option to the feature above. If we request a premium authentication from a player who
 # isn't actual premium but used a premium username, the player will disconnect with the reason "invalid session" or
 # "bad login".
@@ -126,6 +135,10 @@ nameChangeCheck: false
 # This means this plugin doesn't need to create a new connection to the Mojang servers, because
 # the skin data is included in the Auth-Verification-Response sent by Mojang. If you want to use for other
 # players like cracked player, you have to use other plugins.
+#
+# If you use PaperSpigot - FastLogin will always try to set the skin, even if forwardSkin is set to false
+# It is needed to allow premium name change to work correctly
+# https://github.com/games647/FastLogin/issues/457
 #
 # If you want to use skins for your cracked player, you need an additional plugin like
 # ChangeSkin, SkinRestorer, ...
