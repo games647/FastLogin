@@ -38,7 +38,7 @@ public class PluginMessageListener implements Listener {
     @EventHandler
     public void onPluginMessage(PluginMessageEvent pluginMessageEvent) {
         String channel = pluginMessageEvent.getTag();
-        if (pluginMessageEvent.isCancelled() || !channel.startsWith(plugin.getName())) {
+        if (pluginMessageEvent.isCancelled() || !channel.startsWith(plugin.getName().toLowerCase())) {
             return;
         }
 
