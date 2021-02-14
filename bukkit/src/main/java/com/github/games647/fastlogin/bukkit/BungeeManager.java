@@ -106,15 +106,16 @@ public class BungeeManager {
         Path legacyFile = plugin.getPluginFolder().resolve(LEGACY_FILE_NAME);
         try {
             if (Files.notExists(proxiesFile)) {
-                if (Files.notExists(legacyFile)) {
-                    Files.createFile(proxiesFile);
-                }
-
                 if (Files.exists(legacyFile)) {
                     Files.move(legacyFile, proxiesFile);
                 }
+
+                if (Files.notExists(legacyFile)) {
+                    Files.createFile(proxiesFile);
+                }
             }
 
+            Files.deleteIfExists(legacyFile);
             try (Stream<String> lines = Files.lines(proxiesFile)) {
                 return lines.map(String::trim)
                         .map(UUID::fromString)

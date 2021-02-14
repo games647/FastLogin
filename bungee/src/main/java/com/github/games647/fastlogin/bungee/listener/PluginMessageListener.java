@@ -47,7 +47,7 @@ public class PluginMessageListener implements Listener {
         pluginMessageEvent.setCancelled(true);
 
         if (!(pluginMessageEvent.getSender() instanceof Server)) {
-            //check if the message is sent really from the server and not a malicious client
+            //check if the message is sent from the server
             return;
         }
 

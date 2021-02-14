@@ -242,9 +242,7 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
         Path dataFolder = plugin.getPluginFolder();
 
         try {
-            if (Files.notExists(dataFolder)) {
-                Files.createDirectories(dataFolder);
-            }
+            Files.createDirectories(dataFolder);
 
             Path configFile = dataFolder.resolve(fileName);
             if (Files.notExists(configFile)) {

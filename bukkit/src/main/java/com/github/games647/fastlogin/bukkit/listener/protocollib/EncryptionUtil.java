@@ -85,7 +85,7 @@ public class EncryptionUtil {
     /**
      * Decrypts the content and extracts the key spec.
      *
-     * @param privateKey decryption cipher initialized with the private key
+     * @param cipher     decryption cipher initialized with the private key
      * @param sharedKey  the encrypted shared key
      * @return shared secret key
      * @throws GeneralSecurityException if it fails to decrypt the data
