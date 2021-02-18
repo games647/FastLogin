@@ -76,15 +76,15 @@ Possible values: `Premium`, `Cracked`, `Unknown`
 
 #### Spigot/Paper
 
-* [AuthMe (5.X)](https://dev.bukkit.org/bukkit-plugins/authme-reloaded/)
-* [xAuth](https://dev.bukkit.org/bukkit-plugins/xauth/)
-* [LogIt](https://github.com/games647/LogIt)
 * [AdvancedLogin (Paid)](https://www.spigotmc.org/resources/advancedlogin.10510/)
+* [AuthMe (5.X)](https://dev.bukkit.org/bukkit-plugins/authme-reloaded/)
 * [CrazyLogin](https://dev.bukkit.org/bukkit-plugins/crazylogin/)
 * [LoginSecurity](https://dev.bukkit.org/bukkit-plugins/loginsecurity/)
-* [UltraAuth](https://dev.bukkit.org/bukkit-plugins/ultraauth-aa/)
+* [LogIt](https://github.com/games647/LogIt)
 * [SodionAuth (2.0+)](https://github.com/Mohist-Community/SodionAuth)
+* [UltraAuth](https://dev.bukkit.org/bukkit-plugins/ultraauth-aa/)
 * [UserLogin](https://www.spigotmc.org/resources/userlogin.80669/)
+* [xAuth](https://dev.bukkit.org/bukkit-plugins/xauth/)
 
 #### BungeeCord/Waterfall
 
