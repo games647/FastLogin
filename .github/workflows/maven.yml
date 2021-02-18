@@ -45,4 +45,4 @@ jobs:
     # Run non-interactive, package (with compile+test),
     # ignore snapshot updates, because they are likely to have breaking changes, enforce checksums to validate
     # possible errors in dependencies
-      run: mvn package test --batch-mode --no-snapshot-updates --strict-checksums --file pom.xml
+      run: mvn test --batch-mode --no-snapshot-updates --strict-checksums --file pom.xml
