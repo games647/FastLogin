@@ -19,14 +19,14 @@ jobs:
     # Run steps
     steps:
     # Pull changes
-    - uses: actions/checkout@v2.3
+    - uses: actions/checkout@v2.3.4
 
     # Cache artifacts - however this has the downside that we don't get notified of
     # artifact resolution failures like invalid repository
     # Nevertheless the repositories should be more stable and it makes no sense to pull
     # a same version every time
     # A dry run would make more sense
-    - uses: actions/cache@v2.1
+    - uses: actions/cache@v2.1.4
       with:
         path: ~/.m2/repository
         key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
