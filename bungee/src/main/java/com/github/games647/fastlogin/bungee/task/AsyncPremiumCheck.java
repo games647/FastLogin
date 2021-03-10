@@ -12,7 +12,6 @@ import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.PendingConnection;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.PreLoginEvent;
-import net.md_5.bungee.connection.InitialHandler;
 
 public class AsyncPremiumCheck extends JoinManagement<ProxiedPlayer, CommandSender, BungeeLoginSource>
         implements Runnable {
@@ -20,22 +19,23 @@ public class AsyncPremiumCheck extends JoinManagement<ProxiedPlayer, CommandSend
     private final FastLoginBungee plugin;
     private final PreLoginEvent preLoginEvent;
 
+    private final String username;
     private final PendingConnection connection;
 
-    public AsyncPremiumCheck(FastLoginBungee plugin, PreLoginEvent preLoginEvent, PendingConnection connection) {
+    public AsyncPremiumCheck(FastLoginBungee plugin, PreLoginEvent preLoginEvent, PendingConnection connection,
+                             String username) {
         super(plugin.getCore(), plugin.getCore().getAuthPluginHook());
 
         this.plugin = plugin;
         this.preLoginEvent = preLoginEvent;
         this.connection = connection;
+        this.username = username;
     }
 
     @Override
     public void run() {
         plugin.getSession().remove(connection);
 
-        InitialHandler initialHandler = (InitialHandler) connection;
-        String username = initialHandler.getLoginRequest().getData();
         try {
             super.onLogin(username, new BungeeLoginSource(connection, preLoginEvent));
         } finally {

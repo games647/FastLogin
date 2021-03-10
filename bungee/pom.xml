@@ -56,7 +56,6 @@
     </build>
 
     <repositories>
-
         <repository>
             <id>codemc-repo</id>
             <url>https://repo.codemc.io/repository/maven-public/</url>
@@ -71,7 +70,6 @@
             <id>spigotplugins-repo</id>
             <url>https://maven.gamestrike.de/mvn/</url>
         </repository>
-
     </repositories>
 
     <dependencies>
