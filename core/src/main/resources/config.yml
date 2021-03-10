@@ -85,14 +85,15 @@ premiumUuid: false
 # player changed it's  username and we just update the name in the database.
 # Examples:
 # #### Case 1
-# nameChangeCheck = false ----- autoRegister = false
+# autoRegister = false
+# nameChangeCheck = false
 #
 # GameProfile logins as cracked until the player invoked the command /premium. Then we could override the existing
 # database record.
 #
 # #### Case 2
-#
-# nameChangeCheck = true ----- autoRegister = false
+# autoRegister = false
+# nameChangeCheck = true
 #
 # Connect the Mojang API and check what UUID the player has (UUID exists => Paid Minecraft account). If that UUID is in
 # the database it's an **existing player** and FastLogin can **assume** the player is premium and changed the username.
@@ -104,8 +105,8 @@ premiumUuid: false
 # in the meanwhile).
 #
 # #### Case 3
-#
-# nameChangeCheck = false ----- autoRegister = true
+# autoRegister = true
+# nameChangeCheck = false
 #
 # We will always request a premium authentication if the username is unknown to us, but is in use by a paid Minecraft
 # account. This means it's kind of a more aggressive check like nameChangeCheck = true and autoRegister = false, because
@@ -114,8 +115,8 @@ premiumUuid: false
 # **Limitation**: see below
 #
 # #### Case 4
-#
-# nameChangeCheck = true ----- autoRegister = true
+# autoRegister = true
+# nameChangeCheck = true
 #
 # Based on autoRegister it checks if the player name is premium and login using a premium authentication. After that
 # fastlogin receives the premium UUID and can update the database record.

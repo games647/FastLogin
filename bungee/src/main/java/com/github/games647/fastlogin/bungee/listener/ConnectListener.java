@@ -71,22 +71,21 @@ public class ConnectListener implements Listener {
 
     @EventHandler
     public void onPreLogin(PreLoginEvent preLoginEvent) {
-        if (preLoginEvent.isCancelled() || isBedrockPlayer(preLoginEvent.getConnection().getUniqueId())) {
+        PendingConnection connection = preLoginEvent.getConnection();
+        if (preLoginEvent.isCancelled() || isBedrockPlayer(connection.getUniqueId())) {
             return;
         }
 
-        PendingConnection connection = preLoginEvent.getConnection();
         if (!rateLimiter.tryAcquire()) {
             plugin.getLog().warn("Join limit hit - Ignoring player {}", connection);
             return;
         }
 
-        InitialHandler initialHandler = (InitialHandler) connection;
-        String username = initialHandler.getLoginRequest().getData();
-        plugin.getLog().info("Incoming login request for {} from {}", username, initialHandler.getAddress());
+        String username = connection.getName();
+        plugin.getLog().info("Incoming login request for {} from {}", username, connection.getSocketAddress());
 
         preLoginEvent.registerIntent(plugin);
-        Runnable asyncPremiumCheck = new AsyncPremiumCheck(plugin, preLoginEvent, connection);
+        Runnable asyncPremiumCheck = new AsyncPremiumCheck(plugin, preLoginEvent, connection, username);
         plugin.getScheduler().runAsync(asyncPremiumCheck);
     }
 
