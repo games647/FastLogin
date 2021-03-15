@@ -206,7 +206,7 @@ public class AuthStorage {
 
                         saveStmt.execute();
                         try (ResultSet generatedKeys = saveStmt.getGeneratedKeys()) {
-                            if (generatedKeys != null && generatedKeys.next()) {
+                            if (generatedKeys.next()) {
                                 playerProfile.setRowId(generatedKeys.getInt(1));
                             }
                         }

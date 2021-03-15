@@ -31,6 +31,8 @@ import net.md_5.bungee.event.EventHandler;
 import net.md_5.bungee.event.EventPriority;
 
 import org.geysermc.floodgate.FloodgateAPI;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Enables online mode logins for specified users and sends plugin message to the Bukkit version of this plugin in
@@ -38,30 +40,40 @@ import org.geysermc.floodgate.FloodgateAPI;
  */
 public class ConnectListener implements Listener {
 
-    private final FastLoginBungee plugin;
-    private final RateLimiter rateLimiter;
-
-    private final Property[] emptyProperties = {};
-    private final boolean floodGateAvailable;
-
-
     private static final String UUID_FIELD_NAME = "uniqueId";
+    private static final boolean initialHandlerClazzFound;
     private static final MethodHandle uniqueIdSetter;
 
     static {
         MethodHandle setHandle = null;
+        boolean handlerFound = false;
         try {
             Lookup lookup = MethodHandles.lookup();
+
+            Class.forName("net.md_5.bungee.connection.InitialHandler");
+            handlerFound = true;
 
             Field uuidField = InitialHandler.class.getDeclaredField(UUID_FIELD_NAME);
             uuidField.setAccessible(true);
             setHandle = lookup.unreflectSetter(uuidField);
+        } catch (ClassNotFoundException classNotFoundException) {
+            Logger logger = LoggerFactory.getLogger(ConnectListener.class);
+            logger.error(
+                    "Cannot find Bungee initial handler; Disabling premium UUID and skin won't work.",
+                    classNotFoundException
+            );
         } catch (ReflectiveOperationException reflectiveOperationException) {
             reflectiveOperationException.printStackTrace();
         }
 
+        initialHandlerClazzFound = handlerFound;
         uniqueIdSetter = setHandle;
     }
+
+    private final FastLoginBungee plugin;
+    private final RateLimiter rateLimiter;
+    private final Property[] emptyProperties = {};
+    private final boolean floodGateAvailable;
 
     public ConnectListener(FastLoginBungee plugin, RateLimiter rateLimiter, boolean floodgateAvailable) {
         this.plugin = plugin;
@@ -97,29 +109,31 @@ public class ConnectListener implements Listener {
 
         //use the login event instead of the post login event in order to send the login success packet to the client
         //with the offline uuid this makes it possible to set the skin then
-        final PendingConnection connection = loginEvent.getConnection();
-        final InitialHandler initialHandler = (InitialHandler) connection;
-
+        PendingConnection connection = loginEvent.getConnection();
         if (connection.isOnlineMode()) {
             LoginSession session = plugin.getSession().get(connection);
-            LoginResult loginProfile = initialHandler.getLoginProfile();
 
             UUID verifiedUUID = connection.getUniqueId();
+            String verifiedUsername = connection.getName();
             session.setUuid(verifiedUUID);
-            session.setVerifiedUsername(loginProfile.getName());
+            session.setVerifiedUsername(verifiedUsername);
 
             StoredProfile playerProfile = session.getProfile();
             playerProfile.setId(verifiedUUID);
 
-            //bungeecord will do this automatically so override it on disabled option
-            if (!plugin.getCore().getConfig().get("premiumUuid", true)) {
-                String username = loginProfile.getName();
-                setOfflineId(initialHandler, username);
-            }
+            // bungeecord will do this automatically so override it on disabled option
+            if (uniqueIdSetter != null) {
+                InitialHandler initialHandler = (InitialHandler) connection;
 
-            if (!plugin.getCore().getConfig().get("forwardSkin", true)) {
-                // this is null on offline mode
-                loginProfile.setProperties(emptyProperties);
+                if (!plugin.getCore().getConfig().get("premiumUuid", true)) {
+                    setOfflineId(initialHandler, verifiedUsername);
+                }
+
+                if (!plugin.getCore().getConfig().get("forwardSkin", true)) {
+                    // this is null on offline mode
+                    LoginResult loginProfile = initialHandler.getLoginProfile();
+                    loginProfile.setProperties(emptyProperties);
+                }
             }
         }
     }

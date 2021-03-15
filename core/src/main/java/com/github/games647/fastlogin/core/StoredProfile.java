@@ -3,6 +3,7 @@ package com.github.games647.fastlogin.core;
 import com.github.games647.craftapi.model.Profile;
 
 import java.time.Instant;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.locks.ReentrantLock;
@@ -84,6 +85,21 @@ public class StoredProfile extends Profile {
 
     public synchronized void setLastLogin(Instant lastLogin) {
         this.lastLogin = lastLogin;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof StoredProfile)) return false;
+        if (!super.equals(o)) return false;
+        StoredProfile that = (StoredProfile) o;
+        return rowId == that.rowId && premium == that.premium
+                && Objects.equals(lastIp, that.lastIp) && lastLogin.equals(that.lastLogin);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), rowId, premium, lastIp, lastLogin);
     }
 
     @Override
