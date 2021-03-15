@@ -14,10 +14,7 @@ import com.github.games647.craftapi.model.skin.SkinProperty;
 import com.github.games647.craftapi.resolver.MojangResolver;
 import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
-import org.bukkit.entity.Player;
 
-import javax.crypto.Cipher;
-import javax.crypto.SecretKey;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -30,6 +27,11 @@ import java.security.PrivateKey;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.UUID;
+
+import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
+
+import org.bukkit.entity.Player;
 
 import static com.comphenix.protocol.PacketType.Login.Client.START;
 import static com.comphenix.protocol.PacketType.Login.Server.DISCONNECT;
@@ -59,7 +61,7 @@ public class VerifyResponseTask implements Runnable {
     @Override
     public void run() {
         try {
-            BukkitLoginSession session = plugin.getSession(player.getAddress());
+            BukkitLoginSession session = plugin.getSessionManager().getLoginSession(player.getAddress());
             if (session == null) {
                 disconnect("invalid-request", true
                         , "GameProfile {0} tried to send encryption response at invalid state", player.getAddress());

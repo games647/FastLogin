@@ -10,29 +10,30 @@ import com.github.games647.fastlogin.bukkit.listener.protocolsupport.ProtocolSup
 import com.github.games647.fastlogin.bukkit.task.DelayedAuthHook;
 import com.github.games647.fastlogin.core.CommonUtil;
 import com.github.games647.fastlogin.core.PremiumStatus;
+import com.github.games647.fastlogin.core.StoredProfile;
 import com.github.games647.fastlogin.core.shared.FastLoginCore;
 import com.github.games647.fastlogin.core.shared.PlatformPlugin;
+
 import io.papermc.lib.PaperLib;
+
+import java.nio.file.Path;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.slf4j.Logger;
 
-import java.net.InetSocketAddress;
-import java.nio.file.Path;
-import java.util.Map;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-
 /**
  * This plugin checks if a player has a paid account and if so tries to skip offline mode authentication.
  */
 public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<CommandSender> {
 
-    //1 minutes should be enough as a timeout for bad internet connection (Server, Client and Mojang)
-    private final ConcurrentMap<String, BukkitLoginSession> loginSession = CommonUtil.buildCache(1, -1);
+    private final BukkitSessionManager sessionManager = new BukkitSessionManager();
     private final Map<UUID, PremiumStatus> premiumPlayers = new ConcurrentHashMap<>();
     private final Logger logger;
 
@@ -108,7 +109,6 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
 
     @Override
     public void onDisable() {
-        loginSession.clear();
         premiumPlayers.clear();
 
         if (core != null) {
@@ -126,47 +126,35 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
     }
 
     /**
-     * Gets a thread-safe map about players which are connecting to the server are being checked to be premium (paid
-     * account)
-     *
-     * @return a thread-safe loginSession map
-     */
-    public ConcurrentMap<String, BukkitLoginSession> getLoginSessions() {
-        return loginSession;
-    }
-
-    public BukkitLoginSession getSession(InetSocketAddress addr) {
-        String id = getSessionId(addr);
-        return loginSession.get(id);
-    }
-
-    public String getSessionId(InetSocketAddress addr) {
-        return addr.getAddress().getHostAddress() + ':' + addr.getPort();
-    }
-
-    public void putSession(InetSocketAddress addr, BukkitLoginSession session) {
-        String id = getSessionId(addr);
-        loginSession.put(id, session);
-    }
-
-    public void removeSession(InetSocketAddress addr) {
-        String id = getSessionId(addr);
-        loginSession.remove(id);
-    }
-
-    public Map<UUID, PremiumStatus> getPremiumPlayers() {
-        return premiumPlayers;
-    }
-
-    /**
      * Fetches the premium status of an online player.
      *
      * @param onlinePlayer
      * @return the online status or unknown if an error happened, the player isn't online or BungeeCord doesn't send
      * us the status message yet (This means you cannot check the login status on the PlayerJoinEvent).
+     * @deprecated this method could be removed in future versions and exists only as a temporarily solution
      */
+    @Deprecated
     public PremiumStatus getStatus(UUID onlinePlayer) {
-        return premiumPlayers.getOrDefault(onlinePlayer, PremiumStatus.UNKNOWN);
+        StoredProfile playSession = sessionManager.getPlaySession(onlinePlayer);
+        return Optional.ofNullable(playSession).map(profile -> {
+            if (profile.isPremium())
+                return PremiumStatus.PREMIUM;
+            return PremiumStatus.CRACKED;
+        }).orElse(PremiumStatus.UNKNOWN);
+    }
+
+    /**
+     * Gets a thread-safe map about players which are connecting to the server are being checked to be premium (paid
+     * account)
+     *
+     * @return a thread-safe loginSession map
+     */
+    public BukkitSessionManager getSessionManager() {
+        return sessionManager;
+    }
+
+    public Map<UUID, PremiumStatus> getPremiumPlayers() {
+        return premiumPlayers;
     }
 
     /**

@@ -48,7 +48,7 @@ public class ProtocolSupportListener extends JoinManagement<Player, CommandSende
         InetSocketAddress address = loginStartEvent.getAddress();
 
         //remove old data every time on a new login in order to keep the session only for one person
-        plugin.removeSession(address);
+        plugin.getSessionManager().endLoginSession(address);
 
         super.onLogin(username, new ProtocolLoginSource(loginStartEvent));
     }
@@ -56,13 +56,13 @@ public class ProtocolSupportListener extends JoinManagement<Player, CommandSende
     @EventHandler
     public void onConnectionClosed(ConnectionCloseEvent closeEvent) {
         InetSocketAddress address = closeEvent.getConnection().getAddress();
-        plugin.removeSession(address);
+        plugin.getSessionManager().endLoginSession(address);
     }
 
     @EventHandler
     public void onPropertiesResolve(PlayerProfileCompleteEvent profileCompleteEvent) {
         InetSocketAddress address = profileCompleteEvent.getAddress();
-        BukkitLoginSession session = plugin.getSession(address);
+        BukkitLoginSession session = plugin.getSessionManager().getLoginSession(address);
 
         if (session != null && profileCompleteEvent.getConnection().getProfile().isOnlineMode()) {
             session.setVerified(true);
@@ -91,12 +91,12 @@ public class ProtocolSupportListener extends JoinManagement<Player, CommandSende
         plugin.getCore().getPendingLogin().put(ip + username, new Object());
 
         BukkitLoginSession playerSession = new BukkitLoginSession(username, registered, profile);
-        plugin.putSession(source.getAddress(), playerSession);
+        plugin.getSessionManager().startLoginSession(source.getAddress(), playerSession);
     }
 
     @Override
     public void startCrackedSession(ProtocolLoginSource source, StoredProfile profile, String username) {
         BukkitLoginSession loginSession = new BukkitLoginSession(username, profile);
-        plugin.putSession(source.getAddress(), loginSession);
+        plugin.getSessionManager().startLoginSession(source.getAddress(), loginSession);
     }
 }

@@ -27,7 +27,7 @@ public class PaperPreLoginListener implements Listener {
         }
 
         // event gives us only IP, not the port, so we need to loop through all the sessions
-        for (BukkitLoginSession session : plugin.getLoginSessions().values()) {
+        for (BukkitLoginSession session : plugin.getSessionManager().getLoginSessions().values()) {
             if (!event.getName().equals(session.getUsername())) {
                 continue;
             }

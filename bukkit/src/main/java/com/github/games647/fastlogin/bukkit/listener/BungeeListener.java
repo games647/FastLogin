@@ -101,7 +101,7 @@ public class BungeeListener implements PluginMessageListener {
 
     private void startLoginTaskIfReady(Player player, BukkitLoginSession session) {
         session.setVerified(true);
-        plugin.putSession(player.getAddress(), session);
+        plugin.getSessionManager().startLoginSession(player.getAddress(), session);
 
         // only start a new login task if the join event fired earlier. This event then didn
         boolean result = plugin.getBungeeManager().didJoinEventFired(player);

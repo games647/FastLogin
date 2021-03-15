@@ -74,7 +74,7 @@ public class NameCheckTask extends JoinManagement<Player, CommandSender, Protoco
         byte[] verify = source.getVerifyToken();
 
         BukkitLoginSession playerSession = new BukkitLoginSession(username, serverId, verify, registered, profile);
-        plugin.putSession(player.getAddress(), playerSession);
+        plugin.getSessionManager().startLoginSession(player.getAddress(), playerSession);
         //cancel only if the player has a paid account otherwise login as normal offline player
         synchronized (packetEvent.getAsyncMarker().getProcessingLock()) {
             packetEvent.setCancelled(true);
@@ -84,6 +84,6 @@ public class NameCheckTask extends JoinManagement<Player, CommandSender, Protoco
     @Override
     public void startCrackedSession(ProtocolLibLoginSource source, StoredProfile profile, String username) {
         BukkitLoginSession loginSession = new BukkitLoginSession(username, profile);
-        plugin.putSession(player.getAddress(), loginSession);
+        plugin.getSessionManager().startLoginSession(player.getAddress(), loginSession);
     }
 }

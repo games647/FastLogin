@@ -44,11 +44,8 @@ public class ConnectionListener implements Listener {
             // session exists so the player is ready for force login
             // cases: Paper (firing BungeeCord message before PlayerJoinEvent) or not running BungeeCord and already
             // having the login session from the login process
-            BukkitLoginSession session = plugin.getSession(player.getAddress());
-            if (session == null) {
-                String sessionId = plugin.getSessionId(player.getAddress());
-                plugin.getLog().info("No on-going login session for player: {} with ID {}", player, sessionId);
-            } else {
+            BukkitLoginSession session = plugin.getSessionManager().getLoginSession(player.getAddress());
+            if (session != null) {
                 Runnable forceLoginTask = new ForceLoginTask(plugin.getCore(), player, session);
                 Bukkit.getScheduler().runTaskAsynchronously(plugin, forceLoginTask);
             }
