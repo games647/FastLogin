@@ -10,7 +10,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.Random;
-
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
@@ -27,7 +26,7 @@ public class EncryptionUtil {
     public static final String KEY_PAIR_ALGORITHM = "RSA";
 
     private EncryptionUtil() {
-        //utility
+        // utility
     }
 
     /**
@@ -43,7 +42,7 @@ public class EncryptionUtil {
             keyPairGenerator.initialize(1_024);
             return keyPairGenerator.generateKeyPair();
         } catch (NoSuchAlgorithmException nosuchalgorithmexception) {
-            //Should be existing in every vm
+            // Should be existing in every vm
             throw new ExceptionInInitializerError(nosuchalgorithmexception);
         }
     }
@@ -65,9 +64,9 @@ public class EncryptionUtil {
     /**
      * Generate the server id based on client and server data.
      *
-     * @param sessionId    session for the current login attempt
+     * @param sessionId session for the current login attempt
      * @param sharedSecret shared secret between the client and the server
-     * @param publicKey    public key of the server
+     * @param publicKey public key of the server
      * @return the server id formatted as a hexadecimal string.
      */
     public static String getServerIdHashString(String sessionId, SecretKey sharedSecret, PublicKey publicKey) {
@@ -85,8 +84,8 @@ public class EncryptionUtil {
     /**
      * Decrypts the content and extracts the key spec.
      *
-     * @param cipher     decryption cipher initialized with the private key
-     * @param sharedKey  the encrypted shared key
+     * @param privateKey private server key
+     * @param sharedKey the encrypted shared key
      * @return shared secret key
      * @throws GeneralSecurityException if it fails to decrypt the data
      */
@@ -106,16 +105,18 @@ public class EncryptionUtil {
      * Decrypted the given data using the cipher.
      *
      * @param cipher decryption cypher initialized with the private key
-     * @param data   the encrypted data
+     * @param data the encrypted data
      * @return clear text data
      * @throws GeneralSecurityException if it fails to decrypt the data
      */
     private static byte[] decrypt(Cipher cipher, byte[] data) throws GeneralSecurityException {
-        // inlined: byte[] a(int var0, Key var1, byte[] var2), Cipher a(int var0, String var1, Key var2)
+        // inlined: byte[] a(int var0, Key var1, byte[] var2), Cipher a(int var0, String var1, Key
+        // var2)
         return cipher.doFinal(data);
     }
 
-    private static byte[] getServerIdHash(String sessionId, PublicKey publicKey, SecretKey sharedSecret)
+    private static byte[] getServerIdHash(
+            String sessionId, PublicKey publicKey, SecretKey sharedSecret)
             throws NoSuchAlgorithmException {
         // byte[] a(String var0, PublicKey var1, SecretKey var2)
         MessageDigest digest = MessageDigest.getInstance("SHA-1");

@@ -90,7 +90,7 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
         }
 
         int maxCon = config.getInt("anti-bot.connections", 200);
-        long expireTime = config.getInt("anti-bot.expire", 5) * 60 * 1_000L;
+        long expireTime = config.getLong("anti-bot.expire", 5) * 60 * 1_000L;
         if (expireTime > MAX_EXPIRE_RATE) {
             expireTime = MAX_EXPIRE_RATE;
         }
@@ -132,7 +132,7 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
             config = configProvider.load(reader, defaults);
         }
 
-        //explicitly add keys here, because Configuration.getKeys doesn't return the keys from the default configuration
+        // explicitly add keys here, because Configuration.getKeys doesn't return the keys from the default configuration
         for (String key : defaults.getKeys()) {
             config.set(key, config.get(key));
         }
