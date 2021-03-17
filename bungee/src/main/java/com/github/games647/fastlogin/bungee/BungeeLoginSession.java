@@ -1,7 +1,7 @@
 package com.github.games647.fastlogin.bungee;
 
-import com.github.games647.fastlogin.core.StoredProfile;
-import com.github.games647.fastlogin.core.shared.LoginSession;
+import com.github.games647.fastlogin.core.storage.StoredProfile;
+import com.github.games647.fastlogin.core.auth.LoginSession;
 
 public class BungeeLoginSession extends LoginSession {
 

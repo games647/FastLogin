@@ -25,7 +25,7 @@ public class LogItHook implements AuthPlugin<Player> {
 
     private final FastLoginBukkit plugin;
 
-    public LogItHook(FastLoginBukkit plugin) {
+    protected LogItHook(FastLoginBukkit plugin) {
         this.plugin = plugin;
     }
 

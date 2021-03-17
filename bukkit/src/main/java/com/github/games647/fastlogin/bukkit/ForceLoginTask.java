@@ -1,14 +1,12 @@
-package com.github.games647.fastlogin.bukkit.task;
+package com.github.games647.fastlogin.bukkit;
 
-import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
-import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 import com.github.games647.fastlogin.bukkit.event.BukkitFastLoginAutoLoginEvent;
 import com.github.games647.fastlogin.core.PremiumStatus;
-import com.github.games647.fastlogin.core.StoredProfile;
+import com.github.games647.fastlogin.core.storage.StoredProfile;
 import com.github.games647.fastlogin.core.message.SuccessMessage;
 import com.github.games647.fastlogin.core.shared.FastLoginCore;
-import com.github.games647.fastlogin.core.shared.ForceLoginManagement;
-import com.github.games647.fastlogin.core.shared.LoginSession;
+import com.github.games647.fastlogin.core.auth.ForceLoginManagement;
+import com.github.games647.fastlogin.core.auth.LoginSession;
 import com.github.games647.fastlogin.core.shared.event.FastLoginAutoLoginEvent;
 
 import java.util.concurrent.ExecutionException;

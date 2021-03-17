@@ -23,7 +23,7 @@ public class LoginSecurityHook implements AuthPlugin<Player> {
 
     private final FastLoginBukkit plugin;
 
-    public LoginSecurityHook(FastLoginBukkit plugin) {
+    protected LoginSecurityHook(FastLoginBukkit plugin) {
         this.plugin = plugin;
     }
 

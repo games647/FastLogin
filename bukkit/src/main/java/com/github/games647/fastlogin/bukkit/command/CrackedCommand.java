@@ -2,9 +2,8 @@ package com.github.games647.fastlogin.bukkit.command;
 
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 import com.github.games647.fastlogin.bukkit.event.BukkitFastLoginPremiumToggleEvent;
-import com.github.games647.fastlogin.core.StoredProfile;
+import com.github.games647.fastlogin.core.storage.StoredProfile;
 
-import com.github.games647.fastlogin.core.shared.event.FastLoginPremiumToggleEvent;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 

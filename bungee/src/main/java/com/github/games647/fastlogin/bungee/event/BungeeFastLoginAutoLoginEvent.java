@@ -1,7 +1,7 @@
 package com.github.games647.fastlogin.bungee.event;
 
-import com.github.games647.fastlogin.core.StoredProfile;
-import com.github.games647.fastlogin.core.shared.LoginSession;
+import com.github.games647.fastlogin.core.storage.StoredProfile;
+import com.github.games647.fastlogin.core.auth.LoginSession;
 import com.github.games647.fastlogin.core.shared.event.FastLoginAutoLoginEvent;
 import net.md_5.bungee.api.plugin.Cancellable;
 import net.md_5.bungee.api.plugin.Event;

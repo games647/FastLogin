@@ -24,7 +24,7 @@ public class xAuthHook implements AuthPlugin<Player> {
     private final xAuth xAuthPlugin = xAuth.getPlugin();
     private final FastLoginBukkit plugin;
 
-    public xAuthHook(FastLoginBukkit plugin) {
+    protected xAuthHook(FastLoginBukkit plugin) {
         this.plugin = plugin;
     }
 

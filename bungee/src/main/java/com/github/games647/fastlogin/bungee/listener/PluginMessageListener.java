@@ -3,7 +3,7 @@ package com.github.games647.fastlogin.bungee.listener;
 import com.github.games647.fastlogin.bungee.BungeeLoginSession;
 import com.github.games647.fastlogin.bungee.FastLoginBungee;
 import com.github.games647.fastlogin.bungee.task.AsyncToggleMessage;
-import com.github.games647.fastlogin.core.StoredProfile;
+import com.github.games647.fastlogin.core.storage.StoredProfile;
 import com.github.games647.fastlogin.core.message.ChangePremiumMessage;
 import com.github.games647.fastlogin.core.message.NamespaceKey;
 import com.github.games647.fastlogin.core.message.SuccessMessage;

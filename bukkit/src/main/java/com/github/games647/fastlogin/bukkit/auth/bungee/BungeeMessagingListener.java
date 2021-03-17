@@ -1,8 +1,8 @@
-package com.github.games647.fastlogin.bukkit.listener;
+package com.github.games647.fastlogin.bukkit.auth.bungee;
 
 import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
-import com.github.games647.fastlogin.bukkit.task.ForceLoginTask;
+import com.github.games647.fastlogin.bukkit.ForceLoginTask;
 import com.github.games647.fastlogin.core.PremiumStatus;
 import com.github.games647.fastlogin.core.hooks.AuthPlugin;
 import com.github.games647.fastlogin.core.message.LoginActionMessage;
@@ -23,11 +23,11 @@ import org.bukkit.plugin.messaging.PluginMessageListener;
  * This class also receives the plugin message from the bungeecord version of this plugin in order to get notified if
  * the connection is in online mode.
  */
-public class BungeeListener implements PluginMessageListener {
+public class BungeeMessagingListener implements PluginMessageListener {
 
     private final FastLoginBukkit plugin;
 
-    public BungeeListener(FastLoginBukkit plugin) {
+    protected BungeeMessagingListener(FastLoginBukkit plugin) {
         this.plugin = plugin;
     }
 

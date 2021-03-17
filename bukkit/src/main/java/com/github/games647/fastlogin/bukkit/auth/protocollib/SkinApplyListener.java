@@ -1,4 +1,4 @@
-package com.github.games647.fastlogin.bukkit.listener.protocollib;
+package com.github.games647.fastlogin.bukkit.auth.protocollib;
 
 import com.comphenix.protocol.reflect.accessors.Accessors;
 import com.comphenix.protocol.reflect.accessors.MethodAccessor;
@@ -23,7 +23,7 @@ public class SkinApplyListener implements Listener {
 
     private final FastLoginBukkit plugin;
 
-    public SkinApplyListener(FastLoginBukkit plugin) {
+    protected SkinApplyListener(FastLoginBukkit plugin) {
         this.plugin = plugin;
     }
 

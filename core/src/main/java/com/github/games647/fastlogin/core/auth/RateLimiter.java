@@ -1,4 +1,4 @@
-package com.github.games647.fastlogin.core;
+package com.github.games647.fastlogin.core.auth;
 
 /**
  * Limit the number of requests with a maximum size. Each requests expires after the specified time making it available

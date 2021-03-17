@@ -1,7 +1,9 @@
-package com.github.games647.fastlogin.core.shared;
+package com.github.games647.fastlogin.core.auth;
 
-import com.github.games647.fastlogin.core.AuthStorage;
-import com.github.games647.fastlogin.core.StoredProfile;
+import com.github.games647.fastlogin.core.shared.FastLoginCore;
+import com.github.games647.fastlogin.core.shared.PlatformPlugin;
+import com.github.games647.fastlogin.core.storage.AuthStorage;
+import com.github.games647.fastlogin.core.storage.StoredProfile;
 import com.github.games647.fastlogin.core.hooks.AuthPlugin;
 import com.github.games647.fastlogin.core.shared.event.FastLoginAutoLoginEvent;
 

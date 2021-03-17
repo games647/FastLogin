@@ -1,7 +1,7 @@
 package com.github.games647.fastlogin.bukkit.hook;
 
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
-import com.github.games647.fastlogin.core.StoredProfile;
+import com.github.games647.fastlogin.core.storage.StoredProfile;
 import com.github.games647.fastlogin.core.hooks.AuthPlugin;
 
 import fr.xephi.authme.api.v3.AuthMeApi;
@@ -33,7 +33,7 @@ public class AuthMeHook implements AuthPlugin<Player>, Listener {
     private final AuthMeApi authmeAPI;
     private Management authmeManagement;
 
-    public AuthMeHook(FastLoginBukkit plugin) {
+    protected AuthMeHook(FastLoginBukkit plugin) {
         this.plugin = plugin;
         this.authmeAPI = AuthMeApi.getInstance();
 

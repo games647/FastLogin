@@ -1,4 +1,4 @@
-package com.github.games647.fastlogin.bukkit.listener.protocollib;
+package com.github.games647.fastlogin.bukkit.auth.protocollib;
 
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketContainer;
@@ -49,7 +49,7 @@ public class VerifyResponseTask implements Runnable {
     private static Method encryptMethod;
     private static Method cipherMethod;
 
-    public VerifyResponseTask(FastLoginBukkit plugin, PacketEvent packetEvent, Player player,
+    protected VerifyResponseTask(FastLoginBukkit plugin, PacketEvent packetEvent, Player player,
                               byte[] sharedSecret, KeyPair keyPair) {
         this.plugin = plugin;
         this.packetEvent = packetEvent;

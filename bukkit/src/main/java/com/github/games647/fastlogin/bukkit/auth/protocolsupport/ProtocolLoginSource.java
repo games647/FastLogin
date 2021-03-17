@@ -1,6 +1,6 @@
-package com.github.games647.fastlogin.bukkit.listener.protocolsupport;
+package com.github.games647.fastlogin.bukkit.auth.protocolsupport;
 
-import com.github.games647.fastlogin.core.shared.LoginSource;
+import com.github.games647.fastlogin.core.auth.LoginSource;
 
 import java.net.InetSocketAddress;
 
@@ -10,7 +10,7 @@ public class ProtocolLoginSource implements LoginSource {
 
     private final PlayerLoginStartEvent loginStartEvent;
 
-    public ProtocolLoginSource(PlayerLoginStartEvent loginStartEvent) {
+    protected ProtocolLoginSource(PlayerLoginStartEvent loginStartEvent) {
         this.loginStartEvent = loginStartEvent;
     }
 

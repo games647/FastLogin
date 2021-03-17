@@ -1,4 +1,4 @@
-package com.github.games647.fastlogin.bukkit.listener.protocollib;
+package com.github.games647.fastlogin.bukkit.auth.protocollib;
 
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;

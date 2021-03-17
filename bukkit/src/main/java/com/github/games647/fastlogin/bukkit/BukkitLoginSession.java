@@ -1,8 +1,8 @@
 package com.github.games647.fastlogin.bukkit;
 
 import com.github.games647.craftapi.model.skin.SkinProperty;
-import com.github.games647.fastlogin.core.StoredProfile;
-import com.github.games647.fastlogin.core.shared.LoginSession;
+import com.github.games647.fastlogin.core.storage.StoredProfile;
+import com.github.games647.fastlogin.core.auth.LoginSession;
 
 import java.util.Optional;
 

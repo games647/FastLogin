@@ -1,5 +1,7 @@
 package com.github.games647.fastlogin.core;
 
+import com.github.games647.fastlogin.core.auth.RateLimiter;
+
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;

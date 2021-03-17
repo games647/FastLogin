@@ -1,4 +1,4 @@
-package com.github.games647.fastlogin.bukkit.listener.protocollib;
+package com.github.games647.fastlogin.bukkit.auth.protocollib;
 
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
@@ -6,7 +6,7 @@ import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.reflect.StructureModifier;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
-import com.github.games647.fastlogin.core.shared.LoginSource;
+import com.github.games647.fastlogin.core.auth.LoginSource;
 
 import java.lang.reflect.InvocationTargetException;
 import java.net.InetSocketAddress;
@@ -30,7 +30,7 @@ class ProtocolLibLoginSource implements LoginSource {
     private final String serverId = "";
     private byte[] verifyToken;
 
-    public ProtocolLibLoginSource(PacketEvent packetEvent, Player player, Random random, PublicKey publicKey) {
+    protected ProtocolLibLoginSource(PacketEvent packetEvent, Player player, Random random, PublicKey publicKey) {
         this.packetEvent = packetEvent;
         this.player = player;
         this.random = random;

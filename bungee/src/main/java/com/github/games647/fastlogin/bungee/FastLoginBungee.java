@@ -12,18 +12,15 @@ import com.github.games647.fastlogin.core.message.NamespaceKey;
 import com.github.games647.fastlogin.core.message.SuccessMessage;
 import com.github.games647.fastlogin.core.shared.FastLoginCore;
 import com.github.games647.fastlogin.core.shared.PlatformPlugin;
-import com.google.common.collect.MapMaker;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 import java.nio.file.Path;
-import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ThreadFactory;
 
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.TextComponent;
-import net.md_5.bungee.api.connection.PendingConnection;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.connection.Server;
 import net.md_5.bungee.api.plugin.Plugin;
@@ -37,7 +34,7 @@ import org.slf4j.Logger;
  */
 public class FastLoginBungee extends Plugin implements PlatformPlugin<CommandSender> {
 
-    private final ConcurrentMap<PendingConnection, BungeeLoginSession> session = new MapMaker().weakKeys().makeMap();
+    private final BungeeSessionManager sessionManager = new BungeeSessionManager();
 
     private FastLoginCore<ProxiedPlayer, CommandSender, FastLoginBungee> core;
     private AsyncScheduler scheduler;
@@ -78,10 +75,6 @@ public class FastLoginBungee extends Plugin implements PlatformPlugin<CommandSen
 
     public FastLoginCore<ProxiedPlayer, CommandSender, FastLoginBungee> getCore() {
         return core;
-    }
-
-    public ConcurrentMap<PendingConnection, BungeeLoginSession> getSession() {
-        return session;
     }
 
     private void registerHook() {

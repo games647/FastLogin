@@ -1,5 +1,7 @@
 package com.github.games647.fastlogin.bukkit.listener.protocollib;
 
+import com.github.games647.fastlogin.bukkit.auth.protocollib.EncryptionUtil;
+
 import java.security.SecureRandom;
 
 import org.junit.Test;

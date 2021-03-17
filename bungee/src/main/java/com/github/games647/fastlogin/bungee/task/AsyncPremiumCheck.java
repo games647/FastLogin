@@ -4,8 +4,8 @@ import com.github.games647.fastlogin.bungee.BungeeLoginSession;
 import com.github.games647.fastlogin.bungee.BungeeLoginSource;
 import com.github.games647.fastlogin.bungee.FastLoginBungee;
 import com.github.games647.fastlogin.bungee.event.BungeeFastLoginPreLoginEvent;
-import com.github.games647.fastlogin.core.StoredProfile;
-import com.github.games647.fastlogin.core.shared.JoinManagement;
+import com.github.games647.fastlogin.core.storage.StoredProfile;
+import com.github.games647.fastlogin.core.auth.JoinManagement;
 import com.github.games647.fastlogin.core.shared.event.FastLoginPreLoginEvent;
 
 import net.md_5.bungee.api.CommandSender;

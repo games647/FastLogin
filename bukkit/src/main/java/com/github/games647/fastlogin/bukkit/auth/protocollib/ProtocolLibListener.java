@@ -1,4 +1,4 @@
-package com.github.games647.fastlogin.bukkit.listener.protocollib;
+package com.github.games647.fastlogin.bukkit.auth.protocollib;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
@@ -6,12 +6,16 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
-import com.github.games647.fastlogin.core.RateLimiter;
+import com.github.games647.fastlogin.core.auth.RateLimiter;
+
+import io.papermc.lib.PaperLib;
 
 import java.security.KeyPair;
 import java.security.SecureRandom;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.PluginManager;
 
 import static com.comphenix.protocol.PacketType.Login.Client.ENCRYPTION_BEGIN;
 import static com.comphenix.protocol.PacketType.Login.Client.START;
@@ -25,7 +29,11 @@ public class ProtocolLibListener extends PacketAdapter {
     private final KeyPair keyPair = EncryptionUtil.generateKeyPair();
     private final RateLimiter rateLimiter;
 
-    public ProtocolLibListener(FastLoginBukkit plugin, RateLimiter rateLimiter) {
+    // Wait before the server is fully started. This is workaround, because connections right on startup are not
+    // injected by ProtocolLib
+    private boolean serverStarted;
+
+    protected ProtocolLibListener(FastLoginBukkit plugin, RateLimiter rateLimiter) {
         //run async in order to not block the server, because we are making api calls to Mojang
         super(params()
                 .plugin(plugin)
@@ -38,19 +46,28 @@ public class ProtocolLibListener extends PacketAdapter {
 
     public static void register(FastLoginBukkit plugin, RateLimiter rateLimiter) {
         //they will be created with a static builder, because otherwise it will throw a NoClassDefFoundError
+        ProtocolLibListener packetListener = new ProtocolLibListener(plugin, rateLimiter);
         ProtocolLibrary.getProtocolManager()
                 .getAsynchronousManager()
-                .registerAsyncHandler(new ProtocolLibListener(plugin, rateLimiter))
+                .registerAsyncHandler(packetListener)
                 .start();
+
+        PluginManager pluginManager = Bukkit.getServer().getPluginManager();
+        pluginManager.registerEvents(new InitializedListener(packetListener), plugin);
+
+        //if server is using paper - we need to set the skin at pre login anyway, so no need for this listener
+        if (!PaperLib.isPaper() && plugin.getConfig().getBoolean("forwardSkin")) {
+            pluginManager.registerEvents(new SkinApplyListener(plugin), plugin);
+        }
     }
 
     @Override
     public void onPacketReceiving(PacketEvent packetEvent) {
-        if (packetEvent.isCancelled()
-                || plugin.getCore().getAuthPluginHook()== null
-                || !plugin.isServerFullyStarted()) {
+        if (packetEvent.isCancelled() || plugin.getCore().getAuthPluginHook() == null) {
             return;
         }
+
+        markReadyToInject();
 
         Player sender = packetEvent.getPlayer();
         PacketType packetType = packetEvent.getPacketType();
@@ -90,5 +107,18 @@ public class ProtocolLibListener extends PacketAdapter {
         packetEvent.getAsyncMarker().incrementProcessingDelay();
         Runnable nameCheckTask = new NameCheckTask(plugin, packetEvent, random, player, username, keyPair.getPublic());
         plugin.getScheduler().runAsync(nameCheckTask);
+    }
+
+    public void markReadyToInject() {
+        this.serverStarted = true;
+    }
+
+    public boolean isReadyToInject() {
+        return serverStarted;
+    }
+
+    @Override
+    public FastLoginBukkit getPlugin() {
+        return plugin;
     }
 }

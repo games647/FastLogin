@@ -1,16 +1,16 @@
 package com.github.games647.fastlogin.bukkit;
 
+import com.github.games647.fastlogin.bukkit.auth.bungee.BungeeManager;
+import com.github.games647.fastlogin.bukkit.auth.protocollib.ProtocolLibListener;
+import com.github.games647.fastlogin.bukkit.auth.protocolsupport.ProtocolSupportListener;
 import com.github.games647.fastlogin.bukkit.command.CrackedCommand;
 import com.github.games647.fastlogin.bukkit.command.PremiumCommand;
+import com.github.games647.fastlogin.bukkit.hook.DelayedAuthHook;
 import com.github.games647.fastlogin.bukkit.listener.ConnectionListener;
 import com.github.games647.fastlogin.bukkit.listener.PaperPreLoginListener;
-import com.github.games647.fastlogin.bukkit.listener.protocollib.ProtocolLibListener;
-import com.github.games647.fastlogin.bukkit.listener.protocollib.SkinApplyListener;
-import com.github.games647.fastlogin.bukkit.listener.protocolsupport.ProtocolSupportListener;
-import com.github.games647.fastlogin.bukkit.task.DelayedAuthHook;
 import com.github.games647.fastlogin.core.CommonUtil;
 import com.github.games647.fastlogin.core.PremiumStatus;
-import com.github.games647.fastlogin.core.StoredProfile;
+import com.github.games647.fastlogin.core.storage.StoredProfile;
 import com.github.games647.fastlogin.core.shared.FastLoginCore;
 import com.github.games647.fastlogin.core.shared.PlatformPlugin;
 
@@ -35,12 +35,12 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
 
     private final BukkitSessionManager sessionManager = new BukkitSessionManager();
     private final Map<UUID, PremiumStatus> premiumPlayers = new ConcurrentHashMap<>();
-    private final Logger logger;
+    private final FastLoginCore<Player, CommandSender, FastLoginBukkit> core = new FastLoginCore<>(this);
 
-    private boolean serverStarted;
-    private BungeeManager bungeeManager;
+    private final Logger logger;
     private final BukkitScheduler scheduler;
-    private FastLoginCore<Player, CommandSender, FastLoginBukkit> core;
+
+    private BungeeManager bungeeManager;
 
     private PremiumPlaceholder premiumPlaceholder;
 
@@ -51,7 +51,6 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
 
     @Override
     public void onEnable() {
-        core = new FastLoginCore<>(this);
         core.load();
 
         if (getServer().getOnlineMode()) {
@@ -65,9 +64,7 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
         bungeeManager.initialize();
         
         PluginManager pluginManager = getServer().getPluginManager();
-        if (bungeeManager.isEnabled()) {
-            markInitialized();
-        } else {
+        if (!bungeeManager.isEnabled()) {
             if (!core.setupDatabase()) {
                 setEnabled(false);
                 return;
@@ -77,11 +74,6 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
                 pluginManager.registerEvents(new ProtocolSupportListener(this, core.getRateLimiter()), this);
             } else if (pluginManager.isPluginEnabled("ProtocolLib")) {
                 ProtocolLibListener.register(this, core.getRateLimiter());
-
-                //if server is using paper - we need to set the skin at pre login anyway, so no need for this listener
-                if (!PaperLib.isPaper() && getConfig().getBoolean("forwardSkin")) {
-                    pluginManager.registerEvents(new SkinApplyListener(this), this);
-                }
             } else {
                 logger.warn("Either ProtocolLib or ProtocolSupport have to be installed if you don't use BungeeCord");
             }
@@ -110,10 +102,7 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
     @Override
     public void onDisable() {
         premiumPlayers.clear();
-
-        if (core != null) {
-            core.close();
-        }
+        core.close();
 
         bungeeManager.cleanup();
         if (getServer().getPluginManager().isPluginEnabled("PlaceholderAPI") && premiumPlaceholder != null) {
@@ -155,20 +144,6 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
 
     public Map<UUID, PremiumStatus> getPremiumPlayers() {
         return premiumPlayers;
-    }
-
-    /**
-     * Wait before the server is fully started. This is workaround, because connections right on startup are not
-     * injected by ProtocolLib
-     *
-     * @return true if ProtocolLib can now intercept packets
-     */
-    public boolean isServerFullyStarted() {
-        return serverStarted;
-    }
-
-    public void markInitialized() {
-        this.serverStarted = true;
     }
 
     public BungeeManager getBungeeManager() {

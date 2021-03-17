@@ -25,7 +25,7 @@ public class UltraAuthHook implements AuthPlugin<Player> {
     private final Plugin ultraAuthPlugin = Main.main;
     private final FastLoginBukkit plugin;
 
-    public UltraAuthHook(FastLoginBukkit plugin) {
+    protected UltraAuthHook(FastLoginBukkit plugin) {
         this.plugin = plugin;
     }
 

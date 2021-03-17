@@ -5,9 +5,9 @@ import com.github.games647.fastlogin.bungee.BungeeLoginSession;
 import com.github.games647.fastlogin.bungee.FastLoginBungee;
 import com.github.games647.fastlogin.bungee.task.AsyncPremiumCheck;
 import com.github.games647.fastlogin.bungee.task.ForceLoginTask;
-import com.github.games647.fastlogin.core.RateLimiter;
-import com.github.games647.fastlogin.core.StoredProfile;
-import com.github.games647.fastlogin.core.shared.LoginSession;
+import com.github.games647.fastlogin.core.auth.RateLimiter;
+import com.github.games647.fastlogin.core.storage.StoredProfile;
+import com.github.games647.fastlogin.core.auth.LoginSession;
 import com.google.common.base.Throwables;
 
 import java.lang.invoke.MethodHandle;

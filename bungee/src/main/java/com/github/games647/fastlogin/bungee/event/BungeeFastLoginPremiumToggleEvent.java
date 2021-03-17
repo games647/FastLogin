@@ -1,6 +1,6 @@
 package com.github.games647.fastlogin.bungee.event;
 
-import com.github.games647.fastlogin.core.StoredProfile;
+import com.github.games647.fastlogin.core.storage.StoredProfile;
 import com.github.games647.fastlogin.core.shared.event.FastLoginPremiumToggleEvent;
 import net.md_5.bungee.api.plugin.Event;
 

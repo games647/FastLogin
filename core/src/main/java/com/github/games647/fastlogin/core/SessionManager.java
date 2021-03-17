@@ -1,6 +1,7 @@
 package com.github.games647.fastlogin.core;
 
-import com.github.games647.fastlogin.core.shared.LoginSession;
+import com.github.games647.fastlogin.core.auth.LoginSession;
+import com.github.games647.fastlogin.core.storage.StoredProfile;
 import com.google.common.collect.MapMaker;
 
 import java.util.UUID;

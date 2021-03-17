@@ -1,13 +1,6 @@
-package com.github.games647.fastlogin.bukkit.task;
+package com.github.games647.fastlogin.bukkit.hook;
 
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
-import com.github.games647.fastlogin.bukkit.hook.AuthMeHook;
-import com.github.games647.fastlogin.bukkit.hook.CrazyLoginHook;
-import com.github.games647.fastlogin.bukkit.hook.LogItHook;
-import com.github.games647.fastlogin.bukkit.hook.LoginSecurityHook;
-import com.github.games647.fastlogin.bukkit.hook.UltraAuthHook;
-import com.github.games647.fastlogin.bukkit.hook.xAuthHook;
-import com.github.games647.fastlogin.bukkit.hook.SodionAuthHook;
 import com.github.games647.fastlogin.core.hooks.AuthPlugin;
 
 import java.lang.reflect.Constructor;
@@ -36,10 +29,6 @@ public class DelayedAuthHook implements Runnable {
                     + "(other plugins could hook into this after the initialization of this plugin)"
                     + "and BungeeCord is deactivated. "
                     + "Either one or both of the checks have to pass in order to use this plugin");
-        }
-
-        if (hookFound) {
-            plugin.markInitialized();
         }
     }
 

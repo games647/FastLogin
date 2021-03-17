@@ -2,9 +2,9 @@ package com.github.games647.fastlogin.core.shared;
 
 import com.github.games647.craftapi.resolver.MojangResolver;
 import com.github.games647.craftapi.resolver.http.RotatingProxySelector;
-import com.github.games647.fastlogin.core.AuthStorage;
+import com.github.games647.fastlogin.core.storage.AuthStorage;
 import com.github.games647.fastlogin.core.CommonUtil;
-import com.github.games647.fastlogin.core.RateLimiter;
+import com.github.games647.fastlogin.core.auth.RateLimiter;
 import com.github.games647.fastlogin.core.hooks.AuthPlugin;
 import com.github.games647.fastlogin.core.hooks.DefaultPasswordGenerator;
 import com.github.games647.fastlogin.core.hooks.PasswordGenerator;

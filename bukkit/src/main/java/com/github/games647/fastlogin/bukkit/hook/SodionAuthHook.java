@@ -20,7 +20,7 @@ public class SodionAuthHook implements AuthPlugin<Player> {
 
     private final FastLoginBukkit plugin;
 
-    public SodionAuthHook(FastLoginBukkit plugin) {
+    protected SodionAuthHook(FastLoginBukkit plugin) {
         this.plugin = plugin;
     }
 

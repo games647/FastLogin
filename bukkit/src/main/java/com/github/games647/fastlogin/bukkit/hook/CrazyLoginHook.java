@@ -31,7 +31,7 @@ public class CrazyLoginHook implements AuthPlugin<Player> {
     private final CrazyLogin crazyLoginPlugin;
     private final PlayerListener playerListener;
 
-    public CrazyLoginHook(FastLoginBukkit plugin) {
+    protected CrazyLoginHook(FastLoginBukkit plugin) {
         this.plugin = plugin;
 
         crazyLoginPlugin = CrazyLogin.getPlugin();

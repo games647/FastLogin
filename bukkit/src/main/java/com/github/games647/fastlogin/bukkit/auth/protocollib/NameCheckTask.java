@@ -1,12 +1,12 @@
-package com.github.games647.fastlogin.bukkit.listener.protocollib;
+package com.github.games647.fastlogin.bukkit.auth.protocollib;
 
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketEvent;
 import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 import com.github.games647.fastlogin.bukkit.event.BukkitFastLoginPreLoginEvent;
-import com.github.games647.fastlogin.core.StoredProfile;
-import com.github.games647.fastlogin.core.shared.JoinManagement;
+import com.github.games647.fastlogin.core.storage.StoredProfile;
+import com.github.games647.fastlogin.core.auth.JoinManagement;
 import com.github.games647.fastlogin.core.shared.event.FastLoginPreLoginEvent;
 
 import java.security.PublicKey;
@@ -27,7 +27,7 @@ public class NameCheckTask extends JoinManagement<Player, CommandSender, Protoco
     private final Player player;
     private final String username;
 
-    public NameCheckTask(FastLoginBukkit plugin, PacketEvent packetEvent, Random random,
+    protected NameCheckTask(FastLoginBukkit plugin, PacketEvent packetEvent, Random random,
                          Player player, String username, PublicKey publicKey) {
         super(plugin.getCore(), plugin.getCore().getAuthPluginHook());
 

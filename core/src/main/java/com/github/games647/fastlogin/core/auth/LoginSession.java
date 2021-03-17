@@ -1,6 +1,6 @@
-package com.github.games647.fastlogin.core.shared;
+package com.github.games647.fastlogin.core.auth;
 
-import com.github.games647.fastlogin.core.StoredProfile;
+import com.github.games647.fastlogin.core.storage.StoredProfile;
 import com.google.common.base.Objects;
 
 import java.util.UUID;

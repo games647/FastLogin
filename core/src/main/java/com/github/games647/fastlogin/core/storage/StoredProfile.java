@@ -1,4 +1,4 @@
-package com.github.games647.fastlogin.core;
+package com.github.games647.fastlogin.core.storage;
 
 import com.github.games647.craftapi.model.Profile;
 

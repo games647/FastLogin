@@ -1,12 +1,12 @@
-package com.github.games647.fastlogin.bukkit.listener.protocolsupport;
+package com.github.games647.fastlogin.bukkit.auth.protocolsupport;
 
 import com.github.games647.craftapi.UUIDAdapter;
 import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 import com.github.games647.fastlogin.bukkit.event.BukkitFastLoginPreLoginEvent;
-import com.github.games647.fastlogin.core.RateLimiter;
-import com.github.games647.fastlogin.core.StoredProfile;
-import com.github.games647.fastlogin.core.shared.JoinManagement;
+import com.github.games647.fastlogin.core.auth.RateLimiter;
+import com.github.games647.fastlogin.core.storage.StoredProfile;
+import com.github.games647.fastlogin.core.auth.JoinManagement;
 import com.github.games647.fastlogin.core.shared.event.FastLoginPreLoginEvent;
 
 import java.net.InetSocketAddress;
