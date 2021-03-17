@@ -22,12 +22,12 @@ public class DelayedAuthHook implements Runnable {
     @Override
     public void run() {
         boolean hookFound = isHookFound();
-        if (plugin.getBungeeManager().isEnabled()) {
-            plugin.getLog().info("BungeeCord setting detected. No auth plugin is required");
+        if (plugin.getProxyManager().isEnabled()) {
+            plugin.getLog().info("Proxy setting detected. No auth plugin is required");
         } else if (!hookFound) {
             plugin.getLog().warn("No auth plugin were found by this plugin "
                     + "(other plugins could hook into this after the initialization of this plugin)"
-                    + "and BungeeCord is deactivated. "
+                    + "and BungeeCord (or similar proxies) is deactivated. "
                     + "Either one or both of the checks have to pass in order to use this plugin");
         }
     }

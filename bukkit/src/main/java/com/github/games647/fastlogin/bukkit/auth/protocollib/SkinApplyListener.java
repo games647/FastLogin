@@ -6,7 +6,7 @@ import com.comphenix.protocol.utility.MinecraftReflection;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
 import com.comphenix.protocol.wrappers.WrappedSignedProperty;
 import com.github.games647.craftapi.model.skin.Textures;
-import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
+import com.github.games647.fastlogin.bukkit.auth.BukkitLoginSession;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 
 import org.bukkit.entity.Player;

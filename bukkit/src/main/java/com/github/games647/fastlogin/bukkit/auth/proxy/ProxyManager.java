@@ -1,4 +1,4 @@
-package com.github.games647.fastlogin.bukkit.auth.bungee;
+package com.github.games647.fastlogin.bukkit.auth.proxy;
 
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 import com.github.games647.fastlogin.core.message.ChannelMessage;
@@ -25,12 +25,12 @@ import static com.github.games647.fastlogin.core.message.ChangePremiumMessage.CH
 import static com.github.games647.fastlogin.core.message.SuccessMessage.SUCCESS_CHANNEL;
 import static java.util.stream.Collectors.toSet;
 
-public class BungeeManager {
+public class ProxyManager {
 
     private static final String LEGACY_FILE_NAME = "proxy-whitelist.txt";
     private static final String FILE_NAME = "allowed-proxies.txt";
 
-    //null if proxies allowed list is empty so bungeecord support is disabled
+    //null if proxies allowed list is empty so proxy support is disabled
     private Set<UUID> proxyIds;
 
     private final FastLoginBukkit plugin;
@@ -38,7 +38,7 @@ public class BungeeManager {
 
     private final Set<UUID> firedJoinEvents = new HashSet<>();
 
-    public BungeeManager(FastLoginBukkit plugin) {
+    public ProxyManager(FastLoginBukkit plugin) {
         this.plugin = plugin;
     }
 
@@ -63,23 +63,23 @@ public class BungeeManager {
 
     public void initialize() {
         try {
-            enabled = detectBungeeCord();
+            enabled = detectProxy();
         } catch (Exception ex) {
-            plugin.getLog().warn("Cannot check bungeecord support. Fallback to non-bungee mode", ex);
+            plugin.getLog().warn("Cannot check proxy support. Fallback to non-proxy mode", ex);
         }
 
         if (enabled) {
-            proxyIds = loadBungeeCordIds();
+            proxyIds = loadProxyIds();
             registerPluginChannels();
         }
     }
 
-    private boolean detectBungeeCord() throws Exception {
+    private boolean detectProxy() throws Exception {
         try {
             enabled = Class.forName("org.spigotmc.SpigotConfig").getDeclaredField("bungee").getBoolean(null);
             return enabled;
         } catch (ClassNotFoundException notFoundEx) {
-            //ignore server has no bungee support
+            //ignore server has no proxy support
             return false;
         } catch (Exception ex) {
             throw ex;
@@ -89,10 +89,10 @@ public class BungeeManager {
     private void registerPluginChannels() {
         Server server = Bukkit.getServer();
 
-        // check for incoming messages from the bungeecord version of this plugin
+        // check for incoming messages from the proxy version of this plugin
         String groupId = plugin.getName();
         String forceChannel = NamespaceKey.getCombined(groupId, LoginActionMessage.FORCE_CHANNEL);
-        server.getMessenger().registerIncomingPluginChannel(plugin, forceChannel, new BungeeMessagingListener(plugin));
+        server.getMessenger().registerIncomingPluginChannel(plugin, forceChannel, new ProxyMessagingListener(plugin));
 
         // outgoing
         String successChannel = new NamespaceKey(groupId, SUCCESS_CHANNEL).getCombinedName();
@@ -101,7 +101,7 @@ public class BungeeManager {
         server.getMessenger().registerOutgoingPluginChannel(plugin, changeChannel);
     }
 
-    private Set<UUID> loadBungeeCordIds() {
+    private Set<UUID> loadProxyIds() {
         Path proxiesFile = plugin.getPluginFolder().resolve(FILE_NAME);
         Path legacyFile = plugin.getPluginFolder().resolve(LEGACY_FILE_NAME);
         try {
@@ -124,7 +124,7 @@ public class BungeeManager {
         } catch (IOException ex) {
             plugin.getLog().error("Failed to read proxies", ex);
         } catch (Exception ex) {
-            plugin.getLog().error("Failed to retrieve proxy Id. Disabling BungeeCord support", ex);
+            plugin.getLog().error("Failed to retrieve proxy Id. Disabling proxy support", ex);
         }
 
         return Collections.emptySet();
@@ -145,7 +145,7 @@ public class BungeeManager {
 
     /**
      * Check if the event fired including with the task delay. This necessary to restore the order of processing the
-     * BungeeCord messages after the PlayerJoinEvent fires including the delay.
+     * proxy messages after the PlayerJoinEvent fires including the delay.
      *
      * If the join event fired, the delay exceeded, but it ran earlier and couldn't find the recently started login
      * session. If not fired, we can start a new force login task. This will still match the requirement that we wait

@@ -1,6 +1,6 @@
 package com.github.games647.fastlogin.bukkit;
 
-import com.github.games647.fastlogin.bukkit.auth.bungee.BungeeManager;
+import com.github.games647.fastlogin.bukkit.auth.proxy.ProxyManager;
 import com.github.games647.fastlogin.bukkit.auth.protocollib.ProtocolLibListener;
 import com.github.games647.fastlogin.bukkit.auth.protocolsupport.ProtocolSupportListener;
 import com.github.games647.fastlogin.bukkit.command.CrackedCommand;
@@ -40,7 +40,7 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
     private final Logger logger;
     private final BukkitScheduler scheduler;
 
-    private BungeeManager bungeeManager;
+    private ProxyManager proxyManager;
 
     private PremiumPlaceholder premiumPlaceholder;
 
@@ -60,11 +60,11 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
             return;
         }
 
-        bungeeManager = new BungeeManager(this);
-        bungeeManager.initialize();
+        proxyManager = new ProxyManager(this);
+        proxyManager.initialize();
         
         PluginManager pluginManager = getServer().getPluginManager();
-        if (!bungeeManager.isEnabled()) {
+        if (!proxyManager.isEnabled()) {
             if (!core.setupDatabase()) {
                 setEnabled(false);
                 return;
@@ -75,7 +75,7 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
             } else if (pluginManager.isPluginEnabled("ProtocolLib")) {
                 ProtocolLibListener.register(this, core.getRateLimiter());
             } else {
-                logger.warn("Either ProtocolLib or ProtocolSupport have to be installed if you don't use BungeeCord");
+                logger.warn("Either ProtocolLib or ProtocolSupport have to be installed if you don't use proxies");
             }
         }
 
@@ -104,7 +104,7 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
         premiumPlayers.clear();
         core.close();
 
-        bungeeManager.cleanup();
+        proxyManager.cleanup();
         if (getServer().getPluginManager().isPluginEnabled("PlaceholderAPI") && premiumPlaceholder != null) {
             premiumPlaceholder.unregister();
         }
@@ -118,7 +118,7 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
      * Fetches the premium status of an online player.
      *
      * @param onlinePlayer
-     * @return the online status or unknown if an error happened, the player isn't online or BungeeCord doesn't send
+     * @return the online status or unknown if an error happened, the player isn't online or a proxy doesn't send
      * us the status message yet (This means you cannot check the login status on the PlayerJoinEvent).
      * @deprecated this method could be removed in future versions and exists only as a temporarily solution
      */
@@ -146,8 +146,8 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
         return premiumPlayers;
     }
 
-    public BungeeManager getBungeeManager() {
-        return bungeeManager;
+    public ProxyManager getProxyManager() {
+        return proxyManager;
     }
 
     @Override

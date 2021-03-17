@@ -1,6 +1,6 @@
-package com.github.games647.fastlogin.bukkit.auth.bungee;
+package com.github.games647.fastlogin.bukkit.auth.proxy;
 
-import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
+import com.github.games647.fastlogin.bukkit.auth.BukkitLoginSession;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 import com.github.games647.fastlogin.bukkit.ForceLoginTask;
 import com.github.games647.fastlogin.core.PremiumStatus;
@@ -18,16 +18,16 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 
 /**
- * Responsible for receiving messages from a BungeeCord instance.
+ * Responsible for receiving messages from a proxy instance.
  *
- * This class also receives the plugin message from the bungeecord version of this plugin in order to get notified if
+ * This class also receives the plugin message from the proxy version of this plugin in order to get notified if
  * the connection is in online mode.
  */
-public class BungeeMessagingListener implements PluginMessageListener {
+public class ProxyMessagingListener implements PluginMessageListener {
 
     private final FastLoginBukkit plugin;
 
-    protected BungeeMessagingListener(FastLoginBukkit plugin) {
+    protected ProxyMessagingListener(FastLoginBukkit plugin) {
         this.plugin = plugin;
     }
 
@@ -50,12 +50,12 @@ public class BungeeMessagingListener implements PluginMessageListener {
             return;
         }
 
-        // fail if target player is blocked because already authenticated or wrong bungeecord id
+        // fail if target player is blocked because already authenticated or wrong proxy id
         if (targetPlayer.hasMetadata(plugin.getName())) {
             plugin.getLog().warn("Received message {} from a blocked player {}", loginMessage, targetPlayer);
         } else {
             UUID sourceId = loginMessage.getProxyId();
-            if (plugin.getBungeeManager().isProxyAllowed(sourceId)) {
+            if (plugin.getProxyManager().isProxyAllowed(sourceId)) {
                 readMessage(targetPlayer, loginMessage);
             } else {
                 plugin.getLog().warn("Received proxy id: {} that doesn't exist in the proxy file", sourceId);
@@ -104,7 +104,7 @@ public class BungeeMessagingListener implements PluginMessageListener {
         plugin.getSessionManager().startLoginSession(player.getAddress(), session);
 
         // only start a new login task if the join event fired earlier. This event then didn
-        boolean result = plugin.getBungeeManager().didJoinEventFired(player);
+        boolean result = plugin.getProxyManager().didJoinEventFired(player);
         plugin.getLog().info("Delaying force login until join event fired?: {}", result);
         if (result) {
             Runnable forceLoginTask = new ForceLoginTask(plugin.getCore(), player, session);

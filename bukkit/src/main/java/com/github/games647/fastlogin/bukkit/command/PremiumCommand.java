@@ -2,11 +2,11 @@ package com.github.games647.fastlogin.bukkit.command;
 
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 import com.github.games647.fastlogin.bukkit.event.BukkitFastLoginPremiumToggleEvent;
+import com.github.games647.fastlogin.core.shared.event.FastLoginPremiumToggleEvent.PremiumToggleReason;
 import com.github.games647.fastlogin.core.storage.StoredProfile;
 
 import java.util.UUID;
 
-import com.github.games647.fastlogin.core.shared.event.FastLoginPremiumToggleEvent.PremiumToggleReason;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -99,6 +99,6 @@ public class PremiumCommand extends ToggleCommand {
     }
 
     private boolean forwardPremiumCommand(CommandSender sender, String target) {
-        return forwardBungeeCommand(sender, target, true);
+        return forwardProxyCommand(sender, target, true);
     }
 }

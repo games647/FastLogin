@@ -1,7 +1,7 @@
 package com.github.games647.fastlogin.bukkit.auth.protocolsupport;
 
 import com.github.games647.craftapi.UUIDAdapter;
-import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
+import com.github.games647.fastlogin.bukkit.auth.BukkitLoginSession;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 import com.github.games647.fastlogin.bukkit.event.BukkitFastLoginPreLoginEvent;
 import com.github.games647.fastlogin.core.auth.RateLimiter;

@@ -1,6 +1,6 @@
 package com.github.games647.fastlogin.bukkit.listener;
 
-import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
+import com.github.games647.fastlogin.bukkit.auth.BukkitLoginSession;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 import com.github.games647.fastlogin.bukkit.ForceLoginTask;
 
@@ -38,7 +38,7 @@ public class ConnectionListener implements Listener {
 
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
             // session exists so the player is ready for force login
-            // cases: Paper (firing BungeeCord message before PlayerJoinEvent) or not running BungeeCord and already
+            // cases: Paper (firing proxy message before PlayerJoinEvent) or not running proxy and already
             // having the login session from the login process
             BukkitLoginSession session = plugin.getSessionManager().getLoginSession(player.getAddress());
             if (session != null) {
@@ -46,7 +46,7 @@ public class ConnectionListener implements Listener {
                 Bukkit.getScheduler().runTaskAsynchronously(plugin, forceLoginTask);
             }
 
-            plugin.getBungeeManager().markJoinEventFired(player);
+            plugin.getProxyManager().markJoinEventFired(player);
             // delay the login process to let auth plugins initialize the player
             // Magic number however as there is no direct event from those plugins
         }, DELAY_LOGIN);
@@ -59,7 +59,7 @@ public class ConnectionListener implements Listener {
         removeBlockedStatus(player);
         plugin.getCore().getPendingConfirms().remove(player.getUniqueId());
         plugin.getPremiumPlayers().remove(player.getUniqueId());
-        plugin.getBungeeManager().cleanup(player);
+        plugin.getProxyManager().cleanup(player);
     }
 
     private void removeBlockedStatus(Player player) {

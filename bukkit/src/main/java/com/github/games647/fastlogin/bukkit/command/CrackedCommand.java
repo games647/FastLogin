@@ -35,8 +35,8 @@ public class CrackedCommand extends ToggleCommand {
             return;
         }
 
-        if (plugin.getBungeeManager().isEnabled()) {
-            sendBungeeActivateMessage(sender, sender.getName(), false);
+        if (plugin.getProxyManager().isEnabled()) {
+            sendProxyActivateMessage(sender, sender.getName(), false);
             plugin.getCore().sendLocaleMessage("wait-on-proxy", sender);
         } else {
             //todo: load async if
@@ -89,6 +89,6 @@ public class CrackedCommand extends ToggleCommand {
     }
 
     private boolean forwardCrackedCommand(CommandSender sender, String target) {
-        return forwardBungeeCommand(sender, target, false);
+        return forwardProxyCommand(sender, target, false);
     }
 }

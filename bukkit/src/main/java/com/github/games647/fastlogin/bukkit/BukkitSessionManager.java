@@ -1,5 +1,6 @@
 package com.github.games647.fastlogin.bukkit;
 
+import com.github.games647.fastlogin.bukkit.auth.BukkitLoginSession;
 import com.github.games647.fastlogin.core.SessionManager;
 
 import java.net.InetSocketAddress;

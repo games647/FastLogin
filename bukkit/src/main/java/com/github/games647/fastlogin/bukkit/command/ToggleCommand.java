@@ -30,9 +30,9 @@ public abstract class ToggleCommand implements CommandExecutor {
         return true;
     }
 
-    protected boolean forwardBungeeCommand(CommandSender sender, String target, boolean activate) {
-        if (plugin.getBungeeManager().isEnabled()) {
-            sendBungeeActivateMessage(sender, target, activate);
+    protected boolean forwardProxyCommand(CommandSender sender, String target, boolean activate) {
+        if (plugin.getProxyManager().isEnabled()) {
+            sendProxyActivateMessage(sender, target, activate);
             plugin.getCore().sendLocaleMessage("wait-on-proxy", sender);
             return true;
         }
@@ -50,10 +50,10 @@ public abstract class ToggleCommand implements CommandExecutor {
         return true;
     }
 
-    protected void sendBungeeActivateMessage(CommandSender invoker, String target, boolean activate) {
+    protected void sendProxyActivateMessage(CommandSender invoker, String target, boolean activate) {
         if (invoker instanceof PluginMessageRecipient) {
             ChannelMessage message = new ChangePremiumMessage(target, activate, true);
-            plugin.getBungeeManager().sendPluginMessage((PluginMessageRecipient) invoker, message);
+            plugin.getProxyManager().sendPluginMessage((PluginMessageRecipient) invoker, message);
         } else {
             Optional<? extends Player> optPlayer = Bukkit.getServer().getOnlinePlayers().stream().findFirst();
             if (!optPlayer.isPresent()) {
@@ -63,7 +63,7 @@ public abstract class ToggleCommand implements CommandExecutor {
 
             Player sender = optPlayer.get();
             ChannelMessage message = new ChangePremiumMessage(target, activate, false);
-            plugin.getBungeeManager().sendPluginMessage(sender, message);
+            plugin.getProxyManager().sendPluginMessage(sender, message);
         }
     }
 }

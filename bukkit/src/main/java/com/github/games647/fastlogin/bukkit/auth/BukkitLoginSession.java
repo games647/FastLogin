@@ -1,4 +1,4 @@
-package com.github.games647.fastlogin.bukkit;
+package com.github.games647.fastlogin.bukkit.auth;
 
 import com.github.games647.craftapi.model.skin.SkinProperty;
 import com.github.games647.fastlogin.core.storage.StoredProfile;
@@ -30,7 +30,7 @@ public class BukkitLoginSession extends LoginSession {
         this.verifyToken = verifyToken.clone();
     }
 
-    //available for BungeeCord
+    // available for proxies
     public BukkitLoginSession(String username, boolean registered) {
         this(username, "", EMPTY_ARRAY, registered, null);
     }
@@ -48,7 +48,7 @@ public class BukkitLoginSession extends LoginSession {
     /**
      * Gets the verify token the server sent to the client.
      *
-     * Empty if it's a BungeeCord connection
+     * Empty if it's a proxy connection
      *
      * @return the verify token from the server
      */
