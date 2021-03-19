@@ -98,6 +98,12 @@
                 <enabled>false</enabled>
             </snapshots>
         </repository>
+
+        <!-- Floodgate -->
+        <repository>
+            <id>nukkitx-snapshot</id>
+            <url>https://repo.nukkitx.com/maven-snapshots/</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -212,6 +218,13 @@
                     <artifactId>*</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.geysermc</groupId>
+            <artifactId>connector</artifactId>
+            <version>1.2.0-SNAPSHOT</version>
+            <scope>provided</scope>
         </dependency>
 
         <!--No maven repository :(-->
