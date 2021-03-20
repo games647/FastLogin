@@ -14,6 +14,8 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerLoginEvent.Result;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.geysermc.connector.GeyserConnector;
+import org.geysermc.connector.network.session.GeyserSession;
 import org.geysermc.floodgate.FloodgateAPI;
 import org.geysermc.floodgate.FloodgatePlayer;
 
@@ -50,18 +52,49 @@ public class ConnectionListener implements Listener {
             BukkitLoginSession session = plugin.getSession(player.getAddress());
             
             if(Bukkit.getServer().getPluginManager().getPlugin("Geyser-Spigot") != null &&
-                    Bukkit.getServer().getPluginManager().getPlugin("floodgate-bukkit") != null) {
-                //TODO: Does this return null if a player is connected through Geyser Offline mode?
-                FloodgatePlayer floodgatePlayer = FloodgateAPI.getPlayer(player.getUniqueId());
-                if (floodgatePlayer != null) {
-                    StoredProfile profile = plugin.getCore().getStorage().loadProfile(player.getName());
+                    Bukkit.getServer().getPluginManager().getPlugin("floodgate-bukkit") != null) {                
+                FloodgatePlayer floodgatePlayer = null;
                 
-                    //create fake session to make auto login work
+                // check if the player is really connected through Geyser
+                for (GeyserSession geyserPlayer : GeyserConnector.getInstance().getPlayers()) {
+                    if (geyserPlayer.getName().equals(player.getName())) {
+                        // this also returns a floodgatePlayer for linked Java accounts
+                        // that's why the Geyser Server's player list also has to be checked
+                        //TODO: does this return null if a player is connected through Geyser Offline mode?
+                        floodgatePlayer = FloodgateAPI.getPlayer(player.getUniqueId());
+                        break;
+                    }
+                }
+                
+                if (floodgatePlayer != null) {
+                    plugin.getLog().info(
+                            "Player {} is connecting through Geyser Floodgate.",
+                            player.getName());
+                    String allowNameConflict = plugin.getCore().getConfig().getString("allowFloodgateNameConflict");
+                    if (allowNameConflict.equalsIgnoreCase("linked") &&
+                            floodgatePlayer.fetchLinkedPlayer() == null) {
+                        plugin.getLog().info(
+                                "Bedrock Player {}'s name conflits an existing Java Premium Player's name",
+                                player.getName());
+                        player.kickPlayer("This name is allready in use by a Premium Java Player");
+
+                    }
+                    if (!allowNameConflict.equalsIgnoreCase("true") && !allowNameConflict.equalsIgnoreCase("linked")) {
+                        plugin.getLog().error(
+                                "Invalid value detected for 'allowNameConflict' in FasttLogin/config.yml. Aborting login of Player {}",
+                                player.getName());
+                        return;
+                    }
+                    
+                    StoredProfile profile = plugin.getCore().getStorage().loadProfile(player.getName());
+
+                    // create fake session to make auto login work
                     session = new BukkitLoginSession(player.getName(), profile.isSaved());
                     session.setVerified(true);
 
-                    //TODO: configurate auto login for floodgate players
-                    //TODO: fix bug: registering as bedrock player breaks java auto login 
+                    // TODO: configurate auto login for floodgate players
+                    // TODO: fix bug: registering as bedrock player breaks java auto login
+
                 }
             }
             if (session == null) {

@@ -47,17 +47,17 @@ public class NameCheckTask extends JoinManagement<Player, CommandSender, Protoco
     public void run() {
         try {
             // check if the player is connecting through Geyser
-            if(Bukkit.getServer().getPluginManager().getPlugin("Geyser-Spigot") != null) {
-                if (GeyserConnector.getInstance().getDefaultAuthType() == AuthType.FLOODGATE) {
-                    // the Floodgate API requires UUID, which is inaccessible at this state
-                    // workaround: iterate over Geyser's player's usernames
-                    for (GeyserSession geyserPlayer : GeyserConnector.getInstance().getPlayers()) {
-                        if (geyserPlayer.getName().equals(username)) {
-                            plugin.getLog().info(
-                                    "Player {} is connecting through Geyser Floodgate.",
-                                    username);
-                            return;
-                        }
+            if (!plugin.getCore().getConfig().getString("allowFloodgateNameConflict").equalsIgnoreCase("false") &&
+                    Bukkit.getServer().getPluginManager().getPlugin("Geyser-Spigot") != null &&
+                    GeyserConnector.getInstance().getDefaultAuthType() == AuthType.FLOODGATE) {
+                // the Floodgate API requires UUID, which is inaccessible at this state
+                // workaround: iterate over Geyser's player's usernames
+                for (GeyserSession geyserPlayer : GeyserConnector.getInstance().getPlayers()) {
+                    if (geyserPlayer.getName().equals(username)) {
+                        plugin.getLog().info(
+                                "Skipping name conflict checking for player {}",
+                                username);
+                        return;
                     }
                 }
             }
