@@ -51,7 +51,7 @@ public class ConnectionListener implements Listener {
             
             if(Bukkit.getServer().getPluginManager().getPlugin("Geyser-Spigot") != null &&
                     Bukkit.getServer().getPluginManager().getPlugin("floodgate-bukkit") != null) {
-                //TODO: Does this return null if a player is connected through Geyser Online mode?
+                //TODO: Does this return null if a player is connected through Geyser Offline mode?
                 FloodgatePlayer floodgatePlayer = FloodgateAPI.getPlayer(player.getUniqueId());
                 if (floodgatePlayer != null) {
                     StoredProfile profile = plugin.getCore().getStorage().loadProfile(player.getName());

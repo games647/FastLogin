@@ -12,9 +12,6 @@ import java.security.KeyPair;
 import java.security.SecureRandom;
 
 import org.bukkit.entity.Player;
-import org.geysermc.connector.GeyserConnector;
-import org.geysermc.connector.common.AuthType;
-import org.geysermc.connector.network.session.GeyserSession;
 
 import static com.comphenix.protocol.PacketType.Login.Client.ENCRYPTION_BEGIN;
 import static com.comphenix.protocol.PacketType.Login.Client.START;
