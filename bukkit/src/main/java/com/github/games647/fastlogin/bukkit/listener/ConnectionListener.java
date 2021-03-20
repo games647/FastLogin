@@ -3,6 +3,7 @@ package com.github.games647.fastlogin.bukkit.listener;
 import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 import com.github.games647.fastlogin.bukkit.task.ForceLoginTask;
+import com.github.games647.fastlogin.core.StoredProfile;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -13,6 +14,8 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerLoginEvent.Result;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.geysermc.floodgate.FloodgateAPI;
+import org.geysermc.floodgate.FloodgatePlayer;
 
 /**
  * This listener tells authentication plugins if the player has a premium account and we checked it successfully. So the
@@ -45,7 +48,20 @@ public class ConnectionListener implements Listener {
             // cases: Paper (firing BungeeCord message before PlayerJoinEvent) or not running BungeeCord and already
             // having the login session from the login process
             BukkitLoginSession session = plugin.getSession(player.getAddress());
-            if (session == null) {
+            FloodgatePlayer floodgatePlayer = FloodgateAPI.getPlayer(player.getUniqueId());
+            if (floodgatePlayer != null) {
+                StoredProfile profile = plugin.getCore().getStorage().loadProfile(player.getName());
+                
+                //create fake session to make auto login work
+                session = new BukkitLoginSession(player.getName(), profile.isSaved());
+                session.setVerified(true);
+                
+                //start auto login
+                //TODO: configurate auto login for floodgate players
+                //TODO: fix bug: registering as bedrock player breaks java auto login 
+                Runnable forceLoginTask = new ForceLoginTask(plugin.getCore(), player, session);
+                Bukkit.getScheduler().runTaskAsynchronously(plugin, forceLoginTask);
+            } else if (session == null) {
                 String sessionId = plugin.getSessionId(player.getAddress());
                 plugin.getLog().info("No on-going login session for player: {} with ID {}", player, sessionId);
             } else {

@@ -14,6 +14,9 @@ import java.util.Random;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.geysermc.connector.GeyserConnector;
+import org.geysermc.connector.common.AuthType;
+import org.geysermc.connector.network.session.GeyserSession;
 
 public class NameCheckTask extends JoinManagement<Player, CommandSender, ProtocolLibLoginSource>
         implements Runnable {
@@ -42,6 +45,19 @@ public class NameCheckTask extends JoinManagement<Player, CommandSender, Protoco
     @Override
     public void run() {
         try {
+            // check if the player is connecting through Geyser
+            if (GeyserConnector.getInstance().getDefaultAuthType() == AuthType.FLOODGATE) {
+                // the Floodgate API requires UUID, which is inaccessible at this state
+                // workaround: iterate over Geyser's player's usernames
+                for (GeyserSession geyserPlayer : GeyserConnector.getInstance().getPlayers()) {
+                    if (geyserPlayer.getName().equals(username)) {
+                        plugin.getLog().info(
+                                "Player {} is connecting through Geyser Floodgate.",
+                                username);
+                        return;
+                    }
+                }
+            }
             super.onLogin(username, new ProtocolLibLoginSource(packetEvent, player, random, publicKey));
         } finally {
             ProtocolLibrary.getProtocolManager().getAsynchronousManager().signalPacketTransmission(packetEvent);

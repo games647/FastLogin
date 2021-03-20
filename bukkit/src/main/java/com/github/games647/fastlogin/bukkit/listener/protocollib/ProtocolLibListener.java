@@ -90,21 +90,6 @@ public class ProtocolLibListener extends PacketAdapter {
         String username = packet.getGameProfiles().read(0).getName();
         plugin.getLog().trace("GameProfile {} with {} connecting", sessionKey, username);
 
-        // check if the player is connecting through Geyser
-        if (GeyserConnector.getInstance().getDefaultAuthType() == AuthType.FLOODGATE) {
-            // the Floodgate API requires UUID, which is inaccessible at this state
-            // workaround: iterate over Geyser's player's usernames
-            for (GeyserSession geyserPlayer : GeyserConnector.getInstance().getPlayers()) {
-                if (geyserPlayer.getName().equals(username)) {
-                    plugin.getLog().info(
-                            "Player {} is connecting throught Geyser Floodgate. FastLogin will not check this player.",
-                            username);
-                    // TODO: auto login (WHEN?)
-                    return;
-                }
-            }
-        }
-
         packetEvent.getAsyncMarker().incrementProcessingDelay();
         Runnable nameCheckTask = new NameCheckTask(plugin, packetEvent, random, player, username, keyPair.getPublic());
         plugin.getScheduler().runAsync(nameCheckTask);
