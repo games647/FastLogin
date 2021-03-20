@@ -48,20 +48,23 @@ public class ConnectionListener implements Listener {
             // cases: Paper (firing BungeeCord message before PlayerJoinEvent) or not running BungeeCord and already
             // having the login session from the login process
             BukkitLoginSession session = plugin.getSession(player.getAddress());
-            FloodgatePlayer floodgatePlayer = FloodgateAPI.getPlayer(player.getUniqueId());
-            if (floodgatePlayer != null) {
-                StoredProfile profile = plugin.getCore().getStorage().loadProfile(player.getName());
+            
+            if(Bukkit.getServer().getPluginManager().getPlugin("Geyser-Spigot") != null &&
+                    Bukkit.getServer().getPluginManager().getPlugin("floodgate-bukkit") != null) {
+                //TODO: Does this return null if a player is connected through Geyser Online mode?
+                FloodgatePlayer floodgatePlayer = FloodgateAPI.getPlayer(player.getUniqueId());
+                if (floodgatePlayer != null) {
+                    StoredProfile profile = plugin.getCore().getStorage().loadProfile(player.getName());
                 
-                //create fake session to make auto login work
-                session = new BukkitLoginSession(player.getName(), profile.isSaved());
-                session.setVerified(true);
-                
-                //start auto login
-                //TODO: configurate auto login for floodgate players
-                //TODO: fix bug: registering as bedrock player breaks java auto login 
-                Runnable forceLoginTask = new ForceLoginTask(plugin.getCore(), player, session);
-                Bukkit.getScheduler().runTaskAsynchronously(plugin, forceLoginTask);
-            } else if (session == null) {
+                    //create fake session to make auto login work
+                    session = new BukkitLoginSession(player.getName(), profile.isSaved());
+                    session.setVerified(true);
+
+                    //TODO: configurate auto login for floodgate players
+                    //TODO: fix bug: registering as bedrock player breaks java auto login 
+                }
+            }
+            if (session == null) {
                 String sessionId = plugin.getSessionId(player.getAddress());
                 plugin.getLog().info("No on-going login session for player: {} with ID {}", player, sessionId);
             } else {

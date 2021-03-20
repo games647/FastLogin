@@ -12,6 +12,7 @@ import com.github.games647.fastlogin.core.shared.event.FastLoginPreLoginEvent;
 import java.security.PublicKey;
 import java.util.Random;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.geysermc.connector.GeyserConnector;
@@ -46,15 +47,17 @@ public class NameCheckTask extends JoinManagement<Player, CommandSender, Protoco
     public void run() {
         try {
             // check if the player is connecting through Geyser
-            if (GeyserConnector.getInstance().getDefaultAuthType() == AuthType.FLOODGATE) {
-                // the Floodgate API requires UUID, which is inaccessible at this state
-                // workaround: iterate over Geyser's player's usernames
-                for (GeyserSession geyserPlayer : GeyserConnector.getInstance().getPlayers()) {
-                    if (geyserPlayer.getName().equals(username)) {
-                        plugin.getLog().info(
-                                "Player {} is connecting through Geyser Floodgate.",
-                                username);
-                        return;
+            if(Bukkit.getServer().getPluginManager().getPlugin("Geyser-Spigot") != null) {
+                if (GeyserConnector.getInstance().getDefaultAuthType() == AuthType.FLOODGATE) {
+                    // the Floodgate API requires UUID, which is inaccessible at this state
+                    // workaround: iterate over Geyser's player's usernames
+                    for (GeyserSession geyserPlayer : GeyserConnector.getInstance().getPlayers()) {
+                        if (geyserPlayer.getName().equals(username)) {
+                            plugin.getLog().info(
+                                    "Player {} is connecting through Geyser Floodgate.",
+                                    username);
+                            return;
+                        }
                     }
                 }
             }
