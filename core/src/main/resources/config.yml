@@ -186,6 +186,31 @@ auto-register-unknown: false
 # The password of your Minecraft and the password to login in with your auth plugin
 autoLogin: true
 
+# Floodgate configuration
+# Connecing through Floodgate requires player's to sign in via their Xbox Live account
+# Requires https://github.com/GeyserMC/Floodgate/ and https://github.com/GeyserMC/Geyser/
+# These settings only work in Bukkit/Spigot/Paper mode
+
+# This enables auto login for every player connecting through Floodgate.
+# Possible values: false, true, linked
+# Linked means that only Bedrock accounts linked to a Java account will be logged in automatically
+autoLoginFloodgate: false
+
+# This enables Floodgate players to join the server, even if autoRegister is true and there's an existing Java Premium
+# account with the same name
+# Possible values:
+#   false: Check for Premium Java name conflicts as described in 'autoRegister'
+#   true:  Bypass 'autoRegister's name conflict checking 
+#   linked: Bedrock accounts linked to a Java account will be allowed to join with conflicting names
+# Note: Linking a new account requires players to log in with a non-linked Bedrock account first
+# Enabling this will make linking new Bedrock players impossible
+# More information on linking accounts: https://github.com/GeyserMC/Geyser/wiki/Floodgate#account-linking
+# Releated Floodgate issue: https://github.com/GeyserMC/Floodgate/issues/37
+allowFloodgateNameConflict: false
+
+# This enables auto registering every player connecting through Floodgate.
+autoRegisterFloodgate: false
+
 # Database configuration
 # Recommended is the use of MariaDB (a better version of MySQL)
 
