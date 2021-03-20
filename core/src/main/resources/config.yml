@@ -212,6 +212,7 @@ autoLoginFloodgate: 'false'
 allowFloodgateNameConflict: 'false'
 
 # This enables auto registering every player connecting through Floodgate.
+# autoLoginFloodgate must be 'true' for this to work
 autoRegisterFloodgate: false
 
 # Database configuration

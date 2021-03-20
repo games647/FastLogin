@@ -71,8 +71,9 @@ public class ConnectionListener implements Listener {
                             "Player {} is connecting through Geyser Floodgate.",
                             player.getName());
                     String allowNameConflict = plugin.getCore().getConfig().getString("allowFloodgateNameConflict");
-                    if (allowNameConflict.equalsIgnoreCase("linked") &&
-                            floodgatePlayer.fetchLinkedPlayer() == null) {
+                    // check if the Bedrock player is linked to a Java account 
+                    boolean isLinked = floodgatePlayer.fetchLinkedPlayer() != null;
+                    if (allowNameConflict.equalsIgnoreCase("linked") && !isLinked) {
                         plugin.getLog().info(
                                 "Bedrock Player {}'s name conflits an existing Java Premium Player's name",
                                 player.getName());
@@ -88,13 +89,16 @@ public class ConnectionListener implements Listener {
                     
                     StoredProfile profile = plugin.getCore().getStorage().loadProfile(player.getName());
 
+                    String autoLoginFloodgate = plugin.getCore().getConfig().getString("autoLoginFloodgate");
+                    boolean autoRegisterFloodgate = plugin.getCore().getConfig().getBoolean("autoRegisterFloodgate");
+                    
                     // create fake session to make auto login work
-                    session = new BukkitLoginSession(player.getName(), profile.isSaved());
-                    session.setVerified(true);
-
-                    // TODO: configurate auto login for floodgate players
-                    // TODO: fix bug: registering as bedrock player breaks java auto login
-
+                    // the player should only be registered (=> parm. registered = false) if
+                    // the player is not registered and autoRegister is enabled in the config
+                    session = new BukkitLoginSession(player.getName(), profile.isSaved() || !autoRegisterFloodgate);
+                    // enable auto login based on the value of 'autoLoginFloodgate' in config.yml
+                    session.setVerified(autoLoginFloodgate.equalsIgnoreCase("true")
+                            || (autoLoginFloodgate.equalsIgnoreCase("linked") && isLinked));
                 }
             }
             if (session == null) {
