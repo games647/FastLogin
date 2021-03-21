@@ -3,7 +3,7 @@ package com.github.games647.fastlogin.bukkit.listener;
 import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 import com.github.games647.fastlogin.bukkit.task.ForceLoginTask;
-import com.github.games647.fastlogin.core.StoredProfile;
+import com.github.games647.fastlogin.core.hooks.AuthPlugin;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -87,7 +87,7 @@ public class ConnectionListener implements Listener {
                         return;
                     }
                     
-                    StoredProfile profile = plugin.getCore().getStorage().loadProfile(player.getName());
+                    AuthPlugin<Player> authPlugin = plugin.getCore().getAuthPluginHook();
 
                     String autoLoginFloodgate = plugin.getCore().getConfig().getString("autoLoginFloodgate");
                     boolean autoRegisterFloodgate = plugin.getCore().getConfig().getBoolean("autoRegisterFloodgate");
@@ -95,10 +95,17 @@ public class ConnectionListener implements Listener {
                     // create fake session to make auto login work
                     // the player should only be registered (=> parm. registered = false) if
                     // the player is not registered and autoRegister is enabled in the config
-                    session = new BukkitLoginSession(player.getName(), profile.isSaved() || !autoRegisterFloodgate);
-                    // enable auto login based on the value of 'autoLoginFloodgate' in config.yml
-                    session.setVerified(autoLoginFloodgate.equalsIgnoreCase("true")
-                            || (autoLoginFloodgate.equalsIgnoreCase("linked") && isLinked));
+                    try {
+                        session = new BukkitLoginSession(player.getName(), authPlugin.isRegistered(player.getName()) || !autoRegisterFloodgate);
+                        // enable auto login based on the value of 'autoLoginFloodgate' in config.yml
+                        session.setVerified(autoLoginFloodgate.equalsIgnoreCase("true")
+                                || (autoLoginFloodgate.equalsIgnoreCase("linked") && isLinked));
+                    } catch (Exception e) {
+                        plugin.getLog().error(
+                                "An error has occured while checking if player {} is registered",
+                                player.getName());
+                        return;
+                    }
                 }
             }
             if (session == null) {
