@@ -162,6 +162,22 @@
             </exclusions>
         </dependency>
 
+		<!--Geyser for Bedrock Edition support-->
+        <dependency>
+            <groupId>org.geysermc</groupId>
+            <artifactId>connector</artifactId>
+            <version>1.2.0-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+
+		<!--Floodgate for Xbox Live Authentication-->
+        <dependency>
+            <groupId>org.geysermc</groupId>
+            <artifactId>floodgate-bukkit</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+
         <!--Login Plugins-->
         <dependency>
             <groupId>fr.xephi</groupId>
@@ -218,20 +234,6 @@
                     <artifactId>*</artifactId>
                 </exclusion>
             </exclusions>
-        </dependency>
-        
-        <dependency>
-            <groupId>org.geysermc</groupId>
-            <artifactId>connector</artifactId>
-            <version>1.2.0-SNAPSHOT</version>
-            <scope>provided</scope>
-        </dependency>
-        
-        <dependency>
-            <groupId>org.geysermc</groupId>
-            <artifactId>floodgate-bukkit</artifactId>
-            <version>1.0-SNAPSHOT</version>
-            <scope>provided</scope>
         </dependency>
 
         <!--No maven repository :(-->
