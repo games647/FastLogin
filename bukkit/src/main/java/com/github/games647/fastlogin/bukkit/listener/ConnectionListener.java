@@ -51,8 +51,8 @@ public class ConnectionListener implements Listener {
             // having the login session from the login process
             BukkitLoginSession session = plugin.getSession(player.getAddress());
             
-            if(Bukkit.getServer().getPluginManager().getPlugin("Geyser-Spigot") != null &&
-                    Bukkit.getServer().getPluginManager().getPlugin("floodgate-bukkit") != null) {                
+            if (Bukkit.getServer().getPluginManager().isPluginEnabled("Geyser-Spigot") &&
+                    Bukkit.getServer().getPluginManager().isPluginEnabled("floodgate-bukkit")) {                
                 FloodgatePlayer floodgatePlayer = null;
                 
                 // check if the player is really connected through Geyser
