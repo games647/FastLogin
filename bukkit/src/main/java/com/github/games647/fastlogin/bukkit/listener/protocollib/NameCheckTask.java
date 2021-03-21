@@ -48,7 +48,7 @@ public class NameCheckTask extends JoinManagement<Player, CommandSender, Protoco
         try {
             // check if the player is connecting through Geyser
             if (!plugin.getCore().getConfig().getString("allowFloodgateNameConflict").equalsIgnoreCase("false") &&
-                    Bukkit.getServer().getPluginManager().getPlugin("Geyser-Spigot") != null &&
+                    Bukkit.getServer().getPluginManager().isPluginEnabled("Geyser-Spigot") &&
                     GeyserConnector.getInstance().getDefaultAuthType() == AuthType.FLOODGATE) {
                 // the Floodgate API requires UUID, which is inaccessible at this state
                 // workaround: iterate over Geyser's player's usernames
