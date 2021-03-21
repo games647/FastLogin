@@ -107,11 +107,13 @@
             <systemPath>${project.basedir}/lib/BungeeAuth-1.4.jar</systemPath>
         </dependency>
 
+        <!--Maven repository throw [409 Conflict] :(-->
         <dependency>
             <groupId>de.xxschrandxx.bca</groupId>
             <artifactId>BungeeCordAuthenticator</artifactId>
             <version>0.0.2</version>
-            <scope>provided</scope>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/bungeecordauthenticator-0.0.2-20210207.174619-2.jar</systemPath>
         </dependency>
     </dependencies>
 </project>
