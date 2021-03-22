@@ -13,6 +13,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerLoginEvent.Result;
+import org.geysermc.connector.GeyserConnector;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 /**
@@ -47,7 +48,7 @@ public class ConnectionListener implements Listener {
             // having the login session from the login process
             BukkitLoginSession session = plugin.getSession(player.getAddress());
             
-            if (FloodgateAuthTask.getGeyserPlayer(player.getName()) != null) {
+            if (GeyserConnector.getInstance().getPlayerByUuid(player.getUniqueId()) != null) {
                 Runnable floodgateAuthTask = new FloodgateAuthTask(plugin, player);
                 Bukkit.getScheduler().runTaskAsynchronously(plugin, floodgateAuthTask);
             } else if (session == null) {
