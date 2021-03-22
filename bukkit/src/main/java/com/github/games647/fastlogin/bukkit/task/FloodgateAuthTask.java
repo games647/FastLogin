@@ -10,6 +10,7 @@ import org.geysermc.floodgate.FloodgatePlayer;
 
 import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
+import com.github.games647.fastlogin.core.StoredProfile;
 import com.github.games647.fastlogin.core.hooks.AuthPlugin;
 
 public class FloodgateAuthTask implements Runnable {
@@ -40,7 +41,7 @@ public class FloodgateAuthTask implements Runnable {
         }
         if (!allowNameConflict.equalsIgnoreCase("true") && !allowNameConflict.equalsIgnoreCase("linked")) {
             plugin.getLog().error(
-                    "Invalid value detected for 'allowNameConflict' in FasttLogin/config.yml. Aborting login of Player {}",
+                    "Invalid value detected for 'allowFloodgateNameConflict' in FasttLogin/config.yml. Aborting login of Player {}",
                     player.getName());
             return;
         }
@@ -65,8 +66,14 @@ public class FloodgateAuthTask implements Runnable {
                     "Auto registration is disabled for Floodgate players in config.yml");
             return;
         }
+        
+        // logging in from bedrock for a second time threw an error with UUID
+        StoredProfile profile = plugin.getCore().getStorage().loadProfile(player.getName());
+        if (profile == null) {
+            profile = new StoredProfile(player.getUniqueId(), player.getName(), true, player.getAddress().toString());
+        }
 
-        BukkitLoginSession session = new BukkitLoginSession(player.getName(), isRegistered);
+        BukkitLoginSession session = new BukkitLoginSession(player.getName(), isRegistered, profile);
         
         // enable auto login based on the value of 'autoLoginFloodgate' in config.yml
         session.setVerified(autoLoginFloodgate.equalsIgnoreCase("true")
