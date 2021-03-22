@@ -33,7 +33,14 @@ public class FloodgateAuthTask implements Runnable {
             plugin.getLog().info(
                     "Bedrock Player {}'s name conflits an existing Java Premium Player's name",
                     player.getName());
-            player.kickPlayer("This name is allready in use by a Premium Java Player");
+            
+            // kicking must be synchronous
+            // https://www.spigotmc.org/threads/asynchronous-player-kick-problem.168580/
+            Bukkit.getScheduler().runTask(plugin, new Runnable() {
+                public void run() {
+                    player.kickPlayer("This name is allready in use by a Premium Java Player");
+                }
+            });
 
         }
         if (!allowNameConflict.equalsIgnoreCase("true")
