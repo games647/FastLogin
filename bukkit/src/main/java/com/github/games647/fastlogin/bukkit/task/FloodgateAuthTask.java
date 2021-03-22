@@ -50,26 +50,33 @@ public class FloodgateAuthTask implements Runnable {
         String autoLoginFloodgate = plugin.getCore().getConfig().getString("autoLoginFloodgate");
         boolean autoRegisterFloodgate = plugin.getCore().getConfig().getBoolean("autoRegisterFloodgate");
         
-        // create fake session to make auto login work
-        // the player should only be registered (=> parm. registered = false) if
-        // the player is not registered and autoRegister is enabled in the config
+        boolean isRegistered;
         try {
-            BukkitLoginSession session = new BukkitLoginSession(player.getName(), authPlugin.isRegistered(player.getName()) || !autoRegisterFloodgate);
-            // enable auto login based on the value of 'autoLoginFloodgate' in config.yml
-            session.setVerified(autoLoginFloodgate.equalsIgnoreCase("true")
-                    || (autoLoginFloodgate.equalsIgnoreCase("linked") && isLinked));
-            
-            //run login task
-            Runnable forceLoginTask = new ForceLoginTask(plugin.getCore(), player, session);
-            Bukkit.getScheduler().runTaskAsynchronously(plugin, forceLoginTask);
+            isRegistered = authPlugin.isRegistered(player.getName());
         } catch (Exception e) {
             plugin.getLog().error(
                     "An error has occured while checking if player {} is registered",
                     player.getName());
             return;
         }
+        
+        if (!isRegistered && !autoRegisterFloodgate) {
+            plugin.getLog().info(
+                    "Auto registration is disabled for Floodgate players in config.yml");
+            return;
+        }
+
+        BukkitLoginSession session = new BukkitLoginSession(player.getName(), isRegistered);
+        
+        // enable auto login based on the value of 'autoLoginFloodgate' in config.yml
+        session.setVerified(autoLoginFloodgate.equalsIgnoreCase("true")
+                || (autoLoginFloodgate.equalsIgnoreCase("linked") && isLinked));
+
+        // run login task
+        Runnable forceLoginTask = new ForceLoginTask(plugin.getCore(), player, session);
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, forceLoginTask);
     }
-    
+
     public static GeyserSession getGeyserPlayer(String username) {
         if (Bukkit.getServer().getPluginManager().isPluginEnabled("floodgate-bukkit") &&
                 Bukkit.getServer().getPluginManager().isPluginEnabled("Geyser-Spigot") &&
