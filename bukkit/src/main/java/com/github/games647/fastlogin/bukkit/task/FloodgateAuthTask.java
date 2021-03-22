@@ -2,9 +2,6 @@ package com.github.games647.fastlogin.bukkit.task;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.geysermc.connector.GeyserConnector;
-import org.geysermc.connector.common.AuthType;
-import org.geysermc.connector.network.session.GeyserSession;
 import org.geysermc.floodgate.FloodgateAPI;
 import org.geysermc.floodgate.FloodgatePlayer;
 
@@ -84,23 +81,6 @@ public class FloodgateAuthTask implements Runnable {
         // run login task
         Runnable forceLoginTask = new ForceLoginTask(plugin.getCore(), player, session);
         Bukkit.getScheduler().runTaskAsynchronously(plugin, forceLoginTask);
-    }
-
-    public static GeyserSession getGeyserPlayer(String username) {
-        if (Bukkit.getServer().getPluginManager().isPluginEnabled("floodgate-bukkit") &&
-                Bukkit.getServer().getPluginManager().isPluginEnabled("Geyser-Spigot") &&
-                GeyserConnector.getInstance().getDefaultAuthType() == AuthType.FLOODGATE) {
-            // the Floodgate API requires UUID, which is inaccessible at NameCheckTask.java
-            // the Floodgate API has a return value for Java (non-bedrock) players, if they
-            // are linked to a Bedrock account
-            // workaround: iterate over Geyser's player's usernames
-            for (GeyserSession geyserPlayer : GeyserConnector.getInstance().getPlayers()) {
-                if (geyserPlayer.getName().equals(username)) {
-                    return geyserPlayer;
-                }
-            }
-        }
-        return null;
     }
 
 }

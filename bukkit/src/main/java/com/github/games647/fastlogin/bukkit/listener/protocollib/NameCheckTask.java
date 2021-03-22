@@ -5,7 +5,6 @@ import com.comphenix.protocol.events.PacketEvent;
 import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 import com.github.games647.fastlogin.bukkit.event.BukkitFastLoginPreLoginEvent;
-import com.github.games647.fastlogin.bukkit.task.FloodgateAuthTask;
 import com.github.games647.fastlogin.core.StoredProfile;
 import com.github.games647.fastlogin.core.shared.JoinManagement;
 import com.github.games647.fastlogin.core.shared.event.FastLoginPreLoginEvent;
@@ -13,8 +12,12 @@ import com.github.games647.fastlogin.core.shared.event.FastLoginPreLoginEvent;
 import java.security.PublicKey;
 import java.util.Random;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.geysermc.connector.GeyserConnector;
+import org.geysermc.connector.common.AuthType;
+import org.geysermc.connector.network.session.GeyserSession;
 
 public class NameCheckTask extends JoinManagement<Player, CommandSender, ProtocolLibLoginSource>
         implements Runnable {
@@ -45,7 +48,7 @@ public class NameCheckTask extends JoinManagement<Player, CommandSender, Protoco
         try {
             // check if the player is connecting through Geyser
             if (!plugin.getCore().getConfig().getString("allowFloodgateNameConflict").equalsIgnoreCase("false")
-                    && FloodgateAuthTask.getGeyserPlayer(username) != null) {
+                    && getGeyserPlayer(username) != null) {
                 plugin.getLog().info("Skipping name conflict checking for player {}", username);
                 return;
             }
@@ -92,5 +95,22 @@ public class NameCheckTask extends JoinManagement<Player, CommandSender, Protoco
     public void startCrackedSession(ProtocolLibLoginSource source, StoredProfile profile, String username) {
         BukkitLoginSession loginSession = new BukkitLoginSession(username, profile);
         plugin.putSession(player.getAddress(), loginSession);
+    }
+    
+    private static GeyserSession getGeyserPlayer(String username) {
+        if (Bukkit.getServer().getPluginManager().isPluginEnabled("floodgate-bukkit") &&
+                Bukkit.getServer().getPluginManager().isPluginEnabled("Geyser-Spigot") &&
+                GeyserConnector.getInstance().getDefaultAuthType() == AuthType.FLOODGATE) {
+            // the Floodgate API requires UUID, which is inaccessible at NameCheckTask.java
+            // the Floodgate API has a return value for Java (non-bedrock) players, if they
+            // are linked to a Bedrock account
+            // workaround: iterate over Geyser's player's usernames
+            for (GeyserSession geyserPlayer : GeyserConnector.getInstance().getPlayers()) {
+                if (geyserPlayer.getName().equals(username)) {
+                    return geyserPlayer;
+                }
+            }
+        }
+        return null;
     }
 }
