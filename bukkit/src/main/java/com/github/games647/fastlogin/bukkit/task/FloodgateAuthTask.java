@@ -39,7 +39,9 @@ public class FloodgateAuthTask implements Runnable {
             player.kickPlayer("This name is allready in use by a Premium Java Player");
 
         }
-        if (!allowNameConflict.equalsIgnoreCase("true") && !allowNameConflict.equalsIgnoreCase("linked")) {
+        if (!allowNameConflict.equalsIgnoreCase("true")
+                && !allowNameConflict.equalsIgnoreCase("linked")
+                && !allowNameConflict.equalsIgnoreCase("false")) {
             plugin.getLog().error(
                     "Invalid value detected for 'allowFloodgateNameConflict' in FasttLogin/config.yml. Aborting login of Player {}",
                     player.getName());

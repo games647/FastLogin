@@ -197,8 +197,8 @@ autoLogin: true
 # !!! DO NOT REMOVE THE APOSTROPHE !!!
 autoLoginFloodgate: 'false'
 
-# This enables Floodgate players to join the server, even if autoRegister is true and there's an existing Java Premium
-# account with the same name
+# This enables Floodgate players to join the server, even if autoRegister is true and there's an existing
+# Java **PREMIUM** account with the same name
 # Possible values:
 #   false: Check for Premium Java name conflicts as described in 'autoRegister'
 #     'autoRegister' must be 'true' for this to work
