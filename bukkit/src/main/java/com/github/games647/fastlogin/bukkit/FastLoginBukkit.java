@@ -12,12 +12,8 @@ import com.github.games647.fastlogin.core.CommonUtil;
 import com.github.games647.fastlogin.core.PremiumStatus;
 import com.github.games647.fastlogin.core.shared.FastLoginCore;
 import com.github.games647.fastlogin.core.shared.PlatformPlugin;
+
 import io.papermc.lib.PaperLib;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.PluginManager;
-import org.bukkit.plugin.java.JavaPlugin;
-import org.slf4j.Logger;
 
 import java.net.InetSocketAddress;
 import java.nio.file.Path;
@@ -25,6 +21,12 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.java.JavaPlugin;
+import org.slf4j.Logger;
 
 /**
  * This plugin checks if a player has a paid account and if so tries to skip offline mode authentication.
@@ -116,8 +118,12 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
         }
 
         bungeeManager.cleanup();
-        if (getServer().getPluginManager().isPluginEnabled("PlaceholderAPI") && premiumPlaceholder != null) {
-            premiumPlaceholder.unregister();
+        if (premiumPlaceholder != null && getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
+            try {
+                premiumPlaceholder.unregister();
+            } catch (Exception | NoSuchMethodError exception) {
+                logger.error("Failed to unregister placeholder", exception);
+            }
         }
     }
 
