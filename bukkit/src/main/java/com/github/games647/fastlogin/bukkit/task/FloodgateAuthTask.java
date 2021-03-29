@@ -2,8 +2,8 @@ package com.github.games647.fastlogin.bukkit.task;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.geysermc.floodgate.FloodgateAPI;
-import org.geysermc.floodgate.FloodgatePlayer;
+import org.geysermc.floodgate.api.FloodgateApi;
+import org.geysermc.floodgate.api.player.FloodgatePlayer;
 
 import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
@@ -22,13 +22,13 @@ public class FloodgateAuthTask implements Runnable {
 
     @Override
     public void run() {
-        FloodgatePlayer floodgatePlayer = FloodgateAPI.getPlayer(player.getUniqueId());
+        FloodgatePlayer floodgatePlayer = FloodgateApi.getInstance().getPlayer(player.getUniqueId());
         plugin.getLog().info(
                 "Player {} is connecting through Geyser Floodgate.",
                 player.getName());
         String allowNameConflict = plugin.getCore().getConfig().getString("allowFloodgateNameConflict");
         // check if the Bedrock player is linked to a Java account 
-        boolean isLinked = floodgatePlayer.fetchLinkedPlayer() != null;
+        boolean isLinked = floodgatePlayer.getLinkedPlayer() != null;
         if (allowNameConflict.equalsIgnoreCase("linked") && !isLinked) {
             plugin.getLog().info(
                     "Bedrock Player {}'s name conflits an existing Java Premium Player's name",

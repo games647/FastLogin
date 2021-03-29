@@ -15,9 +15,8 @@ import java.util.Random;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.geysermc.connector.GeyserConnector;
-import org.geysermc.connector.common.AuthType;
-import org.geysermc.connector.network.session.GeyserSession;
+import org.geysermc.floodgate.api.FloodgateApi;
+import org.geysermc.floodgate.api.player.FloodgatePlayer;
 
 public class NameCheckTask extends JoinManagement<Player, CommandSender, ProtocolLibLoginSource>
         implements Runnable {
@@ -48,7 +47,7 @@ public class NameCheckTask extends JoinManagement<Player, CommandSender, Protoco
         try {
             // check if the player is connecting through Geyser
             if (!plugin.getCore().getConfig().getString("allowFloodgateNameConflict").equalsIgnoreCase("false")
-                    && getGeyserPlayer(username) != null) {
+                    && getFloodgatePlayer(username) != null) {
                 plugin.getLog().info("Skipping name conflict checking for player {}", username);
                 return;
             }
@@ -97,17 +96,12 @@ public class NameCheckTask extends JoinManagement<Player, CommandSender, Protoco
         plugin.putSession(player.getAddress(), loginSession);
     }
     
-    private static GeyserSession getGeyserPlayer(String username) {
-        if (Bukkit.getServer().getPluginManager().isPluginEnabled("floodgate-bukkit") &&
-                Bukkit.getServer().getPluginManager().isPluginEnabled("Geyser-Spigot") &&
-                GeyserConnector.getInstance().getDefaultAuthType() == AuthType.FLOODGATE) {
+    private static FloodgatePlayer getFloodgatePlayer(String username) {
+        if (Bukkit.getServer().getPluginManager().isPluginEnabled("floodgate"))  {
             // the Floodgate API requires UUID, which is inaccessible at NameCheckTask.java
-            // the Floodgate API has a return value for Java (non-bedrock) players, if they
-            // are linked to a Bedrock account
-            // workaround: iterate over Geyser's player's usernames
-            for (GeyserSession geyserPlayer : GeyserConnector.getInstance().getPlayers()) {
-                if (geyserPlayer.getName().equals(username)) {
-                    return geyserPlayer;
+            for (FloodgatePlayer floodgatePlayer : FloodgateApi.getInstance().getPlayers()) {
+                if (floodgatePlayer.getUsername().equals(username)) {
+                    return floodgatePlayer;
                 }
             }
         }
