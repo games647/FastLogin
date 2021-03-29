@@ -188,7 +188,7 @@ autoLogin: true
 
 # Floodgate configuration
 # Connecing through Floodgate requires player's to sign in via their Xbox Live account
-# Requires https://github.com/GeyserMC/Floodgate/ and https://github.com/GeyserMC/Geyser/
+# Requires Floodgate 2.0 https://github.com/GeyserMC/Floodgate/tree/dev/2.0
 # These settings only work in Bukkit/Spigot/Paper mode
 # !!!!!!!! WARNING: FLOODGATE SUPPORT IS AN EXPERIMENTAL FEATURE !!!!!!!!
 # Enabling any of these settings might lead to people gaining unauthorized access to other's accounts!
@@ -208,10 +208,6 @@ autoLoginFloodgate: 'false'
 #     'autoRegister' must be 'true' for this to work
 #   true:  Bypass 'autoRegister's name conflict checking 
 #   linked: Bedrock accounts linked to a Java account will be allowed to join with conflicting names
-# Note: Linking a new account requires players to log in with a non-linked Bedrock account first
-# Enabling this without using Floodgate prefixes will make linking new Bedrock players impossible
-# More information on linking accounts: https://github.com/GeyserMC/Geyser/wiki/Floodgate#account-linking
-# Releated Floodgate issue: https://github.com/GeyserMC/Floodgate/issues/37
 # !!! DO NOT REMOVE THE APOSTROPHE !!!
 # !!!!!!!! WARNING: FLOODGATE SUPPORT IS AN EXPERIMENTAL FEATURE !!!!!!!!
 # Enabling this might lead to people gaining unauthorized access to other's accounts!
