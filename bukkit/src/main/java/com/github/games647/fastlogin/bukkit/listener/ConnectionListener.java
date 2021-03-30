@@ -14,6 +14,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerLoginEvent.Result;
 import org.geysermc.floodgate.api.FloodgateApi;
+import org.geysermc.floodgate.api.player.FloodgatePlayer;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 /**
@@ -48,10 +49,12 @@ public class ConnectionListener implements Listener {
             // having the login session from the login process
             BukkitLoginSession session = plugin.getSession(player.getAddress());
             
-            if (Bukkit.getServer().getPluginManager().isPluginEnabled("floodgate") &&
-            		FloodgateApi.getInstance().getPlayer(player.getUniqueId()) != null) {
-                Runnable floodgateAuthTask = new FloodgateAuthTask(plugin, player);
-                Bukkit.getScheduler().runTaskAsynchronously(plugin, floodgateAuthTask);
+			if (Bukkit.getServer().getPluginManager().isPluginEnabled("floodgate")) {
+				FloodgatePlayer floodgatePlayer = FloodgateApi.getInstance().getPlayer(player.getUniqueId());
+				if (floodgatePlayer != null) {
+					Runnable floodgateAuthTask = new FloodgateAuthTask(plugin, player, floodgatePlayer);
+					Bukkit.getScheduler().runTaskAsynchronously(plugin, floodgateAuthTask);
+				}
             } else if (session == null) {
                 String sessionId = plugin.getSessionId(player.getAddress());
                 plugin.getLog().info("No on-going login session for player: {} with ID {}", player, sessionId);

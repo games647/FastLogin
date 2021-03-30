@@ -2,7 +2,6 @@ package com.github.games647.fastlogin.bukkit.task;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.geysermc.floodgate.api.FloodgateApi;
 import org.geysermc.floodgate.api.player.FloodgatePlayer;
 
 import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
@@ -14,15 +13,16 @@ public class FloodgateAuthTask implements Runnable {
 
     private final FastLoginBukkit plugin;
     private final Player player;
+    private final FloodgatePlayer floodgatePlayer;
 
-    public FloodgateAuthTask(FastLoginBukkit plugin, Player player) {
+    public FloodgateAuthTask(FastLoginBukkit plugin, Player player, FloodgatePlayer floodgatePlayer) {
         this.plugin = plugin;
         this.player = player;
+        this.floodgatePlayer = floodgatePlayer;
     }
 
     @Override
     public void run() {
-        FloodgatePlayer floodgatePlayer = FloodgateApi.getInstance().getPlayer(player.getUniqueId());
         plugin.getLog().info(
                 "Player {} is connecting through Geyser Floodgate.",
                 player.getName());
