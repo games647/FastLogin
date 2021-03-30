@@ -43,9 +43,7 @@ public class FloodgateAuthTask implements Runnable {
             });
 
         }
-        if (!allowNameConflict.equalsIgnoreCase("true")
-                && !allowNameConflict.equalsIgnoreCase("linked")
-                && !allowNameConflict.equalsIgnoreCase("false")) {
+        if (!isValidConfigValue(allowNameConflict)) {
             plugin.getLog().error(
                     "Invalid value detected for 'allowFloodgateNameConflict' in FasttLogin/config.yml. Aborting login of Player {}",
                     player.getName());
@@ -89,5 +87,17 @@ public class FloodgateAuthTask implements Runnable {
         Runnable forceLoginTask = new ForceLoginTask(plugin.getCore(), player, session);
         Bukkit.getScheduler().runTaskAsynchronously(plugin, forceLoginTask);
     }
+    
+	/**
+	 * Check if a string is a valid configuration option for
+	 * 'allowFloodgateNameConflict' or 'autoLoginFloodgate'
+	 * 
+	 * @param value The value of 'allowFloodgateNameConflict' or
+	 *              'autoLoginFloodgate' from config.yml
+	 * @return true if value is "true", "false", or "linked"
+	 */
+	boolean isValidConfigValue(String value) {
+		return value.equalsIgnoreCase("true") || value.equalsIgnoreCase("linked") || value.equalsIgnoreCase("false");
+	}
 
 }
