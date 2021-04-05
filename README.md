@@ -90,6 +90,7 @@ Possible values: `Premium`, `Cracked`, `Unknown`
 
 * [BungeeAuth](https://www.spigotmc.org/resources/bungeeauth.493/)
 * [BungeeAuthenticator](https://www.spigotmc.org/resources/bungeecordauthenticator.87669/)
+* [SodionAuth (2.0+)](https://github.com/Mohist-Community/SodionAuth)
 
 ## Network requests
 

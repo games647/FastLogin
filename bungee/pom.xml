@@ -97,6 +97,14 @@
             <id>spigotplugins-repo</id>
             <url>https://maven.gamestrike.de/mvn/</url>
         </repository>
+
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -136,6 +144,20 @@
             <groupId>de.xxschrandxx.bca</groupId>
             <artifactId>BungeeCordAuthenticator</artifactId>
             <version>0.0.2</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.Mohist-Community.SodionAuth</groupId>
+            <artifactId>SodionAuth-Bungee</artifactId>
+            <version>3a71c7f936</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.github.Mohist-Community.SodionAuth</groupId>
+                    <artifactId>SodionAuth-Libs</artifactId>
+                </exclusion>
+            </exclusions>
+            <optional>true</optional>
             <scope>provided</scope>
         </dependency>
     </dependencies>
