@@ -32,14 +32,16 @@ import red.mohist.sodionauth.bukkit.implementation.BukkitPlayer;
 import red.mohist.sodionauth.core.SodionAuthApi;
 import red.mohist.sodionauth.core.exception.AuthenticatedException;
 
+import java.util.concurrent.ExecutionException;
+
 /**
  * GitHub: https://github.com/Mohist-Community/SodionAuth
  * <p>
- * Project page:
+ * Project page: https://gitea.e-loli.com/SodionAuth/SodionAuth
  * <p>
  * Bukkit: Unknown
  * <p>
- * Spigot: Unknown
+ * Spigot: https://www.spigotmc.org/resources/sodionauth.76944/
  */
 public class SodionAuthHook implements AuthPlugin<Player> {
 
@@ -67,6 +69,9 @@ public class SodionAuthHook implements AuthPlugin<Player> {
         } catch (UnsupportedOperationException e){
             plugin.getLog().warn("Currently SodionAuth is not accepting forceRegister, " +
                     "It may be caused by unsupported AuthBackend");
+            return false;
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
             return false;
         }
     }
