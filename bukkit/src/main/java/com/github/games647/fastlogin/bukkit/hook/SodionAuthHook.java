@@ -32,8 +32,6 @@ import red.mohist.sodionauth.bukkit.implementation.BukkitPlayer;
 import red.mohist.sodionauth.core.SodionAuthApi;
 import red.mohist.sodionauth.core.exception.AuthenticatedException;
 
-import java.util.concurrent.ExecutionException;
-
 /**
  * GitHub: https://github.com/Mohist-Community/SodionAuth
  * <p>
