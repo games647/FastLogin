@@ -122,10 +122,11 @@ public class FastLoginBungee extends Plugin implements PlatformPlugin<CommandSen
 
             for (Class<? extends AuthPlugin<ProxiedPlayer>> clazz : hooks) {
                 String pluginName = clazz.getSimpleName();
-                pluginName = pluginName.substring(0, pluginName.length() - 4);
+                pluginName = pluginName.substring(0, pluginName.length() - "Hook".length());
                 //uses only member classes which uses AuthPlugin interface (skip interfaces)
                 Plugin plugin = getProxy().getPluginManager().getPlugin(pluginName);
                 if (plugin != null) {
+                    logger.info("Hooking into auth plugin: {}", pluginName);
                     core.setAuthPluginHook(
                             clazz.getDeclaredConstructor(FastLoginBungee.class).newInstance(this));
                 }
