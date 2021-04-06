@@ -94,13 +94,13 @@ public class DelayedAuthHook implements Runnable {
 
     private AuthPlugin<Player> getAuthHook() {
         try {
-            @SuppressWarnings("unchecked")
             List<Class<? extends AuthPlugin<Player>>> hooks = Arrays.asList(AuthMeHook.class,
                     CrazyLoginHook.class, LogItHook.class, LoginSecurityHook.class,
                     SodionAuthHook.class, UltraAuthHook.class, xAuthHook.class);
 
             for (Class<? extends AuthPlugin<Player>> clazz : hooks) {
-                String pluginName = clazz.getSimpleName().replace("Hook", "");
+                String pluginName = clazz.getSimpleName();
+                pluginName = pluginName.substring(0, pluginName.length() - 4);
                 //uses only member classes which uses AuthPlugin interface (skip interfaces)
                 if (Bukkit.getPluginManager().isPluginEnabled(pluginName)) {
                     //check only for enabled plugins. A single plugin could be disabled by plugin managers

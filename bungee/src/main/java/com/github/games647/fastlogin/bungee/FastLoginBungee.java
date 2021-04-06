@@ -121,7 +121,8 @@ public class FastLoginBungee extends Plugin implements PlatformPlugin<CommandSen
                     BungeeAuthHook.class, BungeeCordAuthenticatorBungeeHook.class, SodionAuthHook.class);
 
             for (Class<? extends AuthPlugin<ProxiedPlayer>> clazz : hooks) {
-                String pluginName = clazz.getSimpleName().replace("Hook", "");
+                String pluginName = clazz.getSimpleName();
+                pluginName = pluginName.substring(0, pluginName.length() - 4);
                 //uses only member classes which uses AuthPlugin interface (skip interfaces)
                 Plugin plugin = getProxy().getPluginManager().getPlugin(pluginName);
                 if (plugin != null) {
