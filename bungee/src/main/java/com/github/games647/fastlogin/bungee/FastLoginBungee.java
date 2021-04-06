@@ -129,6 +129,7 @@ public class FastLoginBungee extends Plugin implements PlatformPlugin<CommandSen
                     logger.info("Hooking into auth plugin: {}", pluginName);
                     core.setAuthPluginHook(
                             clazz.getDeclaredConstructor(FastLoginBungee.class).newInstance(this));
+                    break;
                 }
             }
         } catch (ReflectiveOperationException ex) {
