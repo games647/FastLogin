@@ -23,6 +23,7 @@ softdepend:
     # Auth plugins
     - AuthMe
     - LoginSecurity
+    - SodionAuth
     - xAuth
     - LogIt
     - UltraAuth
