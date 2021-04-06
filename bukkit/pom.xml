@@ -272,7 +272,7 @@
         <dependency>
             <groupId>com.github.Mohist-Community.SodionAuth</groupId>
             <artifactId>SodionAuth-Bukkit</artifactId>
-            <version>3a71c7f936</version>
+            <version>2bdfdc854b</version>
             <exclusions>
                 <exclusion>
                     <groupId>com.github.Mohist-Community.SodionAuth</groupId>

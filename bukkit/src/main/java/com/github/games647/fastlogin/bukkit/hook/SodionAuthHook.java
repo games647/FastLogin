@@ -70,9 +70,6 @@ public class SodionAuthHook implements AuthPlugin<Player> {
             plugin.getLog().warn("Currently SodionAuth is not accepting forceRegister, " +
                     "It may be caused by unsupported AuthBackend");
             return false;
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-            return false;
         }
     }
 
