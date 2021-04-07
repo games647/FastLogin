@@ -26,11 +26,13 @@
 package com.github.games647.fastlogin.bungee;
 
 import com.github.games647.fastlogin.bungee.hook.BungeeAuthHook;
-import com.github.games647.fastlogin.bungee.hook.BungeeCordAuthenticatorHook;
+import com.github.games647.fastlogin.bungee.hook.BungeeCordAuthenticatorBungeeHook;
+import com.github.games647.fastlogin.bungee.hook.SodionAuthHook;
 import com.github.games647.fastlogin.bungee.listener.ConnectListener;
 import com.github.games647.fastlogin.bungee.listener.PluginMessageListener;
 import com.github.games647.fastlogin.core.AsyncScheduler;
 import com.github.games647.fastlogin.core.CommonUtil;
+import com.github.games647.fastlogin.core.hooks.AuthPlugin;
 import com.github.games647.fastlogin.core.message.ChangePremiumMessage;
 import com.github.games647.fastlogin.core.message.ChannelMessage;
 import com.github.games647.fastlogin.core.message.NamespaceKey;
@@ -43,6 +45,8 @@ import com.google.common.io.ByteStreams;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ThreadFactory;
 
@@ -55,6 +59,8 @@ import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.api.plugin.PluginManager;
 import net.md_5.bungee.api.scheduler.GroupedThreadFactory;
 
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.slf4j.Logger;
 
 /**
@@ -110,16 +116,24 @@ public class FastLoginBungee extends Plugin implements PlatformPlugin<CommandSen
     }
 
     private void registerHook() {
-        Plugin BungeeAuth = getProxy().getPluginManager().getPlugin("BungeeAuth");
-        if (BungeeAuth != null) {
-            core.setAuthPluginHook(new BungeeAuthHook());
-            logger.info("Hooked into BungeeAuth");
-        }
-        Plugin BungeeCordAuthenticatorBungee = getProxy().getPluginManager().getPlugin("BungeeCordAuthenticatorBungee");
-        if (BungeeCordAuthenticatorBungee != null) {
-            logger.info("Try to hook into BungeeCordAuthenticatorBungee...");
-            BungeeCordAuthenticatorHook hook = new BungeeCordAuthenticatorHook(BungeeCordAuthenticatorBungee, logger);
-            core.setAuthPluginHook(hook);
+        try {
+            List<Class<? extends AuthPlugin<ProxiedPlayer>>> hooks = Arrays.asList(
+                    BungeeAuthHook.class, BungeeCordAuthenticatorBungeeHook.class, SodionAuthHook.class);
+
+            for (Class<? extends AuthPlugin<ProxiedPlayer>> clazz : hooks) {
+                String pluginName = clazz.getSimpleName();
+                pluginName = pluginName.substring(0, pluginName.length() - "Hook".length());
+                //uses only member classes which uses AuthPlugin interface (skip interfaces)
+                Plugin plugin = getProxy().getPluginManager().getPlugin(pluginName);
+                if (plugin != null) {
+                    logger.info("Hooking into auth plugin: {}", pluginName);
+                    core.setAuthPluginHook(
+                            clazz.getDeclaredConstructor(FastLoginBungee.class).newInstance(this));
+                    break;
+                }
+            }
+        } catch (ReflectiveOperationException ex) {
+            logger.error("Couldn't load the auth hook class", ex);
         }
     }
 

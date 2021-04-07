@@ -25,6 +25,7 @@
  */
 package com.github.games647.fastlogin.bungee.hook;
 
+import com.github.games647.fastlogin.bungee.FastLoginBungee;
 import com.github.games647.fastlogin.core.hooks.AuthPlugin;
 
 import me.vik1395.BungeeAuth.Main;
@@ -42,6 +43,9 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 public class BungeeAuthHook implements AuthPlugin<ProxiedPlayer> {
 
     private final RequestHandler requestHandler = new RequestHandler();
+
+    public BungeeAuthHook(FastLoginBungee plugin) {
+    }
 
     @Override
     public boolean forceLogin(ProxiedPlayer player) {
