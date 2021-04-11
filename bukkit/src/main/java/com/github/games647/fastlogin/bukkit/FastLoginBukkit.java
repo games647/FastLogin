@@ -59,6 +59,13 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
             setEnabled(false);
             return;
         }
+        
+		// Check Floodgate config values
+		if (!isValidFloodgateConfigString("autoLoginFloodgate")
+				|| !isValidFloodgateConfigString("allowFloodgateNameConflict")) {
+			setEnabled(false);
+			return;
+		}
 
         bungeeManager = new BungeeManager(this);
         bungeeManager.initialize();
@@ -206,4 +213,28 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
     public void sendMessage(CommandSender receiver, String message) {
         receiver.sendMessage(message);
     }
+    
+	/**
+	 * Checks if a config entry (related to Floodgate) is valid. <br>
+	 * Writes to Log if the value is invalid.
+	 * <p>
+	 * This should be used for:
+	 * <ul>
+	 * <li>allowFloodgateNameConflict
+	 * <li>autoLoginFloodgate
+	 * </ul>
+	 * </p>
+	 * 
+	 * @param key the key of the entry in config.yml
+	 * @return <b>true</b> if the entry's value is "true", "false", or "linked"
+	 */
+	private boolean isValidFloodgateConfigString(String key) {
+		String value = core.getConfig().getString(key);
+		if (!value.equalsIgnoreCase("true") && !value.equalsIgnoreCase("linked") && !value.equalsIgnoreCase("false")) {
+			logger.error("Invalid value detected for {} in FastLogin/config.yml.", key);
+			return false;
+		}
+		return true;
+		
+	}
 }
