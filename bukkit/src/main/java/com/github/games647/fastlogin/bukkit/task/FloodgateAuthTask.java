@@ -41,6 +41,7 @@ public class FloodgateAuthTask implements Runnable {
                     player.kickPlayer("This name is allready in use by a Premium Java Player");
                 }
             });
+            return;
 
         }
         if (!isValidConfigValue(allowNameConflict)) {
