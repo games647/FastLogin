@@ -49,19 +49,25 @@ public class ConnectionListener implements Listener {
             // having the login session from the login process
             BukkitLoginSession session = plugin.getSession(player.getAddress());
             
+            boolean isFloodgateLogin = false;
 			if (Bukkit.getServer().getPluginManager().isPluginEnabled("floodgate")) {
 				FloodgatePlayer floodgatePlayer = FloodgateApi.getInstance().getPlayer(player.getUniqueId());
 				if (floodgatePlayer != null) {
+					isFloodgateLogin = true;
 					Runnable floodgateAuthTask = new FloodgateAuthTask(plugin, player, floodgatePlayer);
 					Bukkit.getScheduler().runTaskAsynchronously(plugin, floodgateAuthTask);
 				}
-            } else if (session == null) {
-                String sessionId = plugin.getSessionId(player.getAddress());
-                plugin.getLog().info("No on-going login session for player: {} with ID {}", player, sessionId);
-            } else {
-                Runnable forceLoginTask = new ForceLoginTask(plugin.getCore(), player, session);
-                Bukkit.getScheduler().runTaskAsynchronously(plugin, forceLoginTask);
-            }
+			}
+
+			if (!isFloodgateLogin) {
+	            if (session == null) {
+	                String sessionId = plugin.getSessionId(player.getAddress());
+	                plugin.getLog().info("No on-going login session for player: {} with ID {}", player, sessionId);
+	            } else {
+	                Runnable forceLoginTask = new ForceLoginTask(plugin.getCore(), player, session);
+	                Bukkit.getScheduler().runTaskAsynchronously(plugin, forceLoginTask);
+	            }
+			}
 
             plugin.getBungeeManager().markJoinEventFired(player);
             // delay the login process to let auth plugins initialize the player
