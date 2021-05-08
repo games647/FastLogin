@@ -162,7 +162,7 @@
             </exclusions>
         </dependency>
 
-		<!--Floodgate for Xbox Live Authentication-->
+        <!--Floodgate for Xbox Live Authentication-->
         <dependency>
             <groupId>org.geysermc.floodgate</groupId>
             <artifactId>api</artifactId>
