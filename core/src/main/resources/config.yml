@@ -203,6 +203,17 @@ autoLoginFloodgate: 'false'
 
 # This enables Floodgate players to join the server, even if autoRegister is true and there's an existing
 # Java **PREMIUM** account with the same name
+#
+# Java and Bedrock players will get different UUIDs, so their inventories, location, etc. will be different.
+# However, some plugins (such as AuthMe) rely on names instead of UUIDs to identify a player which might cause issues.
+# In the case of AuthMe (and other auth plugins), both the Java and the Bedrock player will have the same password.
+#
+# To prevent conflits from two different players having the same name, it is highly recommended to use a 'username-prefix'
+# in floodgate/config.yml
+# Note: 'username-prefix' is currently broken when used with FastLogin and ProtocolLib. For more information visit:
+#   https://github.com/games647/FastLogin/issues/493
+# A solution to this is to replace ProtocolLib with ProtocolSupport
+#
 # Possible values:
 #   false: Check for Premium Java name conflicts as described in 'autoRegister'
 #     'autoRegister' must be 'true' for this to work
