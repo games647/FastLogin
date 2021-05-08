@@ -98,12 +98,12 @@ public class ConnectListener implements Listener {
     private final FastLoginBungee plugin;
     private final RateLimiter rateLimiter;
     private final Property[] emptyProperties = {};
-    private final boolean floodGateAvailable;
+    private final String floodgateVersion;
 
-    public ConnectListener(FastLoginBungee plugin, RateLimiter rateLimiter, boolean floodgateAvailable) {
+    public ConnectListener(FastLoginBungee plugin, RateLimiter rateLimiter, String floodgateVersion) {
         this.plugin = plugin;
         this.rateLimiter = rateLimiter;
-        this.floodGateAvailable = floodgateAvailable;
+        this.floodgateVersion = floodgateVersion;
     }
 
     @EventHandler
@@ -211,6 +211,12 @@ public class ConnectListener implements Listener {
         // Floodgate will set a correct UUID at the beginning of the PreLoginEvent
         // and will cancel the online mode login for those players
         // Therefore we just ignore those
-        return floodGateAvailable && FloodgateAPI.isBedrockPlayer(correctedUUID);
+        if (floodgateVersion.startsWith("1")) {
+            return FloodgateAPI.isBedrockPlayer(correctedUUID);
+        } else if (floodgateVersion.startsWith("2")) {
+            return FloodgateAPI.isBedrockPlayer(correctedUUID);
+        }
+
+        return false;
     }
 }
