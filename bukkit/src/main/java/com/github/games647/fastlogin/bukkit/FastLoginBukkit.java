@@ -229,8 +229,8 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
 	 * @return <b>true</b> if the entry's value is "true", "false", or "linked"
 	 */
 	private boolean isValidFloodgateConfigString(String key) {
-		String value = core.getConfig().getString(key);
-		if (!value.equalsIgnoreCase("true") && !value.equalsIgnoreCase("linked") && !value.equalsIgnoreCase("false")) {
+		String value = core.getConfig().get(key).toString().toLowerCase();
+		if (!value.equals("true") && !value.equals("linked") && !value.equals("false")) {
 			logger.error("Invalid value detected for {} in FastLogin/config.yml.", key);
 			return false;
 		}

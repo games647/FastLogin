@@ -196,10 +196,9 @@ autoLogin: true
 # This enables auto login for every player connecting through Floodgate.
 # Possible values: false, true, linked
 # Linked means that only Bedrock accounts linked to a Java account will be logged in automatically
-# !!! DO NOT REMOVE THE APOSTROPHE !!!
 # !!!!!!!! WARNING: FLOODGATE SUPPORT IS AN EXPERIMENTAL FEATURE !!!!!!!!
 # Enabling this might lead to people gaining unauthorized access to other's accounts!
-autoLoginFloodgate: 'false'
+autoLoginFloodgate: false
 
 # This enables Floodgate players to join the server, even if autoRegister is true and there's an existing
 # Java **PREMIUM** account with the same name
@@ -219,10 +218,9 @@ autoLoginFloodgate: 'false'
 #     'autoRegister' must be 'true' for this to work
 #   true:  Bypass 'autoRegister's name conflict checking 
 #   linked: Bedrock accounts linked to a Java account will be allowed to join with conflicting names
-# !!! DO NOT REMOVE THE APOSTROPHE !!!
 # !!!!!!!! WARNING: FLOODGATE SUPPORT IS AN EXPERIMENTAL FEATURE !!!!!!!!
 # Enabling this might lead to people gaining unauthorized access to other's accounts!
-allowFloodgateNameConflict: 'false'
+allowFloodgateNameConflict: false
 
 # This enables auto registering every player connecting through Floodgate.
 # autoLoginFloodgate must be 'true' for this to work

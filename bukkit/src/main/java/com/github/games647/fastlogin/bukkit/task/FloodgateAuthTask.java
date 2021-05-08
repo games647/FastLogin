@@ -26,10 +26,10 @@ public class FloodgateAuthTask implements Runnable {
         plugin.getLog().info(
                 "Player {} is connecting through Geyser Floodgate.",
                 player.getName());
-        String allowNameConflict = plugin.getCore().getConfig().getString("allowFloodgateNameConflict");
+        String allowNameConflict = plugin.getCore().getConfig().get("allowFloodgateNameConflict").toString().toLowerCase();
         // check if the Bedrock player is linked to a Java account 
         boolean isLinked = floodgatePlayer.getLinkedPlayer() != null;
-        if (allowNameConflict.equalsIgnoreCase("linked") && !isLinked) {
+        if (allowNameConflict.equals("linked") && !isLinked) {
             plugin.getLog().info(
                     "Bedrock Player {}'s name conflits an existing Java Premium Player's name",
                     player.getName());
@@ -47,7 +47,7 @@ public class FloodgateAuthTask implements Runnable {
         
         AuthPlugin<Player> authPlugin = plugin.getCore().getAuthPluginHook();
 
-        String autoLoginFloodgate = plugin.getCore().getConfig().getString("autoLoginFloodgate");
+        String autoLoginFloodgate = plugin.getCore().getConfig().get("autoLoginFloodgate").toString().toLowerCase();
         boolean autoRegisterFloodgate = plugin.getCore().getConfig().getBoolean("autoRegisterFloodgate");
         
         boolean isRegistered;
@@ -75,8 +75,8 @@ public class FloodgateAuthTask implements Runnable {
         BukkitLoginSession session = new BukkitLoginSession(player.getName(), isRegistered, profile);
         
         // enable auto login based on the value of 'autoLoginFloodgate' in config.yml
-        session.setVerified(autoLoginFloodgate.equalsIgnoreCase("true")
-                || (autoLoginFloodgate.equalsIgnoreCase("linked") && isLinked));
+        session.setVerified(autoLoginFloodgate.equals("true")
+                || (autoLoginFloodgate.equals("linked") && isLinked));
 
         // run login task
         Runnable forceLoginTask = new ForceLoginTask(plugin.getCore(), player, session);

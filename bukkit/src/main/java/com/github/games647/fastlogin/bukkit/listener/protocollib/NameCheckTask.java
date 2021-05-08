@@ -46,7 +46,7 @@ public class NameCheckTask extends JoinManagement<Player, CommandSender, Protoco
     public void run() {
         try {
             // check if the player is connecting through Geyser
-            if (!plugin.getCore().getConfig().getString("allowFloodgateNameConflict").equalsIgnoreCase("false")
+            if (!plugin.getCore().getConfig().get("allowFloodgateNameConflict").toString().equalsIgnoreCase("false")
                     && getFloodgatePlayer(username) != null) {
                 plugin.getLog().info("Skipping name conflict checking for player {}", username);
                 return;
