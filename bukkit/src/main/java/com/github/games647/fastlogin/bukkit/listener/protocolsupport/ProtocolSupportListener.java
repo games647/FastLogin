@@ -75,7 +75,7 @@ public class ProtocolSupportListener extends JoinManagement<Player, CommandSende
         //remove old data every time on a new login in order to keep the session only for one person
         plugin.removeSession(address);
 
-        super.onLogin(username, new ProtocolLoginSource(loginStartEvent));
+        super.onLogin(username, new ProtocolLoginSource(loginStartEvent), false);
     }
 
     @EventHandler

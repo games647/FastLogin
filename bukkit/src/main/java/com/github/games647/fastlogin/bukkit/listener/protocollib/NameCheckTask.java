@@ -40,8 +40,6 @@ import java.util.Random;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.geysermc.floodgate.api.FloodgateApi;
-import org.geysermc.floodgate.api.player.FloodgatePlayer;
 
 public class NameCheckTask extends JoinManagement<Player, CommandSender, ProtocolLibLoginSource>
         implements Runnable {
@@ -70,13 +68,8 @@ public class NameCheckTask extends JoinManagement<Player, CommandSender, Protoco
     @Override
     public void run() {
         try {
-            // check if the player is connecting through Geyser
-            if (!plugin.getCore().getConfig().get("allowFloodgateNameConflict").toString().equalsIgnoreCase("false")
-                    && getFloodgatePlayer(username) != null) {
-                plugin.getLog().info("Skipping name conflict checking for player {}", username);
-                return;
-            }
-            super.onLogin(username, new ProtocolLibLoginSource(packetEvent, player, random, publicKey));
+            boolean floodgateAvailable = Bukkit.getServer().getPluginManager().isPluginEnabled("floodgate");		
+            super.onLogin(username, new ProtocolLibLoginSource(packetEvent, player, random, publicKey), floodgateAvailable);
         } finally {
             ProtocolLibrary.getProtocolManager().getAsynchronousManager().signalPacketTransmission(packetEvent);
         }
@@ -121,15 +114,4 @@ public class NameCheckTask extends JoinManagement<Player, CommandSender, Protoco
         plugin.putSession(player.getAddress(), loginSession);
     }
     
-    private static FloodgatePlayer getFloodgatePlayer(String username) {
-        if (Bukkit.getServer().getPluginManager().isPluginEnabled("floodgate"))  {
-            // the Floodgate API requires UUID, which is inaccessible at NameCheckTask.java
-            for (FloodgatePlayer floodgatePlayer : FloodgateApi.getInstance().getPlayers()) {
-                if (floodgatePlayer.getUsername().equals(username)) {
-                    return floodgatePlayer;
-                }
-            }
-        }
-        return null;
-    }
 }
