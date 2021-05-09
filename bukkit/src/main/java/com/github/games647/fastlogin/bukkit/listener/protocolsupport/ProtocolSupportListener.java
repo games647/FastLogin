@@ -37,6 +37,7 @@ import com.github.games647.fastlogin.core.shared.event.FastLoginPreLoginEvent;
 import java.net.InetSocketAddress;
 import java.util.Optional;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -75,7 +76,9 @@ public class ProtocolSupportListener extends JoinManagement<Player, CommandSende
         //remove old data every time on a new login in order to keep the session only for one person
         plugin.removeSession(address);
 
-        super.onLogin(username, new ProtocolLoginSource(loginStartEvent), false);
+        boolean floodgateAvailable = Bukkit.getServer().getPluginManager().isPluginEnabled("floodgate");
+
+        super.onLogin(username, new ProtocolLoginSource(loginStartEvent), floodgateAvailable);
     }
 
     @EventHandler
