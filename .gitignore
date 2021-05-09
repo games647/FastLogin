@@ -13,6 +13,9 @@ nb-configuration.xml
 *.iws
 .idea/
 
+# VSCode
+.vscode/
+
 # Maven
 target/
 pom.xml.versionsBackup
