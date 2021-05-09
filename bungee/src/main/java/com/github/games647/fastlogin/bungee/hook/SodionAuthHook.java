@@ -23,14 +23,16 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.github.games647.fastlogin.bukkit.hook;
+package com.github.games647.fastlogin.bungee.hook;
 
-import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
+import com.github.games647.fastlogin.bungee.FastLoginBungee;
 import com.github.games647.fastlogin.core.hooks.AuthPlugin;
-import org.bukkit.entity.Player;
-import red.mohist.sodionauth.bukkit.implementation.BukkitPlayer;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
+import red.mohist.sodionauth.bungee.implementation.BungeePlayer;
 import red.mohist.sodionauth.core.SodionAuthApi;
 import red.mohist.sodionauth.core.exception.AuthenticatedException;
+
+import java.util.concurrent.ExecutionException;
 
 /**
  * GitHub: https://github.com/Mohist-Community/SodionAuth
@@ -41,18 +43,18 @@ import red.mohist.sodionauth.core.exception.AuthenticatedException;
  * <p>
  * Spigot: https://www.spigotmc.org/resources/sodionauth.76944/
  */
-public class SodionAuthHook implements AuthPlugin<Player> {
+public class SodionAuthHook implements AuthPlugin<ProxiedPlayer> {
 
-    private final FastLoginBukkit plugin;
+    private final FastLoginBungee plugin;
 
-    public SodionAuthHook(FastLoginBukkit plugin) {
+    public SodionAuthHook(FastLoginBungee plugin) {
         this.plugin = plugin;
     }
 
     @Override
-    public boolean forceLogin(Player player) {
+    public boolean forceLogin(ProxiedPlayer player) {
         try {
-            SodionAuthApi.login(new BukkitPlayer(player));
+            SodionAuthApi.login(new BungeePlayer(player));
         } catch (AuthenticatedException e) {
             plugin.getLog().warn(ALREADY_AUTHENTICATED, player);
             return false;
@@ -61,9 +63,9 @@ public class SodionAuthHook implements AuthPlugin<Player> {
     }
 
     @Override
-    public boolean forceRegister(Player player, String password) {
+    public boolean forceRegister(ProxiedPlayer player, String password) {
         try{
-            return SodionAuthApi.register(new BukkitPlayer(player), password);
+            return SodionAuthApi.register(new BungeePlayer(player), password);
         } catch (UnsupportedOperationException e){
             plugin.getLog().warn("Currently SodionAuth is not accepting forceRegister, " +
                     "It may be caused by unsupported AuthBackend");

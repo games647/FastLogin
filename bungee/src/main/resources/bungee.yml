@@ -12,6 +12,7 @@ softDepends:
     # BungeeCord auth plugins
     - BungeeAuth
     - BungeeCordAuthenticatorBungee
+    - SodionAuth
 
 description: |
     ${project.description}

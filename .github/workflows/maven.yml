@@ -1,4 +1,5 @@
 # Automatically build, run unit and integration tests to detect errors early (CI provided by GitHub)
+# including making pull requests review easier
 
 # Human readable name in the actions tab
 name: Java CI
