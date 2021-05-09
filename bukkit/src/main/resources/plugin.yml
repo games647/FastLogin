@@ -20,9 +20,7 @@ softdepend:
     - ProtocolLib
     # Premium variable
     - PlaceholderAPI
-    # Floodgate
-    - floodgate-bukkit
-    - Geyser-Spigot
+    - floodgate
     # Auth plugins
     - AuthMe
     - LoginSecurity
