@@ -92,7 +92,7 @@ public class FastLoginBungee extends Plugin implements PlatformPlugin<CommandSen
         String floodgateVersion = "0";
         Plugin floodgatePlugin = pluginManager.getPlugin("floodgate");
         if (floodgatePlugin != null) {
-            floodgatePlugin.getDescription().getVersion();
+            floodgateVersion = floodgatePlugin.getDescription().getVersion();
         }
 
         ConnectListener connectListener = new ConnectListener(this, core.getRateLimiter(), floodgateVersion);
