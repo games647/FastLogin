@@ -28,6 +28,9 @@ package com.github.games647.fastlogin.bungee.listener;
 import com.github.games647.craftapi.UUIDAdapter;
 import com.github.games647.fastlogin.bungee.BungeeLoginSession;
 import com.github.games647.fastlogin.bungee.FastLoginBungee;
+import com.github.games647.fastlogin.bungee.hook.floodgate.FloodgateHook;
+import com.github.games647.fastlogin.bungee.hook.floodgate.FloodgateV1Hook;
+import com.github.games647.fastlogin.bungee.hook.floodgate.FloodgateV2Hook;
 import com.github.games647.fastlogin.bungee.task.AsyncPremiumCheck;
 import com.github.games647.fastlogin.bungee.task.ForceLoginTask;
 import com.github.games647.fastlogin.core.RateLimiter;
@@ -99,11 +102,21 @@ public class ConnectListener implements Listener {
     private final RateLimiter rateLimiter;
     private final Property[] emptyProperties = {};
     private final String floodgateVersion;
+    private final FloodgateHook floodgateHook;
 
     public ConnectListener(FastLoginBungee plugin, RateLimiter rateLimiter, String floodgateVersion) {
         this.plugin = plugin;
         this.rateLimiter = rateLimiter;
         this.floodgateVersion = floodgateVersion;
+
+        // Get the appropriate floodgate api hook based on the version
+        if (floodgateVersion.startsWith("1")) {
+            this.floodgateHook = new FloodgateV1Hook();
+        } else if (floodgateVersion.startsWith("2")) {
+            this.floodgateHook = new FloodgateV2Hook();
+        } else {
+            this.floodgateHook = null;
+        }
     }
 
     @EventHandler
@@ -211,12 +224,9 @@ public class ConnectListener implements Listener {
         // Floodgate will set a correct UUID at the beginning of the PreLoginEvent
         // and will cancel the online mode login for those players
         // Therefore we just ignore those
-        if (floodgateVersion.startsWith("1")) {
-            return FloodgateAPI.isBedrockPlayer(correctedUUID);
-        } else if (floodgateVersion.startsWith("2")) {
-            return FloodgateAPI.isBedrockPlayer(correctedUUID);
+        if (floodgateHook == null) {
+            return false;
         }
-
-        return false;
+        return this.floodgateHook.isBedrockPlayer(correctedUUID);
     }
 }
