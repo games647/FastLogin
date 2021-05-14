@@ -141,6 +141,15 @@
             <scope>provided</scope>
         </dependency>
 
+        <!-- SodionCore, Use it's dependManager -->
+        <!-- Version 2.0 -->
+        <dependency>
+            <groupId>com.github.eLoli-Community.SodionCore</groupId>
+            <artifactId>SodionCore-Bungee</artifactId>
+            <version>93f8bce390</version>
+            <scope>provided</scope>
+        </dependency>
+
         <!--Login plugin-->
         <dependency>
             <groupId>me.vik1395</groupId>

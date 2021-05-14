@@ -25,6 +25,7 @@
  */
 package com.github.games647.fastlogin.bungee;
 
+import com.eloli.sodioncore.bungee.SodionCore;
 import com.github.games647.fastlogin.bungee.hook.BungeeAuthHook;
 import com.github.games647.fastlogin.bungee.hook.BungeeCordAuthenticatorBungeeHook;
 import com.github.games647.fastlogin.bungee.hook.SodionAuthHook;
@@ -81,6 +82,13 @@ public class FastLoginBungee extends Plugin implements PlatformPlugin<CommandSen
 
         core = new FastLoginCore<>(this);
         core.load();
+
+        if(getProxy().getPluginManager().getPlugin("SodionCore") != null
+                && core.getConfig().getString("driver").equals("org.sqlite.JDBC")){
+            SodionCore sodionCore = (SodionCore) getProxy().getPluginManager().getPlugin("SodionCore");
+            sodionCore.getDependencyManager(this).checkDependencyMaven("org.xerial:sqlite-jdbc:3.34.0:org.sqlite.JDBC");
+        }
+
         if (!core.setupDatabase()) {
             return;
         }
