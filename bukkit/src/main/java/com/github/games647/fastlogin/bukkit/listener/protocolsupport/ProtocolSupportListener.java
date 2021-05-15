@@ -76,9 +76,7 @@ public class ProtocolSupportListener extends JoinManagement<Player, CommandSende
         //remove old data every time on a new login in order to keep the session only for one person
         plugin.removeSession(address);
 
-        boolean floodgateAvailable = Bukkit.getServer().getPluginManager().isPluginEnabled("floodgate");
-
-        super.onLogin(username, new ProtocolLoginSource(loginStartEvent), floodgateAvailable);
+        super.onLogin(username, new ProtocolLoginSource(loginStartEvent));
     }
 
     @EventHandler

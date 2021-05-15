@@ -33,9 +33,6 @@ import com.github.games647.fastlogin.core.shared.event.FastLoginPreLoginEvent;
 
 import java.util.Optional;
 
-import org.geysermc.floodgate.api.FloodgateApi;
-import org.geysermc.floodgate.api.player.FloodgatePlayer;
-
 import net.md_5.bungee.config.Configuration;
 
 public abstract class JoinManagement<P extends C, C, S extends LoginSource> {
@@ -48,28 +45,8 @@ public abstract class JoinManagement<P extends C, C, S extends LoginSource> {
         this.authHook = authHook;
     }
 
-    public void onLogin(String username, S source, boolean floodgateAvailable) {
+    public void onLogin(String username, S source) {
         core.getPlugin().getLog().info("Handling player {}", username);
-
-        // check if the player is connecting through Geyser
-        if (floodgateAvailable && getFloodgatePlayer(username) != null) {
-        	if (core.getConfig().get("allowFloodgateNameConflict").toString().equalsIgnoreCase("false")) {
-                core.getPlugin().getLog().info(
-                        "Bedrock Player {}'s name conflits an existing Java Premium Player's name",
-                        username);
-        		try {
-					source.kick("Your name conflits an existing Java Premium Player's name");
-				} catch (Exception e) {
-					e.printStackTrace();
-					core.getPlugin().getLog().error("Could not kick Player {}", username);
-				}
-        	} else {
-                core.getPlugin().getLog().info("Skipping name conflict checking for player {}", username);
-                return;
-            }
-
-        }
-
         StoredProfile profile = core.getStorage().loadProfile(username);
         if (profile == null) {
             return;
@@ -152,24 +129,6 @@ public abstract class JoinManagement<P extends C, C, S extends LoginSource> {
         }
 
         return false;
-    }
-    
-    /**
-     * Get a FloodgatePlayyer by their name.
-     * This is not supported by FloodgateApi.
-     * <br>
-     * <b>WARNING: This method does not check if the floodgate plugin is actually installed on the server!</b>
-     * @param username the name of the player
-     * @return FloodgatePlayer if found, null if the player is not online
-     */
-    protected static FloodgatePlayer getFloodgatePlayer(String username) {
-        // the Floodgate API requires UUID, which is inaccessible at NameCheckTask.java
-        for (FloodgatePlayer floodgatePlayer : FloodgateApi.getInstance().getPlayers()) {
-            if (floodgatePlayer.getUsername().equals(username)) {
-                return floodgatePlayer;
-            }
-        }
-        return null;
     }
 
     public abstract FastLoginPreLoginEvent callFastLoginPreLoginEvent(String username, S source, StoredProfile profile);
