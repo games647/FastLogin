@@ -47,10 +47,13 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import org.bukkit.Bukkit;
+import org.bukkit.Server.Spigot;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.geysermc.floodgate.api.FloodgateApi;
 import org.slf4j.Logger;
 
 /**
@@ -86,6 +89,13 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
             setEnabled(false);
             return;
         }
+        
+		// Check Floodgate config values
+		if (!isValidFloodgateConfigString("autoLoginFloodgate")
+				|| !isValidFloodgateConfigString("allowFloodgateNameConflict")) {
+			setEnabled(false);
+			return;
+		}
 
         bungeeManager = new BungeeManager(this);
         bungeeManager.initialize();
@@ -131,6 +141,8 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
             premiumPlaceholder = new PremiumPlaceholder(this);
             premiumPlaceholder.register();
         }
+
+        dependencyWarnings();
     }
 
     @Override
@@ -236,5 +248,60 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
     @Override
     public void sendMessage(CommandSender receiver, String message) {
         receiver.sendMessage(message);
+    }
+    
+	/**
+	 * Checks if a config entry (related to Floodgate) is valid. <br>
+	 * Writes to Log if the value is invalid.
+	 * <p>
+	 * This should be used for:
+	 * <ul>
+	 * <li>allowFloodgateNameConflict
+	 * <li>autoLoginFloodgate
+	 * </ul>
+	 * </p>
+	 * 
+	 * @param key the key of the entry in config.yml
+	 * @return <b>true</b> if the entry's value is "true", "false", or "linked"
+	 */
+	private boolean isValidFloodgateConfigString(String key) {
+		String value = core.getConfig().get(key).toString().toLowerCase();
+		if (!value.equals("true") && !value.equals("linked") && !value.equals("false")) {
+			logger.error("Invalid value detected for {} in FastLogin/config.yml.", key);
+			return false;
+		}
+		return true;	
+	}
+
+	/**
+	 * Checks if a plugin is installed on the server
+	 * @param name the name of the plugin
+	 * @return true if the plugin is installed
+	 */
+	private boolean isPluginInstalled(String name) {
+	    //the plugin may be enabled after FastLogin, so isPluginEnabled()
+	    //won't work here
+	    return Bukkit.getServer().getPluginManager().getPlugin(name) != null;
+	}
+
+    /**
+     * Send warning messages to log if incompatible plugins are used  
+     */
+    private void dependencyWarnings() {
+        if (isPluginInstalled("floodgate-bukkit")) {
+            logger.warn("We have detected that you are runnging Floodgate 1.0 which is not supported by the Bukkit "
+                    + "version of FastLogin.");
+            logger.warn("If you would like to use FastLogin with Floodgate, you can download developement builds of "
+                    + "Floodgate 2.0 from https://ci.opencollab.dev/job/GeyserMC/job/Floodgate/job/dev%252F2.0/");
+            logger.warn("Don't forget to update Geyser to a supported version as well from "
+                    + "https://ci.opencollab.dev/job/GeyserMC/job/Geyser/job/floodgate-2.0/");
+    	} else if (isPluginInstalled("floodgate") && isPluginInstalled("ProtocolLib")) {
+            logger.warn("We have detected that you are runnging FastLogin alongside Floodgate and ProtocolLib.");
+            logger.warn("Currently there is an issue with FastLogin that prevents Floodgate name prefixes from showing up "
+                    + "when it is together used with ProtocolLib.");
+            logger.warn("If you would like to use Floodgate name prefixes, you can replace ProtocolLib with ProtocolSupport "
+                    + "which does not have this issue.");
+            logger.warn("For more information visit https://github.com/games647/FastLogin/issues/493");
+    	}
     }
 }

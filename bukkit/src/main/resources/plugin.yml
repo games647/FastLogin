@@ -20,6 +20,7 @@ softdepend:
     - ProtocolLib
     # Premium variable
     - PlaceholderAPI
+    - floodgate
     # Auth plugins
     - AuthMe
     - LoginSecurity
