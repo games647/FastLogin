@@ -14,9 +14,6 @@ updates:
     directory: "/"
     schedule:
       interval: weekly
-      time: "16:00"
-      timezone: Etc/Universal
-    open-pull-requests-limit: 10
     ignore:
       - dependency-name: com.google.code.gson:gson
         versions:
