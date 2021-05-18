@@ -1,27 +1,37 @@
 version: 2
+
 updates:
-- package-ecosystem: maven
-  directory: "/"
-  schedule:
-    interval: weekly
-    time: "16:00"
-    timezone: Etc/Universal
-  open-pull-requests-limit: 10
-  ignore:
-  - dependency-name: com.google.code.gson:gson
-    versions:
-    - "> 2.2.4"
-  - dependency-name: me.clip:placeholderapi
-    versions:
-    - "> 2.10.8, < 2.11"
-  - dependency-name: net.md-5:bungeecord-config
-    versions:
-    - "> 1.12-SNAPSHOT"
-  - dependency-name: de.xxschrandxx.bca:BungeeCordAuthenticator
-    versions:
-    - 0.0.3
-  - dependency-name: com.zaxxer:HikariCP
-    versions:
-    - 4.0.0
-    - 4.0.2
-    - 4.0.3
+  # Updates for workflow files
+  - package-ecosystem: "github-actions"
+    # Workflow files stored in the
+    # default location of `.github/workflows`
+    directory: "/"
+    schedule:
+      interval: "monthly"
+
+  # Maven project
+  - package-ecosystem: maven
+    directory: "/"
+    schedule:
+      interval: weekly
+      time: "16:00"
+      timezone: Etc/Universal
+    open-pull-requests-limit: 10
+    ignore:
+      - dependency-name: com.google.code.gson:gson
+        versions:
+          - "> 2.2.4"
+      - dependency-name: me.clip:placeholderapi
+        versions:
+          - "> 2.10.8, < 2.11"
+      - dependency-name: net.md-5:bungeecord-config
+        versions:
+          - "> 1.12-SNAPSHOT"
+      - dependency-name: de.xxschrandxx.bca:BungeeCordAuthenticator
+        versions:
+          - 0.0.3
+      - dependency-name: com.zaxxer:HikariCP
+        versions:
+          - 4.0.0
+          - 4.0.2
+          - 4.0.3
