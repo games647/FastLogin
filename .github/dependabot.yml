@@ -18,6 +18,7 @@ updates:
       - dependency-name: com.google.code.gson:gson
         versions:
           - "> 2.2.4"
+      - dependency-name: com.google.guava
       - dependency-name: me.clip:placeholderapi
         versions:
           - "> 2.10.8, < 2.11"
