@@ -29,6 +29,7 @@ import com.github.games647.craftapi.UUIDAdapter;
 import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 import com.github.games647.fastlogin.bukkit.event.BukkitFastLoginPreLoginEvent;
+import com.github.games647.fastlogin.bukkit.hook.floodgate.FloodgateHook;
 import com.github.games647.fastlogin.core.RateLimiter;
 import com.github.games647.fastlogin.core.StoredProfile;
 import com.github.games647.fastlogin.core.shared.JoinManagement;
@@ -37,11 +38,12 @@ import com.github.games647.fastlogin.core.shared.event.FastLoginPreLoginEvent;
 import java.net.InetSocketAddress;
 import java.util.Optional;
 
-import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.geysermc.floodgate.api.player.FloodgatePlayer;
+
 import protocolsupport.api.events.ConnectionCloseEvent;
 import protocolsupport.api.events.PlayerLoginStartEvent;
 import protocolsupport.api.events.PlayerProfileCompleteEvent;
@@ -51,12 +53,14 @@ public class ProtocolSupportListener extends JoinManagement<Player, CommandSende
 
     private final FastLoginBukkit plugin;
     private final RateLimiter rateLimiter;
+    private final FloodgateHook floodgateHook;
 
     public ProtocolSupportListener(FastLoginBukkit plugin, RateLimiter rateLimiter) {
         super(plugin.getCore(), plugin.getCore().getAuthPluginHook());
 
         this.plugin = plugin;
         this.rateLimiter = rateLimiter;
+        this.floodgateHook = new FloodgateHook(plugin);
     }
 
     @EventHandler
@@ -76,7 +80,17 @@ public class ProtocolSupportListener extends JoinManagement<Player, CommandSende
         //remove old data every time on a new login in order to keep the session only for one person
         plugin.removeSession(address);
 
-        super.onLogin(username, new ProtocolLoginSource(loginStartEvent));
+        ProtocolLoginSource source = new ProtocolLoginSource(loginStartEvent);
+
+        //check if the player is connecting through Floodgate
+        FloodgatePlayer floodgatePlayer = floodgateHook.getFloodgatePlayer(username);
+
+        if (floodgatePlayer != null) {
+            floodgateHook.checkNameConflict(username, source, floodgatePlayer);
+        } else {
+            //do Java login tasks
+            super.onLogin(username, source);
+        }
     }
 
     @EventHandler
