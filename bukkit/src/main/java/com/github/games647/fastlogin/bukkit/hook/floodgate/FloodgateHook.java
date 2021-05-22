@@ -31,14 +31,18 @@ public class FloodgateHook {
      */
     public void checkNameConflict(String username, LoginSource source, FloodgatePlayer floodgatePlayer) {
         String allowConflict = plugin.getCore().getConfig().get("allowFloodgateNameConflict").toString().toLowerCase();
-        if (allowConflict.equals("false")) {
+
+        // check if the Bedrock player is linked to a Java account 
+        boolean isLinked = floodgatePlayer.getLinkedPlayer() != null;
+
+        if (allowConflict.equals("false")
+                || allowConflict.equals("linked") && !isLinked) {
 
             // check for conflicting Premium Java name
             Optional<Profile> premiumUUID = Optional.empty();
             try {
                 premiumUUID = plugin.getCore().getResolver().findProfile(username);
             } catch (IOException | RateLimitException e) {
-                e.printStackTrace();
                 plugin.getLog().error(
                         "Could not check wether Floodgate Player {}'s name conflicts a premium Java player's name.",
                         username);
@@ -55,7 +59,6 @@ public class FloodgateHook {
                 try {
                     source.kick("Your name conflicts an existing Java Premium Player's name");
                 } catch (Exception e) {
-                    e.printStackTrace();
                     plugin.getLog().error("Could not kick Player {}", username);
                 }
             }
