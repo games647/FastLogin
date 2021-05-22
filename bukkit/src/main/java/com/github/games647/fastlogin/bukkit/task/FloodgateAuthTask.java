@@ -76,8 +76,11 @@ public class FloodgateAuthTask implements Runnable {
         }
 
         //decide if checks should be made for conflicting Java player names
-        if (autoLoginFloodgate.equals("no-conflict")
-                || !isRegistered && autoRegisterFloodgate.equals("no-conflict")) {
+        if (!isLinked &&
+                (
+                        autoLoginFloodgate.equals("no-conflict")
+                        || !isRegistered && autoRegisterFloodgate.equals("no-conflict"))
+                ) {
             // check for conflicting Premium Java name
             Optional<Profile> premiumUUID = Optional.empty();
             try {
