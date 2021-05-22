@@ -194,9 +194,11 @@ autoLogin: true
 # !!!!!!!! WARNING: FLOODGATE SUPPORT IS AN EXPERIMENTAL FEATURE !!!!!!!!
 # Enabling any of these settings might lead to people gaining unauthorized access to other's accounts!
 
-# This enables auto login for every player connecting through Floodgate.
-# Possible values: false, true, linked
-# Linked means that only Bedrock accounts linked to a Java account will be logged in automatically
+# Automatically log in players connecting through Floodgate.
+# Possible values:
+#   false: Disables auto login for every player connecting through Floodgate
+#   true: Enables auto login for every player connecting through Floodgate
+#   linked: Only Bedrock accounts that are linked to a Java account will be logged in automatically
 # !!!!!!!! WARNING: FLOODGATE SUPPORT IS AN EXPERIMENTAL FEATURE !!!!!!!!
 # Enabling this might lead to people gaining unauthorized access to other's accounts!
 autoLoginFloodgate: false
@@ -225,8 +227,11 @@ autoLoginFloodgate: false
 # Enabling this might lead to people gaining unauthorized access to other's accounts!
 allowFloodgateNameConflict: false
 
-# This enables auto registering every player connecting through Floodgate.
+# Automatically register players connecting through Floodgate.
 # autoLoginFloodgate must be 'true' for this to work
+# Possible values:
+#   false: Disables auto registering for every player connecting through Floodgate
+#   true: Enables auto registering for every player connecting through Floodgate
 # !!!!!!!! WARNING: FLOODGATE SUPPORT IS AN EXPERIMENTAL FEATURE !!!!!!!!
 # Enabling this might lead to people gaining unauthorized access to other's accounts!
 autoRegisterFloodgate: false
