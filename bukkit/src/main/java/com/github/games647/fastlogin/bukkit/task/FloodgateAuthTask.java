@@ -25,10 +25,15 @@
  */
 package com.github.games647.fastlogin.bukkit.task;
 
+import java.io.IOException;
+import java.util.Optional;
+
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.geysermc.floodgate.api.player.FloodgatePlayer;
 
+import com.github.games647.craftapi.model.Profile;
+import com.github.games647.craftapi.resolver.RateLimitException;
 import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 import com.github.games647.fastlogin.core.StoredProfile;
@@ -58,7 +63,8 @@ public class FloodgateAuthTask implements Runnable {
         AuthPlugin<Player> authPlugin = plugin.getCore().getAuthPluginHook();
 
         String autoLoginFloodgate = plugin.getCore().getConfig().get("autoLoginFloodgate").toString().toLowerCase();
-        boolean autoRegisterFloodgate = plugin.getCore().getConfig().getBoolean("autoRegisterFloodgate");
+        String autoRegisterFloodgate = plugin.getCore().getConfig().get("autoRegisterFloodgate").toString().toLowerCase();
+        String allowNameConflict = plugin.getCore().getConfig().get("allowFloodgateNameConflict").toString().toLowerCase();
         
         boolean isRegistered;
         try {
@@ -70,7 +76,27 @@ public class FloodgateAuthTask implements Runnable {
             return;
         }
         
-        if (!isRegistered && !autoRegisterFloodgate) {
+        //decide if checks should be made for conflicting Java player names
+        if (autoLoginFloodgate.equals("no-conflict")
+                || !isRegistered && autoRegisterFloodgate.equals("no-conflict")) {
+            // check for conflicting Premium Java name
+            Optional<Profile> premiumUUID = Optional.empty();
+            try {
+                premiumUUID = plugin.getCore().getResolver().findProfile(player.getName());
+            } catch (IOException | RateLimitException e) {
+                plugin.getLog().error(
+                        "Could not check wether Floodgate Player {}'s name conflits a premium Java player's name.",
+                        player.getName());
+                return;
+            }
+
+            //stop execution if player's name is conflicting
+            if (premiumUUID.isPresent()) {
+                return;
+            }
+        }
+
+        if (!isRegistered && autoRegisterFloodgate.equals("false")) {
             plugin.getLog().info(
                     "Auto registration is disabled for Floodgate players in config.yml");
             return;
