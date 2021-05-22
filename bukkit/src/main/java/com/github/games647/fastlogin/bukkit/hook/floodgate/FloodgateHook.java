@@ -21,7 +21,7 @@ public class FloodgateHook {
     }
 
     /**
-     * Check if the player's name conflict's an existing Java player's name, and
+     * Check if the player's name conflicts an existing Java player's name, and
      * kick them if it does
      * 
      * @param core     the FastLoginCore
@@ -40,15 +40,20 @@ public class FloodgateHook {
             } catch (IOException | RateLimitException e) {
                 e.printStackTrace();
                 plugin.getLog().error(
-                        "Could not check wether Floodgate Player {}'s name conflits a premium Java player's name.",
+                        "Could not check wether Floodgate Player {}'s name conflicts a premium Java player's name.",
                         username);
+                try {
+                    source.kick("Could not check if your name conflicts an existing Java Premium Player's name");
+                } catch (Exception e1) {
+                    plugin.getLog().error("Could not kick Player {}", username);
+                }
             }
 
             if (premiumUUID.isPresent()) {
-                plugin.getLog().info("Bedrock Player {}'s name conflits an existing Java Premium Player's name",
+                plugin.getLog().info("Bedrock Player {}'s name conflicts an existing Java Premium Player's name",
                         username);
                 try {
-                    source.kick("Your name conflits an existing Java Premium Player's name");
+                    source.kick("Your name conflicts an existing Java Premium Player's name");
                 } catch (Exception e) {
                     e.printStackTrace();
                     plugin.getLog().error("Could not kick Player {}", username);
