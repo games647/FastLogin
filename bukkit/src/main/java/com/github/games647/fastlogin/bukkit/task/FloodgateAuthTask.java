@@ -76,7 +76,10 @@ public class FloodgateAuthTask implements Runnable {
         }
 
         //decide if checks should be made for conflicting Java player names
-        if (!isLinked &&
+        if (!isLinked //linked players have the same name as their Java profile
+                // if allowNameConflict is 'false' or 'linked' and the player had a conflicting
+                // name, than they would have been kicked in FloodgateHook#checkNameConflict
+                && allowNameConflict.equals("true") &&
                 (
                         autoLoginFloodgate.equals("no-conflict")
                         || !isRegistered && autoRegisterFloodgate.equals("no-conflict"))
