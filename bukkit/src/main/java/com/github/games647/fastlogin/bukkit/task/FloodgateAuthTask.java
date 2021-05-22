@@ -59,7 +59,6 @@ public class FloodgateAuthTask implements Runnable {
 
         // check if the Bedrock player is linked to a Java account 
         boolean isLinked = floodgatePlayer.getLinkedPlayer() != null;
-
         AuthPlugin<Player> authPlugin = plugin.getCore().getAuthPluginHook();
 
         String autoLoginFloodgate = plugin.getCore().getConfig().get("autoLoginFloodgate").toString().toLowerCase();
@@ -75,7 +74,7 @@ public class FloodgateAuthTask implements Runnable {
                     player.getName());
             return;
         }
-        
+
         //decide if checks should be made for conflicting Java player names
         if (autoLoginFloodgate.equals("no-conflict")
                 || !isRegistered && autoRegisterFloodgate.equals("no-conflict")) {
@@ -101,7 +100,7 @@ public class FloodgateAuthTask implements Runnable {
                     "Auto registration is disabled for Floodgate players in config.yml");
             return;
         }
-        
+
         // logging in from bedrock for a second time threw an error with UUID
         StoredProfile profile = plugin.getCore().getStorage().loadProfile(player.getName());
         if (profile == null) {
@@ -109,7 +108,7 @@ public class FloodgateAuthTask implements Runnable {
         }
 
         BukkitLoginSession session = new BukkitLoginSession(player.getName(), isRegistered, profile);
-        
+
         // enable auto login based on the value of 'autoLoginFloodgate' in config.yml
         session.setVerified(autoLoginFloodgate.equals("true")
                 || (autoLoginFloodgate.equals("linked") && isLinked));
