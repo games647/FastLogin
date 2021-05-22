@@ -31,6 +31,7 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
+import com.github.games647.fastlogin.bukkit.hook.floodgate.FloodgateHook;
 import com.github.games647.fastlogin.core.RateLimiter;
 
 import java.security.KeyPair;
@@ -49,6 +50,7 @@ public class ProtocolLibListener extends PacketAdapter {
     private final SecureRandom random = new SecureRandom();
     private final KeyPair keyPair = EncryptionUtil.generateKeyPair();
     private final RateLimiter rateLimiter;
+    private final FloodgateHook floodgateHook;
 
     public ProtocolLibListener(FastLoginBukkit plugin, RateLimiter rateLimiter) {
         //run async in order to not block the server, because we are making api calls to Mojang
@@ -59,6 +61,7 @@ public class ProtocolLibListener extends PacketAdapter {
 
         this.plugin = plugin;
         this.rateLimiter = rateLimiter;
+        this.floodgateHook = new FloodgateHook(plugin);
     }
 
     public static void register(FastLoginBukkit plugin, RateLimiter rateLimiter) {
@@ -113,7 +116,8 @@ public class ProtocolLibListener extends PacketAdapter {
         plugin.getLog().trace("GameProfile {} with {} connecting", sessionKey, username);
 
         packetEvent.getAsyncMarker().incrementProcessingDelay();
-        Runnable nameCheckTask = new NameCheckTask(plugin, packetEvent, random, player, username, keyPair.getPublic());
+        Runnable nameCheckTask = new NameCheckTask(plugin, packetEvent, random, player, username, keyPair.getPublic(),
+                floodgateHook);
         plugin.getScheduler().runAsync(nameCheckTask);
     }
 }

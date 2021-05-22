@@ -30,6 +30,7 @@ import com.comphenix.protocol.events.PacketEvent;
 import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 import com.github.games647.fastlogin.bukkit.event.BukkitFastLoginPreLoginEvent;
+import com.github.games647.fastlogin.bukkit.hook.floodgate.FloodgateHook;
 import com.github.games647.fastlogin.core.StoredProfile;
 import com.github.games647.fastlogin.core.shared.JoinManagement;
 import com.github.games647.fastlogin.core.shared.event.FastLoginPreLoginEvent;
@@ -37,10 +38,8 @@ import com.github.games647.fastlogin.core.shared.event.FastLoginPreLoginEvent;
 import java.security.PublicKey;
 import java.util.Random;
 
-import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.geysermc.floodgate.api.FloodgateApi;
 import org.geysermc.floodgate.api.player.FloodgatePlayer;
 
 public class NameCheckTask extends JoinManagement<Player, CommandSender, ProtocolLibLoginSource>
@@ -55,8 +54,10 @@ public class NameCheckTask extends JoinManagement<Player, CommandSender, Protoco
     private final Player player;
     private final String username;
 
+    private final FloodgateHook floodgateHook;
+
     public NameCheckTask(FastLoginBukkit plugin, PacketEvent packetEvent, Random random,
-                         Player player, String username, PublicKey publicKey) {
+                         Player player, String username, PublicKey publicKey, FloodgateHook floodgateHook) {
         super(plugin.getCore(), plugin.getCore().getAuthPluginHook());
 
         this.plugin = plugin;
@@ -65,18 +66,23 @@ public class NameCheckTask extends JoinManagement<Player, CommandSender, Protoco
         this.random = random;
         this.player = player;
         this.username = username;
+        this.floodgateHook = floodgateHook;
     }
 
     @Override
     public void run() {
         try {
-            // check if the player is connecting through Geyser
-            if (!plugin.getCore().getConfig().get("allowFloodgateNameConflict").toString().equalsIgnoreCase("false")
-                    && getFloodgatePlayer(username) != null) {
-                plugin.getLog().info("Skipping name conflict checking for player {}", username);
-                return;
+            ProtocolLibLoginSource source = new ProtocolLibLoginSource(packetEvent, player, random, publicKey);
+
+            //check if the player is connecting through Floodgate
+            FloodgatePlayer floodgatePlayer = floodgateHook.getFloodgatePlayer(username);
+
+            if (floodgatePlayer != null) {
+                floodgateHook.checkNameConflict(username, source, floodgatePlayer);
+            } else {
+                //do Java login tasks
+                super.onLogin(username, source);
             }
-            super.onLogin(username, new ProtocolLibLoginSource(packetEvent, player, random, publicKey));
         } finally {
             ProtocolLibrary.getProtocolManager().getAsynchronousManager().signalPacketTransmission(packetEvent);
         }
@@ -120,16 +126,5 @@ public class NameCheckTask extends JoinManagement<Player, CommandSender, Protoco
         BukkitLoginSession loginSession = new BukkitLoginSession(username, profile);
         plugin.putSession(player.getAddress(), loginSession);
     }
-    
-    private static FloodgatePlayer getFloodgatePlayer(String username) {
-        if (Bukkit.getServer().getPluginManager().isPluginEnabled("floodgate"))  {
-            // the Floodgate API requires UUID, which is inaccessible at NameCheckTask.java
-            for (FloodgatePlayer floodgatePlayer : FloodgateApi.getInstance().getPlayers()) {
-                if (floodgatePlayer.getUsername().equals(username)) {
-                    return floodgatePlayer;
-                }
-            }
-        }
-        return null;
-    }
+
 }
