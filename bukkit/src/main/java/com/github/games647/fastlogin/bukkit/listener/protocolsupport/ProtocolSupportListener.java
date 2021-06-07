@@ -42,7 +42,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.geysermc.floodgate.api.player.FloodgatePlayer;
 
 import protocolsupport.api.events.ConnectionCloseEvent;
 import protocolsupport.api.events.PlayerLoginStartEvent;
@@ -132,7 +131,7 @@ public class ProtocolSupportListener extends JoinManagement<Player, CommandSende
     }
 
     @Override
-    protected FloodgatePlayer getFloodgatePlayer(Object id) {
+    protected Object getFloodgatePlayer(Object id) {
         if ((id instanceof String)) {
             return floodgateHook.getFloodgatePlayer((String) id);
         }

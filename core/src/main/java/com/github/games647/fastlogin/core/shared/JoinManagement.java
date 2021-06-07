@@ -56,7 +56,7 @@ public abstract class JoinManagement<P extends C, C, S extends LoginSource> {
         }
 
         //check if the player is connecting through Floodgate
-        FloodgatePlayer floodgatePlayer = getFloodgatePlayer(username);
+        Object floodgatePlayer = getFloodgatePlayer(username);
 
         if (floodgatePlayer != null) {
             checkFloodgateNameConflict(username, source, floodgatePlayer);
@@ -149,11 +149,11 @@ public abstract class JoinManagement<P extends C, C, S extends LoginSource> {
      * @param username the name of the player
      * @param source   an instance of LoginSource
      */
-    public void checkFloodgateNameConflict(String username, LoginSource source, FloodgatePlayer floodgatePlayer) {
+    public void checkFloodgateNameConflict(String username, LoginSource source, Object floodgatePlayer) {
         String allowConflict = core.getConfig().get("allowFloodgateNameConflict").toString().toLowerCase();
 
         // check if the Bedrock player is linked to a Java account
-        boolean isLinked = floodgatePlayer.getLinkedPlayer() != null;
+        boolean isLinked = ((FloodgatePlayer) floodgatePlayer).getLinkedPlayer() != null;
 
         if (allowConflict.equals("false")
                 || allowConflict.equals("linked") && !isLinked) {
@@ -188,12 +188,16 @@ public abstract class JoinManagement<P extends C, C, S extends LoginSource> {
     }
 
     /**
-     * Check if a player is connecting through Floodgate
+     * Gets a FloodgatePlayer based on name or UUID Note: Don't change the return
+     * type from Object to FloodgatePlayer, unless you want ProtocolSupport to throw
+     * an error if Floodgate is not installed
+     * 
      * @param id UUID for BungeeCord, username for Bukkit
-     * @return true if the player is connecting through Floodgate
-     * <br> null if Floodgate is unavailable
+     * @return an instance of FloodgatePlayer, if Floodgate is installed and a
+     *         player is found <br>
+     *         null if Floodgate is unavailable
      */
-    protected abstract FloodgatePlayer getFloodgatePlayer(Object id);
+    protected abstract Object getFloodgatePlayer(Object id);
 
     public abstract FastLoginPreLoginEvent callFastLoginPreLoginEvent(String username, S source, StoredProfile profile);
 
