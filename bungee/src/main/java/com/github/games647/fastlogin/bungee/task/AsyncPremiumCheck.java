@@ -25,6 +25,8 @@
  */
 package com.github.games647.fastlogin.bungee.task;
 
+import org.geysermc.floodgate.api.player.FloodgatePlayer;
+
 import com.github.games647.fastlogin.bungee.BungeeLoginSession;
 import com.github.games647.fastlogin.bungee.BungeeLoginSource;
 import com.github.games647.fastlogin.bungee.FastLoginBungee;
@@ -88,5 +90,11 @@ public class AsyncPremiumCheck extends JoinManagement<ProxiedPlayer, CommandSend
     @Override
     public void startCrackedSession(BungeeLoginSource source, StoredProfile profile, String username) {
         plugin.getSession().put(source.getConnection(), new BungeeLoginSession(username, false, profile));
+    }
+
+    @Override
+    protected FloodgatePlayer getFloodgatePlayer(Object id) {
+        // force disabled for BungeeCord for now
+        return null;
     }
 }

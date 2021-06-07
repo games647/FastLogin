@@ -60,7 +60,7 @@ public class ProtocolSupportListener extends JoinManagement<Player, CommandSende
 
         this.plugin = plugin;
         this.rateLimiter = rateLimiter;
-        this.floodgateHook = new FloodgateHook(plugin);
+        this.floodgateHook = new FloodgateHook();
     }
 
     @EventHandler
@@ -81,16 +81,7 @@ public class ProtocolSupportListener extends JoinManagement<Player, CommandSende
         plugin.removeSession(address);
 
         ProtocolLoginSource source = new ProtocolLoginSource(loginStartEvent);
-
-        //check if the player is connecting through Floodgate
-        FloodgatePlayer floodgatePlayer = floodgateHook.getFloodgatePlayer(username);
-
-        if (floodgatePlayer != null) {
-            floodgateHook.checkNameConflict(username, source, floodgatePlayer);
-        } else {
-            //do Java login tasks
-            super.onLogin(username, source);
-        }
+        super.onLogin(username, source);
     }
 
     @EventHandler
@@ -138,5 +129,13 @@ public class ProtocolSupportListener extends JoinManagement<Player, CommandSende
     public void startCrackedSession(ProtocolLoginSource source, StoredProfile profile, String username) {
         BukkitLoginSession loginSession = new BukkitLoginSession(username, profile);
         plugin.putSession(source.getAddress(), loginSession);
+    }
+
+    @Override
+    protected FloodgatePlayer getFloodgatePlayer(Object id) {
+        if ((id instanceof String)) {
+            return floodgateHook.getFloodgatePlayer((String) id);
+        }
+        return null;
     }
 }

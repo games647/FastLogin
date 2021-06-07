@@ -72,17 +72,7 @@ public class NameCheckTask extends JoinManagement<Player, CommandSender, Protoco
     @Override
     public void run() {
         try {
-            ProtocolLibLoginSource source = new ProtocolLibLoginSource(packetEvent, player, random, publicKey);
-
-            //check if the player is connecting through Floodgate
-            FloodgatePlayer floodgatePlayer = floodgateHook.getFloodgatePlayer(username);
-
-            if (floodgatePlayer != null) {
-                floodgateHook.checkNameConflict(username, source, floodgatePlayer);
-            } else {
-                //do Java login tasks
-                super.onLogin(username, source);
-            }
+            super.onLogin(username, new ProtocolLibLoginSource(packetEvent, player, random, publicKey));
         } finally {
             ProtocolLibrary.getProtocolManager().getAsynchronousManager().signalPacketTransmission(packetEvent);
         }
@@ -125,6 +115,14 @@ public class NameCheckTask extends JoinManagement<Player, CommandSender, Protoco
     public void startCrackedSession(ProtocolLibLoginSource source, StoredProfile profile, String username) {
         BukkitLoginSession loginSession = new BukkitLoginSession(username, profile);
         plugin.putSession(player.getAddress(), loginSession);
+    }
+
+    @Override
+    protected FloodgatePlayer getFloodgatePlayer(Object id) {
+        if ((id instanceof String)) {
+            return floodgateHook.getFloodgatePlayer((String) id);
+        }
+        return null;
     }
 
 }

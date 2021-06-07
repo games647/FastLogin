@@ -61,7 +61,7 @@ public class ProtocolLibListener extends PacketAdapter {
 
         this.plugin = plugin;
         this.rateLimiter = rateLimiter;
-        this.floodgateHook = new FloodgateHook(plugin);
+        this.floodgateHook = new FloodgateHook();
     }
 
     public static void register(FastLoginBukkit plugin, RateLimiter rateLimiter) {
