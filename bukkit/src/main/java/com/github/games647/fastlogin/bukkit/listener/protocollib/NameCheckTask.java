@@ -104,10 +104,9 @@ public class NameCheckTask extends JoinManagement<Player, CommandSender, Protoco
         String ip = player.getAddress().getAddress().getHostAddress();
         core.getPendingLogin().put(ip + username, new Object());
 
-        String serverId = source.getServerId();
         byte[] verify = source.getVerifyToken();
 
-        BukkitLoginSession playerSession = new BukkitLoginSession(username, serverId, verify, registered, profile);
+        BukkitLoginSession playerSession = new BukkitLoginSession(username, verify, registered, profile);
         plugin.putSession(player.getAddress(), playerSession);
         //cancel only if the player has a paid account otherwise login as normal offline player
         synchronized (packetEvent.getAsyncMarker().getProcessingLock()) {
