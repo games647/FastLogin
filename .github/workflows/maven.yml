@@ -27,7 +27,7 @@ jobs:
     # Nevertheless the repositories should be more stable and it makes no sense to pull
     # a same version every time
     # A dry run would make more sense
-    - uses: actions/cache@v2.1.4
+    - uses: actions/cache@v2.1.6
       with:
         path: ~/.m2/repository
         key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
