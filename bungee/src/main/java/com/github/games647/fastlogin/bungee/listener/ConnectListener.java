@@ -58,7 +58,6 @@ import net.md_5.bungee.connection.LoginResult.Property;
 import net.md_5.bungee.event.EventHandler;
 import net.md_5.bungee.event.EventPriority;
 
-import org.geysermc.floodgate.FloodgateAPI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

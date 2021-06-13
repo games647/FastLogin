@@ -59,8 +59,6 @@ import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.api.plugin.PluginManager;
 import net.md_5.bungee.api.scheduler.GroupedThreadFactory;
 
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 import org.slf4j.Logger;
 
 /**
