@@ -73,12 +73,10 @@ public class ConnectListener implements Listener {
 
     static {
         MethodHandle setHandle = null;
-        boolean handlerFound = false;
         try {
             Lookup lookup = MethodHandles.lookup();
 
             Class.forName("net.md_5.bungee.connection.InitialHandler");
-            handlerFound = true;
 
             Field uuidField = InitialHandler.class.getDeclaredField(UUID_FIELD_NAME);
             uuidField.setAccessible(true);
