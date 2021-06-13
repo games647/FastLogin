@@ -69,7 +69,6 @@ import org.slf4j.LoggerFactory;
 public class ConnectListener implements Listener {
 
     private static final String UUID_FIELD_NAME = "uniqueId";
-    private static final boolean initialHandlerClazzFound;
     private static final MethodHandle uniqueIdSetter;
 
     static {
@@ -94,7 +93,6 @@ public class ConnectListener implements Listener {
             reflectiveOperationException.printStackTrace();
         }
 
-        initialHandlerClazzFound = handlerFound;
         uniqueIdSetter = setHandle;
     }
 
