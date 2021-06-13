@@ -278,7 +278,7 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
 	 * @param name the name of the plugin
 	 * @return true if the plugin is installed
 	 */
-	private boolean isPluginInstalled(String name) {
+	public boolean isPluginInstalled(String name) {
 	    //the plugin may be enabled after FastLogin, so isPluginEnabled()
 	    //won't work here
 	    return Bukkit.getServer().getPluginManager().getPlugin(name) != null;

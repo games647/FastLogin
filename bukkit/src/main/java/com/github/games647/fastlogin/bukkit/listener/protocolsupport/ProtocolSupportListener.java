@@ -29,7 +29,6 @@ import com.github.games647.craftapi.UUIDAdapter;
 import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 import com.github.games647.fastlogin.bukkit.event.BukkitFastLoginPreLoginEvent;
-import com.github.games647.fastlogin.bukkit.hook.floodgate.FloodgateHook;
 import com.github.games647.fastlogin.core.RateLimiter;
 import com.github.games647.fastlogin.core.StoredProfile;
 import com.github.games647.fastlogin.core.shared.JoinManagement;
@@ -52,14 +51,12 @@ public class ProtocolSupportListener extends JoinManagement<Player, CommandSende
 
     private final FastLoginBukkit plugin;
     private final RateLimiter rateLimiter;
-    private final FloodgateHook floodgateHook;
 
     public ProtocolSupportListener(FastLoginBukkit plugin, RateLimiter rateLimiter) {
         super(plugin.getCore(), plugin.getCore().getAuthPluginHook());
 
         this.plugin = plugin;
         this.rateLimiter = rateLimiter;
-        this.floodgateHook = new FloodgateHook();
     }
 
     @EventHandler
@@ -128,13 +125,5 @@ public class ProtocolSupportListener extends JoinManagement<Player, CommandSende
     public void startCrackedSession(ProtocolLoginSource source, StoredProfile profile, String username) {
         BukkitLoginSession loginSession = new BukkitLoginSession(username, profile);
         plugin.putSession(source.getAddress(), loginSession);
-    }
-
-    @Override
-    protected Object getFloodgatePlayer(Object id) {
-        if ((id instanceof String)) {
-            return floodgateHook.getFloodgatePlayer((String) id);
-        }
-        return null;
     }
 }

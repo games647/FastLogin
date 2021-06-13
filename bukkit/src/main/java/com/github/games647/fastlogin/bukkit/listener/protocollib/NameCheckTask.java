@@ -30,7 +30,6 @@ import com.comphenix.protocol.events.PacketEvent;
 import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 import com.github.games647.fastlogin.bukkit.event.BukkitFastLoginPreLoginEvent;
-import com.github.games647.fastlogin.bukkit.hook.floodgate.FloodgateHook;
 import com.github.games647.fastlogin.core.StoredProfile;
 import com.github.games647.fastlogin.core.shared.JoinManagement;
 import com.github.games647.fastlogin.core.shared.event.FastLoginPreLoginEvent;
@@ -40,7 +39,6 @@ import java.util.Random;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.geysermc.floodgate.api.player.FloodgatePlayer;
 
 public class NameCheckTask extends JoinManagement<Player, CommandSender, ProtocolLibLoginSource>
         implements Runnable {
@@ -54,10 +52,9 @@ public class NameCheckTask extends JoinManagement<Player, CommandSender, Protoco
     private final Player player;
     private final String username;
 
-    private final FloodgateHook floodgateHook;
 
     public NameCheckTask(FastLoginBukkit plugin, PacketEvent packetEvent, Random random,
-                         Player player, String username, PublicKey publicKey, FloodgateHook floodgateHook) {
+                         Player player, String username, PublicKey publicKey) {
         super(plugin.getCore(), plugin.getCore().getAuthPluginHook());
 
         this.plugin = plugin;
@@ -66,7 +63,6 @@ public class NameCheckTask extends JoinManagement<Player, CommandSender, Protoco
         this.random = random;
         this.player = player;
         this.username = username;
-        this.floodgateHook = floodgateHook;
     }
 
     @Override
@@ -116,13 +112,4 @@ public class NameCheckTask extends JoinManagement<Player, CommandSender, Protoco
         BukkitLoginSession loginSession = new BukkitLoginSession(username, profile);
         plugin.putSession(player.getAddress(), loginSession);
     }
-
-    @Override
-    protected FloodgatePlayer getFloodgatePlayer(Object id) {
-        if ((id instanceof String)) {
-            return floodgateHook.getFloodgatePlayer((String) id);
-        }
-        return null;
-    }
-
 }

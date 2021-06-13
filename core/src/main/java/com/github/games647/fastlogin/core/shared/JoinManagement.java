@@ -29,9 +29,9 @@ import com.github.games647.craftapi.model.Profile;
 import com.github.games647.craftapi.resolver.RateLimitException;
 import com.github.games647.fastlogin.core.StoredProfile;
 import com.github.games647.fastlogin.core.hooks.AuthPlugin;
+import com.github.games647.fastlogin.core.hooks.FloodgateHook;
 import com.github.games647.fastlogin.core.shared.event.FastLoginPreLoginEvent;
 
-import java.io.IOException;
 import java.util.Optional;
 
 import org.geysermc.floodgate.api.player.FloodgatePlayer;
@@ -42,10 +42,12 @@ public abstract class JoinManagement<P extends C, C, S extends LoginSource> {
 
     protected final FastLoginCore<P, C, ?> core;
     protected final AuthPlugin<P> authHook;
+    private final FloodgateHook<P, C, ?> floodgateHook;
 
     public JoinManagement(FastLoginCore<P, C, ?> core, AuthPlugin<P> authHook) {
         this.core = core;
         this.authHook = authHook;
+        this.floodgateHook = new FloodgateHook<>(core);
     }
 
     public void onLogin(String username, S source) {
@@ -56,10 +58,10 @@ public abstract class JoinManagement<P extends C, C, S extends LoginSource> {
         }
 
         //check if the player is connecting through Floodgate
-        Object floodgatePlayer = getFloodgatePlayer(username);
+        FloodgatePlayer floodgatePlayer = floodgateHook.getFloodgatePlayer(username);
 
         if (floodgatePlayer != null) {
-            checkFloodgateNameConflict(username, source, floodgatePlayer);
+            floodgateHook.checkFloodgateNameConflict(username, source, floodgatePlayer);
             return;
         }
         callFastLoginPreLoginEvent(username, source, profile);
@@ -140,64 +142,6 @@ public abstract class JoinManagement<P extends C, C, S extends LoginSource> {
 
         return false;
     }
-
-    /**
-     * Check if the player's name conflicts an existing Java player's name, and
-     * kick them if it does
-     *
-     * @param core     the FastLoginCore
-     * @param username the name of the player
-     * @param source   an instance of LoginSource
-     */
-    public void checkFloodgateNameConflict(String username, LoginSource source, Object floodgatePlayer) {
-        String allowConflict = core.getConfig().get("allowFloodgateNameConflict").toString().toLowerCase();
-
-        // check if the Bedrock player is linked to a Java account
-        boolean isLinked = ((FloodgatePlayer) floodgatePlayer).getLinkedPlayer() != null;
-
-        if (allowConflict.equals("false")
-                || allowConflict.equals("linked") && !isLinked) {
-
-            // check for conflicting Premium Java name
-            Optional<Profile> premiumUUID = Optional.empty();
-            try {
-                premiumUUID = core.getResolver().findProfile(username);
-            } catch (IOException | RateLimitException e) {
-                core.getPlugin().getLog().error(
-                        "Could not check wether Floodgate Player {}'s name conflicts a premium Java player's name.",
-                        username);
-                try {
-                    source.kick("Could not check if your name conflicts an existing Java Premium Player's name");
-                } catch (Exception e1) {
-                    core.getPlugin().getLog().error("Could not kick Player {}", username);
-                }
-            }
-
-            if (premiumUUID.isPresent()) {
-                core.getPlugin().getLog().info("Bedrock Player {}'s name conflicts an existing Java Premium Player's name",
-                        username);
-                try {
-                    source.kick("Your name conflicts an existing Java Premium Player's name");
-                } catch (Exception e) {
-                    core.getPlugin().getLog().error("Could not kick Player {}", username);
-                }
-            }
-        } else {
-            core.getPlugin().getLog().info("Skipping name conflict checking for player {}", username);
-        }
-    }
-
-    /**
-     * Gets a FloodgatePlayer based on name or UUID Note: Don't change the return
-     * type from Object to FloodgatePlayer, unless you want ProtocolSupport to throw
-     * an error if Floodgate is not installed
-     * 
-     * @param id UUID for BungeeCord, username for Bukkit
-     * @return an instance of FloodgatePlayer, if Floodgate is installed and a
-     *         player is found <br>
-     *         null if Floodgate is unavailable
-     */
-    protected abstract Object getFloodgatePlayer(Object id);
 
     public abstract FastLoginPreLoginEvent callFastLoginPreLoginEvent(String username, S source, StoredProfile profile);
 
