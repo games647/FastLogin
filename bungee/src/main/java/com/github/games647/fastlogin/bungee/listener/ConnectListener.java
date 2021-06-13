@@ -101,13 +101,11 @@ public class ConnectListener implements Listener {
     private final FastLoginBungee plugin;
     private final RateLimiter rateLimiter;
     private final Property[] emptyProperties = {};
-    private final String floodgateVersion;
     private final FloodgateHook floodgateHook;
 
     public ConnectListener(FastLoginBungee plugin, RateLimiter rateLimiter, String floodgateVersion) {
         this.plugin = plugin;
         this.rateLimiter = rateLimiter;
-        this.floodgateVersion = floodgateVersion;
 
         // Get the appropriate floodgate api hook based on the version
         if (floodgateVersion.startsWith("1")) {
