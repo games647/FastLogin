@@ -36,12 +36,10 @@ import org.slf4j.Logger;
 
 public class BukkitScheduler extends AsyncScheduler {
 
-    private final Plugin plugin;
     private final Executor syncExecutor;
 
     public BukkitScheduler(Plugin plugin, Logger logger, ThreadFactory threadFactory) {
         super(logger, threadFactory);
-        this.plugin = plugin;
 
         syncExecutor = r -> Bukkit.getScheduler().runTask(plugin, r);
     }
