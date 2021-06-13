@@ -30,7 +30,6 @@ import com.github.games647.fastlogin.bungee.event.BungeeFastLoginPremiumToggleEv
 import com.github.games647.fastlogin.core.StoredProfile;
 import com.github.games647.fastlogin.core.shared.FastLoginCore;
 
-import com.github.games647.fastlogin.core.shared.event.FastLoginPremiumToggleEvent;
 import com.github.games647.fastlogin.core.shared.event.FastLoginPremiumToggleEvent.PremiumToggleReason;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;

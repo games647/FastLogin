@@ -33,9 +33,7 @@ import java.util.concurrent.Future;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 import ultraauth.api.UltraAuthAPI;
-import ultraauth.main.Main;
 import ultraauth.managers.PlayerManager;
 
 /**
@@ -47,7 +45,6 @@ import ultraauth.managers.PlayerManager;
  */
 public class UltraAuthHook implements AuthPlugin<Player> {
 
-    private final Plugin ultraAuthPlugin = Main.main;
     private final FastLoginBukkit plugin;
 
     public UltraAuthHook(FastLoginBukkit plugin) {

@@ -40,34 +40,32 @@ public class BukkitLoginSession extends LoginSession {
 
     private static final byte[] EMPTY_ARRAY = {};
 
-    private final String serverId;
     private final byte[] verifyToken;
 
     private boolean verified;
 
     private SkinProperty skinProperty;
 
-    public BukkitLoginSession(String username, String serverId, byte[] verifyToken, boolean registered
+    public BukkitLoginSession(String username, byte[] verifyToken, boolean registered
             , StoredProfile profile) {
         super(username, registered, profile);
 
-        this.serverId = serverId;
         this.verifyToken = verifyToken.clone();
     }
 
     //available for BungeeCord
     public BukkitLoginSession(String username, boolean registered) {
-        this(username, "", EMPTY_ARRAY, registered, null);
+        this(username, EMPTY_ARRAY, registered, null);
     }
 
     //cracked player
     public BukkitLoginSession(String username, StoredProfile profile) {
-        this(username, "", EMPTY_ARRAY, false, profile);
+        this(username, EMPTY_ARRAY, false, profile);
     }
 
     //ProtocolSupport
     public BukkitLoginSession(String username, boolean registered, StoredProfile profile) {
-        this(username, "", EMPTY_ARRAY, registered, profile);
+        this(username, EMPTY_ARRAY, registered, profile);
     }
 
     /**

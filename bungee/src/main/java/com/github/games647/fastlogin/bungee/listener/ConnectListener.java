@@ -58,7 +58,6 @@ import net.md_5.bungee.connection.LoginResult.Property;
 import net.md_5.bungee.event.EventHandler;
 import net.md_5.bungee.event.EventPriority;
 
-import org.geysermc.floodgate.FloodgateAPI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,17 +68,14 @@ import org.slf4j.LoggerFactory;
 public class ConnectListener implements Listener {
 
     private static final String UUID_FIELD_NAME = "uniqueId";
-    private static final boolean initialHandlerClazzFound;
     private static final MethodHandle uniqueIdSetter;
 
     static {
         MethodHandle setHandle = null;
-        boolean handlerFound = false;
         try {
             Lookup lookup = MethodHandles.lookup();
 
             Class.forName("net.md_5.bungee.connection.InitialHandler");
-            handlerFound = true;
 
             Field uuidField = InitialHandler.class.getDeclaredField(UUID_FIELD_NAME);
             uuidField.setAccessible(true);
@@ -94,20 +90,17 @@ public class ConnectListener implements Listener {
             reflectiveOperationException.printStackTrace();
         }
 
-        initialHandlerClazzFound = handlerFound;
         uniqueIdSetter = setHandle;
     }
 
     private final FastLoginBungee plugin;
     private final RateLimiter rateLimiter;
     private final Property[] emptyProperties = {};
-    private final String floodgateVersion;
     private final FloodgateHook floodgateHook;
 
     public ConnectListener(FastLoginBungee plugin, RateLimiter rateLimiter, String floodgateVersion) {
         this.plugin = plugin;
         this.rateLimiter = rateLimiter;
-        this.floodgateVersion = floodgateVersion;
 
         // Get the appropriate floodgate api hook based on the version
         if (floodgateVersion.startsWith("1")) {

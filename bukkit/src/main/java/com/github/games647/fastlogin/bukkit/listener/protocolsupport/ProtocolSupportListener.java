@@ -37,7 +37,6 @@ import com.github.games647.fastlogin.core.shared.event.FastLoginPreLoginEvent;
 import java.net.InetSocketAddress;
 import java.util.Optional;
 
-import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
