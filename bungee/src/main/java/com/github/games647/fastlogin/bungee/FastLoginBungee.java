@@ -50,7 +50,6 @@ import java.util.List;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ThreadFactory;
 
-import net.md_5.bungee.BungeeServerInfo;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.PendingConnection;
