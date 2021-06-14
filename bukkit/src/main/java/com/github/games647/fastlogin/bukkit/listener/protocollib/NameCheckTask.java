@@ -37,11 +37,8 @@ import com.github.games647.fastlogin.core.shared.event.FastLoginPreLoginEvent;
 import java.security.PublicKey;
 import java.util.Random;
 
-import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.geysermc.floodgate.api.FloodgateApi;
-import org.geysermc.floodgate.api.player.FloodgatePlayer;
 
 public class NameCheckTask extends JoinManagement<Player, CommandSender, ProtocolLibLoginSource>
         implements Runnable {
@@ -54,6 +51,7 @@ public class NameCheckTask extends JoinManagement<Player, CommandSender, Protoco
 
     private final Player player;
     private final String username;
+
 
     public NameCheckTask(FastLoginBukkit plugin, PacketEvent packetEvent, Random random,
                          Player player, String username, PublicKey publicKey) {
@@ -70,12 +68,6 @@ public class NameCheckTask extends JoinManagement<Player, CommandSender, Protoco
     @Override
     public void run() {
         try {
-            // check if the player is connecting through Geyser
-            if (!plugin.getCore().getConfig().get("allowFloodgateNameConflict").toString().equalsIgnoreCase("false")
-                    && getFloodgatePlayer(username) != null) {
-                plugin.getLog().info("Skipping name conflict checking for player {}", username);
-                return;
-            }
             super.onLogin(username, new ProtocolLibLoginSource(packetEvent, player, random, publicKey));
         } finally {
             ProtocolLibrary.getProtocolManager().getAsynchronousManager().signalPacketTransmission(packetEvent);
@@ -118,17 +110,5 @@ public class NameCheckTask extends JoinManagement<Player, CommandSender, Protoco
     public void startCrackedSession(ProtocolLibLoginSource source, StoredProfile profile, String username) {
         BukkitLoginSession loginSession = new BukkitLoginSession(username, profile);
         plugin.putSession(player.getAddress(), loginSession);
-    }
-    
-    private static FloodgatePlayer getFloodgatePlayer(String username) {
-        if (Bukkit.getServer().getPluginManager().isPluginEnabled("floodgate"))  {
-            // the Floodgate API requires UUID, which is inaccessible at NameCheckTask.java
-            for (FloodgatePlayer floodgatePlayer : FloodgateApi.getInstance().getPlayers()) {
-                if (floodgatePlayer.getUsername().equals(username)) {
-                    return floodgatePlayer;
-                }
-            }
-        }
-        return null;
     }
 }

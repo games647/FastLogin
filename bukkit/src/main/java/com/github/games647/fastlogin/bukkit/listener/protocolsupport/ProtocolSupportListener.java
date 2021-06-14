@@ -41,6 +41,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+
 import protocolsupport.api.events.ConnectionCloseEvent;
 import protocolsupport.api.events.PlayerLoginStartEvent;
 import protocolsupport.api.events.PlayerProfileCompleteEvent;
@@ -75,7 +76,8 @@ public class ProtocolSupportListener extends JoinManagement<Player, CommandSende
         //remove old data every time on a new login in order to keep the session only for one person
         plugin.removeSession(address);
 
-        super.onLogin(username, new ProtocolLoginSource(loginStartEvent));
+        ProtocolLoginSource source = new ProtocolLoginSource(loginStartEvent);
+        super.onLogin(username, source);
     }
 
     @EventHandler

@@ -53,6 +53,11 @@
             <id>codemc-repo</id>
             <url>https://repo.codemc.io/repository/maven-public/</url>
         </repository>
+        <!-- Floodgate -->
+        <repository>
+            <id>nukkitx-snapshot</id>
+            <url>https://repo.nukkitx.com/maven-snapshots/</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -83,6 +88,14 @@
                     <artifactId>*</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+
+        <!--Floodgate for Xbox Live Authentication-->
+        <dependency>
+            <groupId>org.geysermc.floodgate</groupId>
+            <artifactId>api</artifactId>
+            <version>2.0-SNAPSHOT</version>
+            <scope>provided</scope>
         </dependency>
 
         <!--Common component for contacting the Mojang API-->

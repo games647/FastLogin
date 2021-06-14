@@ -29,9 +29,12 @@ import com.github.games647.craftapi.model.Profile;
 import com.github.games647.craftapi.resolver.RateLimitException;
 import com.github.games647.fastlogin.core.StoredProfile;
 import com.github.games647.fastlogin.core.hooks.AuthPlugin;
+import com.github.games647.fastlogin.core.hooks.FloodgateHook;
 import com.github.games647.fastlogin.core.shared.event.FastLoginPreLoginEvent;
 
 import java.util.Optional;
+
+import org.geysermc.floodgate.api.player.FloodgatePlayer;
 
 import net.md_5.bungee.config.Configuration;
 
@@ -39,10 +42,12 @@ public abstract class JoinManagement<P extends C, C, S extends LoginSource> {
 
     protected final FastLoginCore<P, C, ?> core;
     protected final AuthPlugin<P> authHook;
+    private final FloodgateHook<P, C, ?> floodgateHook;
 
     public JoinManagement(FastLoginCore<P, C, ?> core, AuthPlugin<P> authHook) {
         this.core = core;
         this.authHook = authHook;
+        this.floodgateHook = new FloodgateHook<>(core);
     }
 
     public void onLogin(String username, S source) {
@@ -52,6 +57,13 @@ public abstract class JoinManagement<P extends C, C, S extends LoginSource> {
             return;
         }
 
+        //check if the player is connecting through Floodgate
+        FloodgatePlayer floodgatePlayer = floodgateHook.getFloodgatePlayer(username);
+
+        if (floodgatePlayer != null) {
+            floodgateHook.checkFloodgateNameConflict(username, source, floodgatePlayer);
+            return;
+        }
         callFastLoginPreLoginEvent(username, source, profile);
 
         Configuration config = core.getConfig();

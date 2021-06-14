@@ -45,6 +45,8 @@ public interface PlatformPlugin<C> {
 
     AsyncScheduler getScheduler();
 
+    boolean isPluginInstalled(String name);
+
     default void sendMultiLineMessage(C receiver, String message) {
         for (String line : message.split("%nl%")) {
             sendMessage(receiver, line);

@@ -51,25 +51,10 @@ public class FloodgateAuthTask implements Runnable {
         plugin.getLog().info(
                 "Player {} is connecting through Geyser Floodgate.",
                 player.getName());
-        String allowNameConflict = plugin.getCore().getConfig().get("allowFloodgateNameConflict").toString().toLowerCase();
+
         // check if the Bedrock player is linked to a Java account 
         boolean isLinked = floodgatePlayer.getLinkedPlayer() != null;
-        if (allowNameConflict.equals("linked") && !isLinked) {
-            plugin.getLog().info(
-                    "Bedrock Player {}'s name conflits an existing Java Premium Player's name",
-                    player.getName());
-            
-            // kicking must be synchronous
-            // https://www.spigotmc.org/threads/asynchronous-player-kick-problem.168580/
-            Bukkit.getScheduler().runTask(plugin, new Runnable() {
-                public void run() {
-                    player.kickPlayer("This name is allready in use by a Premium Java Player");
-                }
-            });
-            return;
 
-        }
-        
         AuthPlugin<Player> authPlugin = plugin.getCore().getAuthPluginHook();
 
         String autoLoginFloodgate = plugin.getCore().getConfig().get("autoLoginFloodgate").toString().toLowerCase();
