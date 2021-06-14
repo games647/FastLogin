@@ -38,6 +38,7 @@ jobs:
     - name: Set up JDK
       uses: actions/setup-java@v2.1.0
       with:
+        distribution: 'adopt'
         # Use Java 11, because it's minimum required version
         java-version: 11
 
