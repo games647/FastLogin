@@ -39,10 +39,7 @@ import com.github.games647.craftapi.model.skin.SkinProperty;
 import com.github.games647.craftapi.resolver.MojangResolver;
 import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
-import org.bukkit.entity.Player;
 
-import javax.crypto.Cipher;
-import javax.crypto.SecretKey;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -56,10 +53,22 @@ import java.util.Arrays;
 import java.util.Optional;
 import java.util.UUID;
 
+import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
+
+import org.bukkit.entity.Player;
+
 import static com.comphenix.protocol.PacketType.Login.Client.START;
 import static com.comphenix.protocol.PacketType.Login.Server.DISCONNECT;
 
 public class VerifyResponseTask implements Runnable {
+
+    private static final String ENCRYPTION_CLASS_NAME = "MinecraftEncryption";
+    private static final Class<?> ENCRYPTION_CLASS;
+
+    static {
+        ENCRYPTION_CLASS = MinecraftReflection.getMinecraftClass("util." + ENCRYPTION_CLASS_NAME, ENCRYPTION_CLASS_NAME);
+    }
 
     private final FastLoginBukkit plugin;
     private final PacketEvent packetEvent;
@@ -214,8 +223,7 @@ public class VerifyResponseTask implements Runnable {
                         .getMethodByParameters("a", Cipher.class, Cipher.class);
 
                 // Get the needed Cipher helper method (used to generate ciphers from login key)
-                Class<?> encryptionClass = MinecraftReflection.getMinecraftClass("MinecraftEncryption");
-                cipherMethod = FuzzyReflection.fromClass(encryptionClass)
+                cipherMethod = FuzzyReflection.fromClass(ENCRYPTION_CLASS)
                         .getMethodByParameters("a", int.class, Key.class);
             }
         }
