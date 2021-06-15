@@ -217,9 +217,11 @@ public class ConnectListener implements Listener {
         // Floodgate will set a correct UUID at the beginning of the PreLoginEvent
         // and will cancel the online mode login for those players
         // Therefore we just ignore those
-        if (floodgateHook == null) {
+        if (floodgateHook == null || correctedUUID == null) {
+            // Also ignore if not set by floodgate or any other plugin
             return false;
         }
+
         return this.floodgateHook.isBedrockPlayer(correctedUUID);
     }
 }
