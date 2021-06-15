@@ -194,9 +194,14 @@ autoLogin: true
 # !!!!!!!! WARNING: FLOODGATE SUPPORT IS AN EXPERIMENTAL FEATURE !!!!!!!!
 # Enabling any of these settings might lead to people gaining unauthorized access to other's accounts!
 
-# This enables auto login for every player connecting through Floodgate.
-# Possible values: false, true, linked
-# Linked means that only Bedrock accounts linked to a Java account will be logged in automatically
+# Automatically log in players connecting through Floodgate.
+# Possible values:
+#   false: Disables auto login for every player connecting through Floodgate
+#   true: Enables auto login for every player connecting through Floodgate
+#   linked: Only Bedrock accounts that are linked to a Java account will be logged in automatically
+#   no-conflict: Bedrock players will only be automatically logged in if the Mojang API reports
+#     that there is no existing Premium Java MC account with their name.
+#     This option can be useful if you are not using 'username-prefix' in floodgate/config.yml
 # !!!!!!!! WARNING: FLOODGATE SUPPORT IS AN EXPERIMENTAL FEATURE !!!!!!!!
 # Enabling this might lead to people gaining unauthorized access to other's accounts!
 autoLoginFloodgate: false
@@ -225,8 +230,14 @@ autoLoginFloodgate: false
 # Enabling this might lead to people gaining unauthorized access to other's accounts!
 allowFloodgateNameConflict: false
 
-# This enables auto registering every player connecting through Floodgate.
-# autoLoginFloodgate must be 'true' for this to work
+# Automatically register players connecting through Floodgate.
+# autoLoginFloodgate must be available for the player to use this
+# Possible values:
+#   false: Disables auto registering for every player connecting through Floodgate
+#   true: Enables auto registering for every player connecting through Floodgate
+#   no-conflict: Bedrock players will only be automatically registered if the Mojang API reports
+#     that there is no existing Premium Java MC account with their name.
+#     This option can be useful if you are not using 'username-prefix' in floodgate/config.yml
 # !!!!!!!! WARNING: FLOODGATE SUPPORT IS AN EXPERIMENTAL FEATURE !!!!!!!!
 # Enabling this might lead to people gaining unauthorized access to other's accounts!
 autoRegisterFloodgate: false

@@ -256,6 +256,7 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
 	 * <ul>
 	 * <li>allowFloodgateNameConflict
 	 * <li>autoLoginFloodgate
+	 * <li>autoRegisterFloodgate
 	 * </ul>
 	 * </p>
 	 * 
@@ -264,7 +265,7 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
 	 */
 	private boolean isValidFloodgateConfigString(String key) {
 		String value = core.getConfig().get(key).toString().toLowerCase();
-		if (!value.equals("true") && !value.equals("linked") && !value.equals("false")) {
+		if (!value.equals("true") && !value.equals("linked") && !value.equals("false") && !value.equals("no-conflict")) {
 			logger.error("Invalid value detected for {} in FastLogin/config.yml.", key);
 			return false;
 		}
