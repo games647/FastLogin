@@ -155,6 +155,12 @@
             <artifactId>BungeeCordAuthenticator</artifactId>
             <version>0.0.2</version>
             <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>

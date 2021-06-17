@@ -163,6 +163,12 @@
             <artifactId>ProtocolLib</artifactId>
             <version>4.6.0</version>
             <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!--Changing onlinemode on login process-->
@@ -172,6 +178,12 @@
             <!--4.29.dev after commit about API improvements-->
             <version>3a80c661fe</version>
             <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!--Provide premium placeholders-->
