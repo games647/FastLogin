@@ -1,0 +1,58 @@
+# GitHub automatic code security scanning using CodeQL
+
+# Human readable name in the actions tab
+name: "CodeQL"
+
+on:
+  # Scan only for push on the primary branch for now
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  # job i
+  analyze:
+
+    # Display name
+    name: Analyze
+
+    # Environment
+    runs-on: ubuntu-latest
+
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
+    strategy:
+      fail-fast: false
+      matrix:
+        # Languages to scan
+        language: [ 'java' ]
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    # Initializes the CodeQL tools for scanning.
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v1
+      with:
+        languages: ${{ matrix.language }}
+
+    # Cache build process too like in the maven config
+    - uses: actions/cache@v2.1.4
+      with:
+        path: ~/.m2/repository
+        key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+        restore-keys: |
+          ${{ runner.os }}-maven-
+
+    # Autobuild attempts to build any compiled languages  (C/C++, C#, or Java).
+    # If this step fails, then you should remove it and run the build manually (see below)
+    - name: Autobuild
+      uses: github/codeql-action/autobuild@v1
+
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v1
