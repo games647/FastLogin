@@ -42,6 +42,7 @@ import io.papermc.lib.PaperLib;
 
 import java.net.InetSocketAddress;
 import java.nio.file.Path;
+import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -118,6 +119,8 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
                 }
             } else {
                 logger.warn("Either ProtocolLib or ProtocolSupport have to be installed if you don't use BungeeCord");
+                setEnabled(false);
+                return;
             }
         }
 
@@ -264,7 +267,7 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
 	 * @return <b>true</b> if the entry's value is "true", "false", or "linked"
 	 */
 	private boolean isValidFloodgateConfigString(String key) {
-		String value = core.getConfig().get(key).toString().toLowerCase();
+		String value = core.getConfig().get(key).toString().toLowerCase(Locale.ENGLISH);
 		if (!value.equals("true") && !value.equals("linked") && !value.equals("false") && !value.equals("no-conflict")) {
 			logger.error("Invalid value detected for {} in FastLogin/config.yml.", key);
 			return false;
