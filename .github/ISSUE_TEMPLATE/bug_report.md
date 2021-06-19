@@ -1,6 +1,6 @@
 ---
 name: Bug report
-about: Something isn't working
+about: Something isn't working, broken, not expected behavior
 title: ''
 labels: 'bug'
 assignees: ''
@@ -9,6 +9,8 @@ assignees: ''
 
 [//]: # (Lines in this format are considered as comments and will not be displayed.)
 [//]: # (Before reporting make sure you're running the **latest build** of the plugin and checked for existing issues!)
+
+[//]: # (Type: This ticket is about bugs - broken, not expected behavior)
 
 ### What behaviour is observed:
 [//]: # (What happened?)
