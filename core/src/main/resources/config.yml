@@ -221,7 +221,6 @@ autoLoginFloodgate: false
 #
 # Possible values:
 #   false: Check for Premium Java name conflicts as described in 'autoRegister'
-#     'autoRegister' must be 'true' for this to work
 #     Note: Linked players have the same name as their Java profile, so the Bedrock player will always conflict
 #     their own Java account's name. Therefore, setting this to false will prevent any linked player from joining.
 #   true:  Bypass 'autoRegister's name conflict checking 
