@@ -69,17 +69,18 @@ public class FloodgateHook<P extends C, C, S extends LoginSource> {
                         "Could not check wether Floodgate Player {}'s name conflicts a premium Java player's name.",
                         username);
                 try {
-                    source.kick("Could not check if your name conflicts an existing Java Premium Player's name");
+                    source.kick("Could not check if your name conflicts an existing premium Java account's name.\n"
+                            + "This is usually a serverside error.");
                 } catch (Exception e1) {
                     core.getPlugin().getLog().error("Could not kick Player {}", username);
                 }
             }
 
             if (premiumUUID.isPresent()) {
-                core.getPlugin().getLog().info("Bedrock Player {}'s name conflicts an existing Java Premium Player's name",
+                core.getPlugin().getLog().info("Bedrock Player {}'s name conflicts an existing premium Java account's name",
                         username);
                 try {
-                    source.kick("Your name conflicts an existing Java Premium Player's name");
+                    source.kick("Your name conflicts an existing premium Java account's name");
                 } catch (Exception e) {
                     core.getPlugin().getLog().error("Could not kick Player {}", username);
                 }
