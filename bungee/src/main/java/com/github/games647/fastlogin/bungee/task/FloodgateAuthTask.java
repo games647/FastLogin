@@ -23,49 +23,59 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.github.games647.fastlogin.bukkit.task;
+package com.github.games647.fastlogin.bungee.task;
 
 import java.net.InetSocketAddress;
 import java.util.UUID;
 
-import org.bukkit.Bukkit;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 import org.geysermc.floodgate.api.player.FloodgatePlayer;
 
-import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
-import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
+import net.md_5.bungee.api.CommandSender;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.md_5.bungee.api.connection.Server;
+
+import com.github.games647.fastlogin.bungee.BungeeLoginSession;
+import com.github.games647.fastlogin.bungee.FastLoginBungee;
 import com.github.games647.fastlogin.core.shared.FastLoginCore;
 import com.github.games647.fastlogin.core.shared.FloodgateManagement;
 
-public class FloodgateAuthTask extends FloodgateManagement<Player, CommandSender, BukkitLoginSession, FastLoginBukkit> {
+public class FloodgateAuthTask
+        extends FloodgateManagement<ProxiedPlayer, CommandSender, BungeeLoginSession, FastLoginBungee> {
 
-    public FloodgateAuthTask(FastLoginCore<Player, CommandSender, FastLoginBukkit> core, Player player, FloodgatePlayer floodgatePlayer) {
+    private final Server server;
+
+    public FloodgateAuthTask(FastLoginCore<ProxiedPlayer, CommandSender, FastLoginBungee> core, ProxiedPlayer player,
+            FloodgatePlayer floodgatePlayer, Server server) {
         super(core, player, floodgatePlayer);
+        this.server = server;
     }
 
     @Override
     protected void startLogin() {
-        BukkitLoginSession session = new BukkitLoginSession(player.getName(), isRegistered, profile);
+        BungeeLoginSession session = new BungeeLoginSession(player.getName(), isRegistered, profile);
 
         // enable auto login based on the value of 'autoLoginFloodgate' in config.yml
-        session.setVerified(autoLoginFloodgate.equals("true")
-                || (autoLoginFloodgate.equals("linked") && isLinked));
+        boolean forcedOnlineMode = autoLoginFloodgate.equals("true")
+                || (autoLoginFloodgate.equals("linked") && isLinked);
 
         // run login task
-        Runnable forceLoginTask = new ForceLoginTask(core.getPlugin().getCore(), player, session);
-        Bukkit.getScheduler().runTaskAsynchronously(core.getPlugin(), forceLoginTask);
+        Runnable forceLoginTask = new ForceLoginTask(core.getPlugin().getCore(), player, server, session,
+                forcedOnlineMode);
+        core.getPlugin().getScheduler().runAsync(forceLoginTask);
     }
 
-    protected String getName(Player player) {
+    @Override
+    protected String getName(ProxiedPlayer player) {
         return player.getName();
     }
 
-    protected UUID getUUID(Player player) {
+    @Override
+    protected UUID getUUID(ProxiedPlayer player) {
         return player.getUniqueId();
     }
 
-    protected InetSocketAddress getAddress(Player player) {
+    @Override
+    protected InetSocketAddress getAddress(ProxiedPlayer player) {
         return player.getAddress();
     }
 

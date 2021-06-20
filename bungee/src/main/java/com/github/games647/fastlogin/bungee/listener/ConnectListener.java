@@ -28,10 +28,8 @@ package com.github.games647.fastlogin.bungee.listener;
 import com.github.games647.craftapi.UUIDAdapter;
 import com.github.games647.fastlogin.bungee.BungeeLoginSession;
 import com.github.games647.fastlogin.bungee.FastLoginBungee;
-import com.github.games647.fastlogin.bungee.hook.floodgate.FloodgateHook;
-import com.github.games647.fastlogin.bungee.hook.floodgate.FloodgateV1Hook;
-import com.github.games647.fastlogin.bungee.hook.floodgate.FloodgateV2Hook;
 import com.github.games647.fastlogin.bungee.task.AsyncPremiumCheck;
+import com.github.games647.fastlogin.bungee.task.FloodgateAuthTask;
 import com.github.games647.fastlogin.bungee.task.ForceLoginTask;
 import com.github.games647.fastlogin.core.RateLimiter;
 import com.github.games647.fastlogin.core.StoredProfile;
@@ -58,6 +56,8 @@ import net.md_5.bungee.connection.LoginResult.Property;
 import net.md_5.bungee.event.EventHandler;
 import net.md_5.bungee.event.EventPriority;
 
+import org.geysermc.floodgate.api.FloodgateApi;
+import org.geysermc.floodgate.api.player.FloodgatePlayer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -96,26 +96,16 @@ public class ConnectListener implements Listener {
     private final FastLoginBungee plugin;
     private final RateLimiter rateLimiter;
     private final Property[] emptyProperties = {};
-    private final FloodgateHook floodgateHook;
 
-    public ConnectListener(FastLoginBungee plugin, RateLimiter rateLimiter, String floodgateVersion) {
+    public ConnectListener(FastLoginBungee plugin, RateLimiter rateLimiter) {
         this.plugin = plugin;
         this.rateLimiter = rateLimiter;
-
-        // Get the appropriate floodgate api hook based on the version
-        if (floodgateVersion.startsWith("1")) {
-            this.floodgateHook = new FloodgateV1Hook();
-        } else if (floodgateVersion.startsWith("2")) {
-            this.floodgateHook = new FloodgateV2Hook();
-        } else {
-            this.floodgateHook = null;
-        }
     }
 
     @EventHandler
     public void onPreLogin(PreLoginEvent preLoginEvent) {
         PendingConnection connection = preLoginEvent.getConnection();
-        if (preLoginEvent.isCancelled() || isBedrockPlayer(connection.getUniqueId())) {
+        if (preLoginEvent.isCancelled()) {
             return;
         }
 
@@ -194,6 +184,15 @@ public class ConnectListener implements Listener {
         ProxiedPlayer player = serverConnectedEvent.getPlayer();
         Server server = serverConnectedEvent.getServer();
 
+        if (plugin.isPluginInstalled("floodgate")) {
+            FloodgatePlayer floodgatePlayer = FloodgateApi.getInstance().getPlayer(player.getUniqueId());
+            if (floodgatePlayer != null) {
+                Runnable floodgateAuthTask = new FloodgateAuthTask(plugin.getCore(), player, floodgatePlayer, server);
+                plugin.getScheduler().runAsync(floodgateAuthTask);
+                return;
+            }
+        }
+
         BungeeLoginSession session = plugin.getSession().get(player.getPendingConnection());
         if (session == null) {
             return;
@@ -211,17 +210,5 @@ public class ConnectListener implements Listener {
         ProxiedPlayer player = disconnectEvent.getPlayer();
         plugin.getSession().remove(player.getPendingConnection());
         plugin.getCore().getPendingConfirms().remove(player.getUniqueId());
-    }
-
-    private boolean isBedrockPlayer(UUID correctedUUID) {
-        // Floodgate will set a correct UUID at the beginning of the PreLoginEvent
-        // and will cancel the online mode login for those players
-        // Therefore we just ignore those
-        if (floodgateHook == null || correctedUUID == null) {
-            // Also ignore if not set by floodgate or any other plugin
-            return false;
-        }
-
-        return this.floodgateHook.isBedrockPlayer(correctedUUID);
     }
 }
