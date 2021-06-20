@@ -25,92 +25,31 @@
  */
 package com.github.games647.fastlogin.bukkit.task;
 
-import java.io.IOException;
-import java.util.Optional;
+import java.net.InetSocketAddress;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.geysermc.floodgate.api.player.FloodgatePlayer;
 
-import com.github.games647.craftapi.model.Profile;
-import com.github.games647.craftapi.resolver.RateLimitException;
 import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
-import com.github.games647.fastlogin.core.StoredProfile;
-import com.github.games647.fastlogin.core.hooks.AuthPlugin;
+import com.github.games647.fastlogin.core.shared.FastLoginCore;
+import com.github.games647.fastlogin.core.shared.FloodgateManagement;
 
-public class FloodgateAuthTask implements Runnable {
+public class FloodgateAuthTask extends FloodgateManagement<Player, CommandSender, BukkitLoginSession, FastLoginBukkit> {
 
-    private final FastLoginBukkit plugin;
-    private final Player player;
-    private final FloodgatePlayer floodgatePlayer;
-
-    public FloodgateAuthTask(FastLoginBukkit plugin, Player player, FloodgatePlayer floodgatePlayer) {
-        this.plugin = plugin;
-        this.player = player;
-        this.floodgatePlayer = floodgatePlayer;
+    public FloodgateAuthTask(FastLoginCore<Player, CommandSender, FastLoginBukkit> core, Player player, FloodgatePlayer floodgatePlayer) {
+        super(core, player, floodgatePlayer);
     }
 
     @Override
     public void run() {
-        plugin.getLog().info(
-                "Player {} is connecting through Geyser Floodgate.",
-                player.getName());
+        super.run();
 
-        // check if the Bedrock player is linked to a Java account 
-        boolean isLinked = floodgatePlayer.getLinkedPlayer() != null;
-        AuthPlugin<Player> authPlugin = plugin.getCore().getAuthPluginHook();
-
-        String autoLoginFloodgate = plugin.getCore().getConfig().get("autoLoginFloodgate").toString().toLowerCase();
-        String autoRegisterFloodgate = plugin.getCore().getConfig().get("autoRegisterFloodgate").toString().toLowerCase();
-        String allowNameConflict = plugin.getCore().getConfig().get("allowFloodgateNameConflict").toString().toLowerCase();
-        
-        boolean isRegistered;
-        try {
-            isRegistered = authPlugin.isRegistered(player.getName());
-        } catch (Exception e) {
-            plugin.getLog().error(
-                    "An error has occured while checking if player {} is registered",
-                    player.getName());
+        if (!performLogin) {
             return;
-        }
-
-        //decide if checks should be made for conflicting Java player names
-        if (!isLinked //linked players have the same name as their Java profile
-                // if allowNameConflict is 'false' or 'linked' and the player had a conflicting
-                // name, than they would have been kicked in FloodgateHook#checkNameConflict
-                && allowNameConflict.equals("true") &&
-                (
-                        autoLoginFloodgate.equals("no-conflict")
-                        || !isRegistered && autoRegisterFloodgate.equals("no-conflict"))
-                ) {
-            // check for conflicting Premium Java name
-            Optional<Profile> premiumUUID = Optional.empty();
-            try {
-                premiumUUID = plugin.getCore().getResolver().findProfile(player.getName());
-            } catch (IOException | RateLimitException e) {
-                plugin.getLog().error(
-                        "Could not check wether Floodgate Player {}'s name conflits a premium Java player's name.",
-                        player.getName());
-                return;
-            }
-
-            //stop execution if player's name is conflicting
-            if (premiumUUID.isPresent()) {
-                return;
-            }
-        }
-
-        if (!isRegistered && autoRegisterFloodgate.equals("false")) {
-            plugin.getLog().info(
-                    "Auto registration is disabled for Floodgate players in config.yml");
-            return;
-        }
-
-        // logging in from bedrock for a second time threw an error with UUID
-        StoredProfile profile = plugin.getCore().getStorage().loadProfile(player.getName());
-        if (profile == null) {
-            profile = new StoredProfile(player.getUniqueId(), player.getName(), true, player.getAddress().toString());
         }
 
         BukkitLoginSession session = new BukkitLoginSession(player.getName(), isRegistered, profile);
@@ -120,8 +59,20 @@ public class FloodgateAuthTask implements Runnable {
                 || (autoLoginFloodgate.equals("linked") && isLinked));
 
         // run login task
-        Runnable forceLoginTask = new ForceLoginTask(plugin.getCore(), player, session);
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, forceLoginTask);
+        Runnable forceLoginTask = new ForceLoginTask(core.getPlugin().getCore(), player, session);
+        Bukkit.getScheduler().runTaskAsynchronously(core.getPlugin(), forceLoginTask);
+    }
+
+    protected String getName(Player player) {
+        return player.getName();
+    }
+
+    protected UUID getUUID(Player player) {
+        return player.getUniqueId();
+    }
+
+    protected InetSocketAddress getAddress(Player player) {
+        return player.getAddress();
     }
 
 }
