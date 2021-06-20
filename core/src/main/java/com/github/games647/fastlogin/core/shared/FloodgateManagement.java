@@ -109,8 +109,6 @@ public abstract class FloodgateManagement<P extends C, C, L extends LoginSession
         }
 
         if (!isRegistered && autoRegisterFloodgate.equals("false")) {
-            core.getPlugin().getLog().info(
-                    "Auto registration is disabled for Floodgate players in config.yml");
             return;
         }
 
