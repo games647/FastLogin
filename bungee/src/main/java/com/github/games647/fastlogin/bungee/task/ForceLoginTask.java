@@ -49,11 +49,21 @@ public class ForceLoginTask
 
     private final Server server;
 
+    //treat player as if they had a premium account, even when they don't
+    //used for Floodgate auto login/register
+    private final boolean forcedOnlineMode;
+
     public ForceLoginTask(FastLoginCore<ProxiedPlayer, CommandSender, FastLoginBungee> core,
-                          ProxiedPlayer player, Server server, BungeeLoginSession session) {
+                          ProxiedPlayer player, Server server, BungeeLoginSession session, boolean forcedOnlineMode) {
         super(core, player, session);
 
         this.server = server;
+        this.forcedOnlineMode = forcedOnlineMode;
+    }
+
+    public ForceLoginTask(FastLoginCore<ProxiedPlayer, CommandSender, FastLoginBungee> core, ProxiedPlayer player,
+            Server server, BungeeLoginSession session) {
+        this(core, player, server, session, false);
     }
 
     @Override
@@ -116,6 +126,6 @@ public class ForceLoginTask
 
     @Override
     public boolean isOnlineMode() {
-        return player.getPendingConnection().isOnlineMode();
+        return forcedOnlineMode || player.getPendingConnection().isOnlineMode();
     }
 }
