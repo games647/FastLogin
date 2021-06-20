@@ -51,13 +51,7 @@ public class FloodgateAuthTask
     }
 
     @Override
-    public void run() {
-        super.run();
-
-        if (!performLogin) {
-            return;
-        }
-
+    protected void startLogin() {
         BungeeLoginSession session = new BungeeLoginSession(player.getName(), isRegistered, profile);
 
         // enable auto login based on the value of 'autoLoginFloodgate' in config.yml

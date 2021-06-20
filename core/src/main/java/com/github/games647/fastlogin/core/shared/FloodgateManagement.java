@@ -54,7 +54,6 @@ public abstract class FloodgateManagement<P extends C, C, L extends LoginSession
     protected boolean isRegistered;
     protected StoredProfile profile;
     protected boolean isLinked;
-    protected boolean performLogin; //will be set to ture if core#run() wasn't interrupted by a return;
 
     public FloodgateManagement(FastLoginCore<P, C, T> core, P player, FloodgatePlayer floodgatePlayer) {
         this.core = core;
@@ -116,7 +115,8 @@ public abstract class FloodgateManagement<P extends C, C, L extends LoginSession
             profile = new StoredProfile(getUUID(player), username, true, getAddress(player).toString());
         }
 
-        performLogin = true;
+        //start Bukkit/Bungee specific tasks
+        startLogin();
 
     }
 
@@ -141,6 +141,7 @@ public abstract class FloodgateManagement<P extends C, C, L extends LoginSession
         return autoLoginFloodgate.equals("no-conflict");
     }
 
+    protected abstract void startLogin();
     protected abstract String getName(P player);
     protected abstract UUID getUUID(P player);
     protected abstract InetSocketAddress getAddress(P player);
