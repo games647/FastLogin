@@ -16,9 +16,9 @@ anti-bot:
   # Image the following like bucket. The following is total amount that is allowed in this bucket, while expire
   # means how long it takes for every entry to expire.
   # Total number of connections
-  connections: 200
-  # Amount of minutes after the first connection will expire and made available
-  expire: 5
+  connections: 600
+  # Amount of minutes after the first connection got inserted will expire and made available
+  expire: 10
 
 # Request a premium login without forcing the player to type a command
 #
