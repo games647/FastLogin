@@ -105,7 +105,7 @@ public abstract class FloodgateManagement<P extends C, C, L extends LoginSession
             }
         }
 
-        if (!isRegistered && autoRegisterFloodgate.equals("false")) {
+        if (!isRegistered && !isAutoRegisterAllowed()) {
             return;
         }
 
@@ -118,6 +118,17 @@ public abstract class FloodgateManagement<P extends C, C, L extends LoginSession
         //start Bukkit/Bungee specific tasks
         startLogin();
 
+    }
+
+    /**
+     * Decude if the player can be auto registered.
+     * The config option 'non-conflicting' is ignored by this function.
+     * @return true if the Player can be registered automatically
+     */
+    private boolean isAutoRegisterAllowed() {
+        return autoRegisterFloodgate.equals("true") 
+                || autoRegisterFloodgate.equals("no-conflict") // this was checked before
+                || (autoRegisterFloodgate.equals("linked") && isLinked);
     }
 
     /**
