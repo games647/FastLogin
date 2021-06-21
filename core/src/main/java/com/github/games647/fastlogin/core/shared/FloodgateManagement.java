@@ -94,7 +94,7 @@ public abstract class FloodgateManagement<P extends C, C, L extends LoginSession
                 premiumUUID = core.getResolver().findProfile(username);
             } catch (IOException | RateLimitException e) {
                 core.getPlugin().getLog().error(
-                        "Could not check wether Floodgate Player {}'s name conflits a premium Java player's name.",
+                        "Could not check wether Floodgate Player {}'s name conflits a premium Java account's name.",
                         username);
                 return;
             }

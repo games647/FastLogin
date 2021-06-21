@@ -189,7 +189,6 @@ autoLogin: true
 
 # Floodgate configuration
 # Connecing through Floodgate requires player's to sign in via their Xbox Live account
-# Requires Floodgate 2.0 https://github.com/GeyserMC/Floodgate/tree/dev/2.0
 # !!!!!!!! WARNING: FLOODGATE SUPPORT IS AN EXPERIMENTAL FEATURE !!!!!!!!
 # Enabling any of these settings might lead to people gaining unauthorized access to other's accounts!
 
