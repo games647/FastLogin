@@ -234,6 +234,7 @@ allowFloodgateNameConflict: false
 # Possible values:
 #   false: Disables auto registering for every player connecting through Floodgate
 #   true: Enables auto registering for every player connecting through Floodgate
+#   linked: Only Bedrock accounts that are linked to a Java account will be registered automatically
 #   no-conflict: Bedrock players will only be automatically registered if the Mojang API reports
 #     that there is no existing Premium Java MC account with their name.
 #     This option can be useful if you are not using 'username-prefix' in floodgate/config.yml
