@@ -81,7 +81,7 @@ public class ProtocolLibListener extends PacketAdapter {
         PacketType packetType = packetEvent.getPacketType();
         if (packetType == START) {
             if (!rateLimiter.tryAcquire()) {
-                plugin.getLog().warn("Join limit hit - Ignoring player {}", sender);
+                plugin.getLog().warn("Simple Anti-Bot join limit - Ignoring {}", sender);
                 return;
             }
 

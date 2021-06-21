@@ -66,7 +66,7 @@ public class ProtocolSupportListener extends JoinManagement<Player, CommandSende
         }
 
         if (!rateLimiter.tryAcquire()) {
-            plugin.getLog().warn("Join limit hit - Ignoring player {}", loginStartEvent.getConnection());
+            plugin.getLog().warn("Simple Anti-Bot join limit - Ignoring {}", loginStartEvent.getConnection());
             return;
         }
 

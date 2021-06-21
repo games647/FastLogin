@@ -110,7 +110,7 @@ public class ConnectListener implements Listener {
         }
 
         if (!rateLimiter.tryAcquire()) {
-            plugin.getLog().warn("Join limit hit - Ignoring player {}", connection);
+            plugin.getLog().warn("Simple Anti-Bot join limit - Ignoring {}", connection);
             return;
         }
 
