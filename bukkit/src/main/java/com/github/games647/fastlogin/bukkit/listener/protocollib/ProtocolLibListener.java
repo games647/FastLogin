@@ -43,6 +43,8 @@ import static com.comphenix.protocol.PacketType.Login.Client.START;
 
 public class ProtocolLibListener extends PacketAdapter {
 
+    public static final String SOURCE_META_KEY = "source";
+
     private final FastLoginBukkit plugin;
 
     //just create a new once on plugin enable. This used for verify token generation
@@ -74,6 +76,11 @@ public class ProtocolLibListener extends PacketAdapter {
         if (packetEvent.isCancelled()
                 || plugin.getCore().getAuthPluginHook()== null
                 || !plugin.isServerFullyStarted()) {
+            return;
+        }
+
+        if (packetEvent.getPacket().getMeta(SOURCE_META_KEY).map(val -> val.equals(plugin.getName())).orElse(false)) {
+            // this is our own packet
             return;
         }
 

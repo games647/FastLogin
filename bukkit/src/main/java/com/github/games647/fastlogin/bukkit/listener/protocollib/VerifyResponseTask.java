@@ -285,7 +285,8 @@ public class VerifyResponseTask implements Runnable {
         startPacket.getGameProfiles().write(0, fakeProfile);
         try {
             //we don't want to handle our own packets so ignore filters
-            ProtocolLibrary.getProtocolManager().recieveClientPacket(player, startPacket, false);
+            ProtocolLibrary.getProtocolManager().recieveClientPacket(player, startPacket, true);
+            startPacket.setMeta(ProtocolLibListener.SOURCE_META_KEY, plugin.getName());
         } catch (InvocationTargetException | IllegalAccessException ex) {
             plugin.getLog().warn("Failed to fake a new start packet for: {}", username, ex);
             //cancel the event in order to prevent the server receiving an invalid packet
