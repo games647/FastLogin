@@ -1,5 +1,5 @@
 ---
-name: Bug report
+name: 🐞 Bug report
 about: Something isn't working, broken, not expected behavior
 title: ''
 labels: 'bug'
@@ -40,4 +40,4 @@ assignees: ''
 ### Configuration:
 [//]: # (No images please - only the textual representation)
 [//]: # (remember to delete any sensitive data)
-[Hastebin](https://hastebin.com/) / [Gist](https://gist.github.com/) link of your config.yml file 
+[Hastebin](https://hastebin.com/) / [Gist](https://gist.github.com/) link of your config.yml file
