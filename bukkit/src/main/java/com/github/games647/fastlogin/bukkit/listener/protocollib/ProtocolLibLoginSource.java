@@ -28,7 +28,6 @@ package com.github.games647.fastlogin.bukkit.listener.protocollib;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.PacketContainer;
-import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.reflect.StructureModifier;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.github.games647.fastlogin.core.shared.LoginSource;
@@ -46,7 +45,6 @@ import static com.comphenix.protocol.PacketType.Login.Server.ENCRYPTION_BEGIN;
 
 class ProtocolLibLoginSource implements LoginSource {
 
-    private final PacketEvent packetEvent;
     private final Player player;
 
     private final Random random;
@@ -55,15 +53,14 @@ class ProtocolLibLoginSource implements LoginSource {
     private final String serverId = "";
     private byte[] verifyToken;
 
-    public ProtocolLibLoginSource(PacketEvent packetEvent, Player player, Random random, PublicKey publicKey) {
-        this.packetEvent = packetEvent;
+    public ProtocolLibLoginSource(Player player, Random random, PublicKey publicKey) {
         this.player = player;
         this.random = random;
         this.publicKey = publicKey;
     }
 
     @Override
-    public void setOnlineMode() throws Exception {
+    public void enableOnlinemode() throws Exception {
         verifyToken = EncryptionUtil.generateVerifyToken(random);
 
         /*
@@ -109,7 +106,7 @@ class ProtocolLibLoginSource implements LoginSource {
 
     @Override
     public InetSocketAddress getAddress() {
-        return packetEvent.getPlayer().getAddress();
+        return player.getAddress();
     }
 
     public String getServerId() {
@@ -123,8 +120,7 @@ class ProtocolLibLoginSource implements LoginSource {
     @Override
     public String toString() {
         return this.getClass().getSimpleName() + '{' +
-                "packetEvent=" + packetEvent +
-                ", player=" + player +
+                "player=" + player +
                 ", random=" + random +
                 ", serverId='" + serverId + '\'' +
                 ", verifyToken=" + Arrays.toString(verifyToken) +

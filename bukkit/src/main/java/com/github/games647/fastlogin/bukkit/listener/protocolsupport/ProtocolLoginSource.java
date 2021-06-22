@@ -40,7 +40,7 @@ public class ProtocolLoginSource implements LoginSource {
     }
 
     @Override
-    public void setOnlineMode() {
+    public void enableOnlinemode() {
         loginStartEvent.setOnlineMode(true);
     }
 

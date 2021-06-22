@@ -46,7 +46,7 @@ public class BungeeLoginSource implements LoginSource {
     }
 
     @Override
-    public void setOnlineMode() {
+    public void enableOnlinemode() {
         connection.setOnlineMode(true);
     }
 

@@ -112,7 +112,7 @@ public class ProtocolSupportListener extends JoinManagement<Player, CommandSende
     @Override
     public void requestPremiumLogin(ProtocolLoginSource source, StoredProfile profile, String username
             , boolean registered) {
-        source.setOnlineMode();
+        source.enableOnlinemode();
 
         String ip = source.getAddress().getAddress().getHostAddress();
         plugin.getCore().getPendingLogin().put(ip + username, new Object());

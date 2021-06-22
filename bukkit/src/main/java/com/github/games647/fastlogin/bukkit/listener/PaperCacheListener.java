@@ -35,11 +35,11 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent.Result;
 
-public class PaperPreLoginListener implements Listener {
+public class PaperCacheListener implements Listener {
 
     private final FastLoginBukkit plugin;
 
-    public PaperPreLoginListener(final FastLoginBukkit plugin) {
+    public PaperCacheListener(final FastLoginBukkit plugin) {
         this.plugin = plugin;
     }
 

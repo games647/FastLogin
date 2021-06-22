@@ -52,9 +52,8 @@ public class NameCheckTask extends JoinManagement<Player, CommandSender, Protoco
     private final Player player;
     private final String username;
 
-
-    public NameCheckTask(FastLoginBukkit plugin, PacketEvent packetEvent, Random random,
-                         Player player, String username, PublicKey publicKey) {
+    public NameCheckTask(FastLoginBukkit plugin, Random random, Player player, PacketEvent packetEvent,
+                         String username, PublicKey publicKey) {
         super(plugin.getCore(), plugin.getCore().getAuthPluginHook());
 
         this.plugin = plugin;
@@ -68,7 +67,7 @@ public class NameCheckTask extends JoinManagement<Player, CommandSender, Protoco
     @Override
     public void run() {
         try {
-            super.onLogin(username, new ProtocolLibLoginSource(packetEvent, player, random, publicKey));
+            super.onLogin(username, new ProtocolLibLoginSource(player, random, publicKey));
         } finally {
             ProtocolLibrary.getProtocolManager().getAsynchronousManager().signalPacketTransmission(packetEvent);
         }
@@ -87,7 +86,7 @@ public class NameCheckTask extends JoinManagement<Player, CommandSender, Protoco
     public void requestPremiumLogin(ProtocolLibLoginSource source, StoredProfile profile
             , String username, boolean registered) {
         try {
-            source.setOnlineMode();
+            source.enableOnlinemode();
         } catch (Exception ex) {
             plugin.getLog().error("Cannot send encryption packet. Falling back to cracked login for: {}", profile, ex);
             return;

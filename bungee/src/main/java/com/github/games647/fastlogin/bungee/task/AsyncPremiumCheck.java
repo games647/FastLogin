@@ -78,7 +78,7 @@ public class AsyncPremiumCheck extends JoinManagement<ProxiedPlayer, CommandSend
     @Override
     public void requestPremiumLogin(BungeeLoginSource source, StoredProfile profile,
                                     String username, boolean registered) {
-        source.setOnlineMode();
+        source.enableOnlinemode();
         plugin.getSession().put(source.getConnection(), new BungeeLoginSession(username, registered, profile));
 
         String ip = source.getAddress().getAddress().getHostAddress();
