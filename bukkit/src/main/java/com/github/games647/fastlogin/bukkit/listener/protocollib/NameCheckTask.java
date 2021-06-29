@@ -74,7 +74,8 @@ public class NameCheckTask extends JoinManagement<Player, CommandSender, Protoco
     }
 
     @Override
-    public FastLoginPreLoginEvent callFastLoginPreLoginEvent(String username, ProtocolLibLoginSource source, StoredProfile profile) {
+    public FastLoginPreLoginEvent callFastLoginPreLoginEvent(String username, ProtocolLibLoginSource source,
+                                                             StoredProfile profile) {
         BukkitFastLoginPreLoginEvent event = new BukkitFastLoginPreLoginEvent(username, source, profile);
         plugin.getServer().getPluginManager().callEvent(event);
         return event;
