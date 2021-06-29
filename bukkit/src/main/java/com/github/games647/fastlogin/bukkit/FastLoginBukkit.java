@@ -25,10 +25,12 @@
  */
 package com.github.games647.fastlogin.bukkit;
 
+import com.comphenix.protocol.ProtocolLibrary;
 import com.github.games647.fastlogin.bukkit.command.CrackedCommand;
 import com.github.games647.fastlogin.bukkit.command.PremiumCommand;
 import com.github.games647.fastlogin.bukkit.listener.ConnectionListener;
 import com.github.games647.fastlogin.bukkit.listener.PaperCacheListener;
+import com.github.games647.fastlogin.bukkit.listener.protocollib.ManualNameChange;
 import com.github.games647.fastlogin.bukkit.listener.protocollib.ProtocolLibListener;
 import com.github.games647.fastlogin.bukkit.listener.protocollib.SkinApplyListener;
 import com.github.games647.fastlogin.bukkit.listener.protocolsupport.ProtocolSupportListener;
@@ -115,6 +117,8 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
                 pluginManager.registerEvents(new ProtocolSupportListener(this, core.getRateLimiter()), this);
             } else if (pluginManager.isPluginEnabled("ProtocolLib")) {
                 ProtocolLibListener.register(this, core.getRateLimiter());
+                //TODO: make configurable & check if it's needed
+                ProtocolLibrary.getProtocolManager().addPacketListener(new ManualNameChange(this));
 
                 //if server is using paper - we need to set the skin at pre login anyway, so no need for this listener
                 if (!PaperLib.isPaper() && getConfig().getBoolean("forwardSkin")) {
