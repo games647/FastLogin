@@ -120,7 +120,7 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
 
                 if (isPluginInstalled("floodgate")) {
                     if (getConfig().getBoolean("floodgatePrefixWorkaround")){
-                        ProtocolLibrary.getProtocolManager().addPacketListener(new ManualNameChange(this));
+                        ProtocolLibrary.getProtocolManager().addPacketListener(new ManualNameChange(this, floodgateService));
                         logger.info("Floodgate prefix injection workaround has been enabled.");
                         logger.info("If you have problems joining the server, try disabling it in the configuration.");
                     } else {
