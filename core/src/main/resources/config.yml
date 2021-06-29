@@ -214,9 +214,8 @@ autoLoginFloodgate: false
 #
 # To prevent conflits from two different players having the same name, it is highly recommended to use a 'username-prefix'
 # in floodgate/config.yml
-# Note: 'username-prefix' is currently broken when used with FastLogin and ProtocolLib. For more information visit:
-#   https://github.com/games647/FastLogin/issues/493
-# A solution to this is to replace ProtocolLib with ProtocolSupport
+# Note: 'username-prefix' is currently broken when used with FastLogin and ProtocolLib.
+# A solution to this is to enable 'floodgatePrefixWorkaround' below.
 #
 # Possible values:
 #   false: Kick Bedrock players, if they are using an existing Premium Java account's name
@@ -242,6 +241,14 @@ allowFloodgateNameConflict: false
 # !!!!!!!! WARNING: FLOODGATE SUPPORT IS AN EXPERIMENTAL FEATURE !!!!!!!!
 # Enabling this might lead to people gaining unauthorized access to other's accounts!
 autoRegisterFloodgate: false
+
+# Make FastLogin inject the Floodgate name prefixes, instead of Floodgate.
+# This can fix prefixes, if you are using Floodgate alongside ProtocolLib.
+# If either of those plugins are not installed, this option will have no effect.
+# For more information visit: https://github.com/games647/FastLogin/issues/493
+# !!!!!!!! WARNING: FLOODGATE SUPPORT IS AN EXPERIMENTAL FEATURE !!!!!!!!
+# Enabling this might lead to people gaining unauthorized access to other's accounts!
+floodgatePrefixWorkaround: false
 
 # Database configuration
 # Recommended is the use of MariaDB (a better version of MySQL)
