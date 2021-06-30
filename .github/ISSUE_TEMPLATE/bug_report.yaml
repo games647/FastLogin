@@ -1,0 +1,61 @@
+name: 🐞 Bug Report
+description: Something isn't working, broken, not expected behavior
+title: ""
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This ticket is about bugs, so broken, not expected behavior.
+  - type: textarea
+    attributes:
+      label: What happened?
+      description: What behavior is observed?
+  - type: textarea
+    attributes:
+      label: What did you expect
+      description: What behavior is expected?
+  - type: textare
+    attributes:
+      label: Steps/models to reproduce
+      description: The actions that cause the issues. Please explain it in detail.
+  - type: input
+    attributes:
+      label: Plugin list
+      description: This can be found by running `/pl`
+      placeholder: AuthMe, ProtocolLib, ...
+  - type: input
+    attributes:
+      label: Server log
+      description: link of the error, stacktrace or the complete log (if any)
+      value: https://hastebin.com/ / https://gist.github.com/
+  - type: input
+    attributes:
+      label: Configuration file
+      description: link of your config.yml file
+      value: https://hastebin.com/ / https://gist.github.com/
+  - type: input
+    attributes:
+      label: Plugin version
+      description: Plugin version or build number. This can be found by running `/version plugin-name`
+      placeholder: v3.1-SNAPSHOT-570b321
+    validations:
+      required: true
+  - type: dropdown
+    attributes:
+      label: Platform
+      description:
+      options:
+        - Spigot
+        - BungeeCord
+    validations:
+      required: true
+  - type: checkboxes
+    attributes:
+      label: Relevance
+      description:
+      options:
+        - label: I tried the latest build
+          required: true
+        - label: I checked for existing tickets - if there are, please upvote them and not create new ones
+          required: true

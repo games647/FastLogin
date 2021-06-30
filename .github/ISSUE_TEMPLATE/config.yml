@@ -1,6 +1,9 @@
+# General configuration for issue templates
 
+# Allow issues without a template
 #blank_issues_enabled: false
 
+# Extra section on creating issues to redirect to another site
 contact_links:
   - name: 📌 Questions
     url: https://github.com/games647/FastLogin/discussions
