@@ -1,6 +1,5 @@
 name: 🐞 Bug Report
 description: Something isn't working, broken, not expected behavior
-title: ""
 labels: [bug]
 body:
   - type: markdown
@@ -15,7 +14,7 @@ body:
     attributes:
       label: What did you expect
       description: What behavior is expected?
-  - type: textare
+  - type: textarea
     attributes:
       label: Steps/models to reproduce
       description: The actions that cause the issues. Please explain it in detail.
