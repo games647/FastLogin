@@ -5,14 +5,14 @@ body:
   - type: markdown
     attributes:
       value: |
-        This ticket is about bugs, so broken, not expected behavior.
+        This ticket is about bugs, so broken, not expected behavior. Feedback about this form is appreciated.
   - type: textarea
     attributes:
       label: What happened?
       description: What behavior is observed?
   - type: textarea
     attributes:
-      label: What did you expect
+      label: What did you expect?
       description: What behavior is expected?
   - type: textarea
     attributes:
