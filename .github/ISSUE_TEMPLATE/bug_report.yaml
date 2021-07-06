@@ -18,7 +18,7 @@ body:
       description: What behavior is expected?
   - type: textarea
     attributes:
-      label: Steps/models to reproduce
+      label: Steps to reproduce
       description: The actions that cause the issues. Please explain it in detail.
   - type: input
     attributes:
@@ -27,14 +27,17 @@ body:
       placeholder: AuthMe, ProtocolLib, ...
   - type: input
     attributes:
-      label: Server log
-      description: link of the error, stacktrace or the complete log (if any)
-      value: https://hastebin.com/ / https://gist.github.com/
-  - type: input
-    attributes:
       label: Configuration file
-      description: link of your config.yml file
-      value: https://hastebin.com/ / https://gist.github.com/
+      description: |
+        Link to the contents of your config.yml file.
+        You can use [GitHub](https://gist.github.com/), [Hastebin](https://hastebin.com) or similar for that.
+      placeholder: https://gist.github.com/games647/88c4439e1cd7810f21318b1b24a04ee0
+  - type: textarea
+    attributes:
+      label: Server log
+      description: The error, stacktrace or link the complete log. You can use the links above for long versions.
+      render: shell
+      placeholder: https://hastebin.com/ / https://gist.github.com/
   - type: input
     attributes:
       label: Plugin version
@@ -58,5 +61,7 @@ body:
       options:
         - label: I tried the latest build
           required: true
-        - label: I checked for existing tickets - if there are, please upvote them and not create new ones
+        - label: |
+            I checked for existing tickets -
+            If there are, please vote them with a thumps reaction and not create new ones
           required: true
