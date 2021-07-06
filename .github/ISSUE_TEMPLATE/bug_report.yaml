@@ -10,6 +10,8 @@ body:
     attributes:
       label: What happened?
       description: What behavior is observed?
+    validations:
+      required: true
   - type: textarea
     attributes:
       label: What did you expect?
