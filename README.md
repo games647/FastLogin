@@ -29,15 +29,11 @@ are still allowed and it could be re-opened.
 
 ## Development builds
 
-Development builds of this project can be acquired at the provided CI (continuous integration) server. It contains the
-latest changes from the Source-Code in preparation for the following release. This means they could contain new
-features, bug fixes and other changes since the last release.
+Development builds contain the latest changes from the Source-Code. They are bleeding edge and could introduce new bugs,
+but also include features, enhancements and bug fixes that are not yet in a released version. If you click on the left 
+side on `Changes`, you can see iterative change sets leading to a specific build.
 
-They **could** contain new bugs and are likely to be less stable than released versions.
-
-Specific builds can be grabbed by clicking on the build number on the left side or by clicking on status to retrieve the
-latest build.
-https://ci.codemc.org/job/Games647/job/FastLogin/changes
+You can download them from here: https://ci.codemc.org/job/Games647/job/FastLogin/
 
 ***
 
