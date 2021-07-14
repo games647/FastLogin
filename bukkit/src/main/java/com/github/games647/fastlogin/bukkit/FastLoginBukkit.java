@@ -280,9 +280,9 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
 	 * @param name the name of the plugin
 	 * @return true if the plugin is installed
 	 */
+	@Override
 	public boolean isPluginInstalled(String name) {
-	    //the plugin may be enabled after FastLogin, so isPluginEnabled()
-	    //won't work here
+	    // the plugin may be enabled after FastLogin, so isPluginEnabled() won't work here
 	    return Bukkit.getServer().getPluginManager().getPlugin(name) != null;
 	}
 
@@ -291,18 +291,18 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
      */
     private void dependencyWarnings() {
         if (isPluginInstalled("floodgate-bukkit")) {
-            logger.warn("We have detected that you are runnging Floodgate 1.0 which is not supported by the Bukkit "
+            logger.warn("We have detected that you are running Floodgate 1.0 which is not supported by the Bukkit "
                     + "version of FastLogin.");
-            logger.warn("If you would like to use FastLogin with Floodgate, you can download developement builds of "
+            logger.warn("If you would like to use FastLogin with Floodgate, you can download development builds of "
                     + "Floodgate 2.0 from https://ci.opencollab.dev/job/GeyserMC/job/Floodgate/job/dev%252F2.0/");
             logger.warn("Don't forget to update Geyser to a supported version as well from "
                     + "https://ci.opencollab.dev/job/GeyserMC/job/Geyser/job/floodgate-2.0/");
     	} else if (isPluginInstalled("floodgate") && isPluginInstalled("ProtocolLib")) {
-            logger.warn("We have detected that you are runnging FastLogin alongside Floodgate and ProtocolLib.");
-            logger.warn("Currently there is an issue with FastLogin that prevents Floodgate name prefixes from showing up "
-                    + "when it is together used with ProtocolLib.");
-            logger.warn("If you would like to use Floodgate name prefixes, you can replace ProtocolLib with ProtocolSupport "
-                    + "which does not have this issue.");
+            logger.warn("We have detected that you are running FastLogin alongside Floodgate and ProtocolLib.");
+            logger.warn("Currently there is an issue with FastLogin that prevents Floodgate's name prefixes from " +
+                    "showing up when it is together used with ProtocolLib.");
+            logger.warn("If you would like to use Floodgate name prefixes, you can replace ProtocolLib with " +
+                    "ProtocolSupport which does not have this issue.");
             logger.warn("For more information visit https://github.com/games647/FastLogin/issues/493");
     	}
     }
