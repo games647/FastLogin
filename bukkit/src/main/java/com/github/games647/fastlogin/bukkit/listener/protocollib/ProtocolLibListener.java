@@ -80,7 +80,7 @@ public class ProtocolLibListener extends PacketAdapter {
             return;
         }
 
-        if (packetEvent.getPacket().getMeta(SOURCE_META_KEY).map(val -> val.equals(plugin.getName())).orElse(false)) {
+        if (isFastLoginPacket(packetEvent)) {
             // this is our own packet
             return;
         }
@@ -97,6 +97,12 @@ public class ProtocolLibListener extends PacketAdapter {
         } else {
             onEncryptionBegin(packetEvent, sender);
         }
+    }
+
+    private Boolean isFastLoginPacket(PacketEvent packetEvent) {
+        return packetEvent.getPacket().getMeta(SOURCE_META_KEY)
+                .map(val -> val.equals(plugin.getName()))
+                .orElse(false);
     }
 
     private void onEncryptionBegin(PacketEvent packetEvent, Player sender) {
