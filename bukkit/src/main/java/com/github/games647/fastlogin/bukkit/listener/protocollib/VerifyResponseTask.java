@@ -140,7 +140,7 @@ public class VerifyResponseTask implements Runnable {
             Optional<Verification> response = resolver.hasJoined(requestedUsername, serverId, address);
             if (response.isPresent()) {
                 Verification verification = response.get();
-                plugin.getLog().info("Profile {} has a verified premium account: {}", requestedUsername, verification);
+                plugin.getLog().info("Profile {} has a verified premium account", requestedUsername);
                 String realUsername = verification.getName();
                 if (realUsername == null) {
                     disconnect("invalid-session", true, "Username field null for {}", requestedUsername);
