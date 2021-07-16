@@ -202,13 +202,14 @@ public class VerifyResponseTask implements Runnable {
     private Object getNetworkManager() throws IllegalAccessException, ClassNotFoundException {
         Object injectorContainer = TemporaryPlayerFactory.getInjectorFromPlayer(player);
 
-        //ChannelInjector
+        // ChannelInjector
         Class<?> injectorClass = Class.forName("com.comphenix.protocol.injector.netty.Injector");
         Object rawInjector = FuzzyReflection.getFieldValue(injectorContainer, injectorClass, true);
         return FieldUtils.readField(rawInjector, "networkManager", true);
     }
 
     private boolean enableEncryption(SecretKey loginKey) throws IllegalArgumentException {
+        plugin.getLog().info("Enabling onlinemode encryption for {}", player.getName());
         // Initialize method reflections
         if (encryptMethod == null) {
             Class<?> networkManagerClass = MinecraftReflection.getNetworkManagerClass();
@@ -285,8 +286,8 @@ public class VerifyResponseTask implements Runnable {
         startPacket.getGameProfiles().write(0, fakeProfile);
         try {
             //we don't want to handle our own packets so ignore filters
-            ProtocolLibrary.getProtocolManager().recieveClientPacket(player, startPacket, true);
             startPacket.setMeta(ProtocolLibListener.SOURCE_META_KEY, plugin.getName());
+            ProtocolLibrary.getProtocolManager().recieveClientPacket(player, startPacket, true);
         } catch (InvocationTargetException | IllegalAccessException ex) {
             plugin.getLog().warn("Failed to fake a new start packet for: {}", username, ex);
             //cancel the event in order to prevent the server receiving an invalid packet
