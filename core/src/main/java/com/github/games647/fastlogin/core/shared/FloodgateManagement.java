@@ -25,17 +25,17 @@
  */
 package com.github.games647.fastlogin.core.shared;
 
+import com.github.games647.craftapi.model.Profile;
+import com.github.games647.craftapi.resolver.RateLimitException;
+import com.github.games647.fastlogin.core.StoredProfile;
+import com.github.games647.fastlogin.core.hooks.AuthPlugin;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.Optional;
 import java.util.UUID;
 
 import org.geysermc.floodgate.api.player.FloodgatePlayer;
-
-import com.github.games647.craftapi.model.Profile;
-import com.github.games647.craftapi.resolver.RateLimitException;
-import com.github.games647.fastlogin.core.StoredProfile;
-import com.github.games647.fastlogin.core.hooks.AuthPlugin;
 
 public abstract class FloodgateManagement<P extends C, C, L extends LoginSession, T extends PlatformPlugin<C>>
         implements Runnable {
@@ -69,9 +69,7 @@ public abstract class FloodgateManagement<P extends C, C, L extends LoginSession
 
     @Override
     public void run() {
-        core.getPlugin().getLog().info(
-                "Player {} is connecting through Geyser Floodgate.",
-                username);
+        core.getPlugin().getLog().info("Player {} is connecting through Geyser Floodgate.", username);
 
         // check if the Bedrock player is linked to a Java account 
         isLinked = floodgatePlayer.getLinkedPlayer() != null;
@@ -79,10 +77,10 @@ public abstract class FloodgateManagement<P extends C, C, L extends LoginSession
         
         try {
             isRegistered = authPlugin.isRegistered(username);
-        } catch (Exception e) {
+        } catch (Exception ex) {
             core.getPlugin().getLog().error(
                     "An error has occured while checking if player {} is registered",
-                    username);
+                    username, ex);
             return;
         }
 
@@ -94,8 +92,8 @@ public abstract class FloodgateManagement<P extends C, C, L extends LoginSession
                 premiumUUID = core.getResolver().findProfile(username);
             } catch (IOException | RateLimitException e) {
                 core.getPlugin().getLog().error(
-                        "Could not check wether Floodgate Player {}'s name conflits a premium Java account's name.",
-                        username);
+                        "Could not check whether Floodgate Player {}'s name conflicts a premium Java account's name.",
+                        username, e);
                 return;
             }
 
@@ -126,9 +124,9 @@ public abstract class FloodgateManagement<P extends C, C, L extends LoginSession
      * @return true if the Player can be registered automatically
      */
     private boolean isAutoRegisterAllowed() {
-        return autoRegisterFloodgate.equals("true") 
-                || autoRegisterFloodgate.equals("no-conflict") // this was checked before
-                || (autoRegisterFloodgate.equals("linked") && isLinked);
+        return "true".equals(autoRegisterFloodgate)
+                || "no-conflict".equals(autoRegisterFloodgate) // this was checked before
+                || ("linked".equals(autoRegisterFloodgate) && isLinked);
     }
 
     /**
@@ -140,16 +138,16 @@ public abstract class FloodgateManagement<P extends C, C, L extends LoginSession
         //OR
         //if allowNameConflict is 'false' or 'linked' and the player had a conflicting
         //name, than they would have been kicked in FloodgateHook#checkNameConflict
-        if (isLinked || !allowNameConflict.equals("true")) {
+        if (isLinked || !"true".equals(allowNameConflict)) {
             return false;
         }
 
         //autoRegisterFloodgate should only be checked if then player is not yet registered
-        if (!isRegistered && autoRegisterFloodgate.equals("no-conflict")) {
+        if (!isRegistered && "no-conflict".equals(autoRegisterFloodgate)) {
             return true;
         }
 
-        return autoLoginFloodgate.equals("no-conflict");
+        return "no-conflict".equals(autoLoginFloodgate);
     }
 
     protected abstract void startLogin();
