@@ -211,7 +211,7 @@ public class VerifyResponseTask implements Runnable {
     }
 
     private boolean enableEncryption(SecretKey loginKey) throws IllegalArgumentException {
-        plugin.getLog().info("Enabling onlinemode encryption for {}", player.getName());
+        plugin.getLog().info("Enabling onlinemode encryption for {}", player.getAddress());
         // Initialize method reflections
         if (encryptMethod == null) {
             Class<?> networkManagerClass = MinecraftReflection.getNetworkManagerClass();
