@@ -70,7 +70,7 @@ public class ProtocolSupportListener extends JoinManagement<Player, CommandSende
         }
 
         String username = loginStartEvent.getConnection().getProfile().getName();
-        InetSocketAddress address = loginStartEvent.getAddress();
+        InetSocketAddress address = loginStartEvent.getConnection().getRawAddress();
 
         //remove old data every time on a new login in order to keep the session only for one person
         plugin.removeSession(address);
@@ -81,13 +81,14 @@ public class ProtocolSupportListener extends JoinManagement<Player, CommandSende
 
     @EventHandler
     public void onConnectionClosed(ConnectionCloseEvent closeEvent) {
-        InetSocketAddress address = closeEvent.getConnection().getAddress();
+        InetSocketAddress address = closeEvent.getConnection().getRawAddress();
         plugin.removeSession(address);
     }
 
     @EventHandler
     public void onPropertiesResolve(PlayerProfileCompleteEvent profileCompleteEvent) {
-        InetSocketAddress address = profileCompleteEvent.getAddress();
+        InetSocketAddress address = profileCompleteEvent.getConnection().getRawAddress();
+
         BukkitLoginSession session = plugin.getSession(address);
 
         if (session != null && profileCompleteEvent.getConnection().getProfile().isOnlineMode()) {
