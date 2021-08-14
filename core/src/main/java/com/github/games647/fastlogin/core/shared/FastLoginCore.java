@@ -27,12 +27,14 @@ package com.github.games647.fastlogin.core.shared;
 
 import com.github.games647.craftapi.resolver.MojangResolver;
 import com.github.games647.craftapi.resolver.http.RotatingProxySelector;
-import com.github.games647.fastlogin.core.AuthStorage;
+import com.github.games647.fastlogin.core.storage.MySQLStorage;
+import com.github.games647.fastlogin.core.storage.SQLStorage;
 import com.github.games647.fastlogin.core.CommonUtil;
 import com.github.games647.fastlogin.core.RateLimiter;
 import com.github.games647.fastlogin.core.hooks.AuthPlugin;
 import com.github.games647.fastlogin.core.hooks.DefaultPasswordGenerator;
 import com.github.games647.fastlogin.core.hooks.PasswordGenerator;
+import com.github.games647.fastlogin.core.storage.SQLiteStorage;
 import com.google.common.net.HostAndPort;
 import com.zaxxer.hikari.HikariConfig;
 
@@ -82,7 +84,7 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
     private final MojangResolver resolver = new MojangResolver();
 
     private Configuration config;
-    private AuthStorage storage;
+    private SQLStorage storage;
     private RateLimiter rateLimiter;
     private PasswordGenerator<P> passwordGenerator = new DefaultPasswordGenerator<>();
     private AuthPlugin<P> authPlugin;
@@ -169,7 +171,7 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
         return resolver;
     }
 
-    public AuthStorage getStorage() {
+    public SQLStorage getStorage() {
         return storage;
     }
 
@@ -189,26 +191,31 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
     }
 
     public boolean setupDatabase() {
-        if (!checkDriver(config.getString("driver"))) {
+        String driver = config.getString("driver");
+        if (!checkDriver(driver)) {
             return false;
         }
 
         HikariConfig databaseConfig = new HikariConfig();
-        databaseConfig.setDriverClassName(config.getString("driver"));
+        databaseConfig.setDriverClassName(driver);
 
-        String host = config.get("host", "");
-        int port = config.get("port", 3306);
         String database = config.getString("database");
-
-        boolean useSSL = config.get("useSSL", false);
-
-        databaseConfig.setUsername(config.get("username", ""));
-        databaseConfig.setPassword(config.getString("password"));
 
         databaseConfig.setConnectionTimeout(config.getInt("timeout", 30) * 1_000L);
         databaseConfig.setMaxLifetime(config.getInt("lifetime", 30) * 1_000L);
 
-        storage = new AuthStorage(this, host, port, database, databaseConfig, useSSL);
+        if (driver.contains("sqlite")) {
+            storage = new SQLiteStorage(this, database, databaseConfig);
+        } else {
+            String host = config.get("host", "");
+            int port = config.get("port", 3306);
+            boolean useSSL = config.get("useSSL", false);
+
+            databaseConfig.setUsername(config.get("username", ""));
+            databaseConfig.setPassword(config.getString("password"));
+            storage = new MySQLStorage(this, host, port, database, databaseConfig, useSSL);
+        }
+
         try {
             storage.createTables();
             return true;

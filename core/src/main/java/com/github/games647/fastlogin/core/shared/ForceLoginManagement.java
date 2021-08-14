@@ -25,7 +25,7 @@
  */
 package com.github.games647.fastlogin.core.shared;
 
-import com.github.games647.fastlogin.core.AuthStorage;
+import com.github.games647.fastlogin.core.storage.SQLStorage;
 import com.github.games647.fastlogin.core.StoredProfile;
 import com.github.games647.fastlogin.core.hooks.AuthPlugin;
 import com.github.games647.fastlogin.core.shared.event.FastLoginAutoLoginEvent;
@@ -55,7 +55,7 @@ public abstract class ForceLoginManagement<P extends C, C, L extends LoginSessio
             return;
         }
 
-        AuthStorage storage = core.getStorage();
+        SQLStorage storage = core.getStorage();
         StoredProfile playerProfile = session.getProfile();
         try {
             if (isOnlineMode()) {

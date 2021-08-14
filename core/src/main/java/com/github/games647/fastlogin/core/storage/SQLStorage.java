@@ -23,9 +23,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.github.games647.fastlogin.core;
+package com.github.games647.fastlogin.core.storage;
 
 import com.github.games647.craftapi.UUIDAdapter;
+import com.github.games647.fastlogin.core.StoredProfile;
 import com.github.games647.fastlogin.core.shared.FastLoginCore;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
@@ -42,23 +43,34 @@ import java.util.concurrent.ThreadFactory;
 
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
 
-public class AuthStorage {
+public abstract class SQLStorage implements AuthStorage {
 
-    private static final String PREMIUM_TABLE = "premium";
+    private static final String JDBC_PROTOCOL = "jdbc:";
 
-    private static final String LOAD_BY_NAME = "SELECT * FROM `" + PREMIUM_TABLE + "` WHERE `Name`=? LIMIT 1";
-    private static final String LOAD_BY_UUID = "SELECT * FROM `" + PREMIUM_TABLE + "` WHERE `UUID`=? LIMIT 1";
-    private static final String INSERT_PROFILE = "INSERT INTO `" + PREMIUM_TABLE
+    protected static final String PREMIUM_TABLE = "premium";
+    protected static final String CREATE_TABLE_STMT = "CREATE TABLE IF NOT EXISTS `" + PREMIUM_TABLE + "` ("
+            + "`UserID` INTEGER PRIMARY KEY AUTO_INCREMENT, "
+            + "`UUID` CHAR(36), "
+            + "`Name` VARCHAR(16) NOT NULL, "
+            + "`Premium` BOOLEAN NOT NULL, "
+            + "`LastIp` VARCHAR(255) NOT NULL, "
+            + "`LastLogin` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
+            //the premium shouldn't steal the cracked account by changing the name
+            + "UNIQUE (`Name`) "
+            + ')';
+
+    protected static final String LOAD_BY_NAME = "SELECT * FROM `" + PREMIUM_TABLE + "` WHERE `Name`=? LIMIT 1";
+    protected static final String LOAD_BY_UUID = "SELECT * FROM `" + PREMIUM_TABLE + "` WHERE `UUID`=? LIMIT 1";
+    protected static final String INSERT_PROFILE = "INSERT INTO `" + PREMIUM_TABLE
             + "` (`UUID`, `Name`, `Premium`, `LastIp`) " + "VALUES (?, ?, ?, ?) ";
     // limit not necessary here, because it's unique
-    private static final String UPDATE_PROFILE = "UPDATE `" + PREMIUM_TABLE
+    protected static final String UPDATE_PROFILE = "UPDATE `" + PREMIUM_TABLE
             + "` SET `UUID`=?, `Name`=?, `Premium`=?, `LastIp`=?, `LastLogin`=CURRENT_TIMESTAMP WHERE `UserID`=?";
 
-    private final FastLoginCore<?, ?, ?> core;
-    private final HikariDataSource dataSource;
+    protected final FastLoginCore<?, ?, ?> core;
+    protected final HikariDataSource dataSource;
 
-    public AuthStorage(FastLoginCore<?, ?, ?> core, String host, int port, String databasePath,
-                       HikariConfig config, boolean useSSL) {
+    public SQLStorage(FastLoginCore<?, ?, ?> core, String jdbcURL, HikariConfig config) {
         this.core = core;
         config.setPoolName(core.getPlugin().getName());
 
@@ -67,68 +79,7 @@ public class AuthStorage {
             config.setThreadFactory(platformThreadFactory);
         }
 
-        String jdbcUrl = "jdbc:";
-        if (config.getDriverClassName().contains("sqlite")) {
-            String pluginFolder = core.getPlugin().getPluginFolder().toAbsolutePath().toString();
-            databasePath = databasePath.replace("{pluginDir}", pluginFolder);
-
-            jdbcUrl += "sqlite://" + databasePath;
-            config.setConnectionTestQuery("SELECT 1");
-            config.setMaximumPoolSize(1);
-
-            //a try to fix https://www.spigotmc.org/threads/fastlogin.101192/page-26#post-1874647
-            // format strings retrieved by the timestamp column to match them from MySQL
-            config.addDataSourceProperty("date_string_format", "yyyy-MM-dd HH:mm:ss");
-
-            // TODO: test first for compatibility
-            // config.addDataSourceProperty("date_precision", "seconds");
-        } else {
-            jdbcUrl += "mysql://" + host + ':' + port + '/' + databasePath;
-
-            // Require SSL on the server if requested in config - this will also verify certificate
-            // Those values are deprecated in favor of sslMode
-            config.addDataSourceProperty("useSSL", useSSL);
-            config.addDataSourceProperty("requireSSL", useSSL);
-
-            // prefer encrypted if possible
-            config.addDataSourceProperty("sslMode", "PREFERRED");
-
-            // adding paranoid hides hostname, username, version and so
-            // could be useful for hiding server details
-            config.addDataSourceProperty("paranoid", true);
-
-            // enable MySQL specific optimizations
-            // disabled by default - will return the same prepared statement instance
-            config.addDataSourceProperty("cachePrepStmts", true);
-            // default prepStmtCacheSize 25 - amount of cached statements
-            config.addDataSourceProperty("prepStmtCacheSize", 250);
-            // default prepStmtCacheSqlLimit 256 - length of SQL
-            config.addDataSourceProperty("prepStmtCacheSqlLimit", 2048);
-            // default false - available in newer versions caches the statements server-side
-            config.addDataSourceProperty("useServerPrepStmts", true);
-            // default false - prefer use of local values for autocommit and
-            // transaction isolation (alwaysSendSetIsolation) should only be enabled if always use the set* methods
-            // instead of raw SQL
-            // https://forums.mysql.com/read.php?39,626495,626512
-            config.addDataSourceProperty("useLocalSessionState", true);
-            // rewrite batched statements to a single statement, adding them behind each other
-            // only useful for addBatch statements and inserts
-            config.addDataSourceProperty("rewriteBatchedStatements", true);
-            // cache result metadata
-            config.addDataSourceProperty("cacheResultSetMetadata", true);
-            // cache results of show variables and collation per URL
-            config.addDataSourceProperty("cacheServerConfiguration", true);
-            // default false - set auto commit only if not matching
-            config.addDataSourceProperty("elideSetAutoCommits", true);
-
-            // default true - internal timers for idle calculation -> removes System.getCurrentTimeMillis call per query
-            // Some platforms are slow on this and it could affect the throughput about 3% according to MySQL
-            // performance gems presentation
-            // In our case it can be useful to see the time in error messages
-            // config.addDataSourceProperty("maintainTimeStats", false);
-        }
-
-        config.setJdbcUrl(jdbcUrl);
+        config.setJdbcUrl(JDBC_PROTOCOL + jdbcURL);
         this.dataSource = new HikariDataSource(config);
     }
 
@@ -136,28 +87,15 @@ public class AuthStorage {
         // choose surrogate PK(ID), because UUID can be null for offline players
         // if UUID is always Premium UUID we would have to update offline player entries on insert
         // name cannot be PK, because it can be changed for premium players
-        String createDataStmt = "CREATE TABLE IF NOT EXISTS `" + PREMIUM_TABLE + "` ("
-                + "`UserID` INTEGER PRIMARY KEY AUTO_INCREMENT, "
-                + "`UUID` CHAR(36), "
-                + "`Name` VARCHAR(16) NOT NULL, "
-                + "`Premium` BOOLEAN NOT NULL, "
-                + "`LastIp` VARCHAR(255) NOT NULL, "
-                + "`LastLogin` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
-                //the premium shouldn't steal the cracked account by changing the name
-                + "UNIQUE (`Name`) "
-                + ')';
-
-        if (dataSource.getJdbcUrl().contains("sqlite")) {
-            createDataStmt = createDataStmt.replace("AUTO_INCREMENT", "AUTOINCREMENT");
-        }
 
         //todo: add unique uuid index usage
         try (Connection con = dataSource.getConnection();
              Statement createStmt = con.createStatement()) {
-            createStmt.executeUpdate(createDataStmt);
+            createStmt.executeUpdate(CREATE_TABLE_STMT);
         }
     }
 
+    @Override
     public StoredProfile loadProfile(String name) {
         try (Connection con = dataSource.getConnection();
              PreparedStatement loadStmt = con.prepareStatement(LOAD_BY_NAME)
@@ -174,6 +112,7 @@ public class AuthStorage {
         return null;
     }
 
+    @Override
     public StoredProfile loadProfile(UUID uuid) {
         try (Connection con = dataSource.getConnection();
              PreparedStatement loadStmt = con.prepareStatement(LOAD_BY_UUID)) {
@@ -205,6 +144,7 @@ public class AuthStorage {
         return Optional.empty();
     }
 
+    @Override
     public void save(StoredProfile playerProfile) {
         try (Connection con = dataSource.getConnection()) {
             String uuid = playerProfile.getOptId().map(UUIDAdapter::toMojangId).orElse(null);
@@ -245,6 +185,7 @@ public class AuthStorage {
         }
     }
 
+    @Override
     public void close() {
         dataSource.close();
     }
