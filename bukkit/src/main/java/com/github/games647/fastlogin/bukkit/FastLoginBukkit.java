@@ -25,6 +25,7 @@
  */
 package com.github.games647.fastlogin.bukkit;
 
+import com.destroystokyo.paper.event.player.PlayerHandshakeEvent;
 import com.github.games647.fastlogin.bukkit.command.CrackedCommand;
 import com.github.games647.fastlogin.bukkit.command.PremiumCommand;
 import com.github.games647.fastlogin.bukkit.listener.ConnectionListener;
@@ -55,6 +56,8 @@ import java.util.concurrent.ConcurrentMap;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.geysermc.floodgate.api.FloodgateApi;
@@ -103,6 +106,15 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
 
         bungeeManager = new BungeeManager(this);
         bungeeManager.initialize();
+
+        getServer().getPluginManager().registerEvents(new Listener() {
+
+            @EventHandler
+            void onHandshake(PlayerHandshakeEvent handshakeEvent) {
+                handshakeEvent.setCancelled(false);
+                handshakeEvent.setSocketAddressHostname("192.168.0.1");
+            }
+        }, this);
 
         PluginManager pluginManager = getServer().getPluginManager();
         if (bungeeManager.isEnabled()) {
@@ -290,16 +302,17 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
         receiver.sendMessage(message);
     }
 
-	/**
-	 * Checks if a plugin is installed on the server
-	 * @param name the name of the plugin
-	 * @return true if the plugin is installed
-	 */
-	@Override
-	public boolean isPluginInstalled(String name) {
-	    // the plugin may be enabled after FastLogin, so isPluginEnabled() won't work here
-	    return Bukkit.getServer().getPluginManager().getPlugin(name) != null;
-	}
+    /**
+     * Checks if a plugin is installed on the server
+     *
+     * @param name the name of the plugin
+     * @return true if the plugin is installed
+     */
+    @Override
+    public boolean isPluginInstalled(String name) {
+        // the plugin may be enabled after FastLogin, so isPluginEnabled() won't work here
+        return Bukkit.getServer().getPluginManager().getPlugin(name) != null;
+    }
 
     public FloodgateService getFloodgateService() {
         return floodgateService;
