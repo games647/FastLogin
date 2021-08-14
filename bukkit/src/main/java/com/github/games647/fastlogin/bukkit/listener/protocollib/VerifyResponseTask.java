@@ -188,7 +188,7 @@ public class VerifyResponseTask implements Runnable {
 
         //https://github.com/bergerkiller/CraftSource/blob/master/net.minecraft.server/LoginListener.java#L182
         if (!Arrays.equals(requestVerify, EncryptionUtil.decrypt(serverKey.getPrivate(), responseVerify))) {
-            //check if the verify token are equal to the server sent one
+            //check if the verify-token are equal to the server sent one
             disconnect("invalid-verify-token", true
                     , "GameProfile {0} ({1}) tried to login with an invalid verify token. Server: {2} Client: {3}"
                     , session.getRequestUsername(), packetEvent.getPlayer().getAddress(), requestVerify, responseVerify);

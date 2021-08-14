@@ -72,7 +72,7 @@ public class ConnectionListener implements Listener {
             // session exists so the player is ready for force login
             // cases: Paper (firing BungeeCord message before PlayerJoinEvent) or not running BungeeCord and already
             // having the login session from the login process
-            BukkitLoginSession session = plugin.getSession(player.getAddress());
+            BukkitLoginSession session = plugin.getSession(player.spigot().getRawAddress());
             
             boolean isFloodgateLogin = false;
 			if (Bukkit.getServer().getPluginManager().isPluginEnabled("floodgate")) {
@@ -86,7 +86,7 @@ public class ConnectionListener implements Listener {
 
 			if (!isFloodgateLogin) {
 	            if (session == null) {
-	                String sessionId = plugin.getSessionId(player.getAddress());
+	                String sessionId = plugin.getSessionId(player.spigot().getRawAddress());
 	                plugin.getLog().info("No on-going login session for player: {} with ID {}", player, sessionId);
 	            } else {
 	                Runnable forceLoginTask = new ForceLoginTask(plugin.getCore(), player, session);

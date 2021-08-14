@@ -25,6 +25,7 @@
  */
 package com.github.games647.fastlogin.bukkit;
 
+import com.destroystokyo.paper.event.player.PlayerHandshakeEvent;
 import com.github.games647.fastlogin.bukkit.command.CrackedCommand;
 import com.github.games647.fastlogin.bukkit.command.PremiumCommand;
 import com.github.games647.fastlogin.bukkit.listener.ConnectionListener;
@@ -51,6 +52,8 @@ import java.util.concurrent.ConcurrentMap;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.slf4j.Logger;
@@ -64,10 +67,9 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
     private final ConcurrentMap<String, BukkitLoginSession> loginSession = CommonUtil.buildCache(1, -1);
     private final Map<UUID, PremiumStatus> premiumPlayers = new ConcurrentHashMap<>();
     private final Logger logger;
-
+    private final BukkitScheduler scheduler;
     private boolean serverStarted;
     private BungeeManager bungeeManager;
-    private final BukkitScheduler scheduler;
     private FastLoginCore<Player, CommandSender, FastLoginBukkit> core;
 
     private PremiumPlaceholder premiumPlaceholder;
@@ -88,17 +90,26 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
             setEnabled(false);
             return;
         }
-        
-		// Check Floodgate config values
-		if (!isValidFloodgateConfigString("autoLoginFloodgate")
-				|| !isValidFloodgateConfigString("allowFloodgateNameConflict")) {
-			setEnabled(false);
-			return;
-		}
+
+        // Check Floodgate config values
+        if (!isValidFloodgateConfigString("autoLoginFloodgate")
+                || !isValidFloodgateConfigString("allowFloodgateNameConflict")) {
+            setEnabled(false);
+            return;
+        }
 
         bungeeManager = new BungeeManager(this);
         bungeeManager.initialize();
-        
+
+        getServer().getPluginManager().registerEvents(new Listener() {
+
+            @EventHandler
+            void onHandshake(PlayerHandshakeEvent handshakeEvent) {
+                handshakeEvent.setCancelled(false);
+                handshakeEvent.setSocketAddressHostname("192.168.0.1");
+            }
+        }, this);
+
         PluginManager pluginManager = getServer().getPluginManager();
         if (bungeeManager.isEnabled()) {
             markInitialized();
@@ -182,10 +193,6 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
     public BukkitLoginSession getSession(InetSocketAddress addr) {
         String id = getSessionId(addr);
         BukkitLoginSession session = loginSession.get(id);
-        if (session == null) {
-            logger.info("No session found for id {}", id);
-        }
-
         return session;
     }
 
@@ -195,7 +202,6 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
 
     public void putSession(InetSocketAddress addr, BukkitLoginSession session) {
         String id = getSessionId(addr);
-        logger.info("Starting session {}", id);
         loginSession.put(id, session);
     }
 
@@ -256,44 +262,45 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
     public void sendMessage(CommandSender receiver, String message) {
         receiver.sendMessage(message);
     }
-    
-	/**
-	 * Checks if a config entry (related to Floodgate) is valid. <br>
-	 * Writes to Log if the value is invalid.
-	 * <p>
-	 * This should be used for:
-	 * <ul>
-	 * <li>allowFloodgateNameConflict
-	 * <li>autoLoginFloodgate
-	 * <li>autoRegisterFloodgate
-	 * </ul>
-	 * </p>
-	 * 
-	 * @param key the key of the entry in config.yml
-	 * @return <b>true</b> if the entry's value is "true", "false", or "linked"
-	 */
-	private boolean isValidFloodgateConfigString(String key) {
-		String value = core.getConfig().get(key).toString().toLowerCase(Locale.ENGLISH);
-		if (!value.equals("true") && !value.equals("linked") && !value.equals("false") && !value.equals("no-conflict")) {
-			logger.error("Invalid value detected for {} in FastLogin/config.yml.", key);
-			return false;
-		}
-		return true;	
-	}
-
-	/**
-	 * Checks if a plugin is installed on the server
-	 * @param name the name of the plugin
-	 * @return true if the plugin is installed
-	 */
-	@Override
-	public boolean isPluginInstalled(String name) {
-	    // the plugin may be enabled after FastLogin, so isPluginEnabled() won't work here
-	    return Bukkit.getServer().getPluginManager().getPlugin(name) != null;
-	}
 
     /**
-     * Send warning messages to log if incompatible plugins are used  
+     * Checks if a config entry (related to Floodgate) is valid. <br>
+     * Writes to Log if the value is invalid.
+     * <p>
+     * This should be used for:
+     * <ul>
+     * <li>allowFloodgateNameConflict
+     * <li>autoLoginFloodgate
+     * <li>autoRegisterFloodgate
+     * </ul>
+     * </p>
+     *
+     * @param key the key of the entry in config.yml
+     * @return <b>true</b> if the entry's value is "true", "false", or "linked"
+     */
+    private boolean isValidFloodgateConfigString(String key) {
+        String value = core.getConfig().get(key).toString().toLowerCase(Locale.ENGLISH);
+        if (!value.equals("true") && !value.equals("linked") && !value.equals("false") && !value.equals("no-conflict")) {
+            logger.error("Invalid value detected for {} in FastLogin/config.yml.", key);
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Checks if a plugin is installed on the server
+     *
+     * @param name the name of the plugin
+     * @return true if the plugin is installed
+     */
+    @Override
+    public boolean isPluginInstalled(String name) {
+        // the plugin may be enabled after FastLogin, so isPluginEnabled() won't work here
+        return Bukkit.getServer().getPluginManager().getPlugin(name) != null;
+    }
+
+    /**
+     * Send warning messages to log if incompatible plugins are used
      */
     private void dependencyWarnings() {
         if (isPluginInstalled("floodgate-bukkit")) {
@@ -303,13 +310,13 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
                     + "Floodgate 2.0 from https://ci.opencollab.dev/job/GeyserMC/job/Floodgate/job/dev%252F2.0/");
             logger.warn("Don't forget to update Geyser to a supported version as well from "
                     + "https://ci.opencollab.dev/job/GeyserMC/job/Geyser/job/floodgate-2.0/");
-    	} else if (isPluginInstalled("floodgate") && isPluginInstalled("ProtocolLib")) {
+        } else if (isPluginInstalled("floodgate") && isPluginInstalled("ProtocolLib")) {
             logger.warn("We have detected that you are running FastLogin alongside Floodgate and ProtocolLib.");
             logger.warn("Currently there is an issue with FastLogin that prevents Floodgate's name prefixes from " +
                     "showing up when it is together used with ProtocolLib.");
             logger.warn("If you would like to use Floodgate name prefixes, you can replace ProtocolLib with " +
                     "ProtocolSupport which does not have this issue.");
             logger.warn("For more information visit https://github.com/games647/FastLogin/issues/493");
-    	}
+        }
     }
 }
