@@ -181,7 +181,12 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
 
     public BukkitLoginSession getSession(InetSocketAddress addr) {
         String id = getSessionId(addr);
-        return loginSession.get(id);
+        BukkitLoginSession session = loginSession.get(id);
+        if (session == null) {
+            logger.info("No session found for id {}", id);
+        }
+
+        return session;
     }
 
     public String getSessionId(InetSocketAddress addr) {
@@ -190,6 +195,7 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
 
     public void putSession(InetSocketAddress addr, BukkitLoginSession session) {
         String id = getSessionId(addr);
+        logger.info("Starting session {}", id);
         loginSession.put(id, session);
     }
 
