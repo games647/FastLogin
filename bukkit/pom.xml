@@ -128,8 +128,8 @@
 
         <!-- Floodgate -->
         <repository>
-            <id>nukkitx-snapshot</id>
-            <url>https://repo.nukkitx.com/maven-snapshots/</url>
+            <id>opencollab-snapshot</id>
+            <url>https://repo.opencollab.dev/maven-snapshots/</url>
         </repository>
     </repositories>
 
