@@ -73,10 +73,20 @@ public abstract class FloodgateManagement<P extends C, C, L extends LoginSession
 
         // check if the Bedrock player is linked to a Java account 
         isLinked = floodgatePlayer.getLinkedPlayer() != null;
+        profile = core.getStorage().loadProfile(username);
         AuthPlugin<P> authPlugin = core.getAuthPluginHook();
-        
+
         try {
-            isRegistered = authPlugin.isRegistered(username);
+            //maybe Bungee without auth plugin
+            if (authPlugin == null) {
+                if (profile != null) {
+                    isRegistered = profile.isPremium();
+                } else {
+                    isRegistered = false;
+                }
+            } else {
+                isRegistered = authPlugin.isRegistered(username);
+            }
         } catch (Exception ex) {
             core.getPlugin().getLog().error(
                     "An error has occured while checking if player {} is registered",
@@ -108,7 +118,6 @@ public abstract class FloodgateManagement<P extends C, C, L extends LoginSession
         }
 
         //logging in from bedrock for a second time threw an error with UUID
-        profile = core.getStorage().loadProfile(username);
         if (profile == null) {
             profile = new StoredProfile(getUUID(player), username, true, getAddress(player).toString());
         }
