@@ -36,6 +36,9 @@ import com.github.games647.fastlogin.core.shared.FastLoginCore;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteStreams;
 
+import org.geysermc.floodgate.api.FloodgateApi;
+import org.geysermc.floodgate.api.player.FloodgatePlayer;
+
 import java.util.Arrays;
 
 import net.md_5.bungee.api.CommandSender;
@@ -115,7 +118,13 @@ public class PluginMessageListener implements Listener {
     }
 
     private void onSuccessMessage(ProxiedPlayer forPlayer) {
-        if (forPlayer.getPendingConnection().isOnlineMode()) {
+        //check if player is using Floodgate
+        FloodgatePlayer floodgatePlayer = null;
+        if (plugin.isPluginInstalled("floodgate")) {
+            floodgatePlayer = FloodgateApi.getInstance().getPlayer(forPlayer.getUniqueId());
+        }
+
+        if (forPlayer.getPendingConnection().isOnlineMode() || floodgatePlayer != null){
             //bukkit module successfully received and force logged in the user
             //update only on success to prevent corrupt data
             BungeeLoginSession loginSession = plugin.getSession().get(forPlayer.getPendingConnection());
