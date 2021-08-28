@@ -56,6 +56,8 @@ import net.md_5.bungee.connection.LoginResult.Property;
 import net.md_5.bungee.event.EventHandler;
 import net.md_5.bungee.event.EventPriority;
 
+import org.geysermc.connector.GeyserConnector;
+import org.geysermc.connector.network.session.GeyserSession;
 import org.geysermc.floodgate.api.FloodgateApi;
 import org.geysermc.floodgate.api.player.FloodgatePlayer;
 import org.slf4j.Logger;
@@ -116,6 +118,18 @@ public class ConnectListener implements Listener {
 
         String username = connection.getName();
         plugin.getLog().info("Incoming login request for {} from {}", username, connection.getSocketAddress());
+
+        if (plugin.isPluginInstalled("Geyser-BungeeCord")) {
+            for (GeyserSession gSess : GeyserConnector.getInstance().getPlayers()) {
+                if (username.equals(FloodgateApi.getInstance().getPlayerPrefix() + gSess.getName())){
+                    //todo: if no Floodgate prefix is set, and there are name conflicts, how will this behave?
+                    plugin.getLog().info("Player {} is using Geyser. Name conflict checks will be done later.", username);
+                    StoredProfile profile = plugin.getCore().getStorage().loadProfile(username);
+                    plugin.getSession().put(connection, new BungeeLoginSession(username, true, profile, true));
+                    return;
+                }
+            }
+        }
 
         preLoginEvent.registerIntent(plugin);
         Runnable asyncPremiumCheck = new AsyncPremiumCheck(plugin, preLoginEvent, connection, username);
