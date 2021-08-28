@@ -33,8 +33,16 @@ public class BungeeLoginSession extends LoginSession {
     private boolean alreadySaved;
     private boolean alreadyLogged;
 
-    public BungeeLoginSession(String username, boolean registered, StoredProfile profile) {
+    //this will be true, if the Floodgate name conflict checks were skipped in PreLoginEvent
+    private boolean floodgateCheckSkipped;
+
+    public BungeeLoginSession(String username, boolean registered, StoredProfile profile, boolean floodgateCheckSkipped) {
         super(username, registered, profile);
+        this.floodgateCheckSkipped = floodgateCheckSkipped;
+    }
+
+    public BungeeLoginSession(String username, boolean registered, StoredProfile profile) {
+        this(username, registered, profile, false);
     }
 
     public synchronized void setRegistered(boolean registered) {
@@ -64,5 +72,13 @@ public class BungeeLoginSession extends LoginSession {
                 ", alreadyLogged=" + alreadyLogged +
                 ", registered=" + registered +
                 "} " + super.toString();
+    }
+
+    public boolean isFloodgateCheckSkipped() {
+        return this.floodgateCheckSkipped;
+    }
+
+    public void setFloodgateCheckSkipped(boolean floodgateCheckSkipped) {
+        this.floodgateCheckSkipped = floodgateCheckSkipped;
     }
 }
