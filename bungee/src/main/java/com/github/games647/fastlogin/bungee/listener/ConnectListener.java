@@ -26,14 +26,18 @@
 package com.github.games647.fastlogin.bungee.listener;
 
 import com.github.games647.craftapi.UUIDAdapter;
+import com.github.games647.fastlogin.bungee.BungeeFloodgateLoginSource;
 import com.github.games647.fastlogin.bungee.BungeeLoginSession;
+import com.github.games647.fastlogin.bungee.BungeeLoginSource;
 import com.github.games647.fastlogin.bungee.FastLoginBungee;
 import com.github.games647.fastlogin.bungee.task.AsyncPremiumCheck;
 import com.github.games647.fastlogin.bungee.task.FloodgateAuthTask;
 import com.github.games647.fastlogin.bungee.task.ForceLoginTask;
 import com.github.games647.fastlogin.core.RateLimiter;
 import com.github.games647.fastlogin.core.StoredProfile;
+import com.github.games647.fastlogin.core.hooks.FloodgateHook;
 import com.github.games647.fastlogin.core.shared.LoginSession;
+import com.github.games647.fastlogin.core.shared.LoginSource;
 import com.google.common.base.Throwables;
 
 import java.lang.invoke.MethodHandle;
@@ -42,6 +46,7 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Field;
 import java.util.UUID;
 
+import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.PendingConnection;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.connection.Server;
@@ -71,6 +76,7 @@ public class ConnectListener implements Listener {
 
     private static final String UUID_FIELD_NAME = "uniqueId";
     private static final MethodHandle uniqueIdSetter;
+    private final FloodgateHook<ProxiedPlayer, CommandSender, BungeeLoginSource> floodgateHook;
 
     static {
         MethodHandle setHandle = null;
@@ -102,6 +108,7 @@ public class ConnectListener implements Listener {
     public ConnectListener(FastLoginBungee plugin, RateLimiter rateLimiter) {
         this.plugin = plugin;
         this.rateLimiter = rateLimiter;
+        this.floodgateHook = new FloodgateHook<ProxiedPlayer, CommandSender, BungeeLoginSource>(plugin.getCore());
     }
 
     @EventHandler
@@ -119,7 +126,7 @@ public class ConnectListener implements Listener {
         String username = connection.getName();
         plugin.getLog().info("Incoming login request for {} from {}", username, connection.getSocketAddress());
 
-        if (plugin.isPluginInstalled("Geyser-BungeeCord")) {
+        if (plugin.isPluginInstalled("Geyser-BungeeCord") && plugin.isPluginInstalled("floodgate")) {
             for (GeyserSession gSess : GeyserConnector.getInstance().getPlayers()) {
                 if (username.equals(FloodgateApi.getInstance().getPlayerPrefix() + gSess.getName())){
                     //todo: if no Floodgate prefix is set, and there are name conflicts, how will this behave?
@@ -145,9 +152,15 @@ public class ConnectListener implements Listener {
         //use the login event instead of the post login event in order to send the login success packet to the client
         //with the offline uuid this makes it possible to set the skin then
         PendingConnection connection = loginEvent.getConnection();
-        if (connection.isOnlineMode()) {
-            LoginSession session = plugin.getSession().get(connection);
+        BungeeLoginSession session = plugin.getSession().get(connection);
 
+        if (session.isFloodgateCheckSkipped()) {
+            FloodgatePlayer floodgatePlayer = FloodgateApi.getInstance().getPlayer(connection.getUniqueId());
+            LoginSource source = new BungeeFloodgateLoginSource(connection, loginEvent);
+            floodgateHook.checkFloodgateNameConflict(connection.getName(), source, floodgatePlayer);
+        }
+
+        if (connection.isOnlineMode()) {
             UUID verifiedUUID = connection.getUniqueId();
             String verifiedUsername = connection.getName();
             session.setUuid(verifiedUUID);
