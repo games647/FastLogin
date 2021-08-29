@@ -112,10 +112,10 @@ This plugin performs network requests to:
 3. Now there is `allowed-proxies.txt` file in the FastLogin folder
 Put your stats id from the BungeeCord config into this file
 4. Activate ipForward in your BungeeCord config
-5. Download and Install FastLogin (or FastLoginBungee in newer versions) on BungeeCord AND Spigot
+5. Download and Install FastLogin (or FastLoginBungee/FastLoginBukkit in newer versions) on BungeeCord AND Spigot
 (on the servers where your login plugin is or where player should be able to execute the commands of FastLogin)
 6. Check your database settings in the config of FastLogin on BungeeCord
 7. Set proxy and Spigot in offline mode by setting the value onlinemode in your config.yml to false
 8. You should *always* firewall your Spigot server that it's only accessible through BungeeCord 
     * https://www.spigotmc.org/wiki/bungeecord-installation/#post-installation
-    * BungeeCord doesn't support SQLite per default, so you should change the configuration to MySQL or MariaDB
+    * BungeeCord doesn't support SQLite per default, so you should change the configuration to MySQL or MariaDB. For that you have to install MariaDB/MySQL on your root server first and put the credentials you made in the FastLogin config files.
