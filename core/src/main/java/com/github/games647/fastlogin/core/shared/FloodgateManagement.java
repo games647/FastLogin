@@ -73,6 +73,13 @@ public abstract class FloodgateManagement<P extends C, C, L extends LoginSession
 
         // check if the Bedrock player is linked to a Java account 
         isLinked = floodgatePlayer.getLinkedPlayer() != null;
+
+        //this happens on Bukkit if it's connected to Bungee
+        //if that's the case, players will be logged in via plugin messages
+        if (core.getStorage() == null) {
+            return;
+        }
+
         profile = core.getStorage().loadProfile(username);
         AuthPlugin<P> authPlugin = core.getAuthPluginHook();
 
