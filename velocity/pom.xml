@@ -80,33 +80,15 @@
     </build>
 
     <repositories>
-
-        <repository>
-            <id>codemc-repo</id>
-            <url>https://repo.codemc.io/repository/maven-public/</url>
-        </repository>
-
-        <repository>
-            <id>opencollab-snapshot</id>
-            <url>https://repo.opencollab.dev/maven-snapshots/</url>
-        </repository>
-
-        <repository>
-            <id>spigotplugins-repo</id>
-            <url>https://maven.gamestrike.de/mvn/</url>
-        </repository>
-
         <repository>
             <id>velocity</id>
             <url>https://nexus.velocitypowered.com/repository/maven-public/</url>
         </repository>
 
+        <!--For MySql Driver-->
         <repository>
-            <id>jitpack.io</id>
-            <url>https://jitpack.io</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
+            <id>Maven Central</id>
+            <url>https://repo1.maven.org/maven2/</url>
         </repository>
     </repositories>
 
@@ -126,11 +108,12 @@
             <scope>provided</scope>
         </dependency>
 
+        <!--Velocity does not ship any database driver-->
         <dependency>
-            <groupId>org.xerial</groupId>
-            <artifactId>sqlite-jdbc</artifactId>
-            <version>3.32.3</version>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.26</version>
+            <scope>runtime</scope>
         </dependency>
-
     </dependencies>
 </project>
