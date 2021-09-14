@@ -1,9 +1,0 @@
-{
-  "id":"fastlogin",
-  "name":"${project.parent.name}",
-  "version":"${project.version}-${git.commit.id.abbrev}",
-  "authors":["games647", "https://github.com/games647/FastLogin/graphs/contributors"],
-  "dependencies":[],
-  "main":"${project.groupId}.${project.artifactId}.${project.name}"
-
-}
