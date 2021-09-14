@@ -130,8 +130,7 @@ public class ForceLoginTask
 
     @Override
     public boolean isOnline(Player player) {
-        //FIXME: is this right?
-        return core.getPlugin().getProxy().getPlayer(player.getUsername()).isPresent();
+        return player.isActive();
     }
 
     @Override
