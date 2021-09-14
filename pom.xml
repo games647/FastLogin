@@ -57,6 +57,7 @@
         <module>core</module>
         <module>bukkit</module>
         <module>bungee</module>
+        <module>velocity</module>
     </modules>
 
     <!--Deployment configuration for the Maven repository-->
