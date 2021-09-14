@@ -98,7 +98,7 @@ public class ForceLoginTask
             Thread.currentThread().interrupt(); // Set the interrupt flag again
             return event;
         } catch (ExecutionException e) {
-            e.printStackTrace();
+            core.getPlugin().getLog().error("Error firing event", e);
             return event;
         }
     }

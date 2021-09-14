@@ -78,7 +78,7 @@ public class AsyncPremiumCheck extends JoinManagement<Player, CommandSource, Vel
             Thread.currentThread().interrupt(); // Restore the interrupt flag
             return event;
         } catch (ExecutionException e) {
-            e.printStackTrace();
+            core.getPlugin().getLog().error("Error firing event", e);
             return event;
         }
     }
