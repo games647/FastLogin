@@ -61,7 +61,8 @@ import com.velocitypowered.api.proxy.server.RegisteredServer;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.slf4j.Logger;
 
-@Plugin(id = "fastlogin")
+@Plugin(id = PomData.NAME, name = PomData.DISPLAY_NAME, description = PomData.DESCRIPTION, url = PomData.URL,
+        version = PomData.VERSION, authors = {"games647", "https://github.com/games647/FastLogin/graphs/contributors"})
 public class FastLoginVelocity implements PlatformPlugin<CommandSource> {
     private final ProxyServer server;
     private final Path dataDirectory;
@@ -96,8 +97,7 @@ public class FastLoginVelocity implements PlatformPlugin<CommandSource> {
 
     @Override
     public String getName() {
-        //FIXME: some dynamic way to get it?
-        return "fastlogin";
+        return PomData.NAME;
     }
 
     @Override
