@@ -72,9 +72,9 @@ public class FastLoginVelocity implements PlatformPlugin<CommandSource> {
     private AsyncScheduler scheduler;
 
     @Inject
-    public FastLoginVelocity(ProxyServer server, java.util.logging.Logger logger, @DataDirectory Path dataDirectory) {
+    public FastLoginVelocity(ProxyServer server, Logger logger, @DataDirectory Path dataDirectory) {
         this.server = server;
-        this.logger = CommonUtil.createLoggerFromJDK(logger);
+        this.logger = logger;
         this.dataDirectory = dataDirectory;
         logger.info("FastLogin velocity.");
     }
