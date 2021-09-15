@@ -49,13 +49,13 @@ import com.velocitypowered.api.proxy.server.RegisteredServer;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.slf4j.Logger;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -65,14 +65,16 @@ import java.util.concurrent.ConcurrentMap;
 @Plugin(id = PomData.NAME, name = PomData.DISPLAY_NAME, description = PomData.DESCRIPTION, url = PomData.URL,
         version = PomData.VERSION, authors = {"games647", "https://github.com/games647/FastLogin/graphs/contributors"})
 public class FastLoginVelocity implements PlatformPlugin<CommandSource> {
+
     private final ProxyServer server;
     private final Path dataDirectory;
     private final Logger logger;
-    private FastLoginCore<Player, CommandSource, FastLoginVelocity> core;
     private final ConcurrentMap<InetSocketAddress, VelocityLoginSession> session = new MapMaker().weakKeys().makeMap();
+    private final String PROXY_ID_fILE = "proxyId.txt";
+
+    private FastLoginCore<Player, CommandSource, FastLoginVelocity> core;
     private AsyncScheduler scheduler;
     private UUID proxyId;
-    private final String PROXY_ID_fILE = "proxyId.txt";
 
     @Inject
     public FastLoginVelocity(ProxyServer server, Logger logger, @DataDirectory Path dataDirectory) {
@@ -115,7 +117,6 @@ public class FastLoginVelocity implements PlatformPlugin<CommandSource> {
     @Override
     public void sendMessage(CommandSource receiver, String message) {
         receiver.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(message));
-
     }
 
     @Override
@@ -132,7 +133,7 @@ public class FastLoginVelocity implements PlatformPlugin<CommandSource> {
         return core;
     }
 
-    public ConcurrentMap<InetSocketAddress, VelocityLoginSession>  getSession() {
+    public ConcurrentMap<InetSocketAddress, VelocityLoginSession> getSession() {
         return session;
     }
 

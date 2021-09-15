@@ -71,7 +71,6 @@ public class ConnectListener {
         String username = preLoginEvent.getUsername();
         plugin.getLog().info("Incoming login request for {} from {}", username, connection.getRemoteAddress());
 
-
         Runnable asyncPremiumCheck = new AsyncPremiumCheck(plugin, connection, username, continuation, preLoginEvent);
         plugin.getScheduler().runAsync(asyncPremiumCheck);
     }

@@ -113,7 +113,6 @@ public class PluginMessageListener {
     }
 
     private void onSuccessMessage(Player forPlayer) {
-
         if (forPlayer.isOnlineMode()){
             //bukkit module successfully received and force logged in the user
             //update only on success to prevent corrupt data

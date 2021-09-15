@@ -51,8 +51,6 @@ public class VelocityLoginSource implements LoginSource {
 
     @Override
     public void kick(String message) {
-
-
         if (message == null) {
             preLoginEvent.setResult(PreLoginEvent.PreLoginComponentResult.denied(
                     Component.text("Kicked").color(NamedTextColor.WHITE)));
