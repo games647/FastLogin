@@ -34,6 +34,7 @@ import com.github.games647.fastlogin.core.shared.event.FastLoginPreLoginEvent;
 
 import java.util.Optional;
 
+import org.geysermc.floodgate.api.FloodgateApi;
 import org.geysermc.floodgate.api.player.FloodgatePlayer;
 
 import net.md_5.bungee.config.Configuration;
@@ -76,6 +77,11 @@ public abstract class JoinManagement<P extends C, C, S extends LoginSource> {
                     core.getPlugin().getLog().info("Requesting premium login for registered player: {}", username);
                     requestPremiumLogin(source, profile, username, true);
                 } else {
+                    if (profile.getName().startsWith(FloodgateApi.getInstance().getPlayerPrefix())) {
+                        core.getPlugin().getLog().info("Floodgate Prefix detected on cracked player");
+                        source.kick("Your username contains illegal characters");
+                        return;
+                    }
                     startCrackedSession(source, profile, username);
                 }
             } else {
