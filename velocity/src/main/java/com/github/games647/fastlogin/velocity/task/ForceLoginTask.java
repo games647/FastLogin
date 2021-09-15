@@ -89,7 +89,6 @@ public class ForceLoginTask
 
     @Override
     public FastLoginAutoLoginEvent callFastLoginAutoLoginEvent(LoginSession session, StoredProfile profile) {
-        //FIXME: Am I doing it right?
         VelocityFastLoginAutoLoginEvent event = new VelocityFastLoginAutoLoginEvent(session, profile);
         try {
              return core.getPlugin().getProxy().getEventManager().fire(event).get();

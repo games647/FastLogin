@@ -70,7 +70,6 @@ public class AsyncPremiumCheck extends JoinManagement<Player, CommandSource, Vel
 
     @Override
     public FastLoginPreLoginEvent callFastLoginPreLoginEvent(String username, VelocityLoginSource source, StoredProfile profile) {
-        //FIXME: Am I doing it right?
         VelocityFastLoginPreLoginEvent event = new VelocityFastLoginPreLoginEvent(username, source, profile);
         try {
             return plugin.getProxy().getEventManager().fire(event).get();
