@@ -115,11 +115,9 @@ public class ForceLoginTask
         if (session.needsRegistration()) {
             type = Type.REGISTER;
         }
-        //FIXME: Velocity does not have an alternative for this!
-        //UUID proxyId = UUID.fromString(ProxyServer.getInstance().getConfig().getUuid());
-        UUID proxyId = UUID.nameUUIDFromBytes("velocity".getBytes(StandardCharsets.UTF_8));
-        ChannelMessage loginMessage = new LoginActionMessage(type, player.getUsername(), proxyId);
 
+        UUID proxyId = core.getPlugin().getProxyId();
+        ChannelMessage loginMessage = new LoginActionMessage(type, player.getUsername(), proxyId);
         core.getPlugin().sendPluginMessage(server, loginMessage);
     }
 

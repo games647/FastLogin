@@ -49,9 +49,15 @@ import com.velocitypowered.api.proxy.server.RegisteredServer;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.slf4j.Logger;
 
+import java.io.*;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentMap;
 
@@ -64,25 +70,26 @@ public class FastLoginVelocity implements PlatformPlugin<CommandSource> {
     private FastLoginCore<Player, CommandSource, FastLoginVelocity> core;
     private final ConcurrentMap<InetSocketAddress, VelocityLoginSession> session = new MapMaker().weakKeys().makeMap();
     private AsyncScheduler scheduler;
+    private UUID proxyId;
+    private final String PROXY_ID_fILE = "proxyId.txt";
 
     @Inject
     public FastLoginVelocity(ProxyServer server, Logger logger, @DataDirectory Path dataDirectory) {
         this.server = server;
         this.logger = logger;
         this.dataDirectory = dataDirectory;
-        logger.info("FastLogin velocity.");
     }
 
     @Subscribe
     public void onProxyInitialization(ProxyInitializeEvent event) {
         scheduler = new AsyncScheduler(logger, getThreadFactory());
-
         core = new FastLoginCore<>(this);
         core.load();
-        if (!core.setupDatabase()) {
+        loadOrGenerateProxyId();
+        if (!core.setupDatabase() || proxyId == null) {
             return;
         }
-        logger.info("Velocity uuid for allowed proxies:" + UUID.nameUUIDFromBytes("velocity".getBytes(StandardCharsets.UTF_8)));
+
         server.getChannelRegistrar().register(MinecraftChannelIdentifier.create(getName(), ChangePremiumMessage.CHANGE_CHANNEL));
         server.getChannelRegistrar().register(MinecraftChannelIdentifier.create(getName(), SuccessMessage.SUCCESS_CHANNEL));
         server.getEventManager().register(this, new ConnectListener(this, core.getRateLimiter()));
@@ -140,5 +147,44 @@ public class FastLoginVelocity implements PlatformPlugin<CommandSource> {
             MinecraftChannelIdentifier channel = MinecraftChannelIdentifier.create(getName(), message.getChannelName());
             server.sendPluginMessage(channel, dataOutput.toByteArray());
         }
+    }
+
+    private void loadOrGenerateProxyId() {
+        File idFile = new File(dataDirectory.toFile(), PROXY_ID_fILE);
+        boolean shouldGenerate = false;
+
+        if (idFile.exists()) {
+            try {
+                List<String> lines = Files.readAllLines(idFile.toPath(), StandardCharsets.UTF_8);
+                if (lines.isEmpty()) {
+                    shouldGenerate = true;
+                } else {
+                    proxyId = UUID.fromString(lines.get(0));
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+                logger.error("Unable to load proxy id from '{}'", idFile.getAbsolutePath());
+                logger.error("Detailed exception:", e);
+            } catch (IllegalArgumentException e) {
+                logger.error("'{}' contains an invalid uuid! FastLogin will not work without a valid id.", idFile.getAbsolutePath());
+            }
+        } else {
+            shouldGenerate = true;
+        }
+
+        if (shouldGenerate) {
+            proxyId = UUID.randomUUID();
+            try {
+                Files.write(idFile.toPath(), Collections.singletonList(proxyId.toString()),
+                        StandardCharsets.UTF_8, StandardOpenOption.CREATE);
+            } catch (IOException e) {
+                logger.error("Unable to save proxy id to '{}'", idFile.getAbsolutePath());
+                logger.error("Detailed exception:", e);
+            }
+        }
+    }
+
+    public UUID getProxyId() {
+        return proxyId;
     }
 }
