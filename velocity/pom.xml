@@ -74,6 +74,10 @@
                             <pattern>net.md_5.bungee.config</pattern>
                             <shadedPattern>fastlogin.config</shadedPattern>
                         </relocation>
+                        <relocation>
+                            <pattern>com.mysql</pattern>
+                            <shadedPattern>fastlogin.mysql</shadedPattern>
+                        </relocation>
                     </relocations>
                     <artifactSet>
                         <excludes>
