@@ -152,12 +152,12 @@ public class FastLoginVelocity implements PlatformPlugin<CommandSource> {
     }
 
     private void loadOrGenerateProxyId() {
-        File idFile = new File(dataDirectory.toFile(), PROXY_ID_fILE);
+        Path idFile = dataDirectory.resolve(PROXY_ID_fILE);
         boolean shouldGenerate = false;
 
-        if (idFile.exists()) {
+        if (Files.exists(idFile)) {
             try {
-                List<String> lines = Files.readAllLines(idFile.toPath(), StandardCharsets.UTF_8);
+                List<String> lines = Files.readAllLines(idFile, StandardCharsets.UTF_8);
                 if (lines.isEmpty()) {
                     shouldGenerate = true;
                 } else {
@@ -165,10 +165,10 @@ public class FastLoginVelocity implements PlatformPlugin<CommandSource> {
                 }
             } catch (IOException e) {
                 e.printStackTrace();
-                logger.error("Unable to load proxy id from '{}'", idFile.getAbsolutePath());
+                logger.error("Unable to load proxy id from '{}'", idFile.toAbsolutePath());
                 logger.error("Detailed exception:", e);
             } catch (IllegalArgumentException e) {
-                logger.error("'{}' contains an invalid uuid! FastLogin will not work without a valid id.", idFile.getAbsolutePath());
+                logger.error("'{}' contains an invalid uuid! FastLogin will not work without a valid id.", idFile.toAbsolutePath());
             }
         } else {
             shouldGenerate = true;
@@ -177,10 +177,10 @@ public class FastLoginVelocity implements PlatformPlugin<CommandSource> {
         if (shouldGenerate) {
             proxyId = UUID.randomUUID();
             try {
-                Files.write(idFile.toPath(), Collections.singletonList(proxyId.toString()),
+                Files.write(idFile, Collections.singletonList(proxyId.toString()),
                         StandardCharsets.UTF_8, StandardOpenOption.CREATE);
             } catch (IOException e) {
-                logger.error("Unable to save proxy id to '{}'", idFile.getAbsolutePath());
+                logger.error("Unable to save proxy id to '{}'", idFile.toAbsolutePath());
                 logger.error("Detailed exception:", e);
             }
         }
