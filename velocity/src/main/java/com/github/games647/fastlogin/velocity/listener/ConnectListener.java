@@ -124,7 +124,6 @@ public class ConnectListener {
     @Subscribe
     public void onDisconnect(DisconnectEvent disconnectEvent) {
         Player player = disconnectEvent.getPlayer();
-        assert plugin.getSession().remove(player.getRemoteAddress()) != null;
         plugin.getCore().getPendingConfirms().remove(player.getUniqueId());
     }
 }
