@@ -40,6 +40,7 @@ import com.google.inject.Inject;
 import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
+import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.Player;
@@ -97,6 +98,13 @@ public class FastLoginVelocity implements PlatformPlugin<CommandSource> {
         server.getChannelRegistrar().register(MinecraftChannelIdentifier.create(getName(), SuccessMessage.SUCCESS_CHANNEL));
         server.getEventManager().register(this, new ConnectListener(this, core.getRateLimiter()));
         server.getEventManager().register(this, new PluginMessageListener(this));
+    }
+
+    @Subscribe
+    public void onProxyShutdown(ProxyShutdownEvent event) {
+        if (core != null) {
+            core.close();
+        }
     }
 
     @Override
