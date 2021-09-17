@@ -70,7 +70,7 @@ public class FastLoginVelocity implements PlatformPlugin<CommandSource> {
     private final Path dataDirectory;
     private final Logger logger;
     private final ConcurrentMap<InetSocketAddress, VelocityLoginSession> session = new MapMaker().weakKeys().makeMap();
-    private final String PROXY_ID_fILE = "proxyId.txt";
+    private static final String PROXY_ID_fILE = "proxyId.txt";
 
     private FastLoginCore<Player, CommandSource, FastLoginVelocity> core;
     private AsyncScheduler scheduler;
