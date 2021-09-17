@@ -42,8 +42,10 @@ import com.velocitypowered.api.event.player.ServerConnectedEvent;
 import com.velocitypowered.api.proxy.InboundConnection;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
+import com.velocitypowered.api.util.GameProfile;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -95,10 +97,18 @@ public class ConnectListener {
             }
 
             if (!plugin.getCore().getConfig().get("forwardSkin", true)) {
-                //FIXME: Do I need to remove *all* properties or only the skin related ones?
-                event.setGameProfile(event.getGameProfile().withProperties(new ArrayList<>()));
+                event.setGameProfile(event.getGameProfile().withProperties(removeSkin(event.getGameProfile().getProperties())));
             }
         }
+    }
+
+    private List<GameProfile.Property> removeSkin(List<GameProfile.Property> oldProperties) {
+        List<GameProfile.Property> newProperties = new ArrayList<>(oldProperties.size() - 1);
+        for (GameProfile.Property property : oldProperties) {
+            if (!property.getName().equals("textures"))
+                newProperties.add(property);
+        }
+        return newProperties;
     }
 
     @Subscribe
