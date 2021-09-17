@@ -80,6 +80,8 @@
                         </relocation>
                     </relocations>
                     <artifactSet>
+                        <!--org.slf4j is part of velocity api and runtime,
+                        shading and relocating it causes logger injection to fail-->
                         <excludes>
                             <exclude>org.slf4j:*</exclude>
                         </excludes>
