@@ -164,7 +164,6 @@ public class FastLoginVelocity implements PlatformPlugin<CommandSource> {
                     proxyId = UUID.fromString(lines.get(0));
                 }
             } catch (IOException e) {
-                e.printStackTrace();
                 logger.error("Unable to load proxy id from '{}'", idFile.toAbsolutePath());
                 logger.error("Detailed exception:", e);
             } catch (IllegalArgumentException e) {
