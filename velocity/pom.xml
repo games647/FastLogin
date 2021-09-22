@@ -84,6 +84,7 @@
                         shading and relocating it causes logger injection to fail-->
                         <excludes>
                             <exclude>org.slf4j:*</exclude>
+                            <exclude>com.google.code.gson:gson</exclude>
                         </excludes>
                     </artifactSet>
                 </configuration>
