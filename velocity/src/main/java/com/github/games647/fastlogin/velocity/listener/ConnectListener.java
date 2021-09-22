@@ -59,11 +59,12 @@ public class ConnectListener {
         this.rateLimiter = rateLimiter;
     }
 
-    @Subscribe()
+    @Subscribe
     public void onPreLogin(PreLoginEvent preLoginEvent, Continuation continuation) {
         if (!preLoginEvent.getResult().isAllowed()) {
             return;
         }
+
         InboundConnection connection = preLoginEvent.getConnection();
         if (!rateLimiter.tryAcquire()) {
             plugin.getLog().warn("Simple Anti-Bot join limit - Ignoring {}", connection);
@@ -105,9 +106,10 @@ public class ConnectListener {
     private List<GameProfile.Property> removeSkin(List<GameProfile.Property> oldProperties) {
         List<GameProfile.Property> newProperties = new ArrayList<>(oldProperties.size() - 1);
         for (GameProfile.Property property : oldProperties) {
-            if (!property.getName().equals("textures"))
+            if (!"textures".equals(property.getName()))
                 newProperties.add(property);
         }
+
         return newProperties;
     }
 

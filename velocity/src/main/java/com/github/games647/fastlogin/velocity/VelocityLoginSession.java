@@ -31,9 +31,11 @@ import com.github.games647.fastlogin.core.shared.LoginSession;
 public class VelocityLoginSession extends LoginSession {
     private boolean alreadySaved;
     private boolean alreadyLogged;
+
     public VelocityLoginSession(String requestUsername, boolean registered, StoredProfile profile) {
         super(requestUsername, registered, profile);
     }
+
     public synchronized void setRegistered(boolean registered) {
         this.registered = registered;
     }

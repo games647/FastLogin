@@ -47,10 +47,7 @@ import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.messages.MinecraftChannelIdentifier;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-import org.slf4j.Logger;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
@@ -61,6 +58,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentMap;
+
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+
+import org.slf4j.Logger;
 
 //TODO: Support for floodgate
 @Plugin(id = PomData.NAME, name = PomData.DISPLAY_NAME, description = PomData.DESCRIPTION, url = PomData.URL,
@@ -94,10 +95,10 @@ public class FastLoginVelocity implements PlatformPlugin<CommandSource> {
             return;
         }
 
-        server.getChannelRegistrar().register(MinecraftChannelIdentifier.create(getName(), ChangePremiumMessage.CHANGE_CHANNEL));
-        server.getChannelRegistrar().register(MinecraftChannelIdentifier.create(getName(), SuccessMessage.SUCCESS_CHANNEL));
         server.getEventManager().register(this, new ConnectListener(this, core.getRateLimiter()));
         server.getEventManager().register(this, new PluginMessageListener(this));
+        server.getChannelRegistrar().register(MinecraftChannelIdentifier.create(getName(), ChangePremiumMessage.CHANGE_CHANNEL));
+        server.getChannelRegistrar().register(MinecraftChannelIdentifier.create(getName(), SuccessMessage.SUCCESS_CHANNEL));
     }
 
     @Subscribe
@@ -184,8 +185,7 @@ public class FastLoginVelocity implements PlatformPlugin<CommandSource> {
         if (shouldGenerate) {
             proxyId = UUID.randomUUID();
             try {
-                Files.write(idFile, Collections.singletonList(proxyId.toString()),
-                        StandardCharsets.UTF_8, StandardOpenOption.CREATE);
+                Files.write(idFile, Collections.singletonList(proxyId.toString()), StandardOpenOption.CREATE);
             } catch (IOException e) {
                 logger.error("Unable to save proxy id to '{}'", idFile.toAbsolutePath());
                 logger.error("Detailed exception:", e);

@@ -32,7 +32,8 @@ import com.velocitypowered.api.event.ResultedEvent;
 
 import java.util.Objects;
 
-public class VelocityFastLoginAutoLoginEvent implements FastLoginAutoLoginEvent, ResultedEvent<ResultedEvent.GenericResult> {
+public class VelocityFastLoginAutoLoginEvent
+        implements FastLoginAutoLoginEvent, ResultedEvent<ResultedEvent.GenericResult> {
 
     private final LoginSession session;
     private final StoredProfile profile;
