@@ -3,30 +3,35 @@ package com.github.games647.fastlogin.core.storage;
 import com.github.games647.fastlogin.core.shared.FastLoginCore;
 import com.zaxxer.hikari.HikariConfig;
 
+import java.util.Map;
+
 public class MySQLStorage extends SQLStorage {
 
-    public MySQLStorage(FastLoginCore<?, ?, ?> core, String host, int port, String database, HikariConfig config, boolean useSSL) {
+    public MySQLStorage(FastLoginCore<?, ?, ?> core, String host, int port, String database, HikariConfig config,
+                        Map<String, Object> sslOptions) {
         super(core,
                 "mysql://" + host + ':' + port + '/' + database,
-                setParams(config, useSSL));
+                setParams(config, sslOptions));
     }
 
-    private static HikariConfig setParams(HikariConfig config, boolean useSSL) {
+    private static HikariConfig setParams(HikariConfig config, Map<String, Object> sslOptions) {
+        boolean useSSL = (boolean) sslOptions.get("useSSL");
+
         // Require SSL on the server if requested in config - this will also verify certificate
         // Those values are deprecated in favor of sslMode
         config.addDataSourceProperty("useSSL", useSSL);
         config.addDataSourceProperty("requireSSL", useSSL);
-
-        if (useSSL) {
-            // require encrypted if possible
-            config.addDataSourceProperty("sslMode", "VerifyFull");
-        }
 
         // adding paranoid hides hostname, username, version and so
         // could be useful for hiding server details
         config.addDataSourceProperty("paranoid", true);
 
         // enable MySQL specific optimizations
+        addPerformanceProperties(config);
+        return config;
+    }
+
+    private static void addPerformanceProperties(HikariConfig config) {
         // disabled by default - will return the same prepared statement instance
         config.addDataSourceProperty("cachePrepStmts", true);
         // default prepStmtCacheSize 25 - amount of cached statements
@@ -55,7 +60,5 @@ public class MySQLStorage extends SQLStorage {
         // performance gems presentation
         // In our case it can be useful to see the time in error messages
         // config.addDataSourceProperty("maintainTimeStats", false);
-
-        return config;
     }
 }

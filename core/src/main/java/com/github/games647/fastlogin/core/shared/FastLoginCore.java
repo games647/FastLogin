@@ -211,6 +211,12 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
             int port = config.get("port", 3306);
             boolean useSSL = config.get("useSSL", false);
 
+            if (useSSL) {
+                databaseConfig.addDataSourceProperty("allowPublicKeyRetrieval", config.getBoolean("allowPublicKeyRetrieval", false));
+                databaseConfig.addDataSourceProperty("serverRSAPublicKeyFile", config.getString("ServerRSAPublicKeyFile"));
+                databaseConfig.addDataSourceProperty("sslMode", config.getString("sslMode", "Required"));
+            }
+
             databaseConfig.setUsername(config.get("username", ""));
             databaseConfig.setPassword(config.getString("password"));
             storage = new MySQLStorage(this, host, port, database, databaseConfig, useSSL);

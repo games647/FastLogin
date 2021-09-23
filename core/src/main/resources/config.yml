@@ -264,9 +264,19 @@ database: '{pluginDir}/FastLogin.db'
 #timeout: 30
 #lifetime: 30
 
-# It's strongly recommended to enable SSL and setup a SSL certificate if the MySQL server isn't running on the same
-# machine
+## It's recommended to enable SSL if the MySQL server isn't running on the same host
+## This will encrypt the connection for secure transportation of the sql server password
 #useSSL: false
+## Verification requirements for the server cert,
+## Values: Required (unchecked SSL connection), VerifyCA (verify CA), VerifyFull (verify CA and matching hostname)
+#sslMode=Required
+## TLS is preferred for this technique, then your host stored certificate store will be used to verify the server cert
+## Similar to HTTPS. If that's not possible RSA can be used with the following options.
+## This allows to request the public RSA key from the server to encrypt the data to it. True would allow machine-in-the-
+## middle attacks.
+#allowPublicKeyRetrieval=false
+## Path to the RSA public key if key retrieval is forbidden
+#ServerRSAPublicKeyFile=
 
 # HTTP proxies for connecting to the Mojang servers in order to check if the username of a player is premium.
 # This is a workaround to prevent rate-limiting by Mojang. These proxies will only be used once your server hit
