@@ -17,8 +17,10 @@ public class MySQLStorage extends SQLStorage {
         config.addDataSourceProperty("useSSL", useSSL);
         config.addDataSourceProperty("requireSSL", useSSL);
 
-        // prefer encrypted if possible
-        config.addDataSourceProperty("sslMode", "PREFERRED");
+        if (useSSL) {
+            // require encrypted if possible
+            config.addDataSourceProperty("sslMode", "VerifyFull");
+        }
 
         // adding paranoid hides hostname, username, version and so
         // could be useful for hiding server details
