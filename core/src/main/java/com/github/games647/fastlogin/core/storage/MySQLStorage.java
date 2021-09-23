@@ -3,20 +3,16 @@ package com.github.games647.fastlogin.core.storage;
 import com.github.games647.fastlogin.core.shared.FastLoginCore;
 import com.zaxxer.hikari.HikariConfig;
 
-import java.util.Map;
-
 public class MySQLStorage extends SQLStorage {
 
     public MySQLStorage(FastLoginCore<?, ?, ?> core, String host, int port, String database, HikariConfig config,
-                        Map<String, Object> sslOptions) {
+                        boolean useSSL) {
         super(core,
                 "mysql://" + host + ':' + port + '/' + database,
-                setParams(config, sslOptions));
+                setParams(config, useSSL));
     }
 
-    private static HikariConfig setParams(HikariConfig config, Map<String, Object> sslOptions) {
-        boolean useSSL = (boolean) sslOptions.get("useSSL");
-
+    private static HikariConfig setParams(HikariConfig config, boolean useSSL) {
         // Require SSL on the server if requested in config - this will also verify certificate
         // Those values are deprecated in favor of sslMode
         config.addDataSourceProperty("useSSL", useSSL);
