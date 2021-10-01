@@ -77,10 +77,12 @@ public abstract class JoinManagement<P extends C, C, S extends LoginSource> {
                     core.getPlugin().getLog().info("Requesting premium login for registered player: {}", username);
                     requestPremiumLogin(source, profile, username, true);
                 } else {
-                    if (profile.getName().startsWith(FloodgateApi.getInstance().getPlayerPrefix())) {
+                    if(!FloodgateApi.getInstance().getPlayerPrefix().isEmpty()){
+                        if (profile.getName().startsWith(FloodgateApi.getInstance().getPlayerPrefix())) {
                         core.getPlugin().getLog().info("Floodgate Prefix detected on cracked player");
                         source.kick("Your username contains illegal characters");
                         return;
+                    }
                     }
                     startCrackedSession(source, profile, username);
                 }
