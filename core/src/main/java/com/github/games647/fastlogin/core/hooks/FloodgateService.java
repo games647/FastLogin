@@ -41,9 +41,11 @@ import org.geysermc.floodgate.api.player.FloodgatePlayer;
 
 public class FloodgateService {
 
+    private final FloodgateApi floodgate;
     private final FastLoginCore<?, ?, ?> core;
 
-    public FloodgateService(FastLoginCore<?, ?, ?> core) {
+    public FloodgateService(FloodgateApi floodgate, FastLoginCore<?, ?, ?> core) {
+        this.floodgate = floodgate;
         this.core = core;
     }
 
@@ -84,10 +86,11 @@ public class FloodgateService {
      * @param username the name of the player
      * @param source   an instance of LoginSource
      */
-    public void checkFloodgateNameConflict(String username, LoginSource source, FloodgatePlayer floodgatePlayer) {
+    public void checkNameConflict(String username, LoginSource source) {
         String allowConflict = core.getConfig().get("allowFloodgateNameConflict").toString().toLowerCase();
 
         // check if the Bedrock player is linked to a Java account
+        FloodgatePlayer floodgatePlayer = getFloodgatePlayer(username);
         boolean isLinked = floodgatePlayer.getLinkedPlayer() != null;
 
         if ("false".equals(allowConflict)
@@ -151,6 +154,5 @@ public class FloodgateService {
 
     public boolean isFloodgateConnection(String username) {
         return getFloodgatePlayer(username) != null;
-
     }
 }

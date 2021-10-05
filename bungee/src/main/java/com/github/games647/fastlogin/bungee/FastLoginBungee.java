@@ -33,6 +33,7 @@ import com.github.games647.fastlogin.bungee.listener.PluginMessageListener;
 import com.github.games647.fastlogin.core.AsyncScheduler;
 import com.github.games647.fastlogin.core.CommonUtil;
 import com.github.games647.fastlogin.core.hooks.AuthPlugin;
+import com.github.games647.fastlogin.core.hooks.FloodgateService;
 import com.github.games647.fastlogin.core.message.ChangePremiumMessage;
 import com.github.games647.fastlogin.core.message.ChannelMessage;
 import com.github.games647.fastlogin.core.message.NamespaceKey;
@@ -59,6 +60,7 @@ import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.api.plugin.PluginManager;
 import net.md_5.bungee.api.scheduler.GroupedThreadFactory;
 
+import org.geysermc.floodgate.api.FloodgateApi;
 import org.slf4j.Logger;
 
 /**
@@ -70,6 +72,7 @@ public class FastLoginBungee extends Plugin implements PlatformPlugin<CommandSen
 
     private FastLoginCore<ProxiedPlayer, CommandSender, FastLoginBungee> core;
     private AsyncScheduler scheduler;
+    private FloodgateService floodgateService;
     private Logger logger;
 
     @Override
@@ -81,6 +84,10 @@ public class FastLoginBungee extends Plugin implements PlatformPlugin<CommandSen
         core.load();
         if (!core.setupDatabase()) {
             return;
+        }
+
+        if (isPluginInstalled("Floodgate")) {
+            floodgateService = new FloodgateService(FloodgateApi.getInstance(), core);
         }
 
         //events
@@ -184,5 +191,10 @@ public class FastLoginBungee extends Plugin implements PlatformPlugin<CommandSen
     @Override
     public boolean isPluginInstalled(String name) {
         return getProxy().getPluginManager().getPlugin(name) != null;
+    }
+
+    @Override
+    public FloodgateService getFloodgateService() {
+        return floodgateService;
     }
 }

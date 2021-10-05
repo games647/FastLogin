@@ -49,7 +49,7 @@ public class AsyncPremiumCheck extends JoinManagement<ProxiedPlayer, CommandSend
 
     public AsyncPremiumCheck(FastLoginBungee plugin, PreLoginEvent preLoginEvent, PendingConnection connection,
                              String username) {
-        super(plugin.getCore(), plugin.getCore().getAuthPluginHook());
+        super(plugin.getCore(), plugin.getCore().getAuthPluginHook(), plugin.getFloodgateService());
 
         this.plugin = plugin;
         this.preLoginEvent = preLoginEvent;

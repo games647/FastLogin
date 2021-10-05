@@ -36,8 +36,6 @@ import java.util.Optional;
 
 import net.md_5.bungee.config.Configuration;
 
-import org.geysermc.floodgate.api.player.FloodgatePlayer;
-
 public abstract class JoinManagement<P extends C, C, S extends LoginSource> {
 
     protected final FastLoginCore<P, C, ?> core;
@@ -60,7 +58,7 @@ public abstract class JoinManagement<P extends C, C, S extends LoginSource> {
         //check if the player is connecting through Floodgate
         if (floodgateService != null) {
             if (floodgateService.isFloodgateConnection(username)) {
-                floodgateService.checkFloodgateNameConflict(username, source, floodgatePlayer);
+                floodgateService.checkNameConflict(username, source);
                 // skip flow for any floodgate player
                 return;
             }

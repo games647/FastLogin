@@ -53,6 +53,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.geysermc.floodgate.api.FloodgateApi;
 import org.slf4j.Logger;
 
 /**
@@ -146,7 +147,7 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
 
     private boolean initializeFloodgate() {
         if (getServer().getPluginManager().getPlugin("Floodgate") != null) {
-            floodgateService = new FloodgateService(core);
+            floodgateService = new FloodgateService(FloodgateApi.getInstance(), core);
         }
 
         // Check Floodgate config values

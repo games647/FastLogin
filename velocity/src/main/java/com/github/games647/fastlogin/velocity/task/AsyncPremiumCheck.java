@@ -50,7 +50,7 @@ public class AsyncPremiumCheck extends JoinManagement<Player, CommandSource, Vel
     private final InboundConnection connection;
 
     public AsyncPremiumCheck(FastLoginVelocity plugin, InboundConnection connection, String username, Continuation continuation, PreLoginEvent preLoginEvent) {
-        super(plugin.getCore(), plugin.getCore().getAuthPluginHook());
+        super(plugin.getCore(), plugin.getCore().getAuthPluginHook(), plugin.getFloodgateService());
         this.plugin = plugin;
         this.connection = connection;
         this.username = username;
