@@ -26,6 +26,7 @@
 package com.github.games647.fastlogin.core.shared;
 
 import com.github.games647.fastlogin.core.AsyncScheduler;
+import com.github.games647.fastlogin.core.hooks.FloodgateService;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 import java.nio.file.Path;
@@ -52,6 +53,8 @@ public interface PlatformPlugin<C> {
             sendMessage(receiver, line);
         }
     }
+
+    FloodgateService getFloodgateService();
 
     default ThreadFactory getThreadFactory() {
         return new ThreadFactoryBuilder()

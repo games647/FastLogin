@@ -33,6 +33,7 @@ import com.github.games647.fastlogin.bungee.task.FloodgateAuthTask;
 import com.github.games647.fastlogin.bungee.task.ForceLoginTask;
 import com.github.games647.fastlogin.core.RateLimiter;
 import com.github.games647.fastlogin.core.StoredProfile;
+import com.github.games647.fastlogin.core.hooks.FloodgateService;
 import com.github.games647.fastlogin.core.shared.LoginSession;
 import com.google.common.base.Throwables;
 
@@ -56,7 +57,6 @@ import net.md_5.bungee.connection.LoginResult.Property;
 import net.md_5.bungee.event.EventHandler;
 import net.md_5.bungee.event.EventPriority;
 
-import org.geysermc.floodgate.api.FloodgateApi;
 import org.geysermc.floodgate.api.player.FloodgatePlayer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -184,8 +184,9 @@ public class ConnectListener implements Listener {
         ProxiedPlayer player = serverConnectedEvent.getPlayer();
         Server server = serverConnectedEvent.getServer();
 
-        if (plugin.isPluginInstalled("floodgate")) {
-            FloodgatePlayer floodgatePlayer = FloodgateApi.getInstance().getPlayer(player.getUniqueId());
+        FloodgateService floodgateService = plugin.getFloodgateService();
+        if (floodgateService != null) {
+            FloodgatePlayer floodgatePlayer = floodgateService.getFloodgatePlayer(player.getUniqueId());
             if (floodgatePlayer != null) {
                 Runnable floodgateAuthTask = new FloodgateAuthTask(plugin.getCore(), player, floodgatePlayer, server);
                 plugin.getScheduler().runAsync(floodgateAuthTask);

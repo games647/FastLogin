@@ -27,21 +27,54 @@ package com.github.games647.fastlogin.core.hooks;
 
 import com.github.games647.craftapi.model.Profile;
 import com.github.games647.craftapi.resolver.RateLimitException;
+import com.github.games647.fastlogin.core.StoredProfile;
 import com.github.games647.fastlogin.core.shared.FastLoginCore;
 import com.github.games647.fastlogin.core.shared.LoginSource;
 
 import java.io.IOException;
+import java.util.Locale;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.geysermc.floodgate.api.FloodgateApi;
 import org.geysermc.floodgate.api.player.FloodgatePlayer;
 
-public class FloodgateHook<P extends C, C, S extends LoginSource> {
+public class FloodgateService {
 
-    private final FastLoginCore<P, C, ?> core;
+    private final FastLoginCore<?, ?, ?> core;
 
-    public FloodgateHook(FastLoginCore<P, C, ?> core) {
+    public FloodgateService(FastLoginCore<?, ?, ?> core) {
         this.core = core;
+    }
+
+    /**
+     * Checks if a config entry (related to Floodgate) is valid. <br>
+     * Writes to Log if the value is invalid.
+     * <p>
+     * This should be used for:
+     * <ul>
+     * <li>allowFloodgateNameConflict
+     * <li>autoLoginFloodgate
+     * <li>autoRegisterFloodgate
+     * </ul>
+     * </p>
+     *
+     * @param key the key of the entry in config.yml
+     * @return <b>true</b> if the entry's value is "true", "false", or "linked"
+     */
+    public boolean isValidFloodgateConfigString(String key) {
+        String value = core.getConfig().get(key).toString().toLowerCase(Locale.ENGLISH);
+        if (!value.equals("true") && !value.equals("linked") && !value.equals("false") && !value.equals("no-conflict")) {
+            core.getPlugin().getLog().error("Invalid value detected for {} in FastLogin/config.yml.", key);
+            return false;
+        }
+
+        return true;
+    }
+
+    public boolean isUsernameForbidden(StoredProfile profile) {
+        String playerPrefix = FloodgateApi.getInstance().getPlayerPrefix();
+        return profile.getName().startsWith(playerPrefix) && !playerPrefix.isEmpty();
     }
 
     /**
@@ -55,10 +88,10 @@ public class FloodgateHook<P extends C, C, S extends LoginSource> {
         String allowConflict = core.getConfig().get("allowFloodgateNameConflict").toString().toLowerCase();
 
         // check if the Bedrock player is linked to a Java account
-        boolean isLinked = ((FloodgatePlayer) floodgatePlayer).getLinkedPlayer() != null;
+        boolean isLinked = floodgatePlayer.getLinkedPlayer() != null;
 
-        if (allowConflict.equals("false")
-                || allowConflict.equals("linked") && !isLinked) {
+        if ("false".equals(allowConflict)
+                || "linked".equals(allowConflict) && !isLinked) {
 
             // check for conflicting Premium Java name
             Optional<Profile> premiumUUID = Optional.empty();
@@ -66,13 +99,13 @@ public class FloodgateHook<P extends C, C, S extends LoginSource> {
                 premiumUUID = core.getResolver().findProfile(username);
             } catch (IOException | RateLimitException e) {
                 core.getPlugin().getLog().error(
-                        "Could not check wether Floodgate Player {}'s name conflicts a premium Java player's name.",
+                        "Could not check whether Floodgate Player {}'s name conflicts a premium Java player's name.",
                         username);
                 try {
                     source.kick("Could not check if your name conflicts an existing premium Java account's name.\n"
                             + "This is usually a serverside error.");
-                } catch (Exception e1) {
-                    core.getPlugin().getLog().error("Could not kick Player {}", username);
+                } catch (Exception ex) {
+                    core.getPlugin().getLog().error("Could not kick Player {}", username, ex);
                 }
             }
 
@@ -81,8 +114,8 @@ public class FloodgateHook<P extends C, C, S extends LoginSource> {
                         username);
                 try {
                     source.kick("Your name conflicts an existing premium Java account's name");
-                } catch (Exception e) {
-                    core.getPlugin().getLog().error("Could not kick Player {}", username);
+                } catch (Exception ex) {
+                    core.getPlugin().getLog().error("Could not kick Player {}", username, ex);
                 }
             }
         } else {
@@ -99,14 +132,25 @@ public class FloodgateHook<P extends C, C, S extends LoginSource> {
      * @return FloodgatePlayer if found, null otherwise
      */
     public FloodgatePlayer getFloodgatePlayer(String username) {
-        if (core.getPlugin().isPluginInstalled("floodgate")) {
-            for (FloodgatePlayer floodgatePlayer : FloodgateApi.getInstance().getPlayers()) {
-                if (floodgatePlayer.getUsername().equals(username)) {
-                    return floodgatePlayer;
-                }
+        for (FloodgatePlayer floodgatePlayer : FloodgateApi.getInstance().getPlayers()) {
+            if (floodgatePlayer.getUsername().equals(username)) {
+                return floodgatePlayer;
             }
         }
 
         return null;
+    }
+
+    public FloodgatePlayer getFloodgatePlayer(UUID uuid) {
+        return FloodgateApi.getInstance().getPlayer(uuid);
+    }
+
+    public boolean isFloodgatePlayer(UUID uuid) {
+        return getFloodgatePlayer(uuid) != null;
+    }
+
+    public boolean isFloodgateConnection(String username) {
+        return getFloodgatePlayer(username) != null;
+
     }
 }

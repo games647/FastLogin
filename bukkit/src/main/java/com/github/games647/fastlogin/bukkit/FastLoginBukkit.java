@@ -35,6 +35,7 @@ import com.github.games647.fastlogin.bukkit.listener.protocolsupport.ProtocolSup
 import com.github.games647.fastlogin.bukkit.task.DelayedAuthHook;
 import com.github.games647.fastlogin.core.CommonUtil;
 import com.github.games647.fastlogin.core.PremiumStatus;
+import com.github.games647.fastlogin.core.hooks.FloodgateService;
 import com.github.games647.fastlogin.core.shared.FastLoginCore;
 import com.github.games647.fastlogin.core.shared.PlatformPlugin;
 
@@ -42,7 +43,6 @@ import io.papermc.lib.PaperLib;
 
 import java.net.InetSocketAddress;
 import java.nio.file.Path;
-import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -69,6 +69,7 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
     private BungeeManager bungeeManager;
     private final BukkitScheduler scheduler;
     private FastLoginCore<Player, CommandSender, FastLoginBukkit> core;
+    private FloodgateService floodgateService;
 
     private PremiumPlaceholder premiumPlaceholder;
 
@@ -88,13 +89,10 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
             setEnabled(false);
             return;
         }
-        
-		// Check Floodgate config values
-		if (!isValidFloodgateConfigString("autoLoginFloodgate")
-				|| !isValidFloodgateConfigString("allowFloodgateNameConflict")) {
-			setEnabled(false);
-			return;
-		}
+
+        if (!initializeFloodgate()) {
+            setEnabled(false);
+        }
 
         bungeeManager = new BungeeManager(this);
         bungeeManager.initialize();
@@ -144,6 +142,20 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
         }
 
         dependencyWarnings();
+    }
+
+    private boolean initializeFloodgate() {
+        if (getServer().getPluginManager().getPlugin("Floodgate") != null) {
+            floodgateService = new FloodgateService(core);
+        }
+
+        // Check Floodgate config values
+        if (!floodgateService.isValidFloodgateConfigString("autoLoginFloodgate")
+                || !floodgateService.isValidFloodgateConfigString("allowFloodgateNameConflict")) {
+            return false;
+        }
+
+        return true;
     }
 
     @Override
@@ -252,30 +264,6 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
     }
     
 	/**
-	 * Checks if a config entry (related to Floodgate) is valid. <br>
-	 * Writes to Log if the value is invalid.
-	 * <p>
-	 * This should be used for:
-	 * <ul>
-	 * <li>allowFloodgateNameConflict
-	 * <li>autoLoginFloodgate
-	 * <li>autoRegisterFloodgate
-	 * </ul>
-	 * </p>
-	 * 
-	 * @param key the key of the entry in config.yml
-	 * @return <b>true</b> if the entry's value is "true", "false", or "linked"
-	 */
-	private boolean isValidFloodgateConfigString(String key) {
-		String value = core.getConfig().get(key).toString().toLowerCase(Locale.ENGLISH);
-		if (!value.equals("true") && !value.equals("linked") && !value.equals("false") && !value.equals("no-conflict")) {
-			logger.error("Invalid value detected for {} in FastLogin/config.yml.", key);
-			return false;
-		}
-		return true;	
-	}
-
-	/**
 	 * Checks if a plugin is installed on the server
 	 * @param name the name of the plugin
 	 * @return true if the plugin is installed
@@ -285,6 +273,11 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
 	    // the plugin may be enabled after FastLogin, so isPluginEnabled() won't work here
 	    return Bukkit.getServer().getPluginManager().getPlugin(name) != null;
 	}
+
+    @Override
+    public FloodgateService getFloodgateService() {
+        return floodgateService;
+    }
 
     /**
      * Send warning messages to log if incompatible plugins are used  

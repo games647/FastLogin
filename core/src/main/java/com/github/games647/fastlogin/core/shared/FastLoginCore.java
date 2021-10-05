@@ -27,13 +27,13 @@ package com.github.games647.fastlogin.core.shared;
 
 import com.github.games647.craftapi.resolver.MojangResolver;
 import com.github.games647.craftapi.resolver.http.RotatingProxySelector;
-import com.github.games647.fastlogin.core.storage.MySQLStorage;
-import com.github.games647.fastlogin.core.storage.SQLStorage;
 import com.github.games647.fastlogin.core.CommonUtil;
 import com.github.games647.fastlogin.core.RateLimiter;
 import com.github.games647.fastlogin.core.hooks.AuthPlugin;
 import com.github.games647.fastlogin.core.hooks.DefaultPasswordGenerator;
 import com.github.games647.fastlogin.core.hooks.PasswordGenerator;
+import com.github.games647.fastlogin.core.storage.MySQLStorage;
+import com.github.games647.fastlogin.core.storage.SQLStorage;
 import com.github.games647.fastlogin.core.storage.SQLiteStorage;
 import com.google.common.net.HostAndPort;
 import com.zaxxer.hikari.HikariConfig;

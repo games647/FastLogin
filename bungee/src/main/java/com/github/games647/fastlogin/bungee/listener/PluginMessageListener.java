@@ -29,15 +29,13 @@ import com.github.games647.fastlogin.bungee.BungeeLoginSession;
 import com.github.games647.fastlogin.bungee.FastLoginBungee;
 import com.github.games647.fastlogin.bungee.task.AsyncToggleMessage;
 import com.github.games647.fastlogin.core.StoredProfile;
+import com.github.games647.fastlogin.core.hooks.FloodgateService;
 import com.github.games647.fastlogin.core.message.ChangePremiumMessage;
 import com.github.games647.fastlogin.core.message.NamespaceKey;
 import com.github.games647.fastlogin.core.message.SuccessMessage;
 import com.github.games647.fastlogin.core.shared.FastLoginCore;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteStreams;
-
-import org.geysermc.floodgate.api.FloodgateApi;
-import org.geysermc.floodgate.api.player.FloodgatePlayer;
 
 import java.util.Arrays;
 
@@ -118,13 +116,15 @@ public class PluginMessageListener implements Listener {
     }
 
     private void onSuccessMessage(ProxiedPlayer forPlayer) {
-        //check if player is using Floodgate
-        FloodgatePlayer floodgatePlayer = null;
-        if (plugin.isPluginInstalled("floodgate")) {
-            floodgatePlayer = FloodgateApi.getInstance().getPlayer(forPlayer.getUniqueId());
+        boolean shouldPersist = forPlayer.getPendingConnection().isOnlineMode();
+
+        FloodgateService floodgateService = plugin.getFloodgateService();
+        if (!shouldPersist && floodgateService != null) {
+            // always save floodgate players to lock this username
+            shouldPersist = floodgateService.isFloodgatePlayer(forPlayer.getUniqueId());
         }
 
-        if (forPlayer.getPendingConnection().isOnlineMode() || floodgatePlayer != null){
+        if (shouldPersist) {
             //bukkit module successfully received and force logged in the user
             //update only on success to prevent corrupt data
             BungeeLoginSession loginSession = plugin.getSession().get(forPlayer.getPendingConnection());

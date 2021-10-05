@@ -29,26 +29,25 @@ import com.github.games647.craftapi.model.Profile;
 import com.github.games647.craftapi.resolver.RateLimitException;
 import com.github.games647.fastlogin.core.StoredProfile;
 import com.github.games647.fastlogin.core.hooks.AuthPlugin;
-import com.github.games647.fastlogin.core.hooks.FloodgateHook;
+import com.github.games647.fastlogin.core.hooks.FloodgateService;
 import com.github.games647.fastlogin.core.shared.event.FastLoginPreLoginEvent;
 
 import java.util.Optional;
 
-import org.geysermc.floodgate.api.FloodgateApi;
-import org.geysermc.floodgate.api.player.FloodgatePlayer;
-
 import net.md_5.bungee.config.Configuration;
+
+import org.geysermc.floodgate.api.player.FloodgatePlayer;
 
 public abstract class JoinManagement<P extends C, C, S extends LoginSource> {
 
     protected final FastLoginCore<P, C, ?> core;
     protected final AuthPlugin<P> authHook;
-    private final FloodgateHook<P, C, ?> floodgateHook;
+    private final FloodgateService floodgateService;
 
-    public JoinManagement(FastLoginCore<P, C, ?> core, AuthPlugin<P> authHook) {
+    public JoinManagement(FastLoginCore<P, C, ?> core, AuthPlugin<P> authHook, FloodgateService floodService) {
         this.core = core;
         this.authHook = authHook;
-        this.floodgateHook = new FloodgateHook<>(core);
+        this.floodgateService = floodService;
     }
 
     public void onLogin(String username, S source) {
@@ -59,12 +58,14 @@ public abstract class JoinManagement<P extends C, C, S extends LoginSource> {
         }
 
         //check if the player is connecting through Floodgate
-        FloodgatePlayer floodgatePlayer = floodgateHook.getFloodgatePlayer(username);
-
-        if (floodgatePlayer != null) {
-            floodgateHook.checkFloodgateNameConflict(username, source, floodgatePlayer);
-            return;
+        if (floodgateService != null) {
+            if (floodgateService.isFloodgateConnection(username)) {
+                floodgateService.checkFloodgateNameConflict(username, source, floodgatePlayer);
+                // skip flow for any floodgate player
+                return;
+            }
         }
+
         callFastLoginPreLoginEvent(username, source, profile);
 
         Configuration config = core.getConfig();
@@ -77,12 +78,9 @@ public abstract class JoinManagement<P extends C, C, S extends LoginSource> {
                     core.getPlugin().getLog().info("Requesting premium login for registered player: {}", username);
                     requestPremiumLogin(source, profile, username, true);
                 } else {
-                    if (profile.getName().startsWith(FloodgateApi.getInstance().getPlayerPrefix())&&!FloodgateApi.getInstance().getPlayerPrefix().isEmpty()) {
-                        core.getPlugin().getLog().info("Floodgate Prefix detected on cracked player");
-                        source.kick("Your username contains illegal characters");
-                        return;
+                    if (isValidUsername(source, profile)) {
+                        startCrackedSession(source, profile, username);
                     }
-                    startCrackedSession(source, profile, username);
                 }
             } else {
                 if (core.getPendingLogin().remove(ip + username) != null && config.get("secondAttemptCracked", false)) {
@@ -118,6 +116,16 @@ public abstract class JoinManagement<P extends C, C, S extends LoginSource> {
             core.getPlugin().getLog().error("Failed to check premium state for {}", username, ex);
             core.getPlugin().getLog().error("Failed to check premium state of {}", username, ex);
         }
+    }
+
+    protected boolean isValidUsername(LoginSource source, StoredProfile profile) throws Exception {
+        if (floodgateService != null && floodgateService.isUsernameForbidden(profile)) {
+            core.getPlugin().getLog().info("Floodgate Prefix detected on cracked player");
+            source.kick("Your username contains illegal characters");
+            return false;
+        }
+
+        return true;
     }
 
     private boolean checkPremiumName(S source, String username, StoredProfile profile) throws Exception {
