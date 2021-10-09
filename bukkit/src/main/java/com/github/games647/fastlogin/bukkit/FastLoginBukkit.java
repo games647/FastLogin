@@ -148,12 +148,10 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
     private boolean initializeFloodgate() {
         if (getServer().getPluginManager().getPlugin("Floodgate") != null) {
             floodgateService = new FloodgateService(FloodgateApi.getInstance(), core);
-        }
 
-        // Check Floodgate config values
-        if (!floodgateService.isValidFloodgateConfigString("autoLoginFloodgate")
-                || !floodgateService.isValidFloodgateConfigString("allowFloodgateNameConflict")) {
-            return false;
+            // Check Floodgate config values and return
+            return floodgateService.isValidFloodgateConfigString("autoLoginFloodgate")
+                    && floodgateService.isValidFloodgateConfigString("allowFloodgateNameConflict");
         }
 
         return true;
@@ -168,7 +166,10 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
             core.close();
         }
 
-        bungeeManager.cleanup();
+        if (bungeeManager != null) {
+            bungeeManager.cleanup();
+        }
+
         if (premiumPlaceholder != null && getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
             try {
                 premiumPlaceholder.unregister();
