@@ -161,8 +161,8 @@ public class ConnectListener implements Listener {
 
     private void setOfflineId(InitialHandler connection, String username) {
         try {
-            final UUID oldPremiumId = connection.getUniqueId();
-            final UUID offlineUUID = UUIDAdapter.generateOfflineId(username);
+            UUID oldPremiumId = connection.getUniqueId();
+            UUID offlineUUID = UUIDAdapter.generateOfflineId(username);
 
             // BungeeCord only allows setting the UUID in PreLogin events and before requesting online mode
             // However if online mode is requested, it will override previous values

@@ -86,7 +86,7 @@ public class FastLoginBungee extends Plugin implements PlatformPlugin<CommandSen
             return;
         }
 
-        if (isPluginInstalled("Floodgate")) {
+        if (isPluginInstalled("floodgate")) {
             floodgateService = new FloodgateService(FloodgateApi.getInstance(), core);
         }
 

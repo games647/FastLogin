@@ -146,7 +146,7 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
     }
 
     private boolean initializeFloodgate() {
-        if (getServer().getPluginManager().getPlugin("Floodgate") != null) {
+        if (getServer().getPluginManager().getPlugin("floodgate") != null) {
             floodgateService = new FloodgateService(FloodgateApi.getInstance(), core);
 
             // Check Floodgate config values and return
