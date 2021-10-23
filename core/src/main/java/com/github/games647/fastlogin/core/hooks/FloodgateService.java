@@ -131,12 +131,12 @@ public class FloodgateService {
      * iterates over every online FloodgatePlayer and checks if the requested
      * username can be found
      * 
-     * @param username the name of the player
+     * @param prefixedUsername the name of the player with the prefix appended
      * @return FloodgatePlayer if found, null otherwise
      */
-    public FloodgatePlayer getFloodgatePlayer(String username) {
+    public FloodgatePlayer getFloodgatePlayer(String prefixedUsername) {
         for (FloodgatePlayer floodgatePlayer : FloodgateApi.getInstance().getPlayers()) {
-            if (floodgatePlayer.getUsername().equals(username)) {
+            if (floodgatePlayer.getCorrectUsername().equals(prefixedUsername)) {
                 return floodgatePlayer;
             }
         }
