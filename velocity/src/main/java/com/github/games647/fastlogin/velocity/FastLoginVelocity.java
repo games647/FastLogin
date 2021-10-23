@@ -27,6 +27,7 @@ package com.github.games647.fastlogin.velocity;
 
 import com.github.games647.fastlogin.core.AsyncScheduler;
 import com.github.games647.fastlogin.core.hooks.FloodgateService;
+import com.github.games647.fastlogin.core.hooks.GeyserService;
 import com.github.games647.fastlogin.core.message.ChangePremiumMessage;
 import com.github.games647.fastlogin.core.message.ChannelMessage;
 import com.github.games647.fastlogin.core.message.SuccessMessage;
@@ -141,6 +142,11 @@ public class FastLoginVelocity implements PlatformPlugin<CommandSource> {
 
     @Override
     public FloodgateService getFloodgateService() {
+        return null;
+    }
+
+    @Override
+    public GeyserService getGeyserService() {
         return null;
     }
 

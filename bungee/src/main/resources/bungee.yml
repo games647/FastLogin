@@ -13,6 +13,9 @@ softDepends:
     - BungeeAuth
     - BungeeCordAuthenticatorBungee
     - SodionAuth
+    # Bedrock Player Bridge
+    - Geyser-BungeeCord
+    - floodgate
 
 description: |
     ${project.description}
