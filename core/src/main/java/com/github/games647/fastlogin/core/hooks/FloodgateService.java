@@ -130,13 +130,25 @@ public class FloodgateService {
      * The FloodgateApi does not support querying players by name, so this function
      * iterates over every online FloodgatePlayer and checks if the requested
      * username can be found
+     * <br>
+     * <i>Falls back to non-prefixed name checks, if ProtocolLib is installed</i>
      * 
-     * @param username the name of the player
+     * @param prefixedUsername the name of the player with the prefix appended
      * @return FloodgatePlayer if found, null otherwise
      */
-    public FloodgatePlayer getFloodgatePlayer(String username) {
+    public FloodgatePlayer getFloodgatePlayer(String prefixedUsername) {
+        //prefixes are broken with ProtocolLib, so fall back to name checks without prefixes
+        //this should be removed if #493 gets fixed
+        if (core.getPlugin().isPluginInstalled("ProtocolLib")) {
+            for (FloodgatePlayer floodgatePlayer : FloodgateApi.getInstance().getPlayers()) {
+                if (floodgatePlayer.getUsername().equals(prefixedUsername)) {
+                    return floodgatePlayer;
+                }
+            }
+            return null;
+        }
         for (FloodgatePlayer floodgatePlayer : FloodgateApi.getInstance().getPlayers()) {
-            if (floodgatePlayer.getUsername().equals(username)) {
+            if (floodgatePlayer.getCorrectUsername().equals(prefixedUsername)) {
                 return floodgatePlayer;
             }
         }
