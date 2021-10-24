@@ -31,26 +31,34 @@ import com.github.games647.fastlogin.core.shared.FastLoginCore;
 import com.github.games647.fastlogin.core.shared.LoginSource;
 
 import org.geysermc.connector.GeyserConnector;
+import org.geysermc.connector.common.AuthType;
 import org.geysermc.connector.network.session.GeyserSession;
 
 public class GeyserService extends BedrockService<GeyserSession> {
 
     private final GeyserConnector geyser;
     private final FastLoginCore<?, ?, ?> core;
+    private final AuthType authType;
 
     public GeyserService(GeyserConnector geyser, FastLoginCore<?, ?, ?> core) {
         super(core);
         this.geyser = geyser;
         this.core = core;
+        this.authType = geyser.getConfig().getRemote().getAuthType();
     }
 
     @Override
     public boolean performChecks(String username, LoginSource source) {
-        //TODO: Replace stub with Geyser specific code    
-        if ("false".equals(allowConflict)) {
-                super.checkNameConflict(username, source);
-        } else {
+        // AuthType.FLOODGATE will be handled by FloodgateService
+        if (authType == AuthType.ONLINE) {
+            // authenticate everyone, as if they were Java players, since they have signed
+            // in through Mojang
+            return false;
+        }
+        if ("true".equals(allowConflict)) {
             core.getPlugin().getLog().info("Skipping name conflict checking for player {}", username);
+        } else {
+            super.checkNameConflict(username, source);    
         }
         return true;
     }
