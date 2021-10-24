@@ -23,23 +23,35 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.github.games647.fastlogin.core.hooks;
+package com.github.games647.fastlogin.core.hooks.bedrock;
 
 import java.util.UUID;
 
 import com.github.games647.fastlogin.core.shared.FastLoginCore;
+import com.github.games647.fastlogin.core.shared.LoginSource;
 
 import org.geysermc.connector.GeyserConnector;
 import org.geysermc.connector.network.session.GeyserSession;
 
-public class GeyserService {
+public class GeyserService extends BedrockService {
 
     private final GeyserConnector geyser;
     private final FastLoginCore<?, ?, ?> core;
 
     public GeyserService(GeyserConnector geyser, FastLoginCore<?, ?, ?> core) {
+        super(core);
         this.geyser = geyser;
         this.core = core;
+    }
+
+    @Override
+    public void checkNameConflict(String username, LoginSource source) {
+        //TODO: Replace stub with Geyser specific code      
+        if ("false".equals(allowConflict)) {
+                super.checkNameConflict(username, source);
+        } else {
+            core.getPlugin().getLog().info("Skipping name conflict checking for player {}", username);
+        }
     }
 
     /**

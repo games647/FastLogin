@@ -29,8 +29,8 @@ import com.github.games647.craftapi.model.Profile;
 import com.github.games647.craftapi.resolver.RateLimitException;
 import com.github.games647.fastlogin.core.StoredProfile;
 import com.github.games647.fastlogin.core.hooks.AuthPlugin;
-import com.github.games647.fastlogin.core.hooks.FloodgateService;
-import com.github.games647.fastlogin.core.hooks.GeyserService;
+import com.github.games647.fastlogin.core.hooks.bedrock.FloodgateService;
+import com.github.games647.fastlogin.core.hooks.bedrock.GeyserService;
 import com.github.games647.fastlogin.core.shared.event.FastLoginPreLoginEvent;
 
 import java.util.Optional;
@@ -44,7 +44,8 @@ public abstract class JoinManagement<P extends C, C, S extends LoginSource> {
     private final FloodgateService floodgateService;
     private final GeyserService geyserService;
 
-    public JoinManagement(FastLoginCore<P, C, ?> core, AuthPlugin<P> authHook, FloodgateService floodService, GeyserService geyserService) {
+    public JoinManagement(FastLoginCore<P, C, ?> core, AuthPlugin<P> authHook, FloodgateService floodService,
+            GeyserService geyserService) {
         this.core = core;
         this.authHook = authHook;
         this.floodgateService = floodService;

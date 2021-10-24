@@ -35,8 +35,8 @@ import com.github.games647.fastlogin.bukkit.listener.protocolsupport.ProtocolSup
 import com.github.games647.fastlogin.bukkit.task.DelayedAuthHook;
 import com.github.games647.fastlogin.core.CommonUtil;
 import com.github.games647.fastlogin.core.PremiumStatus;
-import com.github.games647.fastlogin.core.hooks.FloodgateService;
-import com.github.games647.fastlogin.core.hooks.GeyserService;
+import com.github.games647.fastlogin.core.hooks.bedrock.FloodgateService;
+import com.github.games647.fastlogin.core.hooks.bedrock.GeyserService;
 import com.github.games647.fastlogin.core.shared.FastLoginCore;
 import com.github.games647.fastlogin.core.shared.PlatformPlugin;
 

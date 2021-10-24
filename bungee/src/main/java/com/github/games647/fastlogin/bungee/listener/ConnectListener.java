@@ -33,7 +33,7 @@ import com.github.games647.fastlogin.bungee.task.FloodgateAuthTask;
 import com.github.games647.fastlogin.bungee.task.ForceLoginTask;
 import com.github.games647.fastlogin.core.RateLimiter;
 import com.github.games647.fastlogin.core.StoredProfile;
-import com.github.games647.fastlogin.core.hooks.FloodgateService;
+import com.github.games647.fastlogin.core.hooks.bedrock.FloodgateService;
 import com.github.games647.fastlogin.core.shared.LoginSession;
 import com.google.common.base.Throwables;
 

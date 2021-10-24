@@ -23,30 +23,25 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.github.games647.fastlogin.core.hooks;
+package com.github.games647.fastlogin.core.hooks.bedrock;
 
-import com.github.games647.craftapi.model.Profile;
-import com.github.games647.craftapi.resolver.RateLimitException;
 import com.github.games647.fastlogin.core.StoredProfile;
 import com.github.games647.fastlogin.core.shared.FastLoginCore;
 import com.github.games647.fastlogin.core.shared.LoginSource;
 
-import java.io.IOException;
 import java.util.Locale;
-import java.util.Optional;
 import java.util.UUID;
 
 import org.geysermc.floodgate.api.FloodgateApi;
 import org.geysermc.floodgate.api.player.FloodgatePlayer;
 
-public class FloodgateService {
+public class FloodgateService extends BedrockService {
 
     private final FloodgateApi floodgate;
-    private final FastLoginCore<?, ?, ?> core;
 
     public FloodgateService(FloodgateApi floodgate, FastLoginCore<?, ?, ?> core) {
+        super(core);
         this.floodgate = floodgate;
-        this.core = core;
     }
 
     /**
@@ -79,48 +74,15 @@ public class FloodgateService {
         return profile.getName().startsWith(playerPrefix) && !playerPrefix.isEmpty();
     }
 
-    /**
-     * Check if the player's name conflicts an existing Java player's name, and
-     * kick them if it does
-     *
-     * @param username the name of the player
-     * @param source   an instance of LoginSource
-     */
+    @Override
     public void checkNameConflict(String username, LoginSource source) {
-        String allowConflict = core.getConfig().get("allowFloodgateNameConflict").toString().toLowerCase();
-
         // check if the Bedrock player is linked to a Java account
         FloodgatePlayer floodgatePlayer = getFloodgatePlayer(username);
         boolean isLinked = floodgatePlayer.getLinkedPlayer() != null;
 
         if ("false".equals(allowConflict)
-                || "linked".equals(allowConflict) && !isLinked) {
-
-            // check for conflicting Premium Java name
-            Optional<Profile> premiumUUID = Optional.empty();
-            try {
-                premiumUUID = core.getResolver().findProfile(username);
-            } catch (IOException | RateLimitException e) {
-                core.getPlugin().getLog().error(
-                        "Could not check whether Floodgate Player {}'s name conflicts a premium Java player's name.",
-                        username);
-                try {
-                    source.kick("Could not check if your name conflicts an existing premium Java account's name.\n"
-                            + "This is usually a serverside error.");
-                } catch (Exception ex) {
-                    core.getPlugin().getLog().error("Could not kick Player {}", username, ex);
-                }
-            }
-
-            if (premiumUUID.isPresent()) {
-                core.getPlugin().getLog().info("Bedrock Player {}'s name conflicts an existing premium Java account's name",
-                        username);
-                try {
-                    source.kick("Your name conflicts an existing premium Java account's name");
-                } catch (Exception ex) {
-                    core.getPlugin().getLog().error("Could not kick Player {}", username, ex);
-                }
-            }
+            || "linked".equals(allowConflict) && !isLinked) {
+                super.checkNameConflict(username, source);
         } else {
             core.getPlugin().getLog().info("Skipping name conflict checking for player {}", username);
         }
