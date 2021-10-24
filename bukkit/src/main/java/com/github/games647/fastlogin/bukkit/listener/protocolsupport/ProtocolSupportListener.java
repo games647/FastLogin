@@ -53,7 +53,8 @@ public class ProtocolSupportListener extends JoinManagement<Player, CommandSende
     private final RateLimiter rateLimiter;
 
     public ProtocolSupportListener(FastLoginBukkit plugin, RateLimiter rateLimiter) {
-        super(plugin.getCore(), plugin.getCore().getAuthPluginHook(), plugin.getFloodgateService());
+        super(plugin.getCore(), plugin.getCore().getAuthPluginHook(), plugin.getFloodgateService(),
+                plugin.getGeyserService());
 
         this.plugin = plugin;
         this.rateLimiter = rateLimiter;
