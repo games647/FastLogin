@@ -30,6 +30,7 @@ import com.github.games647.craftapi.resolver.RateLimitException;
 import com.github.games647.fastlogin.core.StoredProfile;
 import com.github.games647.fastlogin.core.hooks.AuthPlugin;
 import com.github.games647.fastlogin.core.hooks.FloodgateService;
+import com.github.games647.fastlogin.core.hooks.GeyserService;
 import com.github.games647.fastlogin.core.shared.event.FastLoginPreLoginEvent;
 
 import java.util.Optional;
@@ -41,11 +42,13 @@ public abstract class JoinManagement<P extends C, C, S extends LoginSource> {
     protected final FastLoginCore<P, C, ?> core;
     protected final AuthPlugin<P> authHook;
     private final FloodgateService floodgateService;
+    private final GeyserService geyserService;
 
-    public JoinManagement(FastLoginCore<P, C, ?> core, AuthPlugin<P> authHook, FloodgateService floodService) {
+    public JoinManagement(FastLoginCore<P, C, ?> core, AuthPlugin<P> authHook, FloodgateService floodService, GeyserService geyserService) {
         this.core = core;
         this.authHook = authHook;
         this.floodgateService = floodService;
+        this.geyserService = geyserService;
     }
 
     public void onLogin(String username, S source) {
@@ -62,6 +65,10 @@ public abstract class JoinManagement<P extends C, C, S extends LoginSource> {
                 // skip flow for any floodgate player
                 return;
             }
+        }
+        //check if the player is connecting through Geyser (without Floodgate)
+        else if (geyserService != null && geyserService.isGeyserConnection(username)) {
+
         }
 
         callFastLoginPreLoginEvent(username, source, profile);

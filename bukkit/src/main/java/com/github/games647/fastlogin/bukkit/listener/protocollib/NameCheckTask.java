@@ -54,7 +54,7 @@ public class NameCheckTask extends JoinManagement<Player, CommandSender, Protoco
 
     public NameCheckTask(FastLoginBukkit plugin, Random random, Player player, PacketEvent packetEvent,
                          String username, PublicKey publicKey) {
-        super(plugin.getCore(), plugin.getCore().getAuthPluginHook(), plugin.getFloodgateService());
+        super(plugin.getCore(), plugin.getCore().getAuthPluginHook(), plugin.getFloodgateService(), plugin.getGeyserService());
 
         this.plugin = plugin;
         this.packetEvent = packetEvent;
