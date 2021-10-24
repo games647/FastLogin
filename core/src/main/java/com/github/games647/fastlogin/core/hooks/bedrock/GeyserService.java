@@ -45,13 +45,14 @@ public class GeyserService extends BedrockService<GeyserSession> {
     }
 
     @Override
-    public void checkNameConflict(String username, LoginSource source) {
-        //TODO: Replace stub with Geyser specific code      
+    public boolean performChecks(String username, LoginSource source) {
+        //TODO: Replace stub with Geyser specific code    
         if ("false".equals(allowConflict)) {
                 super.checkNameConflict(username, source);
         } else {
             core.getPlugin().getLog().info("Skipping name conflict checking for player {}", username);
         }
+        return true;
     }
 
     @Override
