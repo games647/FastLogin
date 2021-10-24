@@ -71,7 +71,7 @@ public class FloodgateService extends BedrockService<FloodgatePlayer> {
 
     @Override
     public boolean isUsernameForbidden(StoredProfile profile) {
-        String playerPrefix = FloodgateApi.getInstance().getPlayerPrefix();
+        String playerPrefix = floodgate.getPlayerPrefix();
         return profile.getName().startsWith(playerPrefix) && !playerPrefix.isEmpty();
     }
 
@@ -103,14 +103,14 @@ public class FloodgateService extends BedrockService<FloodgatePlayer> {
         //prefixes are broken with ProtocolLib, so fall back to name checks without prefixes
         //this should be removed if #493 gets fixed
         if (core.getPlugin().isPluginInstalled("ProtocolLib")) {
-            for (FloodgatePlayer floodgatePlayer : FloodgateApi.getInstance().getPlayers()) {
+            for (FloodgatePlayer floodgatePlayer : floodgate.getPlayers()) {
                 if (floodgatePlayer.getUsername().equals(prefixedUsername)) {
                     return floodgatePlayer;
                 }
             }
             return null;
         }
-        for (FloodgatePlayer floodgatePlayer : FloodgateApi.getInstance().getPlayers()) {
+        for (FloodgatePlayer floodgatePlayer : floodgate.getPlayers()) {
             if (floodgatePlayer.getCorrectUsername().equals(prefixedUsername)) {
                 return floodgatePlayer;
             }
@@ -120,7 +120,7 @@ public class FloodgateService extends BedrockService<FloodgatePlayer> {
     }
 
     public FloodgatePlayer getBedrockPlayer(UUID uuid) {
-        return FloodgateApi.getInstance().getPlayer(uuid);
+        return floodgate.getPlayer(uuid);
     }
 
     public boolean isBedrockPlayer(UUID uuid) {
