@@ -56,10 +56,9 @@ public abstract class JoinManagement<P extends C, C, S extends LoginSource> {
         }
 
         //check if the player is connecting through Bedrock Edition
-        if (bedrockService != null) {
-            if (bedrockService.isBedrockConnection(username)) {
-                bedrockService.checkNameConflict(username, source);
-                // skip flow for any Bedrock player
+        if (bedrockService != null && bedrockService.isBedrockConnection(username)) {
+            //perform Bedrock specific checks and skip Java checks, if they are not needed
+            if (bedrockService.performChecks(username, source)) {
                 return;
             }
         }

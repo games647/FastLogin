@@ -49,13 +49,22 @@ public abstract class BedrockService<B> {
     }
 
     /**
+     * Perfrom every packet level check needed on a Bedrock player.
+     *
+     * @param username the name of the player
+     * @param source   an instance of LoginSource
+     * @return true if Java specific checks can be skipped
+     */
+    public abstract boolean performChecks(String username, LoginSource source);
+
+    /**
      * Check if the player's name conflicts an existing Java player's name, and kick
      * them if it does
      *
      * @param username the name of the player
      * @param source   an instance of LoginSource
      */
-    public void checkNameConflict(String username, LoginSource source) {
+    protected void checkNameConflict(String username, LoginSource source) {
         // check for conflicting Premium Java name
         Optional<Profile> premiumUUID = Optional.empty();
         try {
@@ -81,7 +90,6 @@ public abstract class BedrockService<B> {
                 core.getPlugin().getLog().error("Could not kick Player {}", username, ex);
             }
         }
-
     }
 
     /**

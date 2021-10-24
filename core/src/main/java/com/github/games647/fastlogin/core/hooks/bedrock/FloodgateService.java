@@ -76,7 +76,7 @@ public class FloodgateService extends BedrockService<FloodgatePlayer> {
     }
 
     @Override
-    public void checkNameConflict(String username, LoginSource source) {
+    public boolean performChecks(String username, LoginSource source) {
         // check if the Bedrock player is linked to a Java account
         FloodgatePlayer floodgatePlayer = getBedrockPlayer(username);
         boolean isLinked = floodgatePlayer.getLinkedPlayer() != null;
@@ -87,6 +87,9 @@ public class FloodgateService extends BedrockService<FloodgatePlayer> {
         } else {
             core.getPlugin().getLog().info("Skipping name conflict checking for player {}", username);
         }
+        
+        //Floodgate users don't need Java specific checks
+        return true;
     }
 
     /**
