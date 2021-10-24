@@ -33,7 +33,7 @@ import com.github.games647.fastlogin.core.shared.LoginSource;
 import org.geysermc.connector.GeyserConnector;
 import org.geysermc.connector.network.session.GeyserSession;
 
-public class GeyserService extends BedrockService {
+public class GeyserService extends BedrockService<GeyserSession> {
 
     private final GeyserConnector geyser;
     private final FastLoginCore<?, ?, ?> core;
@@ -54,15 +54,8 @@ public class GeyserService extends BedrockService {
         }
     }
 
-    /**
-     * The Geyser API does not support querying players by name, so this function
-     * iterates over every online Geyser Player and checks if the requested
-     * username can be found
-     * 
-     * @param username the name of the player
-     * @return GeyserSession if found, null otherwise
-     */
-    public GeyserSession getGeyserPlayer(String username) {
+    @Override
+    public GeyserSession getBedrockPlayer(String username) {
         for (GeyserSession gSess : geyser.getSessionManager().getSessions().values()) {
             if (gSess.getName().equals(username)) {
                 return gSess;
@@ -72,15 +65,8 @@ public class GeyserService extends BedrockService {
         return null;
     }
 
-    public GeyserSession getGeyserPlayer(UUID uuid) {
+    @Override
+    public GeyserSession getBedrockPlayer(UUID uuid) {
         return geyser.getPlayerByUuid(uuid);
-    }
-
-    public boolean isGeyserPlayer(UUID uuid) {
-        return getGeyserPlayer(uuid) != null;
-    }
-
-    public boolean isGeyserConnection(String username) {
-        return getGeyserPlayer(username) != null;
     }
 }

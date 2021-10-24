@@ -35,7 +35,7 @@ import java.util.UUID;
 import org.geysermc.floodgate.api.FloodgateApi;
 import org.geysermc.floodgate.api.player.FloodgatePlayer;
 
-public class FloodgateService extends BedrockService {
+public class FloodgateService extends BedrockService<FloodgatePlayer> {
 
     private final FloodgateApi floodgate;
 
@@ -69,6 +69,7 @@ public class FloodgateService extends BedrockService {
         return true;
     }
 
+    @Override
     public boolean isUsernameForbidden(StoredProfile profile) {
         String playerPrefix = FloodgateApi.getInstance().getPlayerPrefix();
         return profile.getName().startsWith(playerPrefix) && !playerPrefix.isEmpty();
@@ -77,7 +78,7 @@ public class FloodgateService extends BedrockService {
     @Override
     public void checkNameConflict(String username, LoginSource source) {
         // check if the Bedrock player is linked to a Java account
-        FloodgatePlayer floodgatePlayer = getFloodgatePlayer(username);
+        FloodgatePlayer floodgatePlayer = getBedrockPlayer(username);
         boolean isLinked = floodgatePlayer.getLinkedPlayer() != null;
 
         if ("false".equals(allowConflict)
@@ -98,7 +99,7 @@ public class FloodgateService extends BedrockService {
      * @param prefixedUsername the name of the player with the prefix appended
      * @return FloodgatePlayer if found, null otherwise
      */
-    public FloodgatePlayer getFloodgatePlayer(String prefixedUsername) {
+    public FloodgatePlayer getBedrockPlayer(String prefixedUsername) {
         //prefixes are broken with ProtocolLib, so fall back to name checks without prefixes
         //this should be removed if #493 gets fixed
         if (core.getPlugin().isPluginInstalled("ProtocolLib")) {
@@ -118,15 +119,15 @@ public class FloodgateService extends BedrockService {
         return null;
     }
 
-    public FloodgatePlayer getFloodgatePlayer(UUID uuid) {
+    public FloodgatePlayer getBedrockPlayer(UUID uuid) {
         return FloodgateApi.getInstance().getPlayer(uuid);
     }
 
-    public boolean isFloodgatePlayer(UUID uuid) {
-        return getFloodgatePlayer(uuid) != null;
+    public boolean isBedrockPlayer(UUID uuid) {
+        return getBedrockPlayer(uuid) != null;
     }
 
-    public boolean isFloodgateConnection(String username) {
-        return getFloodgatePlayer(username) != null;
+    public boolean isBedrockConnection(String username) {
+        return getBedrockPlayer(username) != null;
     }
 }
