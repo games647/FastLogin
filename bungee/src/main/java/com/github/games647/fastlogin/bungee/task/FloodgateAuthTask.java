@@ -53,6 +53,7 @@ public class FloodgateAuthTask
     @Override
     protected void startLogin() {
         BungeeLoginSession session = new BungeeLoginSession(player.getName(), isRegistered, profile);
+        core.getPlugin().getSession().put(player.getPendingConnection(), session);
 
         // enable auto login based on the value of 'autoLoginFloodgate' in config.yml
         boolean forcedOnlineMode = autoLoginFloodgate.equals("true")
