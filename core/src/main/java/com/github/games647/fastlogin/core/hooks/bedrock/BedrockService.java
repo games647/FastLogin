@@ -27,13 +27,18 @@ package com.github.games647.fastlogin.core.hooks.bedrock;
 
 import java.io.IOException;
 import java.util.Optional;
+import java.util.UUID;
 
 import com.github.games647.craftapi.model.Profile;
 import com.github.games647.craftapi.resolver.RateLimitException;
+import com.github.games647.fastlogin.core.StoredProfile;
 import com.github.games647.fastlogin.core.shared.FastLoginCore;
 import com.github.games647.fastlogin.core.shared.LoginSource;
 
-public abstract class BedrockService {
+/**
+ * @param B is an instance of either FloodgatePlayer or GeyserSession
+ */
+public abstract class BedrockService<B> {
     
     protected final FastLoginCore<?, ?, ?> core;
     protected final String allowConflict;
@@ -77,6 +82,41 @@ public abstract class BedrockService {
             }
         }
 
+    }
+
+    /**
+     * The Floodgate / Geyser API does not support querying players by name, so this function
+     * iterates over every online Bedrock Player and checks if the requested
+     * username can be found
+     * <br>
+     * <i>Falls back to non-prefixed name checks, if ProtocolLib is installed</i>
+     * 
+     * @param prefixedUsername the name of the player with the prefix appended
+     * @return Bedrock Player if found, null otherwise
+     */
+    public B getBedrockPlayer(String prefixedUsername) {
+        return null;
+    }
+
+    public B getBedrockPlayer(UUID uuid) {
+        return null;
+    }
+
+    public boolean isBedrockPlayer(UUID uuid) {
+        return getBedrockPlayer(uuid) != null;
+    }
+
+    public boolean isBedrockConnection(String username) {
+        return getBedrockPlayer(username) != null;
+    }
+
+    /**
+     * Checks if a profile's name starts with the Floodgate prefix, if it's available
+     * @param profile profile of the conecting player
+     * @return true if the username is forbidden
+     */
+    public boolean isUsernameForbidden(StoredProfile profile) {
+        return false;
     }
 
 }

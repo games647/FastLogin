@@ -121,7 +121,7 @@ public class PluginMessageListener implements Listener {
         FloodgateService floodgateService = plugin.getFloodgateService();
         if (!shouldPersist && floodgateService != null) {
             // always save floodgate players to lock this username
-            shouldPersist = floodgateService.isFloodgatePlayer(forPlayer.getUniqueId());
+            shouldPersist = floodgateService.isBedrockPlayer(forPlayer.getUniqueId());
         }
 
         if (shouldPersist) {

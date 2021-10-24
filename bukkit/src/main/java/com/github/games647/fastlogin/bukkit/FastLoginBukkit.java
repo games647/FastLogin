@@ -35,6 +35,7 @@ import com.github.games647.fastlogin.bukkit.listener.protocolsupport.ProtocolSup
 import com.github.games647.fastlogin.bukkit.task.DelayedAuthHook;
 import com.github.games647.fastlogin.core.CommonUtil;
 import com.github.games647.fastlogin.core.PremiumStatus;
+import com.github.games647.fastlogin.core.hooks.bedrock.BedrockService;
 import com.github.games647.fastlogin.core.hooks.bedrock.FloodgateService;
 import com.github.games647.fastlogin.core.hooks.bedrock.GeyserService;
 import com.github.games647.fastlogin.core.shared.FastLoginCore;
@@ -283,13 +284,19 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
 	    return Bukkit.getServer().getPluginManager().getPlugin(name) != null;
 	}
 
-    @Override
     public FloodgateService getFloodgateService() {
         return floodgateService;
     }
 
-    @Override
     public GeyserService getGeyserService() {
+        return geyserService;
+    }
+
+    @Override
+    public BedrockService<?> getBedrockService() {
+        if (floodgateService != null) {
+            return floodgateService;
+        }
         return geyserService;
     }
 

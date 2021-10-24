@@ -33,6 +33,7 @@ import com.github.games647.fastlogin.bungee.listener.PluginMessageListener;
 import com.github.games647.fastlogin.core.AsyncScheduler;
 import com.github.games647.fastlogin.core.CommonUtil;
 import com.github.games647.fastlogin.core.hooks.AuthPlugin;
+import com.github.games647.fastlogin.core.hooks.bedrock.BedrockService;
 import com.github.games647.fastlogin.core.hooks.bedrock.FloodgateService;
 import com.github.games647.fastlogin.core.hooks.bedrock.GeyserService;
 import com.github.games647.fastlogin.core.message.ChangePremiumMessage;
@@ -200,13 +201,19 @@ public class FastLoginBungee extends Plugin implements PlatformPlugin<CommandSen
         return getProxy().getPluginManager().getPlugin(name) != null;
     }
 
-    @Override
     public FloodgateService getFloodgateService() {
         return floodgateService;
     }
 
-    @Override
     public GeyserService getGeyserService() {
+        return geyserService;
+    }
+
+    @Override
+    public BedrockService<?> getBedrockService() {
+        if (floodgateService != null) {
+            return floodgateService;
+        }
         return geyserService;
     }
 }

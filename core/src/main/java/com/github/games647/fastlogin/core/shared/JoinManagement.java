@@ -29,8 +29,7 @@ import com.github.games647.craftapi.model.Profile;
 import com.github.games647.craftapi.resolver.RateLimitException;
 import com.github.games647.fastlogin.core.StoredProfile;
 import com.github.games647.fastlogin.core.hooks.AuthPlugin;
-import com.github.games647.fastlogin.core.hooks.bedrock.FloodgateService;
-import com.github.games647.fastlogin.core.hooks.bedrock.GeyserService;
+import com.github.games647.fastlogin.core.hooks.bedrock.BedrockService;
 import com.github.games647.fastlogin.core.shared.event.FastLoginPreLoginEvent;
 
 import java.util.Optional;
@@ -41,15 +40,12 @@ public abstract class JoinManagement<P extends C, C, S extends LoginSource> {
 
     protected final FastLoginCore<P, C, ?> core;
     protected final AuthPlugin<P> authHook;
-    private final FloodgateService floodgateService;
-    private final GeyserService geyserService;
+    private final BedrockService<?> bedrockService;
 
-    public JoinManagement(FastLoginCore<P, C, ?> core, AuthPlugin<P> authHook, FloodgateService floodService,
-            GeyserService geyserService) {
+    public JoinManagement(FastLoginCore<P, C, ?> core, AuthPlugin<P> authHook, BedrockService<?> bedrockService) {
         this.core = core;
         this.authHook = authHook;
-        this.floodgateService = floodService;
-        this.geyserService = geyserService;
+        this.bedrockService = bedrockService;
     }
 
     public void onLogin(String username, S source) {
@@ -59,17 +55,13 @@ public abstract class JoinManagement<P extends C, C, S extends LoginSource> {
             return;
         }
 
-        //check if the player is connecting through Floodgate
-        if (floodgateService != null) {
-            if (floodgateService.isFloodgateConnection(username)) {
-                floodgateService.checkNameConflict(username, source);
-                // skip flow for any floodgate player
+        //check if the player is connecting through Bedrock Edition
+        if (bedrockService != null) {
+            if (bedrockService.isBedrockConnection(username)) {
+                bedrockService.checkNameConflict(username, source);
+                // skip flow for any Bedrock player
                 return;
             }
-        }
-        //check if the player is connecting through Geyser (without Floodgate)
-        else if (geyserService != null && geyserService.isGeyserConnection(username)) {
-
         }
 
         callFastLoginPreLoginEvent(username, source, profile);
@@ -125,7 +117,7 @@ public abstract class JoinManagement<P extends C, C, S extends LoginSource> {
     }
 
     protected boolean isValidUsername(LoginSource source, StoredProfile profile) throws Exception {
-        if (floodgateService != null && floodgateService.isUsernameForbidden(profile)) {
+        if (bedrockService != null && bedrockService.isUsernameForbidden(profile)) {
             core.getPlugin().getLog().info("Floodgate Prefix detected on cracked player");
             source.kick("Your username contains illegal characters");
             return false;

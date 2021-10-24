@@ -26,8 +26,7 @@
 package com.github.games647.fastlogin.core.shared;
 
 import com.github.games647.fastlogin.core.AsyncScheduler;
-import com.github.games647.fastlogin.core.hooks.bedrock.FloodgateService;
-import com.github.games647.fastlogin.core.hooks.bedrock.GeyserService;
+import com.github.games647.fastlogin.core.hooks.bedrock.BedrockService;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 import java.nio.file.Path;
@@ -55,9 +54,7 @@ public interface PlatformPlugin<C> {
         }
     }
 
-    FloodgateService getFloodgateService();
-
-    GeyserService getGeyserService();
+    BedrockService<?> getBedrockService();
 
     default ThreadFactory getThreadFactory() {
         return new ThreadFactoryBuilder()
