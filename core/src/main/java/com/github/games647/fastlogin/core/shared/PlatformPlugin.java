@@ -26,8 +26,8 @@
 package com.github.games647.fastlogin.core.shared;
 
 import com.github.games647.fastlogin.core.AsyncScheduler;
-import com.github.games647.fastlogin.core.hooks.FloodgateService;
-import com.github.games647.fastlogin.core.hooks.GeyserService;
+import com.github.games647.fastlogin.core.hooks.bedrock.FloodgateService;
+import com.github.games647.fastlogin.core.hooks.bedrock.GeyserService;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 import java.nio.file.Path;
