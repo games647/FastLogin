@@ -34,7 +34,8 @@ import com.github.games647.fastlogin.core.shared.FastLoginCore;
 import com.github.games647.fastlogin.core.shared.PlatformPlugin;
 import com.github.games647.fastlogin.velocity.listener.ConnectListener;
 import com.github.games647.fastlogin.velocity.listener.PluginMessageListener;
-import com.google.common.collect.MapMaker;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import com.google.inject.Inject;
@@ -59,6 +60,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.TimeUnit;
 
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 
@@ -72,7 +74,9 @@ public class FastLoginVelocity implements PlatformPlugin<CommandSource> {
     private final ProxyServer server;
     private final Path dataDirectory;
     private final Logger logger;
-    private final ConcurrentMap<InetSocketAddress, VelocityLoginSession> session = new MapMaker().weakKeys().makeMap();
+    private final Cache<InetSocketAddress, VelocityLoginSession> session = CacheBuilder.newBuilder()
+            .expireAfterAccess(5, TimeUnit.MINUTES)
+            .build();
     private static final String PROXY_ID_fILE = "proxyId.txt";
 
     private FastLoginCore<Player, CommandSource, FastLoginVelocity> core;
@@ -149,7 +153,7 @@ public class FastLoginVelocity implements PlatformPlugin<CommandSource> {
     }
 
     public ConcurrentMap<InetSocketAddress, VelocityLoginSession> getSession() {
-        return session;
+        return session.asMap();
     }
 
     public ProxyServer getProxy() {
