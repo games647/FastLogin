@@ -75,8 +75,8 @@
                             <shadedPattern>fastlogin.config</shadedPattern>
                         </relocation>
                         <relocation>
-                            <pattern>com.mysql</pattern>
-                            <shadedPattern>fastlogin.mysql</shadedPattern>
+                            <pattern>org.mariadb</pattern>
+                            <shadedPattern>fastlogin.mariadb</shadedPattern>
                         </relocation>
                     </relocations>
                     <artifactSet>

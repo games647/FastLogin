@@ -222,7 +222,7 @@ autoLoginFloodgate: false
 #   false: Check for Premium Java name conflicts as described in 'autoRegister'
 #     Note: Linked players have the same name as their Java profile, so the Bedrock player will always conflict
 #     their own Java account's name. Therefore, setting this to false will prevent any linked player from joining.
-#   true:  Bypass 'autoRegister's name conflict checking 
+#   true:  Bypass 'autoRegister's name conflict checking
 #   linked: Bedrock accounts linked to a Java account will be allowed to join with conflicting names
 # !!!!!!!! WARNING: FLOODGATE SUPPORT IS AN EXPERIMENTAL FEATURE !!!!!!!!
 # Enabling this might lead to people gaining unauthorized access to other's accounts!
@@ -252,7 +252,7 @@ database: '{pluginDir}/FastLogin.db'
 
 # MySQL/MariaDB
 # If you want to enable it uncomment only the lines below this not this line.
-# If on velocity use 'fastlogin.mysql.cj.jdbc.Driver' as driver
+# If on velocity use 'fastlogin.mariadb.jdbc.Driver' as driver
 #driver: 'com.mysql.jdbc.Driver'
 #host: '127.0.0.1'
 #port: 3306
