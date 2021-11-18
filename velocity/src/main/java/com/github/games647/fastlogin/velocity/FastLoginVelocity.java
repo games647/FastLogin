@@ -62,6 +62,7 @@ import java.util.concurrent.ConcurrentMap;
 
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 
+import org.geysermc.floodgate.api.FloodgateApi;
 import org.slf4j.Logger;
 
 //TODO: Support for floodgate
@@ -78,6 +79,7 @@ public class FastLoginVelocity implements PlatformPlugin<CommandSource> {
     private FastLoginCore<Player, CommandSource, FastLoginVelocity> core;
     private AsyncScheduler scheduler;
     private UUID proxyId;
+    private FloodgateService floodgateService;
 
     @Inject
     public FastLoginVelocity(ProxyServer server, Logger logger, @DataDirectory Path dataDirectory) {
@@ -94,6 +96,10 @@ public class FastLoginVelocity implements PlatformPlugin<CommandSource> {
         loadOrGenerateProxyId();
         if (!core.setupDatabase() || proxyId == null) {
             return;
+        }
+
+        if (isPluginInstalled("floodgate")) {
+            floodgateService = new FloodgateService(FloodgateApi.getInstance(), core);
         }
 
         server.getEventManager().register(this, new ConnectListener(this, core.getRateLimiter()));
@@ -141,7 +147,7 @@ public class FastLoginVelocity implements PlatformPlugin<CommandSource> {
 
     @Override
     public FloodgateService getFloodgateService() {
-        return null;
+        return floodgateService;
     }
 
     public FastLoginCore<Player, CommandSource, FastLoginVelocity> getCore() {
