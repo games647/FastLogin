@@ -88,9 +88,9 @@ public class BungeeManager {
 
     public void initialize() {
         try {
-            enabled = detectBungeeCord();
+            enabled = detectProxy();
         } catch (Exception ex) {
-            plugin.getLog().warn("Cannot check bungeecord support. Fallback to non-bungee mode", ex);
+            plugin.getLog().warn("Cannot check proxy support. Fallback to non-proxy mode", ex);
         }
 
         if (enabled) {
@@ -99,16 +99,20 @@ public class BungeeManager {
         }
     }
 
-    private boolean detectBungeeCord() throws Exception {
+    private boolean isProxySupported(String className, String fieldName) throws Exception {
         try {
-            enabled = Class.forName("org.spigotmc.SpigotConfig").getDeclaredField("bungee").getBoolean(null);
-            return enabled;
+            return Class.forName(className).getDeclaredField(fieldName).getBoolean(null);
         } catch (ClassNotFoundException notFoundEx) {
-            //ignore server has no bungee support
+            //ignore server has no proxy support
             return false;
         } catch (Exception ex) {
             throw ex;
         }
+    }
+
+    private boolean detectProxy() throws Exception {
+        return isProxySupported("org.spigotmc.SpigotConfig", "bungee")
+                || isProxySupported("com.destroystokyo.paper.PaperConfig", "velocitySupport");
     }
 
     private void registerPluginChannels() {
