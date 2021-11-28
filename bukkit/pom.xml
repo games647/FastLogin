@@ -209,6 +209,14 @@
             <scope>provided</scope>
         </dependency>
 
+        <!-- Bedrock player bridge, used for low level checks -->
+        <dependency>
+            <groupId>org.geysermc</groupId>
+            <artifactId>connector</artifactId>
+            <version>1.4.3-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+
         <!--Login Plugins-->
         <dependency>
             <groupId>fr.xephi</groupId>

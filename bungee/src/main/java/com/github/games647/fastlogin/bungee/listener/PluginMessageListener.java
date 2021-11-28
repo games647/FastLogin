@@ -29,7 +29,7 @@ import com.github.games647.fastlogin.bungee.BungeeLoginSession;
 import com.github.games647.fastlogin.bungee.FastLoginBungee;
 import com.github.games647.fastlogin.bungee.task.AsyncToggleMessage;
 import com.github.games647.fastlogin.core.StoredProfile;
-import com.github.games647.fastlogin.core.hooks.FloodgateService;
+import com.github.games647.fastlogin.core.hooks.bedrock.FloodgateService;
 import com.github.games647.fastlogin.core.message.ChangePremiumMessage;
 import com.github.games647.fastlogin.core.message.NamespaceKey;
 import com.github.games647.fastlogin.core.message.SuccessMessage;
@@ -121,7 +121,7 @@ public class PluginMessageListener implements Listener {
         FloodgateService floodgateService = plugin.getFloodgateService();
         if (!shouldPersist && floodgateService != null) {
             // always save floodgate players to lock this username
-            shouldPersist = floodgateService.isFloodgatePlayer(forPlayer.getUniqueId());
+            shouldPersist = floodgateService.isBedrockPlayer(forPlayer.getUniqueId());
         }
 
         if (shouldPersist) {

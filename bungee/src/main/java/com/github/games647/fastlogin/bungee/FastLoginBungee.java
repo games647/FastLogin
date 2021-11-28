@@ -33,7 +33,9 @@ import com.github.games647.fastlogin.bungee.listener.PluginMessageListener;
 import com.github.games647.fastlogin.core.AsyncScheduler;
 import com.github.games647.fastlogin.core.CommonUtil;
 import com.github.games647.fastlogin.core.hooks.AuthPlugin;
-import com.github.games647.fastlogin.core.hooks.FloodgateService;
+import com.github.games647.fastlogin.core.hooks.bedrock.BedrockService;
+import com.github.games647.fastlogin.core.hooks.bedrock.FloodgateService;
+import com.github.games647.fastlogin.core.hooks.bedrock.GeyserService;
 import com.github.games647.fastlogin.core.message.ChangePremiumMessage;
 import com.github.games647.fastlogin.core.message.ChannelMessage;
 import com.github.games647.fastlogin.core.message.NamespaceKey;
@@ -60,6 +62,7 @@ import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.api.plugin.PluginManager;
 import net.md_5.bungee.api.scheduler.GroupedThreadFactory;
 
+import org.geysermc.connector.GeyserConnector;
 import org.geysermc.floodgate.api.FloodgateApi;
 import org.slf4j.Logger;
 
@@ -73,6 +76,7 @@ public class FastLoginBungee extends Plugin implements PlatformPlugin<CommandSen
     private FastLoginCore<ProxiedPlayer, CommandSender, FastLoginBungee> core;
     private AsyncScheduler scheduler;
     private FloodgateService floodgateService;
+    private GeyserService geyserService;
     private Logger logger;
 
     @Override
@@ -88,6 +92,10 @@ public class FastLoginBungee extends Plugin implements PlatformPlugin<CommandSen
 
         if (isPluginInstalled("floodgate")) {
             floodgateService = new FloodgateService(FloodgateApi.getInstance(), core);
+        }
+
+        if (isPluginInstalled("Geyser-BungeeCord")) {
+            geyserService = new GeyserService(GeyserConnector.getInstance(), core);
         }
 
         //events
@@ -193,8 +201,19 @@ public class FastLoginBungee extends Plugin implements PlatformPlugin<CommandSen
         return getProxy().getPluginManager().getPlugin(name) != null;
     }
 
-    @Override
     public FloodgateService getFloodgateService() {
         return floodgateService;
+    }
+
+    public GeyserService getGeyserService() {
+        return geyserService;
+    }
+
+    @Override
+    public BedrockService<?> getBedrockService() {
+        if (floodgateService != null) {
+            return floodgateService;
+        }
+        return geyserService;
     }
 }

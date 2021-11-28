@@ -205,8 +205,8 @@ autoLogin: true
 # Enabling this might lead to people gaining unauthorized access to other's accounts!
 autoLoginFloodgate: false
 
-# This enables Floodgate players to join the server, even if autoRegister is true and there's an existing
-# Java **PREMIUM** account with the same name
+# This enables Floodgate or Offline Geyser players to join the server, even if they are using the name of an
+# existing Java **PREMIUM** account (so someone has bought Minecraft with that username)
 #
 # Java and Bedrock players will get different UUIDs, so their inventories, location, etc. will be different.
 # However, some plugins (such as AuthMe) rely on names instead of UUIDs to identify a player which might cause issues.
@@ -219,12 +219,13 @@ autoLoginFloodgate: false
 # A solution to this is to replace ProtocolLib with ProtocolSupport
 #
 # Possible values:
-#   false: Check for Premium Java name conflicts as described in 'autoRegister'
-#     Note: Linked players have the same name as their Java profile, so the Bedrock player will always conflict
+#   false: Kick Bedrock players, if they are using an existing Premium Java account's name
+#     Note: Linked Floodgate players have the same name as their Java profile, so the Bedrock player will always conflict
 #     their own Java account's name. Therefore, setting this to false will prevent any linked player from joining.
-#   true:  Bypass 'autoRegister's name conflict checking
-#   linked: Bedrock accounts linked to a Java account will be allowed to join with conflicting names
-# !!!!!!!! WARNING: FLOODGATE SUPPORT IS AN EXPERIMENTAL FEATURE !!!!!!!!
+#   true: Bypass name conflict checking.
+#   linked: Floodgate accounts linked to a Java account will be allowed to join with conflicting names
+#     For Offline Geyser players, 'linked' works as 'false'
+# !!!!!!!! WARNING: FLOODGATE/GEYSER SUPPORT IS AN EXPERIMENTAL FEATURE !!!!!!!!
 # Enabling this might lead to people gaining unauthorized access to other's accounts!
 allowFloodgateNameConflict: false
 

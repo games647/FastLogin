@@ -29,7 +29,7 @@ import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 import com.github.games647.fastlogin.bukkit.task.FloodgateAuthTask;
 import com.github.games647.fastlogin.bukkit.task.ForceLoginTask;
-import com.github.games647.fastlogin.core.hooks.FloodgateService;
+import com.github.games647.fastlogin.core.hooks.bedrock.FloodgateService;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -82,7 +82,7 @@ public class ConnectionListener implements Listener {
         BukkitLoginSession session = plugin.getSession(player.getAddress());
         FloodgateService floodgateService = plugin.getFloodgateService();
         if (floodgateService != null) {
-            FloodgatePlayer floodgatePlayer = floodgateService.getFloodgatePlayer(player.getUniqueId());
+            FloodgatePlayer floodgatePlayer = floodgateService.getBedrockPlayer(player.getUniqueId());
             if (floodgatePlayer != null) {
                 Runnable floodgateAuthTask = new FloodgateAuthTask(plugin.getCore(), player, floodgatePlayer);
                 Bukkit.getScheduler().runTaskAsynchronously(plugin, floodgateAuthTask);

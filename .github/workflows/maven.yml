@@ -31,8 +31,8 @@ jobs:
         uses: actions/setup-java@v2.3.0
         with:
           distribution: 'adopt'
-          # Use Java 11, because it's minimum required version
-          java-version: 11
+          # Use Java 16, because it's minimum required version by Geyser
+          java-version: 16
           cache: 'maven'
 
       # Build and test (included in package)

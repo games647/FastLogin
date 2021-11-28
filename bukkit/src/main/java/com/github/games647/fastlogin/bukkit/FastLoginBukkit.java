@@ -35,7 +35,9 @@ import com.github.games647.fastlogin.bukkit.listener.protocolsupport.ProtocolSup
 import com.github.games647.fastlogin.bukkit.task.DelayedAuthHook;
 import com.github.games647.fastlogin.core.CommonUtil;
 import com.github.games647.fastlogin.core.PremiumStatus;
-import com.github.games647.fastlogin.core.hooks.FloodgateService;
+import com.github.games647.fastlogin.core.hooks.bedrock.BedrockService;
+import com.github.games647.fastlogin.core.hooks.bedrock.FloodgateService;
+import com.github.games647.fastlogin.core.hooks.bedrock.GeyserService;
 import com.github.games647.fastlogin.core.shared.FastLoginCore;
 import com.github.games647.fastlogin.core.shared.PlatformPlugin;
 
@@ -53,6 +55,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.geysermc.connector.GeyserConnector;
 import org.geysermc.floodgate.api.FloodgateApi;
 import org.slf4j.Logger;
 
@@ -71,6 +74,7 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
     private final BukkitScheduler scheduler;
     private FastLoginCore<Player, CommandSender, FastLoginBukkit> core;
     private FloodgateService floodgateService;
+    private GeyserService geyserService;
 
     private PremiumPlaceholder premiumPlaceholder;
 
@@ -146,6 +150,10 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
     }
 
     private boolean initializeFloodgate() {
+        if (getServer().getPluginManager().getPlugin("Geyser-Spigot") != null) {
+            geyserService = new GeyserService(GeyserConnector.getInstance(), core);
+        }
+        
         if (getServer().getPluginManager().getPlugin("floodgate") != null) {
             floodgateService = new FloodgateService(FloodgateApi.getInstance(), core);
 
@@ -276,9 +284,20 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
 	    return Bukkit.getServer().getPluginManager().getPlugin(name) != null;
 	}
 
-    @Override
     public FloodgateService getFloodgateService() {
         return floodgateService;
+    }
+
+    public GeyserService getGeyserService() {
+        return geyserService;
+    }
+
+    @Override
+    public BedrockService<?> getBedrockService() {
+        if (floodgateService != null) {
+            return floodgateService;
+        }
+        return geyserService;
     }
 
     /**
