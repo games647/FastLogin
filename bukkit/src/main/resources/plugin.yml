@@ -20,6 +20,8 @@ softdepend:
     - ProtocolLib
     # Premium variable
     - PlaceholderAPI
+    # Bedrock Player Bridge
+    - Geyser-Spigot
     - floodgate
     # Auth plugins
     - AuthMe

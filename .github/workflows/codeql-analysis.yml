@@ -35,6 +35,15 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
+    # Setup Java
+    - name: Set up JDK
+      uses: actions/setup-java@v2.3.0
+      with:
+        distribution: 'adopt'
+        # Use Java 16, because it's minimum required version by Geyser
+        java-version: 16
+        cache: 'maven'
+
     # Initializes the CodeQL tools for scanning.
     - name: Initialize CodeQL
       uses: github/codeql-action/init@v1
