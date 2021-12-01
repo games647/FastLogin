@@ -51,7 +51,7 @@ jobs:
         languages: ${{ matrix.language }}
 
     # Cache build process too like in the maven config
-    - uses: actions/cache@v2.1.4
+    - uses: actions/cache@v2.1.7
       with:
         path: ~/.m2/repository
         key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
