@@ -26,6 +26,7 @@
 package com.github.games647.fastlogin.core.shared;
 
 import com.github.games647.fastlogin.core.StoredProfile;
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 
 import java.util.UUID;
@@ -91,7 +92,7 @@ public abstract class LoginSession {
 
     @Override
     public synchronized String toString() {
-        return Objects.toStringHelper(this)
+        return MoreObjects.toStringHelper(this)
                 .add("profile", profile)
                 .add("requestUsername", requestUsername)
                 .add("username", username)

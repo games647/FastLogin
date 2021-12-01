@@ -85,6 +85,8 @@
                         <excludes>
                             <exclude>org.slf4j:*</exclude>
                             <exclude>com.google.code.gson:gson</exclude>
+                            <!-- Ships the same old version -->
+                            <exclude>com.google.guava:guava</exclude>
                         </excludes>
                     </artifactSet>
                 </configuration>
