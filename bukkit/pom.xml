@@ -69,6 +69,10 @@
                             <shadedPattern>fastlogin.gson</shadedPattern>
                         </relocation>
                         <relocation>
+                            <pattern>com.google.common</pattern>
+                            <shadedPattern>fastlogin.guava</shadedPattern>
+                        </relocation>
+                        <relocation>
                             <pattern>io.papermc.lib</pattern>
                             <shadedPattern>fastlogin.paperlib</shadedPattern>
                         </relocation>
