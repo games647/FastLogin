@@ -118,7 +118,7 @@
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <!-- Old version for velocity -->
-            <version>25.1-jre</version>
+            <version>29.0-jre</version>
             <!-- Exclude compile time deps not marked as such on upstream  -->
             <exclusions>
                 <exclusion>
