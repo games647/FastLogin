@@ -81,7 +81,7 @@ public class FastLoginBungee extends Plugin implements PlatformPlugin<CommandSen
 
     @Override
     public void onEnable() {
-        logger = CommonUtil.createLoggerFromJDK(getLogger());
+        logger = CommonUtil.initializeLoggerService(getLogger());
         scheduler = new AsyncScheduler(logger, getThreadFactory());
 
         core = new FastLoginCore<>(this);

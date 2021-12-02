@@ -79,7 +79,7 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
     private PremiumPlaceholder premiumPlaceholder;
 
     public FastLoginBukkit() {
-        this.logger = CommonUtil.createLoggerFromJDK(getLogger());
+        this.logger = CommonUtil.initializeLoggerService(getLogger());
         this.scheduler = new BukkitScheduler(this, logger, getThreadFactory());
     }
 
@@ -101,7 +101,7 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
 
         bungeeManager = new BungeeManager(this);
         bungeeManager.initialize();
-        
+
         PluginManager pluginManager = getServer().getPluginManager();
         if (bungeeManager.isEnabled()) {
             markInitialized();
@@ -153,7 +153,7 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
         if (getServer().getPluginManager().getPlugin("Geyser-Spigot") != null) {
             geyserService = new GeyserService(GeyserConnector.getInstance(), core);
         }
-        
+
         if (getServer().getPluginManager().getPlugin("floodgate") != null) {
             floodgateService = new FloodgateService(FloodgateApi.getInstance(), core);
 
@@ -272,7 +272,7 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
     public void sendMessage(CommandSender receiver, String message) {
         receiver.sendMessage(message);
     }
-    
+
 	/**
 	 * Checks if a plugin is installed on the server
 	 * @param name the name of the plugin
@@ -301,7 +301,7 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
     }
 
     /**
-     * Send warning messages to log if incompatible plugins are used  
+     * Send warning messages to log if incompatible plugins are used
      */
     private void dependencyWarnings() {
         if (isPluginInstalled("floodgate-bukkit")) {

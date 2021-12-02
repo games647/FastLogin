@@ -70,6 +70,11 @@
                             <shadedPattern>fastlogin.slf4j</shadedPattern>
                         </relocation>
                     </relocations>
+                    <!-- Rename the service file too to let SLF4J api find our own relocated jdk logger -->
+                    <!-- Located in META-INF/services -->
+                    <transformers>
+                        <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+                    </transformers>
                 </configuration>
                 <executions>
                     <execution>
@@ -120,8 +125,15 @@
         <dependency>
             <groupId>net.md-5</groupId>
             <artifactId>bungeecord-proxy</artifactId>
-            <version>1.16-R0.5-SNAPSHOT</version>
+            <version>1.18-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
+            <!-- Use our own newer api version -->
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- Bedrock player bridge -->

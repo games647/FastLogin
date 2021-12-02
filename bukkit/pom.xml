@@ -77,6 +77,11 @@
                             <shadedPattern>fastlogin.paperlib</shadedPattern>
                         </relocation>
                     </relocations>
+                    <!-- Rename the service file too to let SLF4J api find our own relocated jdk logger -->
+                    <!-- Located in META-INF/services -->
+                    <transformers>
+                        <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+                    </transformers>
                 </configuration>
                 <executions>
                     <execution>
@@ -147,9 +152,9 @@
 
         <!-- PaperSpigot API for correcting usercache usage -->
         <dependency>
-            <groupId>com.destroystokyo.paper</groupId>
+            <groupId>io.papermc.paper</groupId>
             <artifactId>paper-api</artifactId>
-            <version>1.15.2-R0.1-SNAPSHOT</version>
+            <version>1.18-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
 
@@ -158,7 +163,6 @@
             <groupId>io.papermc</groupId>
             <artifactId>paperlib</artifactId>
             <version>1.0.7</version>
-            <scope>compile</scope>
         </dependency>
 
         <!--Library for listening and sending Minecraft packets-->

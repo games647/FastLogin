@@ -70,7 +70,24 @@ public class CommonUtil {
         return new String(chars);
     }
 
-    public static Logger createLoggerFromJDK(java.util.logging.Logger parent) {
+    /**
+     * This creates a SLF4J logger. In the process it initializes the SLF4J service provider. This method looks
+     * for the provider in the plugin jar instead of in the server jar when creating a Logger. The provider is only
+     * initialized once, so this method should be called early.
+     *
+     * The provider is bound to the service class `SLF4JServiceProvider`. Relocating this class makes it available
+     * for exclusive own usage. Other dependencies will use the relocated service too, and therefore will find the
+     * initialized provider.
+     *
+     * @param parent JDK logger
+     * @return slf4j logger
+     */
+    public static Logger initializeLoggerService(java.util.logging.Logger parent) {
+        // set the class loader to the plugin one to find our own SLF4J provider in the plugin jar and not in the global
+        ClassLoader oldLoader = Thread.currentThread().getContextClassLoader();
+
+        ClassLoader pluginLoader = CommonUtil.class.getClassLoader();
+        Thread.currentThread().setContextClassLoader(pluginLoader);
         try {
             parent.setLevel(Level.ALL);
 
@@ -82,6 +99,9 @@ public class CommonUtil {
             parent.log(Level.WARNING, "Cannot create slf4j logging adapter", reflectEx);
             parent.log(Level.WARNING, "Creating logger instance manually...");
             return LoggerFactory.getLogger(parent.getName());
+        } finally {
+            // restore previous class loader
+            Thread.currentThread().setContextClassLoader(oldLoader);
         }
     }
 
