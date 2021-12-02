@@ -51,6 +51,9 @@
         <java.version>1.8</java.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
+
+        <floodgate.version>2.0-SNAPSHOT</floodgate.version>
+        <geyser.version>1.4.3-SNAPSHOT</geyser.version>
     </properties>
 
     <modules>
