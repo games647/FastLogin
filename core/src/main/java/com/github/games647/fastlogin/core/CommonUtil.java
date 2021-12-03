@@ -88,6 +88,9 @@ public class CommonUtil {
 
         ClassLoader pluginLoader = CommonUtil.class.getClassLoader();
         Thread.currentThread().setContextClassLoader(pluginLoader);
+
+        // Trigger provider search
+        LoggerFactory.getLogger(parent.getName()).info("Initialize logging service");
         try {
             parent.setLevel(Level.ALL);
 
