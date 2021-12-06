@@ -30,21 +30,21 @@ import java.util.UUID;
 import com.github.games647.fastlogin.core.shared.FastLoginCore;
 import com.github.games647.fastlogin.core.shared.LoginSource;
 
-import org.geysermc.connector.GeyserConnector;
-import org.geysermc.connector.common.AuthType;
-import org.geysermc.connector.network.session.GeyserSession;
+import org.geysermc.geyser.GeyserImpl;
+import org.geysermc.geyser.session.GeyserSession;
+import org.geysermc.geyser.session.auth.AuthType;
 
 public class GeyserService extends BedrockService<GeyserSession> {
 
-    private final GeyserConnector geyser;
+    private final GeyserImpl geyser;
     private final FastLoginCore<?, ?, ?> core;
     private final AuthType authType;
 
-    public GeyserService(GeyserConnector geyser, FastLoginCore<?, ?, ?> core) {
+    public GeyserService(GeyserImpl geyser, FastLoginCore<?, ?, ?> core) {
         super(core);
         this.geyser = geyser;
         this.core = core;
-        this.authType = geyser.getConfig().getRemote().getAuthType();
+        this.authType = GeyserImpl.getInstance().getConfig().getRemote().getAuthType();
     }
 
     @Override
@@ -65,17 +65,11 @@ public class GeyserService extends BedrockService<GeyserSession> {
 
     @Override
     public GeyserSession getBedrockPlayer(String username) {
-        for (GeyserSession gSess : geyser.getSessionManager().getSessions().values()) {
-            if (gSess.getName().equals(username)) {
-                return gSess;
-            }
-        }
-
-        return null;
+        return geyser.connectionByName(username);
     }
 
     @Override
     public GeyserSession getBedrockPlayer(UUID uuid) {
-        return geyser.getPlayerByUuid(uuid);
+        return geyser.connectionByUuid(uuid);
     }
 }
