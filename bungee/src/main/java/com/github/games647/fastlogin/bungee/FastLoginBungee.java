@@ -62,8 +62,8 @@ import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.api.plugin.PluginManager;
 import net.md_5.bungee.api.scheduler.GroupedThreadFactory;
 
-import org.geysermc.connector.GeyserConnector;
 import org.geysermc.floodgate.api.FloodgateApi;
+import org.geysermc.geyser.GeyserImpl;
 import org.slf4j.Logger;
 
 /**
@@ -95,7 +95,7 @@ public class FastLoginBungee extends Plugin implements PlatformPlugin<CommandSen
         }
 
         if (isPluginInstalled("Geyser-BungeeCord")) {
-            geyserService = new GeyserService(GeyserConnector.getInstance(), core);
+            geyserService = new GeyserService(GeyserImpl.getInstance(), core);
         }
 
         //events

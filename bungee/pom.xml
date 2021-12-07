@@ -152,7 +152,7 @@
         <!-- Bedrock player bridge -->
         <dependency>
             <groupId>org.geysermc</groupId>
-            <artifactId>connector</artifactId>
+            <artifactId>core</artifactId>
             <version>${geyser.version}</version>
             <scope>provided</scope>
             <exclusions>
@@ -161,6 +161,14 @@
                     <artifactId>*</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+
+        <!-- We need the API, but it was excluded above -->
+        <dependency>
+            <groupId>org.geysermc</groupId>
+            <artifactId>geyser-api</artifactId>
+            <version>${geyser.version}</version>
+            <scope>provided</scope>
         </dependency>
 
         <!--Login plugin-->
