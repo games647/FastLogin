@@ -84,8 +84,8 @@ public class ConnectionListener implements Listener {
         if (floodgateService != null) {
             FloodgatePlayer floodgatePlayer = floodgateService.getBedrockPlayer(player.getUniqueId());
             if (floodgatePlayer != null) {
-                Runnable floodgateAuthTask = new FloodgateAuthTask(plugin.getCore(), player, floodgatePlayer);
-                Bukkit.getScheduler().runTaskAsynchronously(plugin, floodgateAuthTask);
+                Runnable forceLoginTask = new ForceLoginTask(plugin.getCore(), player, session);
+                Bukkit.getScheduler().runTaskAsynchronously(plugin, forceLoginTask);
                 return;
             }
         }
