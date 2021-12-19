@@ -84,9 +84,22 @@ public class ConnectionListener implements Listener {
         if (floodgateService != null) {
             FloodgatePlayer floodgatePlayer = floodgateService.getBedrockPlayer(player.getUniqueId());
             if (floodgatePlayer != null) {
-                Runnable forceLoginTask = new ForceLoginTask(plugin.getCore(), player, session);
-                Bukkit.getScheduler().runTaskAsynchronously(plugin, forceLoginTask);
-                return;
+                if(plugin.getBungeeManager().isEnabled()){
+                    if (session == null) {
+                        String sessionId = plugin.getSessionId(player.getAddress());
+                        plugin.getLog().info("No on-going login session for player: {} with ID {}", player, sessionId);
+                        return;
+                    } else {
+                        Runnable forceLoginTask = new ForceLoginTask(plugin.getCore(), player, session);
+                        Bukkit.getScheduler().runTaskAsynchronously(plugin, forceLoginTask);
+                        plugin.getBungeeManager().markJoinEventFired(player);
+                        return;
+                    }
+                } else{
+                    Runnable floodgateAuthTask = new FloodgateAuthTask(plugin.getCore(), player, floodgatePlayer);
+                    Bukkit.getScheduler().runTaskAsynchronously(plugin, floodgateAuthTask);
+                    return;
+                }
             }
         }
 
