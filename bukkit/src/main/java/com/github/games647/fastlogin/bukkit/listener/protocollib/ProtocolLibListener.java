@@ -124,6 +124,12 @@ public class ProtocolLibListener extends PacketAdapter {
         PacketContainer packet = packetEvent.getPacket();
 
         String username = packet.getGameProfiles().read(0).getName();
+
+        if (packetEvent.getPacket().getMeta("original_name").isPresent()) {
+            //username has been injected by ManualNameChange.java
+            username = (String) packetEvent.getPacket().getMeta("original_name").get();
+        }
+
         plugin.getLog().trace("GameProfile {} with {} connecting", sessionKey, username);
 
         packetEvent.getAsyncMarker().incrementProcessingDelay();

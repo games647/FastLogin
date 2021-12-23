@@ -25,10 +25,12 @@
  */
 package com.github.games647.fastlogin.bukkit;
 
+import com.comphenix.protocol.ProtocolLibrary;
 import com.github.games647.fastlogin.bukkit.command.CrackedCommand;
 import com.github.games647.fastlogin.bukkit.command.PremiumCommand;
 import com.github.games647.fastlogin.bukkit.listener.ConnectionListener;
 import com.github.games647.fastlogin.bukkit.listener.PaperCacheListener;
+import com.github.games647.fastlogin.bukkit.listener.protocollib.ManualNameChange;
 import com.github.games647.fastlogin.bukkit.listener.protocollib.ProtocolLibListener;
 import com.github.games647.fastlogin.bukkit.listener.protocollib.SkinApplyListener;
 import com.github.games647.fastlogin.bukkit.listener.protocolsupport.ProtocolSupportListener;
@@ -115,6 +117,21 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
                 pluginManager.registerEvents(new ProtocolSupportListener(this, core.getRateLimiter()), this);
             } else if (pluginManager.isPluginEnabled("ProtocolLib")) {
                 ProtocolLibListener.register(this, core.getRateLimiter());
+
+                if (isPluginInstalled("floodgate")) {
+                    if (getConfig().getBoolean("floodgatePrefixWorkaround")){
+                        ProtocolLibrary.getProtocolManager().addPacketListener(new ManualNameChange(this, floodgateService));
+                        logger.info("Floodgate prefix injection workaround has been enabled.");
+                        logger.info("If you have problems joining the server, try disabling it in the configuration.");
+                    } else {
+                        logger.warn("We have detected that you are runnging FastLogin alongside Floodgate and ProtocolLib.");
+                        logger.warn("Currently there is an issue with FastLogin that prevents Floodgate name prefixes from showing up "
+                                + "when it is together used with ProtocolLib.");
+                        logger.warn("If you would like to use Floodgate name prefixes, you can enable an experimental workaround by changing "
+                                + "the value 'floodgatePrefixWorkaround' to true in config.yml.");
+                        logger.warn("For more information visit https://github.com/games647/FastLogin/issues/493");
+                    }
+                }
 
                 //if server is using paper - we need to set the skin at pre login anyway, so no need for this listener
                 if (!PaperLib.isPaper() && getConfig().getBoolean("forwardSkin")) {
@@ -311,13 +328,6 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
                     + "Floodgate 2.0 from https://ci.opencollab.dev/job/GeyserMC/job/Floodgate/job/dev%252F2.0/");
             logger.warn("Don't forget to update Geyser to a supported version as well from "
                     + "https://ci.opencollab.dev/job/GeyserMC/job/Geyser/job/floodgate-2.0/");
-    	} else if (isPluginInstalled("floodgate") && isPluginInstalled("ProtocolLib")) {
-            logger.warn("We have detected that you are running FastLogin alongside Floodgate and ProtocolLib.");
-            logger.warn("Currently there is an issue with FastLogin that prevents Floodgate's name prefixes from " +
-                    "showing up when it is together used with ProtocolLib.");
-            logger.warn("If you would like to use Floodgate name prefixes, you can replace ProtocolLib with " +
-                    "ProtocolSupport which does not have this issue.");
-            logger.warn("For more information visit https://github.com/games647/FastLogin/issues/493");
     	}
     }
 }
