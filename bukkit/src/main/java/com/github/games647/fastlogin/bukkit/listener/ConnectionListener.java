@@ -80,29 +80,20 @@ public class ConnectionListener implements Listener {
         // cases: Paper (firing BungeeCord message before PlayerJoinEvent) or not running BungeeCord and already
         // having the login session from the login process
         BukkitLoginSession session = plugin.getSession(player.getAddress());
-        FloodgateService floodgateService = plugin.getFloodgateService();
-        if (floodgateService != null) {
-            FloodgatePlayer floodgatePlayer = floodgateService.getBedrockPlayer(player.getUniqueId());
-            if (floodgatePlayer != null) {
-                if(plugin.getBungeeManager().isEnabled()){
-                    if (session == null) {
-                        String sessionId = plugin.getSessionId(player.getAddress());
-                        plugin.getLog().info("No on-going login session for player: {} with ID {}", player, sessionId);
-                    } else {
-                        Runnable forceLoginTask = new ForceLoginTask(plugin.getCore(), player, session);
-                        Bukkit.getScheduler().runTaskAsynchronously(plugin, forceLoginTask);
-                    }
-                    plugin.getBungeeManager().markJoinEventFired(player);
-                    return;
-                } else{
+
+        if (session == null) {
+            // Floodgate players usually don't have a session at this point
+            // exception: if force login by bungee message had been delayed
+            FloodgateService floodgateService = plugin.getFloodgateService();
+            if (floodgateService != null) {
+                FloodgatePlayer floodgatePlayer = floodgateService.getBedrockPlayer(player.getUniqueId());
+                if (floodgatePlayer != null) {
                     Runnable floodgateAuthTask = new FloodgateAuthTask(plugin.getCore(), player, floodgatePlayer);
                     Bukkit.getScheduler().runTaskAsynchronously(plugin, floodgateAuthTask);
                     return;
                 }
             }
-        }
 
-        if (session == null) {
             String sessionId = plugin.getSessionId(player.getAddress());
             plugin.getLog().info("No on-going login session for player: {} with ID {}", player, sessionId);
         } else {
