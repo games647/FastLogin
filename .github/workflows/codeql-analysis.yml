@@ -37,7 +37,7 @@ jobs:
 
     # Setup Java
     - name: Set up JDK
-      uses: actions/setup-java@v2.3.0
+      uses: actions/setup-java@v2.5.0
       with:
         distribution: 'adopt'
         # Use Java 16, because it's minimum required version by Geyser
