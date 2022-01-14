@@ -1,7 +1,7 @@
 # Automatically build, run unit and integration tests to detect errors early (CI provided by GitHub)
 # including making pull requests review easier
 
-# Human readable name in the actions tab
+# Human-readable name in the actions tab
 name: Java CI
 
 # Build on every pull request regardless of the branch
@@ -18,7 +18,7 @@ jobs:
   # job id
   build_and_test:
 
-    # Environment image - always newest OS
+    # Environment image - always use the newest OS
     runs-on: ubuntu-latest
 
     # Run steps

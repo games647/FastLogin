@@ -1,6 +1,6 @@
 # GitHub automatic code security scanning using CodeQL
 
-# Human readable name in the actions tab
+# Human-readable name in the actions tab
 name: "CodeQL"
 
 on:
@@ -58,7 +58,7 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-maven-
 
-    # Autobuild attempts to build any compiled languages  (C/C++, C#, or Java).
+    # Auto build attempts to build any compiled languages  (C/C++, C#, or Java).
     # If this step fails, then you should remove it and run the build manually (see below)
     - name: Autobuild
       uses: github/codeql-action/autobuild@v1
