@@ -25,21 +25,21 @@
  */
 package com.github.games647.fastlogin.core.hooks.bedrock;
 
-import java.io.IOException;
-import java.util.Optional;
-import java.util.UUID;
-
 import com.github.games647.craftapi.model.Profile;
 import com.github.games647.craftapi.resolver.RateLimitException;
 import com.github.games647.fastlogin.core.StoredProfile;
 import com.github.games647.fastlogin.core.shared.FastLoginCore;
 import com.github.games647.fastlogin.core.shared.LoginSource;
 
+import java.io.IOException;
+import java.util.Optional;
+import java.util.UUID;
+
 /**
- * @param B is an instance of either FloodgatePlayer or GeyserSession
+ * @param <B> is an instance of either FloodgatePlayer or GeyserSession
  */
 public abstract class BedrockService<B> {
-    
+
     protected final FastLoginCore<?, ?, ?> core;
     protected final String allowConflict;
 

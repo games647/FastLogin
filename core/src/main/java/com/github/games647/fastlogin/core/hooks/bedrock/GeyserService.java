@@ -25,10 +25,10 @@
  */
 package com.github.games647.fastlogin.core.hooks.bedrock;
 
-import java.util.UUID;
-
 import com.github.games647.fastlogin.core.shared.FastLoginCore;
 import com.github.games647.fastlogin.core.shared.LoginSource;
+
+import java.util.UUID;
 
 import org.geysermc.geyser.GeyserImpl;
 import org.geysermc.geyser.session.GeyserSession;
@@ -58,7 +58,7 @@ public class GeyserService extends BedrockService<GeyserSession> {
         if ("true".equals(allowConflict)) {
             core.getPlugin().getLog().info("Skipping name conflict checking for player {}", username);
         } else {
-            super.checkNameConflict(username, source);    
+            super.checkNameConflict(username, source);
         }
         return true;
     }
