@@ -47,7 +47,7 @@ public class RateLimiterTest {
         FakeTicker ticker = new FakeTicker(5_000_000L);
 
         // run twice the size to fill it first and then test it
-        RateLimiter rateLimiter = new RateLimiter(ticker, size, 0);
+        TickingRateLimiter rateLimiter = new TickingRateLimiter(ticker, size, 0);
         for (int i = 0; i < size; i++) {
             assertTrue("Filling up", rateLimiter.tryAcquire());
         }
@@ -65,7 +65,7 @@ public class RateLimiterTest {
         FakeTicker ticker = new FakeTicker(-5_000_000L);
 
         // run twice the size to fill it first and then test it
-        RateLimiter rateLimiter = new RateLimiter(ticker, size, 0);
+        TickingRateLimiter rateLimiter = new TickingRateLimiter(ticker, size, 0);
         for (int i = 0; i < size; i++) {
             assertTrue("Filling up", rateLimiter.tryAcquire());
         }
@@ -86,7 +86,7 @@ public class RateLimiterTest {
         FakeTicker ticker = new FakeTicker(5_000_000L);
 
         // fill the size
-        RateLimiter rateLimiter = new RateLimiter(ticker, size, TimeUnit.SECONDS.toMillis(30));
+        TickingRateLimiter rateLimiter = new TickingRateLimiter(ticker, size, TimeUnit.SECONDS.toMillis(30));
         for (int i = 0; i < size; i++) {
             assertTrue("Filling up", rateLimiter.tryAcquire());
         }
@@ -104,7 +104,7 @@ public class RateLimiterTest {
         FakeTicker ticker = new FakeTicker(-5_000_000L);
 
         // fill the size
-        RateLimiter rateLimiter = new RateLimiter(ticker, size, TimeUnit.SECONDS.toMillis(30));
+        TickingRateLimiter rateLimiter = new TickingRateLimiter(ticker, size, TimeUnit.SECONDS.toMillis(30));
         for (int i = 0; i < size; i++) {
             assertTrue("Filling up", rateLimiter.tryAcquire());
         }
@@ -120,7 +120,7 @@ public class RateLimiterTest {
         FakeTicker ticker = new FakeTicker(5_000_000L);
 
         // fill the size - 100ms should be reasonable high
-        RateLimiter rateLimiter = new RateLimiter(ticker, 1, 100);
+        TickingRateLimiter rateLimiter = new TickingRateLimiter(ticker, 1, 100);
         assertTrue("Filling up", rateLimiter.tryAcquire());
 
         ticker.add(Duration.ofMillis(50));
@@ -141,7 +141,7 @@ public class RateLimiterTest {
         FakeTicker ticker = new FakeTicker(-5_000_000L);
 
         // fill the size - 100ms should be reasonable high
-        RateLimiter rateLimiter = new RateLimiter(ticker, 1, 100);
+        TickingRateLimiter rateLimiter = new TickingRateLimiter(ticker, 1, 100);
         assertTrue("Filling up", rateLimiter.tryAcquire());
 
         ticker.add(Duration.ofMillis(50));

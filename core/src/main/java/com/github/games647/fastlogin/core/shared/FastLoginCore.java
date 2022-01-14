@@ -29,6 +29,7 @@ import com.github.games647.craftapi.resolver.MojangResolver;
 import com.github.games647.craftapi.resolver.http.RotatingProxySelector;
 import com.github.games647.fastlogin.core.CommonUtil;
 import com.github.games647.fastlogin.core.RateLimiter;
+import com.github.games647.fastlogin.core.TickingRateLimiter;
 import com.github.games647.fastlogin.core.hooks.AuthPlugin;
 import com.github.games647.fastlogin.core.hooks.DefaultPasswordGenerator;
 import com.github.games647.fastlogin.core.hooks.PasswordGenerator;
@@ -117,13 +118,7 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
             return;
         }
 
-        int maxCon = config.getInt("anti-bot.connections", 200);
-        long expireTime = config.getLong("anti-bot.expire", 5) * 60 * 1_000L;
-        if (expireTime > MAX_EXPIRE_RATE) {
-            expireTime = MAX_EXPIRE_RATE;
-        }
-
-        rateLimiter = new RateLimiter(Ticker.systemTicker(), maxCon, expireTime);
+        rateLimiter = createRateLimiter(config.getSection("anti-bot"));
         Set<Proxy> proxies = config.getStringList("proxies")
                 .stream()
                 .map(HostAndPort::fromString)
@@ -143,6 +138,22 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
         resolver.setMaxNameRequests(config.getInt("mojang-request-limit"));
         resolver.setProxySelector(new RotatingProxySelector(proxies));
         resolver.setOutgoingAddresses(addresses);
+    }
+
+    private RateLimiter createRateLimiter(Configuration botSection) {
+        boolean enabled = botSection.getBoolean("enabled", true);
+        if (!enabled) {
+            // no-op rate limiter
+            return () -> true;
+        }
+
+        int maxCon = botSection.getInt("anti-bot.connections", 200);
+        long expireTime = botSection.getLong("anti-bot.expire", 5) * 60 * 1_000L;
+        if (expireTime > MAX_EXPIRE_RATE) {
+            expireTime = MAX_EXPIRE_RATE;
+        }
+
+        return new TickingRateLimiter(Ticker.systemTicker(), maxCon, expireTime);
     }
 
     private Configuration loadFile(String fileName) throws IOException {
