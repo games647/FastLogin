@@ -52,6 +52,7 @@ body:
       options:
         - Spigot
         - BungeeCord
+        - Velocity
     validations:
       required: true
   - type: checkboxes
