@@ -28,6 +28,7 @@ package com.github.games647.fastlogin.bukkit;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 
 import org.bukkit.OfflinePlayer;
+import org.jetbrains.annotations.NotNull;
 
 public class PremiumPlaceholder extends PlaceholderExpansion {
 
@@ -40,7 +41,7 @@ public class PremiumPlaceholder extends PlaceholderExpansion {
     }
 
     @Override
-    public String onRequest(OfflinePlayer player, String identifier) {
+    public String onRequest(OfflinePlayer player, @NotNull String identifier) {
         // player is null if offline
         if (player != null && PLACEHOLDER_VARIABLE.equals(identifier)) {
             return plugin.getStatus(player.getUniqueId()).getReadableName();
@@ -50,7 +51,7 @@ public class PremiumPlaceholder extends PlaceholderExpansion {
     }
 
     @Override
-    public String getIdentifier() {
+    public @NotNull String getIdentifier() {
         return plugin.getName();
     }
 
@@ -60,12 +61,12 @@ public class PremiumPlaceholder extends PlaceholderExpansion {
     }
 
     @Override
-    public String getAuthor() {
+    public @NotNull String getAuthor() {
         return String.join(", ", plugin.getDescription().getAuthors());
     }
 
     @Override
-    public String getVersion() {
+    public @NotNull String getVersion() {
         return plugin.getDescription().getVersion();
     }
 }

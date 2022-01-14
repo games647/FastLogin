@@ -47,12 +47,12 @@ public abstract class ToggleCommand implements CommandExecutor {
     }
 
     protected boolean hasOtherPermission(CommandSender sender, Command cmd) {
-        if (!sender.hasPermission(cmd.getPermission() + ".other")) {
-            plugin.getCore().sendLocaleMessage("no-permission", sender);
-            return false;
+        if (sender.hasPermission(cmd.getPermission() + ".other")) {
+            return true;
         }
 
-        return true;
+        plugin.getCore().sendLocaleMessage("no-permission", sender);
+        return false;
     }
 
     protected boolean forwardBungeeCommand(CommandSender sender, String target, boolean activate) {

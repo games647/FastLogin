@@ -28,17 +28,18 @@ package com.github.games647.fastlogin.bukkit.command;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 import com.github.games647.fastlogin.bukkit.event.BukkitFastLoginPremiumToggleEvent;
 import com.github.games647.fastlogin.core.StoredProfile;
+import com.github.games647.fastlogin.core.shared.event.FastLoginPremiumToggleEvent.PremiumToggleReason;
 
 import java.util.UUID;
 
-import com.github.games647.fastlogin.core.shared.event.FastLoginPremiumToggleEvent.PremiumToggleReason;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Let users activate fast login by command. This only be accessible if
- * the user has access to it's account. So we can make sure that not another
+ * the user has access to its account. So we can make sure that not another
  * person with a paid account and the same username can steal their account.
  */
 public class PremiumCommand extends ToggleCommand {
@@ -48,7 +49,7 @@ public class PremiumCommand extends ToggleCommand {
     }
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
         if (args.length == 0) {
             onPremiumSelf(sender, command, args);
         } else {

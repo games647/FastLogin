@@ -29,6 +29,7 @@ import com.github.games647.fastlogin.core.StoredProfile;
 import com.github.games647.fastlogin.core.shared.event.FastLoginPremiumToggleEvent;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
+import org.jetbrains.annotations.NotNull;
 
 public class BukkitFastLoginPremiumToggleEvent extends Event implements FastLoginPremiumToggleEvent {
 
@@ -53,7 +54,7 @@ public class BukkitFastLoginPremiumToggleEvent extends Event implements FastLogi
     }
 
     @Override
-    public HandlerList getHandlers() {
+    public @NotNull HandlerList getHandlers() {
         return handlers;
     }
 

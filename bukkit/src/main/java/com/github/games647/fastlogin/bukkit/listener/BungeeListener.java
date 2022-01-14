@@ -41,6 +41,7 @@ import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Responsible for receiving messages from a BungeeCord instance.
@@ -57,7 +58,7 @@ public class BungeeListener implements PluginMessageListener {
     }
 
     @Override
-    public void onPluginMessageReceived(String channel, Player player, byte[] message) {
+    public void onPluginMessageReceived(@NotNull String channel, Player player, byte[] message) {
         ByteArrayDataInput dataInput = ByteStreams.newDataInput(message);
 
         LoginActionMessage loginMessage = new LoginActionMessage();
@@ -67,7 +68,7 @@ public class BungeeListener implements PluginMessageListener {
 
         Player targetPlayer = player;
         if (!loginMessage.getPlayerName().equals(player.getName())) {
-            targetPlayer = Bukkit.getPlayerExact(loginMessage.getPlayerName());;
+            targetPlayer = Bukkit.getPlayerExact(loginMessage.getPlayerName());
         }
 
         if (targetPlayer == null) {

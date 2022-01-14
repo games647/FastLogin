@@ -30,6 +30,7 @@ import com.github.games647.fastlogin.core.shared.LoginSource;
 import com.github.games647.fastlogin.core.shared.event.FastLoginPreLoginEvent;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
+import org.jetbrains.annotations.NotNull;
 
 public class BukkitFastLoginPreLoginEvent extends Event implements FastLoginPreLoginEvent {
 
@@ -62,7 +63,7 @@ public class BukkitFastLoginPreLoginEvent extends Event implements FastLoginPreL
     }
 
     @Override
-    public HandlerList getHandlers() {
+    public @NotNull HandlerList getHandlers() {
         return handlers;
     }
 
