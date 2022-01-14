@@ -80,14 +80,12 @@ public class ConnectListener implements Listener {
             Field uuidField = InitialHandler.class.getDeclaredField(UUID_FIELD_NAME);
             uuidField.setAccessible(true);
             setHandle = lookup.unreflectSetter(uuidField);
-        } catch (ClassNotFoundException classNotFoundException) {
+        } catch (ReflectiveOperationException reflectiveOperationException) {
             Logger logger = LoggerFactory.getLogger(ConnectListener.class);
             logger.error(
                     "Cannot find Bungee initial handler; Disabling premium UUID and skin won't work.",
-                    classNotFoundException
+                reflectiveOperationException
             );
-        } catch (ReflectiveOperationException reflectiveOperationException) {
-            reflectiveOperationException.printStackTrace();
         }
 
         uniqueIdSetter = setHandle;

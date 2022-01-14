@@ -44,8 +44,8 @@ public class PaperCacheListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    //if paper is used - player skin must be set at pre login, otherwise usercache is used
-    //using usercache makes premium name change basically impossible
+    //if paper is used - player skin must be set at pre login, otherwise user cache is used
+    // user cache makes premium name change basically impossible
     public void onAsyncPlayerPreLogin(AsyncPlayerPreLoginEvent event) {
         if (event.getLoginResult() != Result.ALLOWED) {
             return;

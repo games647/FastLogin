@@ -60,7 +60,7 @@ class ProtocolLibLoginSource implements LoginSource {
     }
 
     @Override
-    public void enableOnlinemode() throws Exception {
+    public void enableOnlinemode() throws InvocationTargetException {
         verifyToken = EncryptionUtil.generateVerifyToken(random);
 
         /*

@@ -99,18 +99,19 @@ public class BungeeManager {
         }
     }
 
-    private boolean isProxySupported(String className, String fieldName) throws Exception {
+    private boolean isProxySupported(String className, String fieldName) {
         try {
             return Class.forName(className).getDeclaredField(fieldName).getBoolean(null);
         } catch (ClassNotFoundException notFoundEx) {
             //ignore server has no proxy support
-            return false;
-        } catch (Exception ex) {
-            throw ex;
+        } catch (NoSuchFieldException | IllegalAccessException noSuchFieldException) {
+            plugin.getLog().warn("Cannot access proxy field", noSuchFieldException);
         }
+
+        return false;
     }
 
-    private boolean detectProxy() throws Exception {
+    private boolean detectProxy() {
         return isProxySupported("org.spigotmc.SpigotConfig", "bungee")
                 || isProxySupported("com.destroystokyo.paper.PaperConfig", "velocitySupport");
     }
@@ -166,7 +167,7 @@ public class BungeeManager {
     /**
      * Mark the event to be fired including the task delay.
      *
-     * @param player
+     * @param player joining player
      */
     public synchronized void markJoinEventFired(Player player) {
         firedJoinEvents.add(player.getUniqueId());
@@ -180,7 +181,7 @@ public class BungeeManager {
      * session. If not fired, we can start a new force login task. This will still match the requirement that we wait
      * a certain time after the player join event fired.
      *
-     * @param player
+     * @param player joining player
      * @return event fired including delay
      */
     public synchronized boolean didJoinEventFired(Player player) {
@@ -190,7 +191,7 @@ public class BungeeManager {
     /**
      * Player quit clean up
      *
-     * @param player
+     * @param player joining player
      */
     public synchronized void cleanup(Player player) {
         firedJoinEvents.remove(player.getUniqueId());

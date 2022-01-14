@@ -40,6 +40,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerLoginEvent.Result;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.metadata.Metadatable;
 import org.geysermc.floodgate.api.player.FloodgatePlayer;
 
 /**
@@ -111,7 +112,7 @@ public class ConnectionListener implements Listener {
         plugin.getBungeeManager().cleanup(player);
     }
 
-    private void removeBlockedStatus(Player player) {
+    private void removeBlockedStatus(Metadatable player) {
         player.removeMetadata(plugin.getName(), plugin);
     }
 }

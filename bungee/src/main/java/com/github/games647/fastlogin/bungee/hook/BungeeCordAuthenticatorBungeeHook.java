@@ -25,22 +25,23 @@
  */
 package com.github.games647.fastlogin.bungee.hook;
 
-import java.sql.SQLException;
-
 import com.github.games647.fastlogin.bungee.FastLoginBungee;
 import com.github.games647.fastlogin.core.hooks.AuthPlugin;
 
 import de.xxschrandxx.bca.bungee.BungeeCordAuthenticatorBungee;
 import de.xxschrandxx.bca.bungee.api.BungeeCordAuthenticatorBungeeAPI;
 
+import java.sql.SQLException;
+import java.util.logging.Level;
+
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 /**
  * GitHub:
  * https://github.com/xXSchrandXx/SpigotPlugins/tree/master/BungeeCordAuthenticator
- *
+ * <p>
  * Project page:
- *
+ * <p>
  * Spigot: https://www.spigotmc.org/resources/bungeecordauthenticator.87669/
  */
 public class BungeeCordAuthenticatorBungeeHook implements AuthPlugin<ProxiedPlayer> {
@@ -49,7 +50,7 @@ public class BungeeCordAuthenticatorBungeeHook implements AuthPlugin<ProxiedPlay
 
     public BungeeCordAuthenticatorBungeeHook(FastLoginBungee plugin) {
         api = ((BungeeCordAuthenticatorBungee) plugin.getProxy().getPluginManager()
-                .getPlugin("BungeeCordAuthenticatorBungee")).getAPI();
+            .getPlugin("BungeeCordAuthenticatorBungee")).getAPI();
         plugin.getLog().info("BungeeCordAuthenticatorHook | Hooked successful!");
     }
 
@@ -57,25 +58,24 @@ public class BungeeCordAuthenticatorBungeeHook implements AuthPlugin<ProxiedPlay
     public boolean forceLogin(ProxiedPlayer player) {
         if (api.isAuthenticated(player)) {
             return true;
-        } else {
-            try {
-                api.setAuthenticated(player);
-            }
-            catch (SQLException e) {
-                e.printStackTrace();
-                return false;
-            }
-            return true;
         }
+
+        try {
+            api.setAuthenticated(player);
+        } catch (SQLException sqlEx) {
+            api.getLogger().log(Level.WARNING, "Failed to force login", sqlEx);
+            return false;
+        }
+
+        return true;
     }
 
     @Override
     public boolean isRegistered(String playerName) {
         try {
             return api.getSQL().checkPlayerEntry(playerName);
-        }
-        catch (SQLException e) {
-            e.printStackTrace();
+        } catch (SQLException sqlEx) {
+            api.getLogger().log(Level.WARNING, "Failed to check registration", sqlEx);
             return false;
         }
     }
@@ -84,9 +84,8 @@ public class BungeeCordAuthenticatorBungeeHook implements AuthPlugin<ProxiedPlay
     public boolean forceRegister(ProxiedPlayer player, String password) {
         try {
             return api.createPlayerEntry(player, password);
-        }
-        catch (SQLException e) {
-            e.printStackTrace();
+        } catch (SQLException sqlEx) {
+            api.getLogger().log(Level.WARNING, "Failed to force register", sqlEx);
             return false;
         }
     }

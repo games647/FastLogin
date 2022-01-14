@@ -45,8 +45,8 @@ public class AsyncPremiumCheck extends JoinManagement<Player, CommandSource, Vel
 
     private final FastLoginVelocity plugin;
     private final String username;
-    private Continuation continuation;
-    private PreLoginEvent preLoginEvent;
+    private final Continuation continuation;
+    private final PreLoginEvent preLoginEvent;
     private final InboundConnection connection;
 
     public AsyncPremiumCheck(FastLoginVelocity plugin, InboundConnection connection, String username, Continuation continuation, PreLoginEvent preLoginEvent) {
