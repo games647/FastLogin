@@ -72,7 +72,7 @@ public interface AuthPlugin<P> {
     /**
      * Checks whether an account exists for this player name.
      *
-     * This check should check if a cracked player account exists
+     * This check should check if a cracked player account exists,
      * so we can be sure the premium player doesn't steal the account
      * of that player.
      *

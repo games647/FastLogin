@@ -1,4 +1,4 @@
-# project data for Bukkit in order to register our plugin with all it components
+# project data for Bukkit in order to register our plugin with all it's components
 # ${-} are variables from Maven (pom.xml) which will be replaced after the build
 name: ${project.parent.name}
 version: ${project.version}-${git.commit.id.abbrev}
@@ -11,11 +11,11 @@ description: |
 website: ${project.url}
 dev-url: ${project.url}
 
-# This plugin don't have to be transformed for compatibility with Minecraft >= 1.13
+# This plugin doesn't have to be transformed for compatibility with Minecraft >= 1.13
 api-version: '1.13'
 
 softdepend:
-    # We depend either ProtocolLib or ProtocolSupport
+    # We depend on either ProtocolLib or ProtocolSupport
     - ProtocolSupport
     - ProtocolLib
     # Premium variable

@@ -69,11 +69,11 @@ public class BukkitLoginSession extends LoginSession {
     }
 
     /**
-     * Gets the verify token the server sent to the client.
+     * Gets the verify-token the server sent to the client.
      *
      * Empty if it's a BungeeCord connection
      *
-     * @return the verify token from the server
+     * @return verify token from the server
      */
     public synchronized byte[] getVerifyToken() {
         return verifyToken.clone();

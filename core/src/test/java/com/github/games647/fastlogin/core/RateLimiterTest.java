@@ -59,7 +59,7 @@ public class RateLimiterTest {
      * Too many requests
      */
     @Test
-    public void shoudBlock() {
+    public void shouldBlock() {
         int size = 3;
 
         // fill the size

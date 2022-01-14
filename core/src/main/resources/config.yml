@@ -5,13 +5,13 @@
 # You can access the newest config here:
 # https://github.com/games647/FastLogin/blob/main/core/src/main/resources/config.yml
 
-# This a **very** simple anti bot protection. Recommendation is to use a a dedicated program to approach this
+# This a **very** simple anti bot protection. Recommendation is to use a dedicated program to approach this
 # problem. Low level firewalls like uwf (or iptables direct) are more efficient than a Minecraft plugin. TCP reverse
 # proxies could also be used and offload some work even to different host.
 #
 # The settings wil limit how many connections this plugin will handle. After hitting this limit. FastLogin will
 # completely ignore incoming connections. Effectively there will be no database requests and network requests.
-# Therefore auto logins won't be possible.
+# Therefore, auto logins won't be possible.
 anti-bot:
   # Image the following like bucket. The following is total amount that is allowed in this bucket, while expire
   # means how long it takes for every entry to expire.
@@ -30,7 +30,7 @@ anti-bot:
 # -> cracked player cannot register an account for the premium player and so cannot the steal the account
 #
 # Furthermore the premium player check have to be made based on the player name
-# This means if a cracked player connects to the server and we request a paid account login from this player
+# This means if a cracked player connects to the server, we request a paid account login from this player
 # the player just disconnect and sees the message: 'bad login' or 'invalid session'
 # There is no way to change this message
 # For more information: https://github.com/games647/FastLogin#why-do-players-have-to-invoke-a-command
@@ -56,9 +56,9 @@ secondAttemptCracked: false
 # New cracked players will be kicked from server. Good if you want switch from offline-mode to online-mode without
 # losing players!
 #
-# Existing cracked and premium players could still join your server. Moreover you could add playernames to a
-# allowlist.
-# So that these cracked players could join too although they are new players.
+# Existing cracked and premium players could still join your server. Moreover, you could add player names to an
+# allow-list.
+# So that these cracked players could join too, although they are new players.
 switchMode: false
 
 # If this plugin detected that a player has a premium, it can also set the associated
@@ -66,14 +66,14 @@ switchMode: false
 # the same player data (inventory, permissions, ...)
 #
 # Warning: This also means that the UUID will be different if the player is connecting
-# through a offline mode connection. This **could** cause plugin compatibility issues.
+# through an offline mode connection. This **could** cause plugin compatibility issues.
 #
-# This is a example and doesn't apply for every plugin.
+# This is an example and doesn't apply for every plugin.
 # Example: If you want to ban players who aren't online at the moment, the ban plugin will look
-# after a offline uuid associated to the player, because the server is in offline mode. Then the premium
+# after an offline uuid associated to the player, because the server is in offline mode. Then the premium
 # players could still join the server, because they have different UUID.
 #
-# Moreover you may want to convert the offline UUID to a premium UUID. This will ensure that the player
+# Moreover, you may want to convert the offline UUID to a premium UUID. This will ensure that the player
 # will have the same inventory, permissions, ... if they switched to premium authentication from offline/cracked
 # authentication.
 #
@@ -82,7 +82,7 @@ premiumUuid: false
 
 # This will make an additional check (only for player names which are not in the database) against the mojang servers
 # in order to get the premium UUID. If that premium UUID is in the database, we can assume on successful login that the
-# player changed it's  username and we just update the name in the database.
+# player changed its username and then update the name in the database.
 # Examples:
 # #### Case 1
 # autoRegister = false
@@ -97,10 +97,10 @@ premiumUuid: false
 #
 # Connect the Mojang API and check what UUID the player has (UUID exists => Paid Minecraft account). If that UUID is in
 # the database it's an **existing player** and FastLogin can **assume** the player is premium and changed the username.
-# If it's not in the database, it's a new player and **could be a cracked player**. So we just use a offline mode
+# If it's not in the database, it's a new player and **could be a cracked player**. So we just use an offline mode
 # authentication for this player.
 #
-# **Limitation**: Cracked players who uses the new username of a paid account cannot join the server if the database
+# **Limitation**: Cracked players who use the new username of a paid account cannot join the server if the database
 # contains the old name. (Example: The owner of the paid account no longer plays on the server, but changed the username
 # in the meanwhile).
 #
@@ -110,7 +110,7 @@ premiumUuid: false
 #
 # We will always request a premium authentication if the username is unknown to us, but is in use by a paid Minecraft
 # account. This means it's kind of a more aggressive check like nameChangeCheck = true and autoRegister = false, because
-# it request a premium authentication which are completely new to us, that even the premium UUID is not in our database.
+# it requests a premium authentication which are completely new to us, that even the premium UUID is not in our database.
 #
 # **Limitation**: see below
 #
@@ -121,14 +121,14 @@ premiumUuid: false
 # Based on autoRegister it checks if the player name is premium and login using a premium authentication. After that
 # fastlogin receives the premium UUID and can update the database record.
 #
-# **Limitation from autoRegister**: New offline players who uses the username of an existing Minecraft cannot join the
+# **Limitation from autoRegister**: New offline players who use the username of an existing Minecraft cannot join the
 # server.
 nameChangeCheck: false
 
 # If your players have a premium account and a skin associated to their account, this plugin
 # can download the data and set it to the online player.
 #
-# Keep in mind that this will only works if the player:
+# Keep in mind that this will only work if the player:
 # * is the owner of the premium account
 # * the server connection is established through a premium connection (paid account authentication)
 # * has a skin
@@ -188,7 +188,7 @@ auto-register-unknown: false
 autoLogin: true
 
 # Floodgate configuration
-# Connecing through Floodgate requires player's to sign in via their Xbox Live account
+# Connecting through Floodgate requires player's to sign in via their Xbox Live account
 # !!!!!!!! WARNING: FLOODGATE SUPPORT IS AN EXPERIMENTAL FEATURE !!!!!!!!
 # Enabling any of these settings might lead to people gaining unauthorized access to other's accounts!
 
@@ -212,8 +212,8 @@ autoLoginFloodgate: false
 # However, some plugins (such as AuthMe) rely on names instead of UUIDs to identify a player which might cause issues.
 # In the case of AuthMe (and other auth plugins), both the Java and the Bedrock player will have the same password.
 #
-# To prevent conflits from two different players having the same name, it is highly recommended to use a 'username-prefix'
-# in floodgate/config.yml
+# To prevent conflicts from two different players having the same name, it is highly recommended using a
+#    'username-prefix' in floodgate/config.yml
 # Note: 'username-prefix' is currently broken when used with FastLogin and ProtocolLib.
 # A solution to this is to enable 'floodgatePrefixWorkaround' below.
 #

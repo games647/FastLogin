@@ -102,7 +102,6 @@ public class FastLoginBungee extends Plugin implements PlatformPlugin<CommandSen
         PluginManager pluginManager = getProxy().getPluginManager();
 
         ConnectListener connectListener = new ConnectListener(this, core.getRateLimiter());
-
         pluginManager.registerListener(this, connectListener);
         pluginManager.registerListener(this, new PluginMessageListener(this));
 

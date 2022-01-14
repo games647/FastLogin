@@ -69,7 +69,7 @@ public class PluginMessageListener implements Listener {
         }
 
         //the client shouldn't be able to read the messages in order to know something about server internal states
-        //moreover the client shouldn't be able fake a running premium check by sending the result message
+        //moreover the client shouldn't be able to fake a running premium check by sending the result message
         pluginMessageEvent.setCancelled(true);
 
         if (!(pluginMessageEvent.getSender() instanceof Server)) {

@@ -36,7 +36,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <!--This have to be in lowercase because it's used by plugin.yml-->
+    <!--This has to be in lowercase because it's used by plugin.yml-->
     <artifactId>fastlogin.bungee</artifactId>
     <packaging>jar</packaging>
 

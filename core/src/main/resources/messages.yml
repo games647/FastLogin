@@ -14,7 +14,7 @@
 # Second line
 # Third line'
 
-# If you want to disable a message, you can just set it to a empty value.
+# If you want to disable a message, you can just set it to an empty value.
 # In this case no message will be sent
 # Example:
 # bla: ''
@@ -55,7 +55,7 @@ auto-login: '&2Auto logged in'
 
 # FastLogin attempted to auto register user. The user account is registered to protect it from cracked players
 # If FastLogin is respecting auth plugin IP limit - the registration may have failed, however the message is still displayed
-# The password can be used if the mojang servers are down and you still want your premium users to login (PLANNED)
+# The password can be used if the mojang servers are down, and you still want your premium users to login (PLANNED)
 auto-register: '&2Tried auto registering with password: &7%password&2. You may want change it?'
 
 # GameProfile is not able to toggle the premium state of other players
@@ -70,12 +70,12 @@ no-console: '&4You are not a player. You cannot toggle the premium state for YOU
 wait-on-proxy: '&6Sending request... (Do not forget to follow the BungeeCord setup guide)'
 
 # When ProtocolLib is enabled and the plugin is unable to continue handling a login request after a requested premium
-# authentication. In this state the client expects a success packet with a encrypted connection or disconnect packet.
+# authentication. In this state the client expects a success packet with an encrypted connection or disconnect packet.
 # So we kick the player, if we cannot encrypt the connection. In other situation (example: premium name check),
 # the player will be just authenticated as cracked
 error-kick: '&4Error occurred'
 
-# The server sends a verify token within the premium authentication request. If this doesn't match on response,
+# The server sends a verify-token within the premium authentication request. If this doesn't match on response,
 # it could be another client sending malicious packets
 invalid-verify-token: '&4Invalid token'
 

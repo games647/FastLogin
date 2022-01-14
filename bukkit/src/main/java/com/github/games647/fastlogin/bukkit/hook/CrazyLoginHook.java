@@ -121,11 +121,11 @@ public class CrazyLoginHook implements AuthPlugin<Player> {
     public boolean forceRegister(Player player, String password) {
         CrazyLoginDataDatabase crazyDatabase = crazyLoginPlugin.getCrazyDatabase();
 
-        //this executes a sql query and accesses only thread safe collections so we can run it async
+        //this executes a sql query and accesses only thread safe collections, so we can run it async
         LoginPlayerData playerData = crazyLoginPlugin.getPlayerData(player.getName());
         if (playerData == null) {
             //create a fake account - this will be saved to the database with the password=FAILEDLOADING
-            //user cannot login with that password unless the admin uses plain text
+            //user cannot log in with that password unless the admin uses plain text
             //this automatically marks the player as logged in
             crazyDatabase.save(new LoginPlayerData(player));
             return forceLogin(player);

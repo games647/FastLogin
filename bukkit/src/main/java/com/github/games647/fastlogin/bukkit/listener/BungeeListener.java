@@ -128,7 +128,7 @@ public class BungeeListener implements PluginMessageListener {
         session.setVerified(true);
         plugin.putSession(player.getAddress(), session);
 
-        // only start a new login task if the join event fired earlier. This event then didn
+        // only start a new login task if the join event fired earlier. This event then didn't
         boolean result = plugin.getBungeeManager().didJoinEventFired(player);
         plugin.getLog().info("Delaying force login until join event fired?: {}", result);
         if (result) {

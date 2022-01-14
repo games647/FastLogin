@@ -50,7 +50,7 @@ public class ForceLoginTask
     private final Server server;
 
     //treat player as if they had a premium account, even when they don't
-    //used for Floodgate auto login/register
+    //use for Floodgate auto login/register
     private final boolean forcedOnlineMode;
 
     public ForceLoginTask(FastLoginCore<ProxiedPlayer, CommandSender, FastLoginBungee> core,

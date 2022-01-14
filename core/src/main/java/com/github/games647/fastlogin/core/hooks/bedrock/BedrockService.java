@@ -49,7 +49,7 @@ public abstract class BedrockService<B> {
     }
 
     /**
-     * Perfrom every packet level check needed on a Bedrock player.
+     * Perform every packet level check needed on a Bedrock player.
      *
      * @param username the name of the player
      * @param source   an instance of LoginSource
@@ -98,7 +98,7 @@ public abstract class BedrockService<B> {
      * username can be found
      * <br>
      * <i>Falls back to non-prefixed name checks, if ProtocolLib is installed</i>
-     * 
+     *
      * @param prefixedUsername the name of the player with the prefix appended
      * @return Bedrock Player if found, null otherwise
      */
@@ -120,7 +120,7 @@ public abstract class BedrockService<B> {
 
     /**
      * Checks if a profile's name starts with the Floodgate prefix, if it's available
-     * @param profile profile of the conecting player
+     * @param profile profile of the connecting player
      * @return true if the username is forbidden
      */
     public boolean isUsernameForbidden(StoredProfile profile) {

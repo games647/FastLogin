@@ -30,7 +30,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.github.games647</groupId>
-    <!--This have to be in lowercase because it's used by plugin.yml-->
+    <!--This has to be in lowercase because it's used by plugin.yml-->
     <artifactId>fastlogin</artifactId>
     <packaging>pom</packaging>
 
@@ -39,7 +39,7 @@
 
     <url>https://www.spigotmc.org/resources/fastlogin.14153/</url>
     <description>
-        Automatically login premium (paid accounts) player on a offline mode server
+        Automatically login premium (paid accounts) player on an offline mode server
     </description>
 
     <properties>
@@ -105,7 +105,7 @@
                     <licenseSets>
                         <licenseSet>
                             <multi>
-                                <!-- Machine readable representation -->
+                                <!-- Machine-readable representation -->
                                 <preamble>SPDX-License-Identifier: MIT</preamble>
                                 <header>LICENSE</header>
                             </multi>

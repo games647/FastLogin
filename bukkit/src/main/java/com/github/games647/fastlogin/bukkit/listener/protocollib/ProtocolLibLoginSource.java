@@ -83,7 +83,7 @@ class ProtocolLibLoginSource implements LoginSource {
 
         newPacket.getByteArrays().write(verifyField, verifyToken);
 
-        //serverId is a empty string
+        //serverId is an empty string
         ProtocolLibrary.getProtocolManager().sendServerPacket(player, newPacket);
     }
 

@@ -55,7 +55,7 @@ public class EncryptionUtil {
     }
 
     /**
-     * Generate a RSA key pair
+     * Generate an RSA key pair
      *
      * @return The RSA key pair.
      */

@@ -174,7 +174,7 @@ public class ConnectListener implements Listener {
         } catch (Exception ex) {
             plugin.getLog().error("Failed to set offline uuid of {}", username, ex);
         } catch (Throwable throwable) {
-            // throw remaining exceptions like outofmemory that we shouldn't handle ourself
+            // throw remaining exceptions like out of memory that we shouldn't handle ourselves
             Throwables.throwIfUnchecked(throwable);
         }
     }

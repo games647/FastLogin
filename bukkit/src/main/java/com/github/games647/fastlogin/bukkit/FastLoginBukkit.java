@@ -91,7 +91,7 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
         core.load();
 
         if (getServer().getOnlineMode()) {
-            //we need to require offline to prevent a loginSession request for a offline player
+            //we need to require offline to prevent a loginSession request for an offline player
             logger.error("Server has to be in offline mode");
             setEnabled(false);
             return;
@@ -149,7 +149,7 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
 
         pluginManager.registerEvents(new ConnectionListener(this), this);
 
-        //if server is using paper - we need to add one more listener to correct the usercache usage
+        //if server is using paper - we need to add one more listener to correct the user cache usage
         if (PaperLib.isPaper()) {
             pluginManager.registerEvents(new PaperCacheListener(this), this);
         }
@@ -218,22 +218,22 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
         return loginSession;
     }
 
-    public BukkitLoginSession getSession(InetSocketAddress addr) {
-        String id = getSessionId(addr);
+    public BukkitLoginSession getSession(InetSocketAddress address) {
+        String id = getSessionId(address);
         return loginSession.get(id);
     }
 
-    public String getSessionId(InetSocketAddress addr) {
-        return addr.getAddress().getHostAddress() + ':' + addr.getPort();
+    public String getSessionId(InetSocketAddress address) {
+        return address.getAddress().getHostAddress() + ':' + address.getPort();
     }
 
-    public void putSession(InetSocketAddress addr, BukkitLoginSession session) {
-        String id = getSessionId(addr);
+    public void putSession(InetSocketAddress address, BukkitLoginSession session) {
+        String id = getSessionId(address);
         loginSession.put(id, session);
     }
 
-    public void removeSession(InetSocketAddress addr) {
-        String id = getSessionId(addr);
+    public void removeSession(InetSocketAddress address) {
+        String id = getSessionId(address);
         loginSession.remove(id);
     }
 

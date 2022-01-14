@@ -85,7 +85,7 @@
             <version>2.0.0-alpha5</version>
         </dependency>
 
-        <!-- snakeyaml is present in Bungee, Spigot, Cauldron and so we could use this independent implementation -->
+        <!-- snakeyaml is present in Bungee, Spigot, Cauldron, so we could use this independent implementation -->
         <dependency>
             <groupId>net.md-5</groupId>
             <artifactId>bungeecord-config</artifactId>
@@ -151,7 +151,7 @@
             <artifactId>guava</artifactId>
             <!-- Old version for velocity -->
             <version>25.1-jre</version>
-            <!-- Exclude compile time deps not marked as such on upstream  -->
+            <!-- Exclude compile time dependencies not marked as such on upstream  -->
             <exclusions>
                 <exclusion>
                     <groupId>com.google.code.findbugs</groupId>

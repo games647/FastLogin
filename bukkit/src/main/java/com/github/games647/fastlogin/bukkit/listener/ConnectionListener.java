@@ -43,7 +43,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.geysermc.floodgate.api.player.FloodgatePlayer;
 
 /**
- * This listener tells authentication plugins if the player has a premium account and we checked it successfully. So the
+ * This listener tells authentication plugins weather the player has a premium account. So the
  * plugin can skip authentication.
  */
 public class ConnectionListener implements Listener {

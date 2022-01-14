@@ -101,7 +101,7 @@ public class VerifyResponseTask implements Runnable {
                 verifyResponse(session);
             }
         } finally {
-            //this is a fake packet; it shouldn't be send to the server
+            //this is a fake packet; it shouldn't be sent to the server
             synchronized (packetEvent.getAsyncMarker().getProcessingLock()) {
                 packetEvent.setCancelled(true);
             }
@@ -159,7 +159,7 @@ public class VerifyResponseTask implements Runnable {
                 setPremiumUUID(session.getUuid());
                 receiveFakeStartPacket(realUsername);
             } else {
-                //user tried to fake a authentication
+                //user tried to fake an authentication
                 disconnect("invalid-session", true
                         , "GameProfile {0} ({1}) tried to log in with an invalid session ServerId: {2}"
                         , session.getRequestUsername(), socketAddress, serverId);
@@ -188,7 +188,7 @@ public class VerifyResponseTask implements Runnable {
 
         //https://github.com/bergerkiller/CraftSource/blob/master/net.minecraft.server/LoginListener.java#L182
         if (!Arrays.equals(requestVerify, EncryptionUtil.decrypt(serverKey.getPrivate(), responseVerify))) {
-            //check if the verify token are equal to the server sent one
+            //check if the verify-token are equal to the server sent one
             disconnect("invalid-verify-token", true
                     , "GameProfile {0} ({1}) tried to login with an invalid verify token. Server: {2} Client: {3}"
                     , session.getRequestUsername(), packetEvent.getPlayer().getAddress(), requestVerify, responseVerify);

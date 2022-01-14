@@ -26,7 +26,7 @@
 package com.github.games647.fastlogin.core;
 
 /**
- * Limit the number of requests with a maximum size. Each requests expires after the specified time making it available
+ * Limit the number of requests with a maximum size. Each requests expire after the specified time making it available
  * for another request.
  */
 public class RateLimiter {

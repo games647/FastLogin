@@ -36,7 +36,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <!--This have to be in lowercase because it's used by plugin.yml-->
+    <!--This has to be in lowercase because it's used by plugin.yml-->
     <artifactId>fastlogin.bukkit</artifactId>
     <packaging>jar</packaging>
 
@@ -144,7 +144,7 @@
             <version>${project.version}</version>
         </dependency>
 
-        <!-- PaperSpigot API for correcting usercache usage -->
+        <!-- PaperSpigot API for correcting user cache usage -->
         <dependency>
             <groupId>io.papermc.paper</groupId>
             <artifactId>paper-api</artifactId>

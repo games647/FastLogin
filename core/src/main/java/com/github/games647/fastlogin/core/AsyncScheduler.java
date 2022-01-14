@@ -38,8 +38,8 @@ import org.slf4j.Logger;
 
 /**
  * This limits the number of threads that are used at maximum. Thread creation can be very heavy for the CPU and
- * context switching between threads too. However we need many threads for blocking HTTP and database calls.
- * Nevertheless this number can be further limited, because the number of actually working database threads
+ * context switching between threads too. However, we need many threads for blocking HTTP and database calls.
+ * Nevertheless, this number can be further limited, because the number of actually working database threads
  * is limited by the size of our database pool. The goal is to separate concerns into processing and blocking only
  * threads.
  */
