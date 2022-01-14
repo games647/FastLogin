@@ -48,6 +48,7 @@ import io.papermc.lib.PaperLib;
 import java.net.InetSocketAddress;
 import java.nio.file.Path;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -155,8 +156,8 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
         }
 
         //register commands using a unique name
-        getCommand("premium").setExecutor(new PremiumCommand(this));
-        getCommand("cracked").setExecutor(new CrackedCommand(this));
+        Optional.ofNullable(getCommand("premium")).ifPresent(c -> c.setExecutor(new PremiumCommand(this)));
+        Optional.ofNullable(getCommand("cracked")).ifPresent(c -> c.setExecutor(new CrackedCommand(this)));
 
         if (pluginManager.isPluginEnabled("PlaceholderAPI")) {
             premiumPlaceholder = new PremiumPlaceholder(this);
@@ -244,7 +245,7 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
     /**
      * Fetches the premium status of an online player.
      *
-     * @param onlinePlayer
+     * @param onlinePlayer player that is currently online player (play state)
      * @return the online status or unknown if an error happened, the player isn't online or BungeeCord doesn't send
      * us the status message yet (This means you cannot check the login status on the PlayerJoinEvent).
      */
