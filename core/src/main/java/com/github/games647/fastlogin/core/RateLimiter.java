@@ -25,6 +25,8 @@
  */
 package com.github.games647.fastlogin.core;
 
+import java.util.Arrays;
+
 /**
  * Limit the number of requests with a maximum size. Each requests expire after the specified time making it available
  * for another request.
@@ -38,6 +40,9 @@ public class RateLimiter {
     public RateLimiter(int maxLimit, long expireTime) {
         this.requests = new long[maxLimit];
         this.expireTime = expireTime;
+
+        // fill the array with the lowest values, so that the first uninitialized values will always expire
+        Arrays.fill(requests, Long.MIN_VALUE);
     }
 
     /**
