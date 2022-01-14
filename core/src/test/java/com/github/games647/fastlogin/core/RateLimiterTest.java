@@ -25,6 +25,7 @@
  */
 package com.github.games647.fastlogin.core;
 
+import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
@@ -43,14 +44,34 @@ public class RateLimiterTest {
     public void allowExpire() throws InterruptedException {
         int size = 3;
 
+        FakeTicker ticker = new FakeTicker(5_000_000L);
+
         // run twice the size to fill it first and then test it
-        RateLimiter rateLimiter = new RateLimiter(size, 0);
+        RateLimiter rateLimiter = new RateLimiter(ticker, size, 0);
         for (int i = 0; i < size; i++) {
             assertTrue("Filling up", rateLimiter.tryAcquire());
         }
 
         for (int i = 0; i < size; i++) {
-            Thread.sleep(1);
+            ticker.add(Duration.ofSeconds(1));
+            assertTrue("Should be expired", rateLimiter.tryAcquire());
+        }
+    }
+
+    @Test
+    public void allowExpireNegative() throws InterruptedException {
+        int size = 3;
+
+        FakeTicker ticker = new FakeTicker(-5_000_000L);
+
+        // run twice the size to fill it first and then test it
+        RateLimiter rateLimiter = new RateLimiter(ticker, size, 0);
+        for (int i = 0; i < size; i++) {
+            assertTrue("Filling up", rateLimiter.tryAcquire());
+        }
+
+        for (int i = 0; i < size; i++) {
+            ticker.add(Duration.ofSeconds(1));
             assertTrue("Should be expired", rateLimiter.tryAcquire());
         }
     }
@@ -62,8 +83,28 @@ public class RateLimiterTest {
     public void shouldBlock() {
         int size = 3;
 
+        FakeTicker ticker = new FakeTicker(5_000_000L);
+
         // fill the size
-        RateLimiter rateLimiter = new RateLimiter(size, TimeUnit.SECONDS.toMillis(30));
+        RateLimiter rateLimiter = new RateLimiter(ticker, size, TimeUnit.SECONDS.toMillis(30));
+        for (int i = 0; i < size; i++) {
+            assertTrue("Filling up", rateLimiter.tryAcquire());
+        }
+
+        assertFalse("Should be full and no entry should be expired", rateLimiter.tryAcquire());
+    }
+
+    /**
+     * Too many requests
+     */
+    @Test
+    public void shouldBlockNegative() {
+        int size = 3;
+
+        FakeTicker ticker = new FakeTicker(-5_000_000L);
+
+        // fill the size
+        RateLimiter rateLimiter = new RateLimiter(ticker, size, TimeUnit.SECONDS.toMillis(30));
         for (int i = 0; i < size; i++) {
             assertTrue("Filling up", rateLimiter.tryAcquire());
         }
@@ -76,17 +117,40 @@ public class RateLimiterTest {
      */
     @Test
     public void blockedNotAdded() throws InterruptedException {
+        FakeTicker ticker = new FakeTicker(5_000_000L);
+
         // fill the size - 100ms should be reasonable high
-        RateLimiter rateLimiter = new RateLimiter(1, 100);
+        RateLimiter rateLimiter = new RateLimiter(ticker, 1, 100);
         assertTrue("Filling up", rateLimiter.tryAcquire());
 
-        Thread.sleep(50);
+        ticker.add(Duration.ofMillis(50));
 
         // still is full - should fail
         assertFalse("Expired too early", rateLimiter.tryAcquire());
 
         // wait the remaining time and add a threshold, because
-        Thread.sleep(50 + THRESHOLD_MILLI);
+        ticker.add(Duration.ofMillis(50));
+        assertTrue("Request not released", rateLimiter.tryAcquire());
+    }
+
+    /**
+     * Blocked attempts shouldn't replace existing ones.
+     */
+    @Test
+    public void blockedNotAddedNegative() throws InterruptedException {
+        FakeTicker ticker = new FakeTicker(-5_000_000L);
+
+        // fill the size - 100ms should be reasonable high
+        RateLimiter rateLimiter = new RateLimiter(ticker, 1, 100);
+        assertTrue("Filling up", rateLimiter.tryAcquire());
+
+        ticker.add(Duration.ofMillis(50));
+
+        // still is full - should fail
+        assertFalse("Expired too early", rateLimiter.tryAcquire());
+
+        // wait the remaining time and add a threshold, because
+        ticker.add(Duration.ofMillis(50));
         assertTrue("Request not released", rateLimiter.tryAcquire());
     }
 }

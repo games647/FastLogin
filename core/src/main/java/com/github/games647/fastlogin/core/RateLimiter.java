@@ -25,6 +25,8 @@
  */
 package com.github.games647.fastlogin.core;
 
+import com.google.common.base.Ticker;
+
 import java.util.Arrays;
 
 /**
@@ -33,16 +35,22 @@ import java.util.Arrays;
  */
 public class RateLimiter {
 
+    private final Ticker ticker;
+
     private final long[] requests;
     private final long expireTime;
     private int position;
 
-    public RateLimiter(int maxLimit, long expireTime) {
+    public RateLimiter(Ticker ticker, int maxLimit, long expireTime) {
+        this.ticker = ticker;
+
         this.requests = new long[maxLimit];
         this.expireTime = expireTime;
 
-        // fill the array with the lowest values, so that the first uninitialized values will always expire
-        Arrays.fill(requests, Long.MIN_VALUE);
+        // fill the array with expired entry, because nanoTime could overflow and include negative numbers
+        long nowMilli = ticker.read() / 1_000_000;
+        long initialVal = nowMilli - expireTime;
+        Arrays.fill(requests, initialVal);
     }
 
     /**
@@ -52,15 +60,12 @@ public class RateLimiter {
      */
     public boolean tryAcquire() {
         // current time millis is not monotonic - it can jump back depending on user choice or NTP
-        long now = System.nanoTime() / 1_000_000;
-
-        // after this the request should be expired
-        long toBeExpired = now - expireTime;
+        long nowMilli = ticker.read() / 1_000_000;
         synchronized (this) {
             // having synchronized will limit the amount of concurrency a lot
             long oldest = requests[position];
-            if (oldest < toBeExpired) {
-                requests[position] = now;
+            if (nowMilli - oldest >= expireTime) {
+                requests[position] = nowMilli;
                 position = (position + 1) % requests.length;
                 return true;
             }

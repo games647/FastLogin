@@ -35,6 +35,7 @@ import com.github.games647.fastlogin.core.hooks.PasswordGenerator;
 import com.github.games647.fastlogin.core.storage.MySQLStorage;
 import com.github.games647.fastlogin.core.storage.SQLStorage;
 import com.github.games647.fastlogin.core.storage.SQLiteStorage;
+import com.google.common.base.Ticker;
 import com.google.common.net.HostAndPort;
 import com.zaxxer.hikari.HikariConfig;
 
@@ -122,7 +123,7 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
             expireTime = MAX_EXPIRE_RATE;
         }
 
-        rateLimiter = new RateLimiter(maxCon, expireTime);
+        rateLimiter = new RateLimiter(Ticker.systemTicker(), maxCon, expireTime);
         Set<Proxy> proxies = config.getStringList("proxies")
                 .stream()
                 .map(HostAndPort::fromString)
