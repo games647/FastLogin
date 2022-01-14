@@ -113,7 +113,7 @@ public class StoredProfile extends Profile {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public synchronized boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof StoredProfile)) return false;
         if (!super.equals(o)) return false;
@@ -123,7 +123,7 @@ public class StoredProfile extends Profile {
     }
 
     @Override
-    public int hashCode() {
+    public synchronized int hashCode() {
         return Objects.hash(super.hashCode(), rowId, premium, lastIp, lastLogin);
     }
 
