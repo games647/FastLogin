@@ -69,26 +69,31 @@ public abstract class BedrockService<B> {
         Optional<Profile> premiumUUID = Optional.empty();
         try {
             premiumUUID = core.getResolver().findProfile(username);
-        } catch (IOException | RateLimitException e) {
+        } catch (IOException ioEx) {
             core.getPlugin().getLog().error(
-                    "Could not check whether Bedrock Player {}'s name conflicts a premium Java player's name.",
-                    username);
-            try {
-                source.kick("Could not check if your name conflicts an existing premium Java account's name.\n"
-                        + "This is usually a serverside error.");
-            } catch (Exception ex) {
-                core.getPlugin().getLog().error("Could not kick Player {}", username, ex);
-            }
+                "Could not check whether Bedrock Player {}'s name conflicts a premium Java player's name.",
+                username);
+
+            kickPlayer(source, username, "Could not check if your name conflicts an existing " +
+                "premium Java account's name. This is usually a serverside error.");
+        } catch (RateLimitException rateLimitException) {
+            core.getPlugin().getLog().warn("Mojang API rate limit hit");
+            kickPlayer(source, username, "Could not check if your name conflicts an existing premium " +
+                "Java account's name. Try again in a few minutes");
         }
 
         if (premiumUUID.isPresent()) {
             core.getPlugin().getLog().info("Bedrock Player {}'s name conflicts an existing premium Java account's name",
                     username);
-            try {
-                source.kick("Your name conflicts an existing premium Java account's name");
-            } catch (Exception ex) {
-                core.getPlugin().getLog().error("Could not kick Player {}", username, ex);
-            }
+            kickPlayer(source, username, "Your name conflicts an existing premium Java account's name");
+        }
+    }
+
+    private void kickPlayer(LoginSource source, String username, String message) {
+        try {
+            source.kick(message);
+        } catch (Exception ex) {
+            core.getPlugin().getLog().error("Could not kick Player {}", username, ex);
         }
     }
 
