@@ -71,6 +71,9 @@
                         <relocation>
                             <pattern>com.google.common</pattern>
                             <shadedPattern>fastlogin.guava</shadedPattern>
+                            <excludes>
+                                <exclude>com.google.common.collect.Multimap</exclude>
+                            </excludes>
                         </relocation>
                         <relocation>
                             <pattern>io.papermc.lib</pattern>
