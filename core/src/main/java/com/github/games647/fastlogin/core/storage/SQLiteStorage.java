@@ -31,14 +31,22 @@ import org.sqlite.JDBC;
 import org.sqlite.SQLiteConfig;
 
 import java.nio.file.Path;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.UUID;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class SQLiteStorage extends SQLStorage {
+
+    protected static final String CREATE_TABLE_STMT = "CREATE TABLE IF NOT EXISTS `" + PREMIUM_TABLE + "` ("
+            + "`UserID` INTEGER PRIMARY KEY AUTO_INCREMENT, "
+            + "`UUID` CHAR(36), "
+            + "`Name` VARCHAR(16) NOT NULL, "
+            + "`Premium` BOOLEAN NOT NULL, "
+            + "`LastIp` VARCHAR(255) NOT NULL, "
+            + "`LastLogin` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
+            //the premium shouldn't steal the cracked account by changing the name
+            + "UNIQUE (`Name`) "
+            + ')';
 
     private static final String SQLITE_DRIVER = "org.sqlite.SQLiteDataSource";
     private final Lock lock = new ReentrantLock();
@@ -103,12 +111,9 @@ public class SQLiteStorage extends SQLStorage {
     }
 
     @Override
-    public void createTables() throws SQLException {
-        try (Connection con = dataSource.getConnection();
-             Statement createStmt = con.createStatement()) {
-            // SQLite has a different syntax for auto increment
-            createStmt.executeUpdate(CREATE_TABLE_STMT.replace("AUTO_INCREMENT", "AUTOINCREMENT"));
-        }
+    protected String getCreateTableStmt() {
+        // SQLite has a different syntax for auto increment
+        return CREATE_TABLE_STMT.replace("AUTO_INCREMENT", "AUTOINCREMENT");
     }
 
     private static String replacePathVariables(Path dataFolder, String input) {

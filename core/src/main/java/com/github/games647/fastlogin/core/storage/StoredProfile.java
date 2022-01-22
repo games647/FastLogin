@@ -26,6 +26,7 @@
 package com.github.games647.fastlogin.core.storage;
 
 import com.github.games647.craftapi.model.Profile;
+import com.github.games647.fastlogin.core.shared.FloodgateState;
 
 import java.time.Instant;
 import java.util.Objects;
@@ -39,20 +40,28 @@ public class StoredProfile extends Profile {
     private final ReentrantLock saveLock = new ReentrantLock();
 
     private boolean premium;
+    private FloodgateState floodgate;
     private String lastIp;
     private Instant lastLogin;
 
-    public StoredProfile(long rowId, UUID uuid, String playerName, boolean premium, String lastIp, Instant lastLogin) {
+    public StoredProfile(long rowId, UUID uuid, String playerName, boolean premium, FloodgateState floodgate,
+                         String lastIp, Instant lastLogin) {
         super(uuid, playerName);
 
         this.rowId = rowId;
         this.premium = premium;
+        this.floodgate = floodgate;
         this.lastIp = lastIp;
         this.lastLogin = lastLogin;
     }
 
+    public StoredProfile(UUID uuid, String playerName, boolean premium, FloodgateState isFloodgate, String lastIp) {
+        this(-1, uuid, playerName, premium, isFloodgate, lastIp, Instant.now());
+    }
+
+    @Deprecated
     public StoredProfile(UUID uuid, String playerName, boolean premium, String lastIp) {
-        this(-1, uuid, playerName, premium, lastIp, Instant.now());
+        this(-1, uuid, playerName, premium, FloodgateState.FALSE, lastIp, Instant.now());
     }
 
     public ReentrantLock getSaveLock() {
@@ -96,6 +105,18 @@ public class StoredProfile extends Profile {
         this.premium = premium;
     }
 
+    public synchronized FloodgateState getFloodgate() {
+        return floodgate;
+    }
+
+    public synchronized boolean isFloodgateMigrated() {
+        return floodgate != FloodgateState.NOT_MIGRATED;
+    }
+
+    public synchronized void setFloodgate(FloodgateState floodgate) {
+        this.floodgate = floodgate;
+    }
+
     public synchronized String getLastIp() {
         return lastIp;
     }
@@ -128,7 +149,7 @@ public class StoredProfile extends Profile {
         }
 
         return rowId == that.rowId && premium == that.premium
-            && Objects.equals(lastIp, that.lastIp) && lastLogin.equals(that.lastLogin);
+                && Objects.equals(lastIp, that.lastIp) && lastLogin.equals(that.lastLogin);
     }
 
     @Override
@@ -141,6 +162,7 @@ public class StoredProfile extends Profile {
         return this.getClass().getSimpleName() + '{'
             + "rowId=" + rowId
             + ", premium=" + premium
+            + ", floodgate=" + floodgate
             + ", lastIp='" + lastIp + '\''
             + ", lastLogin=" + lastLogin
             + "} " + super.toString();
