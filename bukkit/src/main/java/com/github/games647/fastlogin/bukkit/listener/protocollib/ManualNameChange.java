@@ -36,6 +36,8 @@ import org.geysermc.floodgate.api.FloodgateApi;
 
 import static com.comphenix.protocol.PacketType.Login.Client.START;
 
+import com.comphenix.protocol.ProtocolLibrary;
+
 /**
  * Manually inject Floodgate player name prefixes.
  * <br>
@@ -55,6 +57,14 @@ public class ManualNameChange extends PacketAdapter {
 
         this.plugin = plugin;
         this.floodgate = floodgate;
+    }
+
+    public static void register(FastLoginBukkit plugin, FloodgateService floodgate) {
+        // they will be created with a static builder, because otherwise it will throw a NoClassDefFoundError
+        ProtocolLibrary.getProtocolManager()
+                .getAsynchronousManager()
+                .registerAsyncHandler(new ManualNameChange(plugin, floodgate))
+                .start();
     }
 
     @Override

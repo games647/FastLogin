@@ -25,7 +25,6 @@
  */
 package com.github.games647.fastlogin.bukkit;
 
-import com.comphenix.protocol.ProtocolLibrary;
 import com.github.games647.fastlogin.bukkit.command.CrackedCommand;
 import com.github.games647.fastlogin.bukkit.command.PremiumCommand;
 import com.github.games647.fastlogin.bukkit.listener.ConnectionListener;
@@ -121,7 +120,7 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
 
                 if (isPluginInstalled("floodgate")) {
                     if (getConfig().getBoolean("floodgatePrefixWorkaround")){
-                        ProtocolLibrary.getProtocolManager().addPacketListener(new ManualNameChange(this, floodgateService));
+                        ManualNameChange.register(this, floodgateService);
                         logger.info("Floodgate prefix injection workaround has been enabled.");
                         logger.info("If you have problems joining the server, try disabling it in the configuration.");
                     } else {
