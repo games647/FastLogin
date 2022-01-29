@@ -62,25 +62,20 @@ public class CrackedCommand extends ToggleCommand {
             return;
         }
 
-        if (plugin.getBungeeManager().isEnabled()) {
-            sendBungeeActivateMessage(sender, sender.getName(), false);
-            plugin.getCore().sendLocaleMessage("wait-on-proxy", sender);
-        } else {
-            //todo: load async if
-            StoredProfile profile = plugin.getCore().getStorage().loadProfile(sender.getName());
-            if (profile.isPremium()) {
-                plugin.getCore().sendLocaleMessage("remove-premium", sender);
+        // todo: load async if
+        StoredProfile profile = plugin.getCore().getStorage().loadProfile(sender.getName());
+        if (profile.isPremium()) {
+            plugin.getCore().sendLocaleMessage("remove-premium", sender);
 
-                profile.setPremium(false);
-                profile.setId(null);
-                plugin.getScheduler().runAsync(() -> {
-                    plugin.getCore().getStorage().save(profile);
-                    plugin.getServer().getPluginManager().callEvent(
-                            new BukkitFastLoginPremiumToggleEvent(profile, PremiumToggleReason.COMMAND_OTHER));
-                });
-            } else {
-                plugin.getCore().sendLocaleMessage("not-premium", sender);
-            }
+            profile.setPremium(false);
+            profile.setId(null);
+            plugin.getScheduler().runAsync(() -> {
+                plugin.getCore().getStorage().save(profile);
+                plugin.getServer().getPluginManager().callEvent(
+                        new BukkitFastLoginPremiumToggleEvent(profile, PremiumToggleReason.COMMAND_OTHER));
+            });
+        } else {
+            plugin.getCore().sendLocaleMessage("not-premium", sender);
         }
     }
 
