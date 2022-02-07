@@ -107,14 +107,14 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
         bungeeManager = new BungeeManager(this);
         bungeeManager.initialize();
 
-        getServer().getPluginManager().registerEvents(new Listener() {
-
-            @EventHandler
-            void onHandshake(PlayerHandshakeEvent handshakeEvent) {
-                handshakeEvent.setCancelled(false);
-                handshakeEvent.setSocketAddressHostname("192.168.0.1");
-            }
-        }, this);
+        // getServer().getPluginManager().registerEvents(new Listener() {
+        //
+        //     @EventHandler
+        //     void onHandshake(PlayerHandshakeEvent handshakeEvent) {
+        //         handshakeEvent.setCancelled(false);
+        //         handshakeEvent.setSocketAddressHostname("192.168.0.1");
+        //     }
+        // }, this);
 
         PluginManager pluginManager = getServer().getPluginManager();
         if (bungeeManager.isEnabled()) {
