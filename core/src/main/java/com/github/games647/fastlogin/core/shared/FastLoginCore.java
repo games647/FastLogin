@@ -231,7 +231,7 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
 
             databaseConfig.setUsername(config.get("username", ""));
             databaseConfig.setPassword(config.getString("password"));
-            storage = new MySQLStorage(this, host, port, database, databaseConfig, useSSL);
+            storage = new MySQLStorage(this, driver, host, port, database, databaseConfig, useSSL);
         }
 
         try {
