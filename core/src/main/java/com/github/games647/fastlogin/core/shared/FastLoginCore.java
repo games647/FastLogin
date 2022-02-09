@@ -250,7 +250,8 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
         } catch (ClassNotFoundException notFoundEx) {
             Logger log = plugin.getLog();
             log.warn("This driver {} is not supported on this platform", className);
-            log.warn("Please choose MySQL (Spigot+BungeeCord), SQLite (Spigot+Sponge) or MariaDB (Sponge)", notFoundEx);
+            log.warn("Please choose either MySQL (Spigot, BungeeCord), SQLite (Spigot, Sponge) or " +
+                "MariaDB (Sponge, Velocity)", notFoundEx);
         }
 
         return false;
