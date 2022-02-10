@@ -37,7 +37,7 @@ import static org.mockserver.model.HttpResponse.response;
 // Warning name is sensitive to the surefire plugin
 public class LoginIT {
 
-    private static final String API_TAG = "mockserver-5.11.2@sha256:c7c0dcee6fb7b0be6252977cf3a00ebf8ae2ff1179de9bf2bd5e6c92c768ea87";
+    private static final String API_TAG = "mockserver-5.11.2";
     private static final String API_IMAGE_NAME = "mockserver/mockserver";
     private static final String API_IMAGE = API_IMAGE_NAME + ':' + API_TAG;
 
