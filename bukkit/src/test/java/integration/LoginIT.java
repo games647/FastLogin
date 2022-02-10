@@ -37,15 +37,15 @@ import static org.mockserver.model.HttpResponse.response;
 // Warning name is sensitive to the surefire plugin
 public class LoginIT {
 
-    private static final String API_TAG = "mockserver-5.11.2";
+    private static final String API_TAG = "mockserver-5.11.2@sha256:c7c0dcee6fb7b0be6252977cf3a00ebf8ae2ff1179de9bf2bd5e6c92c768ea87";
     private static final String API_IMAGE_NAME = "mockserver/mockserver";
     private static final String API_IMAGE = API_IMAGE_NAME + ':' + API_TAG;
 
-    // @Rule
+    @Rule
     public MockServerContainer mockServer = new MockServerContainer(DockerImageName.parse(API_IMAGE))
         .withReuse(true);
 
-    private static final String SERVER_TAG = "1.18.1";
+    private static final String SERVER_TAG = "1.18.1@sha256:dd3c8d212de585ec73113a0c0c73ac755ec1ff53e65bb09089061584fac02053";
     private static final String SERVER_IMAGE_NAME = "ghcr.io/games647/paperclip";
     private static final String SERVER_IMAGE = SERVER_IMAGE_NAME + ':' + SERVER_TAG;
 
