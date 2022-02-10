@@ -7,13 +7,17 @@ import com.github.steveice10.packetlib.event.session.SessionAdapter;
 import com.github.steveice10.packetlib.packet.Packet;
 import com.github.steveice10.packetlib.tcp.TcpClientSession;
 import com.google.common.io.CharStreams;
+import com.mojang.authlib.EnvironmentParser;
 
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -47,13 +51,26 @@ public class LoginIT {
 
     @Rule
     public GenericContainer<?> minecraftServer = new GenericContainer(DockerImageName.parse(SERVER_IMAGE))
-        .withEnv("JDK_JAVA_OPTIONS", "-Dcom.mojang.eula.agree=true")
+        .withEnv("JDK_JAVA_OPTIONS", buildJVMFlags())
         .withExposedPorts(25565)
         // Done (XXXXs)! For help, type "help"
         .waitingFor(
             Wait.forLogMessage(".*For help, type \"help\"*\\n", 1)
         )
         .withReuse(true);
+
+    private String buildJVMFlags() {
+        Map<String, String> systemProperties = new HashMap<>();
+        systemProperties.put("com.mojang.eula.agree", Boolean.toString(true));
+
+        // set the Yggdrasil hosts that will also be used by the vanilla server
+        systemProperties.put(EnvironmentParser.PROP_ACCOUNT_HOST, getProxyHost());
+        systemProperties.put(EnvironmentParser.PROP_SESSION_HOST, getProxyHost());
+
+        return systemProperties.entrySet().stream()
+            .map(entry -> "-D" + entry.getKey() + '=' + entry.getValue())
+            .collect(Collectors.joining(" "));
+    }
 
     @Test
     public void checkRunning() throws Exception {
@@ -82,6 +99,10 @@ public class LoginIT {
         } finally {
             clientSession.disconnect("Status test complete.");
         }
+    }
+
+    private String getProxyHost() {
+        return String.format("https://%s:%d", mockServer.getHost(), mockServer.getServerPort());
     }
 
     @Test
