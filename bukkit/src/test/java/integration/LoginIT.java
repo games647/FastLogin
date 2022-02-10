@@ -13,12 +13,14 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockserver.client.MockServerClient;
@@ -28,6 +30,7 @@ import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.MockServerContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.utility.DockerImageName;
+import org.testcontainers.utility.MountableFile;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -53,6 +56,11 @@ public class LoginIT {
     public GenericContainer<?> minecraftServer = new GenericContainer(DockerImageName.parse(SERVER_IMAGE))
         .withEnv("JDK_JAVA_OPTIONS", buildJVMFlags())
         .withExposedPorts(25565)
+        // use server settings that use minimal minecraft log to quickly ramp up the server
+        .withCopyFileToContainer(MountableFile.forClasspathResource("server.properties"), "/home/nonroot/server.properties")
+        .withCopyFileToContainer(MountableFile.forClasspathResource("bukkit.yml"), "/home/nonroot/bukkit.yml")
+        .withCopyFileToContainer(MountableFile.forClasspathResource("spigot.yml"), "/home/nonroot/spigot.yml")
+        .withTmpFs(Collections.singletonMap("/home/nonroot/world", "rw,noexec,nosuid,nodev"))
         // Done (XXXXs)! For help, type "help"
         .waitingFor(
             Wait.forLogMessage(".*For help, type \"help\"*\\n", 1)
@@ -70,6 +78,11 @@ public class LoginIT {
         return systemProperties.entrySet().stream()
             .map(entry -> "-D" + entry.getKey() + '=' + entry.getValue())
             .collect(Collectors.joining(" "));
+    }
+
+    @Before
+    public void setUp() throws Exception {
+        System.out.println(minecraftServer.getLogs());
     }
 
     @Test
