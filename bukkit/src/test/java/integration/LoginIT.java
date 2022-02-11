@@ -87,7 +87,7 @@ public class LoginIT {
 
         return systemProperties.entrySet().stream()
             .map(entry -> "-D" + entry.getKey() + '=' + entry.getValue())
-            .collect(Collectors.joining(" "));
+            .collect(Collectors.joining(" ")) + " -client";
     }
 
     @Before
