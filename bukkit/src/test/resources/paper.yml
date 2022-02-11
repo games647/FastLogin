@@ -55,7 +55,7 @@ settings:
   console:
     enable-brigadier-highlighting: false
     enable-brigadier-completions: false
-  suggest-player-names-when-null-tab-completions: true
+  suggest-player-names-when-null-tab-completions: false
   watchdog:
     early-warning-every: 5000
     early-warning-delay: 10000
@@ -163,31 +163,7 @@ world-settings:
     fishing-time-range:
       MinimumTicks: 100
       MaximumTicks: 600
-    despawn-ranges:
-      monster:
-        soft: 32
-        hard: 128
-      creature:
-        soft: 32
-        hard: 128
-      ambient:
-        soft: 32
-        hard: 128
-      axolotls:
-        soft: 32
-        hard: 128
-      underground_water_creature:
-        soft: 32
-        hard: 128
-      water_creature:
-        soft: 32
-        hard: 128
-      water_ambient:
-        soft: 32
-        hard: 64
-      misc:
-        soft: 32
-        hard: 128
+    despawn-ranges: []
     falling-block-height-nerf: 0
     tnt-entity-height-nerf: 0
     slime-spawn-height:
