@@ -44,6 +44,8 @@ public class LoginIT {
     private static final String API_IMAGE_NAME = "mockserver/mockserver";
     private static final String API_IMAGE = API_IMAGE_NAME + ':' + API_TAG;
 
+    private static final String HOME_FOLDER = "/home/nonroot/";
+
     @Rule
     public MockServerContainer mockServer = new MockServerContainer(DockerImageName.parse(API_IMAGE))
         .withReuse(true);
@@ -57,15 +59,23 @@ public class LoginIT {
         .withEnv("JDK_JAVA_OPTIONS", buildJVMFlags())
         .withExposedPorts(25565)
         // use server settings that use minimal minecraft log to quickly ramp up the server
-        .withCopyFileToContainer(MountableFile.forClasspathResource("server.properties"), "/home/nonroot/server.properties")
-        .withCopyFileToContainer(MountableFile.forClasspathResource("bukkit.yml"), "/home/nonroot/bukkit.yml")
-        .withCopyFileToContainer(MountableFile.forClasspathResource("spigot.yml"), "/home/nonroot/spigot.yml")
-        .withTmpFs(Collections.singletonMap("/home/nonroot/world", "rw,noexec,nosuid,nodev"))
+        .withCopyFileToContainer(MountableFile.forClasspathResource("server.properties"), HOME_FOLDER + "server.properties")
+        .withCopyFileToContainer(MountableFile.forClasspathResource("bukkit.yml"), HOME_FOLDER + "bukkit.yml")
+        .withCopyFileToContainer(MountableFile.forClasspathResource("spigot.yml"), HOME_FOLDER + "spigot.yml")
+        // create folders that are volatile
+        .withTmpFs(getTempFS())
         // Done (XXXXs)! For help, type "help"
         .waitingFor(
             Wait.forLogMessage(".*For help, type \"help\"*\\n", 1)
         )
         .withReuse(true);
+
+    private Map<String, String> getTempFS() {
+        Map<String, String> tmpfs = new HashMap<>();
+        tmpfs.put(HOME_FOLDER + "world", "rw,noexec,nosuid,nodev");
+        tmpfs.put(HOME_FOLDER + "logs", "rw,noexec,nosuid,nodev");
+        return tmpfs;
+    }
 
     private String buildJVMFlags() {
         Map<String, String> systemProperties = new HashMap<>();
