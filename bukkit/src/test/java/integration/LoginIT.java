@@ -119,6 +119,7 @@ public class LoginIT {
     }
 
     @Test
+    @Ignore
     public void autoRegisterNewUser() throws Exception {
         assertThat(mockServer.isRunning(), is(true));
 
@@ -155,41 +156,49 @@ public class LoginIT {
     }
 
     @Test
+    @Ignore
     public void failedJoinedVerification() {
         // has joined fails
     }
 
     @Test
+    @Ignore
     public void offlineLoginNewUserDisabledRegister() {
         // auto register disabled, always offline login for new users
     }
 
     @Test
+    @Ignore
     public void offlineLoginNewUser() {
         // auto register enabled, but no paid account
     }
 
     @Test
+    @Ignore
     public void autoLoginRegistered() {
         // registered premium user and paid account login in
     }
 
     @Test
+    @Ignore
     public void failedLoginPremiumRegistered() {
         // registered premium, but tried offline login
     }
 
     @Test
+    @Ignore
     public void offlineLoginRegistered() {
         // assume registered user marked as offline - tried to login
     }
 
     @Test
+    @Ignore
     public void alreadyOnlineDuplicateOwner() {
 
     }
 
     @Test
+    @Ignore
     public void alreadyOnlineDuplicateCracked() {
 
     }
