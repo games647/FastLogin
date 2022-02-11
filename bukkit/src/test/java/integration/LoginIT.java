@@ -13,21 +13,23 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockserver.client.MockServerClient;
 import org.mockserver.model.HttpRequest;
 import org.mockserver.verify.VerificationTimes;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.MockServerContainer;
+import org.testcontainers.containers.output.Slf4jLogConsumer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.utility.DockerImageName;
 import org.testcontainers.utility.MountableFile;
@@ -39,6 +41,8 @@ import static org.mockserver.model.HttpResponse.response;
 
 // Warning name is sensitive to the surefire plugin
 public class LoginIT {
+
+    private static final Logger LOG = LoggerFactory.getLogger(LoginIT.class);
 
     private static final String API_TAG = "mockserver-5.11.2";
     private static final String API_IMAGE_NAME = "mockserver/mockserver";
@@ -55,7 +59,7 @@ public class LoginIT {
     private static final String SERVER_IMAGE = SERVER_IMAGE_NAME + ':' + SERVER_TAG;
 
     @Rule
-    public GenericContainer<?> minecraftServer = new GenericContainer(DockerImageName.parse(SERVER_IMAGE))
+    public GenericContainer<?> minecraftServer = new GenericContainer<>(DockerImageName.parse(SERVER_IMAGE))
         .withEnv("JDK_JAVA_OPTIONS", buildJVMFlags())
         .withExposedPorts(25565)
         // use server settings that use minimal minecraft log to quickly ramp up the server
@@ -68,7 +72,8 @@ public class LoginIT {
         .waitingFor(
             Wait.forLogMessage(".*For help, type \"help\"*\\n", 1)
         )
-        .withReuse(true);
+        .withReuse(true)
+        .withLogConsumer(new Slf4jLogConsumer(LOG));
 
     private Map<String, String> getTempFS() {
         Map<String, String> tmpfs = new HashMap<>();
@@ -88,11 +93,6 @@ public class LoginIT {
         return systemProperties.entrySet().stream()
             .map(entry -> "-D" + entry.getKey() + '=' + entry.getValue())
             .collect(Collectors.joining(" ")) + " -client";
-    }
-
-    @Before
-    public void setUp() throws Exception {
-        System.out.println(minecraftServer.getLogs());
     }
 
     @Test
