@@ -107,7 +107,7 @@ public class LoginIT {
             clientSession.addListener(new SessionAdapter() {
                 @Override
                 public void packetReceived(Session session, Packet packet) {
-                    System.out.println("Received: " + packet.getClass());
+                    LOG.info("Client received: {}", packet.getClass());
                     connectionResult.complete(true);
                 }
 
@@ -161,7 +161,7 @@ public class LoginIT {
 
             URLConnection urlConnection = new URL(mockServer.getEndpoint() + "/users/profiles/minecraft/username").openConnection();
             String out = CharStreams.toString(new InputStreamReader(urlConnection.getInputStream(), StandardCharsets.UTF_8));
-            System.out.println("OUTPUT: " + out);
+            LOG.info("OUTPUT: {}", out);
         }
     }
 
