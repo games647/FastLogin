@@ -102,20 +102,28 @@ This plugin performs network requests to:
 ### Spigot/Paper
 
 1. Download and install ProtocolLib/ProtocolSupport
-2. Download and install FastLogin (or FastLoginBukkit for newer versions)
-3. Set your server in offline mode by setting the value onlinemode in your server.properties to false
+2. Download and install FastLogin (or `FastLoginBukkit` for newer versions)
+3. Set your server in offline mode by setting the value `onlinemode` in your server.properties to false
 
-### BungeeCord/Waterfall
+### BungeeCord/Waterfall or Velocity
 
-1. Activate BungeeCord in the Spigot configuration
-2. Restart your server
-3. Now there is `allowed-proxies.txt` file in the FastLogin folder
-Put your stats id from the BungeeCord config into this file
-4. Activate ipForward in your BungeeCord config
-5. Download and Install FastLogin (or FastLoginBungee/FastLoginBukkit in newer versions) on BungeeCord AND Spigot
-(on the servers where your login plugin is or where player should be able to execute the commands of FastLogin)
-6. Check your database settings in the config of FastLogin on BungeeCord
-7. Set proxy and Spigot in offline mode by setting the value onlinemode in your config.yml to false
-8. You should *always* firewall your Spigot server that it's only accessible through BungeeCord
-    * https://www.spigotmc.org/wiki/bungeecord-installation/#post-installation
-    * BungeeCord doesn't support SQLite per default, so you should change the configuration to MySQL or MariaDB. For that you have to install MariaDB/MySQL on your root server first and put the credentials you made in the FastLogin config files.
+Install the plugin on both platforms, that is proxy (BungeeCord or Velocity) and backend server (Spigot).
+
+1. Activate proxy support in the server configuration
+   * This is often found in `spigot.yml` or `paper.yml`
+2. Restart the backend server
+3. Now there is `allowed-proxies.txt` file in the FastLogin folder of the restarted server
+    * BungeeCord: Put your `stats-id` from the BungeeCord config into this file
+    * Velocity: On plugin startup the plugin generates a `proxyId.txt` inside the plugins folder of the proxy
+4. Activate ip forwarding in your proxy config
+5. Check your database settings in the config of FastLogin on your proxy
+    * The proxies only ship with a limited set of drivers where Spigot supports more. Therefore, these are supported:
+    * BungeeCord: `com.mysql.jdbc.Driver` for MySQL/MariaDB
+    * Velocity: `fastlogin.mariadb.jdbc.Driver` for MySQL/MariaDB
+    * Note the embedded file storage SQLite is not available
+    * MySQL/MariaDB requires an external database server running. Check your server provider if there is one available
+   or install one.
+6. Set proxy and Spigot in offline mode by setting the value `onlinemode` in your `config.yml` to false
+7. You should *always* firewall your Spigot server that it's only accessible through your proxy
+   * This is also the case without this plugin
+   * https://www.spigotmc.org/wiki/bungeecord-installation/#post-installation
