@@ -119,12 +119,6 @@
         <repository>
             <id>codemc-releases</id>
             <url>https://repo.codemc.io/repository/maven-public/</url>
-        </repository>
-
-        <!-- GitHub automatic maven builds -->
-        <repository>
-            <id>jitpack.io</id>
-            <url>https://jitpack.io</url>
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
@@ -134,6 +128,15 @@
         <repository>
             <id>placeholderapi</id>
             <url>https://repo.extendedclip.com/content/repositories/placeholderapi</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+
+        <!-- GitHub automatic maven builds -->
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
