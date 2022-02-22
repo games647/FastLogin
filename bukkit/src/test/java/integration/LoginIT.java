@@ -48,8 +48,6 @@ public class LoginIT {
     private static final String API_IMAGE_NAME = "mockserver/mockserver";
     private static final String API_IMAGE = API_IMAGE_NAME + ':' + API_TAG;
 
-    private static final String HOME_FOLDER = "/home/nonroot/";
-
     @Rule
     public MockServerContainer mockServer = new MockServerContainer(DockerImageName.parse(API_IMAGE))
         .withReuse(true);
@@ -57,6 +55,10 @@ public class LoginIT {
     private static final String SERVER_TAG = "1.18.1@sha256:dd3c8d212de585ec73113a0c0c73ac755ec1ff53e65bb09089061584fac02053";
     private static final String SERVER_IMAGE_NAME = "ghcr.io/games647/paperclip";
     private static final String SERVER_IMAGE = SERVER_IMAGE_NAME + ':' + SERVER_TAG;
+
+    private static final String HOME_FOLDER = "/home/nonroot/";
+
+    private static final long MINECRAFT_MAX_MEMORY = 1024 * 1024 * 1024L;
 
     @Rule
     public GenericContainer<?> minecraftServer = new GenericContainer<>(DockerImageName.parse(SERVER_IMAGE))
@@ -73,7 +75,8 @@ public class LoginIT {
             Wait.forLogMessage(".*For help, type \"help\"*\\n", 1)
         )
         .withReuse(true)
-        .withLogConsumer(new Slf4jLogConsumer(LOG));
+        .withLogConsumer(new Slf4jLogConsumer(LOG))
+        .withCreateContainerCmdModifier(cmd -> cmd.getHostConfig().withMemory(MINECRAFT_MAX_MEMORY));
 
     private Map<String, String> getTempFS() {
         Map<String, String> tmpfs = new HashMap<>();
