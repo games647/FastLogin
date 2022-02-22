@@ -88,7 +88,7 @@ public class FastLoginVelocity implements PlatformPlugin<CommandSource> {
 
     @Subscribe
     public void onProxyInitialization(ProxyInitializeEvent event) {
-        scheduler = new AsyncScheduler(logger, getThreadFactory());
+        scheduler = new AsyncScheduler(logger, task -> server.getScheduler().buildTask(this, task).schedule());
         core = new FastLoginCore<>(this);
         core.load();
         loadOrGenerateProxyId();

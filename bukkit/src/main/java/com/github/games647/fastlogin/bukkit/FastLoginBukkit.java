@@ -82,7 +82,7 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
 
     public FastLoginBukkit() {
         this.logger = CommonUtil.initializeLoggerService(getLogger());
-        this.scheduler = new BukkitScheduler(this, logger, getThreadFactory());
+        this.scheduler = new BukkitScheduler(this, logger);
     }
 
     @Override

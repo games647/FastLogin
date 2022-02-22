@@ -28,7 +28,6 @@ package com.github.games647.fastlogin.bukkit;
 import com.github.games647.fastlogin.core.AsyncScheduler;
 
 import java.util.concurrent.Executor;
-import java.util.concurrent.ThreadFactory;
 
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
@@ -38,8 +37,8 @@ public class BukkitScheduler extends AsyncScheduler {
 
     private final Executor syncExecutor;
 
-    public BukkitScheduler(Plugin plugin, Logger logger, ThreadFactory threadFactory) {
-        super(logger, threadFactory);
+    public BukkitScheduler(Plugin plugin, Logger logger) {
+        super(logger, command -> Bukkit.getScheduler().runTaskAsynchronously(plugin, command));
 
         syncExecutor = r -> Bukkit.getScheduler().runTask(plugin, r);
     }
