@@ -120,7 +120,7 @@ public abstract class FloodgateManagement<P extends C, C, L extends LoginSession
             }
         }
 
-        if (!isRegistered && !isAutoRegisterAllowed()) {
+        if (!isRegistered && !isAutoAuthAllowed(autoRegisterFloodgate)) {
             return;
         }
 
@@ -135,25 +135,18 @@ public abstract class FloodgateManagement<P extends C, C, L extends LoginSession
     }
 
     /**
-     * Decude if the player can be auto registered.
-     * The config option 'non-conflicting' is ignored by this function.
+     * Decide if the player can be automatically registered or logged in.<br>
+     * The config option 'non-conflicting' is ignored by this function, as name
+     * conflicts are checked by a different part of the code.
+     * 
+     * @param configValue the value of either 'autoLoginFloodgate' or
+     *                    'autoRegisterFloodgate' from config.yml
      * @return true if the Player can be registered automatically
      */
-    private boolean isAutoRegisterAllowed() {
-        return "true".equals(autoRegisterFloodgate)
-                || "no-conflict".equals(autoRegisterFloodgate) // this was checked before
-                || ("linked".equals(autoRegisterFloodgate) && isLinked);
-    }
-
-    /**
-     * Decide if the player can be auto logged in.
-     * The config option 'non-conflicting' is ignored by this function.
-     * @return true if the Player can be logged in automatically
-     */
-    protected boolean isAutoLoginAllowed() {
-        return "true".equals(autoLoginFloodgate)
-            || "no-conflict".equals(autoRegisterFloodgate) // this was checked before
-            || ("linked".equals(autoLoginFloodgate) && isLinked);
+    protected boolean isAutoAuthAllowed(String configValue) {
+        return "true".equals(configValue)
+                || "no-conflict".equals(configValue) // this was checked before
+                || ("linked".equals(configValue) && isLinked);
     }
 
     /**

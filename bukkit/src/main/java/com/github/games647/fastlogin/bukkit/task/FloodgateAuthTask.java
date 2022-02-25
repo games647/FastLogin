@@ -49,7 +49,7 @@ public class FloodgateAuthTask extends FloodgateManagement<Player, CommandSender
         BukkitLoginSession session = new BukkitLoginSession(player.getName(), isRegistered, profile);
 
         // enable auto login based on the value of 'autoLoginFloodgate' in config.yml
-        session.setVerified(isAutoLoginAllowed());
+        session.setVerified(isAutoAuthAllowed(autoLoginFloodgate));
 
         // run login task
         Runnable forceLoginTask = new ForceLoginTask(core.getPlugin().getCore(), player, session);

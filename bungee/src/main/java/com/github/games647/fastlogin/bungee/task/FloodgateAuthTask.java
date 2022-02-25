@@ -57,7 +57,7 @@ public class FloodgateAuthTask
 
         // run login task
         Runnable forceLoginTask = new ForceLoginTask(core.getPlugin().getCore(), player, server, session,
-                isAutoLoginAllowed());
+                isAutoAuthAllowed(autoLoginFloodgate));
         core.getPlugin().getScheduler().runAsync(forceLoginTask);
     }
 
