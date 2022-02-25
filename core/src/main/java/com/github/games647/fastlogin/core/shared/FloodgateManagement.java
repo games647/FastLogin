@@ -146,6 +146,17 @@ public abstract class FloodgateManagement<P extends C, C, L extends LoginSession
     }
 
     /**
+     * Decide if the player can be auto logged in.
+     * The config option 'non-conflicting' is ignored by this function.
+     * @return true if the Player can be logged in automatically
+     */
+    protected boolean isAutoLoginAllowed() {
+        return "true".equals(autoLoginFloodgate)
+            || "no-conflict".equals(autoRegisterFloodgate) // this was checked before
+            || ("linked".equals(autoLoginFloodgate) && isLinked);
+    }
+
+    /**
      * Decides wether checks for conflicting Java names should be made
      * @return ture if an API call to Mojang is needed
      */

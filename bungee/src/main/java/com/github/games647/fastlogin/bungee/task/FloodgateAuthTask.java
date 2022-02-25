@@ -55,13 +55,9 @@ public class FloodgateAuthTask
         BungeeLoginSession session = new BungeeLoginSession(player.getName(), isRegistered, profile);
         core.getPlugin().getSession().put(player.getPendingConnection(), session);
 
-        // enable auto login based on the value of 'autoLoginFloodgate' in config.yml
-        boolean forcedOnlineMode = autoLoginFloodgate.equals("true")
-                || (autoLoginFloodgate.equals("linked") && isLinked);
-
         // run login task
         Runnable forceLoginTask = new ForceLoginTask(core.getPlugin().getCore(), player, server, session,
-                forcedOnlineMode);
+                isAutoLoginAllowed());
         core.getPlugin().getScheduler().runAsync(forceLoginTask);
     }
 
