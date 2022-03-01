@@ -28,7 +28,7 @@ jobs:
 
       # Setup Java
       - name: Set up JDK
-        uses: actions/setup-java@v2.3.0
+        uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           # Use Java 16, because it's minimum required version by Geyser
