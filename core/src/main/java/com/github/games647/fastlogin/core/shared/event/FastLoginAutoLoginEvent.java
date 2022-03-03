@@ -28,6 +28,9 @@ package com.github.games647.fastlogin.core.shared.event;
 import com.github.games647.fastlogin.core.StoredProfile;
 import com.github.games647.fastlogin.core.shared.LoginSession;
 
+/**
+ * This event fires if the plugin performs an auto login on the platform where the login plugin is.
+ */
 public interface FastLoginAutoLoginEvent extends FastLoginCancellableEvent {
     LoginSession getSession();
     StoredProfile getProfile();

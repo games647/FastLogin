@@ -27,6 +27,9 @@ package com.github.games647.fastlogin.core.shared.event;
 
 import com.github.games647.fastlogin.core.StoredProfile;
 
+/**
+ * This even represents the opt-in premium status change by request.
+ */
 public interface FastLoginPremiumToggleEvent {
 
     StoredProfile getProfile();
