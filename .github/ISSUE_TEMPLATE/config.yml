@@ -7,5 +7,6 @@
 contact_links:
   - name: 📌 Questions
     url: https://github.com/games647/FastLogin/discussions
-    about: You want to ask something
+    about:
+      You want to ask something - general questions. Example includes how to set it up or how it is working internally
 
