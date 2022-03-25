@@ -33,7 +33,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-public class RateLimiterTest {
+public class TickingRateLimiterTest {
 
     private static final long THRESHOLD_MILLI = 10;
 

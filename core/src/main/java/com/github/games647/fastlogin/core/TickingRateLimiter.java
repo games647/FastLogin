@@ -27,7 +27,9 @@ package com.github.games647.fastlogin.core;
 
 import com.google.common.base.Ticker;
 
-import java.util.Arrays;
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Limit the number of requests with a maximum size. Each requests expire after the specified time making it available
@@ -37,20 +39,22 @@ public class TickingRateLimiter implements RateLimiter {
 
     private final Ticker ticker;
 
-    private final long[] requests;
+    // amount of milliseconds to expire
     private final long expireTime;
-    private int position;
+
+    // total request limit
+    private final int requestLimit;
+
+    private final Deque<TimeRecord> records;
+    private int totalRequests;
 
     public TickingRateLimiter(Ticker ticker, int maxLimit, long expireTime) {
         this.ticker = ticker;
 
-        this.requests = new long[maxLimit];
+        this.requestLimit = maxLimit;
         this.expireTime = expireTime;
 
-        // fill the array with expired entry, because nanoTime could overflow and include negative numbers
-        long nowMilli = ticker.read() / 1_000_000;
-        long initialVal = nowMilli - expireTime;
-        Arrays.fill(requests, initialVal);
+        records = new ArrayDeque<>(10);
     }
 
     /**
@@ -64,14 +68,80 @@ public class TickingRateLimiter implements RateLimiter {
         long nowMilli = ticker.read() / 1_000_000;
         synchronized (this) {
             // having synchronized will limit the amount of concurrency a lot
-            long oldest = requests[position];
-            if (nowMilli - oldest >= expireTime) {
-                requests[position] = nowMilli;
-                position = (position + 1) % requests.length;
+            TimeRecord oldest = records.peekFirst();
+            if (oldest != null && oldest.hasExpired(nowMilli)) {
+                records.pop();
+                totalRequests -= oldest.getRequestCount();
+            }
+
+            // total requests reached block any further requests
+            if (totalRequests >= requestLimit) {
+                return false;
+            }
+
+            TimeRecord latest = records.peekLast();
+            if (latest == null) {
+                // empty list - add new record
+                records.add(new TimeRecord(nowMilli, expireTime));
+                totalRequests++;
                 return true;
             }
 
-            return false;
+            int res = latest.compareTo(nowMilli);
+            if (res < 0) {
+                // now is before than the record means time jumps
+                throw new IllegalStateException("Time jumped back");
+            }
+
+            if (res == 0) {
+                // same minute record
+                latest.hit();
+                totalRequests++;
+                return true;
+            }
+
+            // now is one minute newer
+            records.add(new TimeRecord(nowMilli, expireTime));
+            totalRequests++;
+            return true;
+        }
+    }
+
+    private static class TimeRecord implements Comparable<Long> {
+
+        private final long firstMinuteRecord;
+        private final long expireTime;
+        private int count;
+
+        public TimeRecord(long firstMinuteRecord, long expireTime) {
+            this.firstMinuteRecord = firstMinuteRecord;
+            this.expireTime = expireTime;
+            this.count = 1;
+        }
+
+        public void hit() {
+            count++;
+        }
+
+        public int getRequestCount() {
+            return count;
+        }
+
+        public boolean hasExpired(long now) {
+            return firstMinuteRecord + expireTime <= now;
+        }
+
+        @Override
+        public int compareTo(Long other) {
+            if (other < firstMinuteRecord) {
+                return -1;
+            }
+
+            if (other > firstMinuteRecord + TimeUnit.MINUTES.toMillis(1)) {
+                return +1;
+            }
+
+            return 0;
         }
     }
 }
