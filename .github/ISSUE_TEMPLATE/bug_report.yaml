@@ -60,7 +60,7 @@ body:
       label: Relevance
       description: Check list for previous tickets
       options:
-        - label: I tried the latest build
+        - label: I tried the latest build (build refers to development builds not necessary a release version)
           required: true
         - label: |
             I checked for existing tickets -
