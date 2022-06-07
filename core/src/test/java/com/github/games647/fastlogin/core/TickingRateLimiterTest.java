@@ -25,6 +25,8 @@
  */
 package com.github.games647.fastlogin.core;
 
+import com.github.games647.fastlogin.core.antibot.TickingRateLimiter;
+
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 

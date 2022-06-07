@@ -20,6 +20,9 @@ anti-bot:
   connections: 600
   # Amount of minutes after the first connection got inserted will expire and made available
   expire: 10
+  # Action - Which action should be performed when the bucket is full (too many connections)
+  # Allowed values are: 'ignore' (FastLogin drops handling the player) or 'block' (block this incoming connection)
+  action: 'ignore'
 
 # Request a premium login without forcing the player to type a command
 #

@@ -114,9 +114,9 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
             }
 
             if (pluginManager.isPluginEnabled("ProtocolSupport")) {
-                pluginManager.registerEvents(new ProtocolSupportListener(this, core.getRateLimiter()), this);
+                pluginManager.registerEvents(new ProtocolSupportListener(this, core.getAntiBot()), this);
             } else if (pluginManager.isPluginEnabled("ProtocolLib")) {
-                ProtocolLibListener.register(this, core.getRateLimiter());
+                ProtocolLibListener.register(this, core.getAntiBot());
 
                 if (isPluginInstalled("floodgate")) {
                     if (getConfig().getBoolean("floodgatePrefixWorkaround")){

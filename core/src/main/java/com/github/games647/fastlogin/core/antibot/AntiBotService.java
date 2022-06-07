@@ -23,10 +23,40 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.github.games647.fastlogin.core;
+package com.github.games647.fastlogin.core.antibot;
 
-@FunctionalInterface
-public interface RateLimiter {
+import java.net.InetSocketAddress;
 
-    boolean tryAcquire();
+import org.slf4j.Logger;
+
+public class AntiBotService {
+
+    private final Logger logger;
+
+    private final RateLimiter rateLimiter;
+    private final Action limitReachedAction;
+
+    public AntiBotService(Logger logger, RateLimiter rateLimiter, Action limitReachedAction) {
+        this.logger = logger;
+
+        this.rateLimiter = rateLimiter;
+        this.limitReachedAction = limitReachedAction;
+    }
+
+    public Action onIncomingConnection(InetSocketAddress clientAddress, String username) {
+        if (!rateLimiter.tryAcquire()) {
+            logger.warn("Anti-Bot join limit - Ignoring {}", clientAddress);
+            return limitReachedAction;
+        }
+
+        return Action.Continue;
+    }
+
+    public enum Action {
+        Ignore,
+
+        Block,
+
+        Continue;
+    }
 }
