@@ -30,6 +30,7 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
+import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 import com.github.games647.fastlogin.core.antibot.AntiBotService;
 import com.github.games647.fastlogin.core.antibot.AntiBotService.Action;
@@ -124,9 +125,15 @@ public class ProtocolLibListener extends PacketAdapter {
     private void onEncryptionBegin(PacketEvent packetEvent, Player sender) {
         byte[] sharedSecret = packetEvent.getPacket().getByteArrays().read(0);
 
-        packetEvent.getAsyncMarker().incrementProcessingDelay();
-        Runnable verifyTask = new VerifyResponseTask(plugin, packetEvent, sender, sharedSecret, keyPair);
-        plugin.getScheduler().runAsync(verifyTask);
+        BukkitLoginSession session = plugin.getSession(sender.getAddress());
+        if (session == null) {
+            plugin.getLog().warn("GameProfile {} tried to send encryption response at invalid state", sender.getAddress());
+            sender.kickPlayer(plugin.getCore().getMessage("invalid-request"));
+        } else {
+            packetEvent.getAsyncMarker().incrementProcessingDelay();
+            Runnable verifyTask = new VerifyResponseTask(plugin, packetEvent, sender, session, sharedSecret, keyPair);
+            plugin.getScheduler().runAsync(verifyTask);
+        }
     }
 
     private void onLogin(PacketEvent packetEvent, Player player, String username) {
