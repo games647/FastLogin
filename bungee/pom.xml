@@ -201,19 +201,5 @@
                 </exclusion>
             </exclusions>
         </dependency>
-
-        <dependency>
-            <groupId>com.github.Mohist-Community.SodionAuth</groupId>
-            <artifactId>SodionAuth-Bungee</artifactId>
-            <version>2bdfdc854b</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.github.Mohist-Community.SodionAuth</groupId>
-                    <artifactId>SodionAuth-Libs</artifactId>
-                </exclusion>
-            </exclusions>
-            <optional>true</optional>
-            <scope>provided</scope>
-        </dependency>
     </dependencies>
 </project>
