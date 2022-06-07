@@ -95,8 +95,9 @@ public class VerifyResponseTask implements Runnable {
         try {
             BukkitLoginSession session = plugin.getSession(player.getAddress());
             if (session == null) {
-                disconnect("invalid-request", true
-                        , "GameProfile {0} tried to send encryption response at invalid state", player.getAddress());
+                disconnect("invalid-request",
+                    "GameProfile {0} tried to send encryption response at invalid state",
+                    player.getAddress());
             } else {
                 verifyResponse(session);
             }
@@ -117,7 +118,7 @@ public class VerifyResponseTask implements Runnable {
         try {
             loginKey = EncryptionUtil.decryptSharedKey(privateKey, sharedSecret);
         } catch (GeneralSecurityException securityEx) {
-            disconnect("error-kick", false, "Cannot decrypt received contents", securityEx);
+            disconnect("error-kick", "Cannot decrypt received contents", securityEx);
             return;
         }
 
@@ -126,7 +127,7 @@ public class VerifyResponseTask implements Runnable {
                 return;
             }
         } catch (Exception ex) {
-            disconnect("error-kick", false, "Cannot decrypt received contents", ex);
+            disconnect("error-kick", "Cannot decrypt received contents", ex);
             return;
         }
 
@@ -143,7 +144,7 @@ public class VerifyResponseTask implements Runnable {
                 plugin.getLog().info("Profile {} has a verified premium account", requestedUsername);
                 String realUsername = verification.getName();
                 if (realUsername == null) {
-                    disconnect("invalid-session", true, "Username field null for {}", requestedUsername);
+                    disconnect("invalid-session", "Username field null for {}", requestedUsername);
                     return;
                 }
 
@@ -160,12 +161,12 @@ public class VerifyResponseTask implements Runnable {
                 receiveFakeStartPacket(realUsername);
             } else {
                 //user tried to fake an authentication
-                disconnect("invalid-session", true
-                        , "GameProfile {0} ({1}) tried to log in with an invalid session ServerId: {2}"
-                        , session.getRequestUsername(), socketAddress, serverId);
+                disconnect("invalid-session",
+                    "GameProfile {0} ({1}) tried to log in with an invalid session ServerId: {2}",
+                    session.getRequestUsername(), socketAddress, serverId);
             }
         } catch (IOException ioEx) {
-            disconnect("error-kick", false, "Failed to connect to session server", ioEx);
+            disconnect("error-kick", "Failed to connect to session server", ioEx);
         }
     }
 
@@ -189,9 +190,9 @@ public class VerifyResponseTask implements Runnable {
         //https://github.com/bergerkiller/CraftSource/blob/master/net.minecraft.server/LoginListener.java#L182
         if (!Arrays.equals(requestVerify, EncryptionUtil.decrypt(serverKey.getPrivate(), responseVerify))) {
             //check if the verify-token are equal to the server sent one
-            disconnect("invalid-verify-token", true
-                    , "GameProfile {0} ({1}) tried to login with an invalid verify token. Server: {2} Client: {3}"
-                    , session.getRequestUsername(), packetEvent.getPlayer().getAddress(), requestVerify, responseVerify);
+            disconnect("invalid-verify-token",
+                "GameProfile {0} ({1}) tried to login with an invalid verify token. Server: {2} Client: {3}",
+                session.getRequestUsername(), packetEvent.getPlayer().getAddress(), requestVerify, responseVerify);
             return false;
         }
 
@@ -217,15 +218,15 @@ public class VerifyResponseTask implements Runnable {
             try {
                 // Try to get the old (pre MC 1.16.4) encryption method
                 encryptMethod = FuzzyReflection.fromClass(networkManagerClass)
-                        .getMethodByParameters("a", SecretKey.class);
+                    .getMethodByParameters("a", SecretKey.class);
             } catch (IllegalArgumentException exception) {
                 // Get the new encryption method
                 encryptMethod = FuzzyReflection.fromClass(networkManagerClass)
-                        .getMethodByParameters("a", Cipher.class, Cipher.class);
+                    .getMethodByParameters("a", Cipher.class, Cipher.class);
 
                 // Get the needed Cipher helper method (used to generate ciphers from login key)
                 cipherMethod = FuzzyReflection.fromClass(ENCRYPTION_CLASS)
-                        .getMethodByParameters("a", int.class, Key.class);
+                    .getMethodByParameters("a", int.class, Key.class);
             }
         }
 
@@ -245,20 +246,15 @@ public class VerifyResponseTask implements Runnable {
                 encryptMethod.invoke(networkManager, decryptionCipher, encryptionCipher);
             }
         } catch (Exception ex) {
-            disconnect("error-kick", false, "Couldn't enable encryption", ex);
+            disconnect("error-kick", "Couldn't enable encryption", ex);
             return false;
         }
 
         return true;
     }
 
-    private void disconnect(String reasonKey, boolean debug, String logMessage, Object... arguments) {
-        if (debug) {
-            plugin.getLog().debug(logMessage, arguments);
-        } else {
-            plugin.getLog().error(logMessage, arguments);
-        }
-
+    private void disconnect(String reasonKey, String logMessage, Object... arguments) {
+        plugin.getLog().error(logMessage, arguments);
         kickPlayer(plugin.getCore().getMessage(reasonKey));
     }
 
