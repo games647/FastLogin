@@ -96,7 +96,7 @@ public class FastLoginVelocity implements PlatformPlugin<CommandSource> {
             return;
         }
 
-        server.getEventManager().register(this, new ConnectListener(this, core.getRateLimiter()));
+        server.getEventManager().register(this, new ConnectListener(this, core.getAntiBot()));
         server.getEventManager().register(this, new PluginMessageListener(this));
         server.getChannelRegistrar().register(MinecraftChannelIdentifier.create(getName(), ChangePremiumMessage.CHANGE_CHANNEL));
         server.getChannelRegistrar().register(MinecraftChannelIdentifier.create(getName(), SuccessMessage.SUCCESS_CHANNEL));

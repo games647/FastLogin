@@ -26,8 +26,8 @@
 package com.github.games647.fastlogin.velocity.listener;
 
 import com.github.games647.craftapi.UUIDAdapter;
-import com.github.games647.fastlogin.core.RateLimiter;
 import com.github.games647.fastlogin.core.StoredProfile;
+import com.github.games647.fastlogin.core.antibot.RateLimiter;
 import com.github.games647.fastlogin.core.shared.LoginSession;
 import com.github.games647.fastlogin.velocity.FastLoginVelocity;
 import com.github.games647.fastlogin.velocity.VelocityLoginSession;

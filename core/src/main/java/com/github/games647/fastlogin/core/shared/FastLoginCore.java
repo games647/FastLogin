@@ -151,8 +151,8 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
             return () -> true;
         }
 
-        int maxCon = botSection.getInt("anti-bot.connections", 200);
-        long expireTime = botSection.getLong("anti-bot.expire", 5) * 60 * 1_000L;
+        int maxCon = botSection.getInt("connections", 200);
+        long expireTime = botSection.getLong("expire", 5) * 60 * 1_000L;
         if (expireTime > MAX_EXPIRE_RATE) {
             expireTime = MAX_EXPIRE_RATE;
         }
