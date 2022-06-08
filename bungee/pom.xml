@@ -129,7 +129,7 @@
         <dependency>
             <groupId>net.md-5</groupId>
             <artifactId>bungeecord-proxy</artifactId>
-            <version>1.18-R0.1-SNAPSHOT</version>
+            <version>1.19-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
             <!-- Use our own newer api version -->
             <exclusions>
