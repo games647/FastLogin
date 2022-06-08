@@ -60,12 +60,13 @@ Possible values: `Premium`, `Cracked`, `Unknown`
 
 ## Requirements
 
-* Plugin:
-    * [ProtocolLib](https://www.spigotmc.org/resources/protocollib.1997/) or
-    * [ProtocolSupport](https://www.spigotmc.org/resources/protocolsupport.7201/)
-* [Spigot](https://www.spigotmc.org) 1.8.8+
 * Java 8+
-* Run Spigot (or a fork e.g. Paper) and/or BungeeCord (or a fork e.g. Waterfall) in offline mode
+* Server software in offlinemode:
+  * Spigot (or a fork e.g. Paper) 1.8.8+
+    * Protocol plugin:
+      * [ProtocolLib](https://www.spigotmc.org/resources/protocollib.1997/) or
+      * [ProtocolSupport](https://www.spigotmc.org/resources/protocolsupport.7201/)
+  * Latest BungeeCord (or a fork e.g. Waterfall)
 * An auth plugin.
 
 ### Supported auth plugins
