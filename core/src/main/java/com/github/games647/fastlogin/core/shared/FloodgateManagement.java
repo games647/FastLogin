@@ -50,7 +50,7 @@ public abstract class FloodgateManagement<P extends C, C, L extends LoginSession
     protected final String autoRegisterFloodgate;
     protected final String allowNameConflict;
 
-    //variables initialized through run() and accesses by subclasss
+    //variables initialized through run() and accesses by subclass
     protected boolean isRegistered;
     protected StoredProfile profile;
     protected boolean isLinked;
@@ -71,7 +71,7 @@ public abstract class FloodgateManagement<P extends C, C, L extends LoginSession
     public void run() {
         core.getPlugin().getLog().info("Player {} is connecting through Geyser Floodgate.", username);
 
-        // check if the Bedrock player is linked to a Java account 
+        // check if the Bedrock player is linked to a Java account
         isLinked = floodgatePlayer.getLinkedPlayer() != null;
 
         //this happens on Bukkit if it's connected to Bungee
@@ -96,7 +96,7 @@ public abstract class FloodgateManagement<P extends C, C, L extends LoginSession
             }
         } catch (Exception ex) {
             core.getPlugin().getLog().error(
-                    "An error has occured while checking if player {} is registered",
+                    "An error has occurred while checking if player {} is registered",
                     username, ex);
             return;
         }
@@ -104,7 +104,7 @@ public abstract class FloodgateManagement<P extends C, C, L extends LoginSession
         //decide if checks should be made for conflicting Java player names
         if (isNameCheckRequired()) {
             // check for conflicting Premium Java name
-            Optional<Profile> premiumUUID = Optional.empty();
+            Optional<Profile> premiumUUID;
             try {
                 premiumUUID = core.getResolver().findProfile(username);
             } catch (IOException | RateLimitException e) {
@@ -138,7 +138,7 @@ public abstract class FloodgateManagement<P extends C, C, L extends LoginSession
      * Decide if the player can be automatically registered or logged in.<br>
      * The config option 'non-conflicting' is ignored by this function, as name
      * conflicts are checked by a different part of the code.
-     * 
+     *
      * @param configValue the value of either 'autoLoginFloodgate' or
      *                    'autoRegisterFloodgate' from config.yml
      * @return true if the Player can be registered automatically
@@ -150,14 +150,14 @@ public abstract class FloodgateManagement<P extends C, C, L extends LoginSession
     }
 
     /**
-     * Decides wether checks for conflicting Java names should be made
+     * Decides whether checks for conflicting Java names should be made
      * @return ture if an API call to Mojang is needed
      */
     private boolean isNameCheckRequired() {
         //linked players have the same name as their Java profile
         //OR
         //if allowNameConflict is 'false' or 'linked' and the player had a conflicting
-        //name, than they would have been kicked in FloodgateHook#checkNameConflict
+        //name, then they would have been kicked in FloodgateHook#checkNameConflict
         if (isLinked || !"true".equals(allowNameConflict)) {
             return false;
         }

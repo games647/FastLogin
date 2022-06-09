@@ -124,7 +124,7 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
                         logger.info("Floodgate prefix injection workaround has been enabled.");
                         logger.info("If you have problems joining the server, try disabling it in the configuration.");
                     } else {
-                        logger.warn("We have detected that you are runnging FastLogin alongside Floodgate and ProtocolLib.");
+                        logger.warn("We have detected that you are running FastLogin alongside Floodgate and ProtocolLib.");
                         logger.warn("Currently there is an issue with FastLogin that prevents Floodgate name prefixes from showing up "
                                 + "when it is together used with ProtocolLib.");
                         logger.warn("If you would like to use Floodgate name prefixes, you can enable an experimental workaround by changing "

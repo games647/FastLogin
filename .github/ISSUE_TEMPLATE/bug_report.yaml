@@ -36,7 +36,6 @@ body:
     attributes:
       label: Server log
       description: The error, stacktrace or link the complete log. You can use the links above for long versions.
-      render: shell
       placeholder: https://hastebin.com/ / https://gist.github.com/
   - type: input
     attributes:

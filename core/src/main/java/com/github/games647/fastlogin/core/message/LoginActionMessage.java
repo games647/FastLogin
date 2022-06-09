@@ -80,7 +80,7 @@ public class LoginActionMessage implements ChannelMessage {
         //Data is sent through a random player. We have to tell the Bukkit version of this plugin the target
         output.writeUTF(playerName);
 
-        //proxy identifier to check if it's a acceptable proxy
+        //proxy identifier to check if it's an acceptable proxy
         output.writeLong(proxyId.getMostSignificantBits());
         output.writeLong(proxyId.getLeastSignificantBits());
     }

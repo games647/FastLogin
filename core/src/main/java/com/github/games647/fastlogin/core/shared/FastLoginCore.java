@@ -312,7 +312,6 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
 
     public void close() {
         plugin.getLog().info("Safely shutting down scheduler. This could take up to one minute.");
-        plugin.getScheduler().shutdown();
 
         if (storage != null) {
             storage.close();
