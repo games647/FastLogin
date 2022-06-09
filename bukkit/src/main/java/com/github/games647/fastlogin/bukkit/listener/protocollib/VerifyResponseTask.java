@@ -141,10 +141,7 @@ public class VerifyResponseTask implements Runnable {
         try {
             MojangResolver resolver = plugin.getCore().getResolver();
             InetAddress address = socketAddress.getAddress();
-
-            // TODO edit marker
-            Optional<Verification> response = VerifyResponseTask.hasJoined(resolver, requestedUsername, serverId, address);
-
+            Optional<Verification> response = resolver.hasJoined(requestedUsername, serverId, address);
             if (response.isPresent()) {
                 Verification verification = response.get();
                 plugin.getLog().info("Profile {} has a verified premium account", requestedUsername);
@@ -174,83 +171,6 @@ public class VerifyResponseTask implements Runnable {
         } catch (IOException ioEx) {
             disconnect("error-kick", "Failed to connect to session server", ioEx);
         }
-    }
-
-    /**
-     * A reimplementation of {@link MojangResolver#hasJoined(String, String, InetAddress)} using various crude reflection-based hacks
-     * to access the protected code. The significant difference is that unlike in the CraftAPI implementation, which sends the "ip" parameter
-     * when the hostIp parameter is an IPv4 address, but skips it for IPv6, this implementation ommits the "ip" parameter also for IPv4, effectively
-     * enabling transparent proxies to work.
-     *
-     * TODO Reimplement as MojangResolver subclass overriding hasJoined method -> "ProxyAgnosticMojangResolver" perhaps?
-     *
-     * @param resolver The mojang resolver object the method will operate on
-     * @param username The literal username of the player
-     * @param serverHash The computed server hash sent to mojang session servers
-     * @param hostIp The host IP address - not used, kept to maintain similar signature
-     * @return An optional object containing the verification information, if any. If there is no verification information, the session servers consider the join invalid.
-     * @throws IOException When an error occurs during the HTTP communication
-     * @author games647, Enginecrafter77
-     */
-    public static Optional<Verification> hasJoined(MojangResolver resolver, String username, String serverHash, InetAddress hostIp) throws IOException {
-        /*String url;
-        if (hostIp instanceof Inet6Address) {
-            url = String.format("https://sessionserver.mojang.com/session/minecraft/hasJoined?username=%s&serverId=%s", username, serverHash);
-        } else {
-            String encodedIP = URLEncoder.encode(hostIp.getHostAddress(), StandardCharsets.UTF_8.name());
-            url = String.format("https://sessionserver.mojang.com/session/minecraft/hasJoined?username=%s&serverId=%s&ip=%s", username, serverHash, encodedIP);
-        }*/
-        String url = String.format("https://sessionserver.mojang.com/session/minecraft/hasJoined?username=%s&serverId=%s", username, serverHash);
-
-        try
-        {
-            Class<?> inputStreamActionClass = Class.forName("com.github.games647.craftapi.resolver.AbstractResolver$InputStreamAction");
-            Method getConnectionMethod = AbstractResolver.class.getDeclaredMethod("getConnection", String.class);
-            Method parseRequestMethod = AbstractResolver.class.getDeclaredMethod("parseRequest", HttpURLConnection.class, inputStreamActionClass);
-            Method readJsonMethod = AbstractResolver.class.getDeclaredMethod("readJson", InputStream.class, Class.class);
-
-            getConnectionMethod.setAccessible(true);
-            parseRequestMethod.setAccessible(true);
-            readJsonMethod.setAccessible(true);
-
-            HttpURLConnection conn = (HttpURLConnection)getConnectionMethod.invoke(resolver, url);
-            int responseCode = conn.getResponseCode();
-
-            Verification result = null;
-            if(responseCode != 204)
-            {
-                AbstractResolverAdapter.InputStreamActionAdapter<Verification> action = new AbstractResolverAdapter.InputStreamActionAdapter<Verification>() {
-                    @Override
-                    public Verification useStream(InputStream inp) throws IOException
-                    {
-                        try
-                        {
-                            return (Verification)readJsonMethod.invoke(resolver, new Object[] {inp, Verification.class});
-                        }
-                        catch(ReflectiveOperationException exc)
-                        {
-                            throw new IOException("Reflective method access failed", exc);
-                        }
-                    }
-                };
-                result = (Verification)parseRequestMethod.invoke(resolver, new Object[] {conn, action});
-            }
-            return Optional.ofNullable(result);
-        }
-        catch(ReflectiveOperationException exc)
-        {
-            throw new RuntimeException("Error occured in reflective hacks to MojangResolver", exc);
-        }
-    }
-
-    /**
-     * An adapter class used to make the InputStreamAction interface accessible to us.
-     * I know, it's a crude and disgusting solution, but bear with me, it's just temporary.
-     */
-    public static class AbstractResolverAdapter extends AbstractResolver
-    {
-        @FunctionalInterface
-        protected static interface InputStreamActionAdapter<R> extends AbstractResolver.InputStreamAction<R> {}
     }
 
     private void setPremiumUUID(UUID premiumUUID) {

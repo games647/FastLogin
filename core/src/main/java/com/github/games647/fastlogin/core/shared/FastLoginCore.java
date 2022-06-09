@@ -33,6 +33,7 @@ import com.github.games647.fastlogin.core.TickingRateLimiter;
 import com.github.games647.fastlogin.core.hooks.AuthPlugin;
 import com.github.games647.fastlogin.core.hooks.DefaultPasswordGenerator;
 import com.github.games647.fastlogin.core.hooks.PasswordGenerator;
+import com.github.games647.fastlogin.core.mojang.ProxyAgnosticMojangResolver;
 import com.github.games647.fastlogin.core.storage.MySQLStorage;
 import com.github.games647.fastlogin.core.storage.SQLStorage;
 import com.github.games647.fastlogin.core.storage.SQLiteStorage;
@@ -83,7 +84,8 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
     private final Collection<UUID> pendingConfirms = new HashSet<>();
     private final T plugin;
 
-    private final MojangResolver resolver = new MojangResolver();
+    //private final MojangResolver resolver = new MojangResolver();
+    private final MojangResolver resolver = new ProxyAgnosticMojangResolver();
 
     private Configuration config;
     private SQLStorage storage;
