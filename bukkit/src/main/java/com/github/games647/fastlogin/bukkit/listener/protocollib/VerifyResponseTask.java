@@ -32,6 +32,7 @@ import com.comphenix.protocol.injector.server.TemporaryPlayerFactory;
 import com.comphenix.protocol.reflect.FieldUtils;
 import com.comphenix.protocol.reflect.FuzzyReflection;
 import com.comphenix.protocol.utility.MinecraftReflection;
+import com.comphenix.protocol.utility.MinecraftVersion;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
 import com.github.games647.craftapi.model.auth.Verification;
@@ -278,9 +279,14 @@ public class VerifyResponseTask implements Runnable {
         //see StartPacketListener for packet information
         PacketContainer startPacket = new PacketContainer(START);
 
-        //uuid is ignored by the packet definition
-        WrappedGameProfile fakeProfile = new WrappedGameProfile(UUID.randomUUID(), username);
-        startPacket.getGameProfiles().write(0, fakeProfile);
+        if (MinecraftVersion.atOrAbove(new MinecraftVersion(1, 19, 0))) {
+            startPacket.getStrings().write(0, username);
+        } else {
+            //uuid is ignored by the packet definition
+            WrappedGameProfile fakeProfile = new WrappedGameProfile(UUID.randomUUID(), username);
+            startPacket.getGameProfiles().write(0, fakeProfile);
+        }
+
         try {
             //we don't want to handle our own packets so ignore filters
             startPacket.setMeta(ProtocolLibListener.SOURCE_META_KEY, plugin.getName());
