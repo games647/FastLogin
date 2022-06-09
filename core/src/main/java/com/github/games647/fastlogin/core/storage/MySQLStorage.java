@@ -52,7 +52,7 @@ public class MySQLStorage extends SQLStorage {
         config.addDataSourceProperty("useSSL", useSSL);
         config.addDataSourceProperty("requireSSL", useSSL);
 
-        // adding paranoid hides hostname, username, version and so
+        // adding paranoid, hides hostname, username, version and so
         // could be useful for hiding server details
         config.addDataSourceProperty("paranoid", true);
 
@@ -86,7 +86,7 @@ public class MySQLStorage extends SQLStorage {
         config.addDataSourceProperty("elideSetAutoCommits", true);
 
         // default true - internal timers for idle calculation -> removes System.getCurrentTimeMillis call per query
-        // Some platforms are slow on this and it could affect the throughput about 3% according to MySQL
+        // Some platforms are slow on this, it could affect the throughput about 3% according to MySQL
         // performance gems presentation
         // In our case it can be useful to see the time in error messages
         // config.addDataSourceProperty("maintainTimeStats", false);

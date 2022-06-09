@@ -52,12 +52,6 @@ public class AsyncScheduler {
 
     private final AtomicInteger currentlyRunning = new AtomicInteger();
 
-    /*
-    private final ExecutorService databaseExecutor = new ThreadPoolExecutor(1, 10,
-            0L, TimeUnit.MILLISECONDS,
-            new LinkedBlockingQueue<>(MAX_CAPACITY));
-     */
-
     public AsyncScheduler(Logger logger, Executor processingPool) {
         this.logger = logger;
         this.processingPool = processingPool;
@@ -75,10 +69,5 @@ public class AsyncScheduler {
             logger.warn("Error occurred on thread pool", error);
             return null;
         });
-    }
-
-    public void shutdown() {
-        // MoreExecutors.shutdownAndAwaitTermination(processingPool, 1, TimeUnit.MINUTES);
-        //MoreExecutors.shutdownAndAwaitTermination(databaseExecutor, 1, TimeUnit.MINUTES);
     }
 }

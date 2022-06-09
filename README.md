@@ -125,6 +125,6 @@ Install the plugin on both platforms, that is proxy (BungeeCord or Velocity) and
     * MySQL/MariaDB requires an external database server running. Check your server provider if there is one available
    or install one.
 6. Set proxy and Spigot in offline mode by setting the value `onlinemode` in your `config.yml` to false
-7. You should *always* firewall your Spigot server that it's only accessible through your proxy
+7. You should *always* configure the firewall for your Spigot server so that it's only accessible through your proxy
    * This is also the case without this plugin
    * https://www.spigotmc.org/wiki/bungeecord-installation/#post-installation

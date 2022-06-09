@@ -115,9 +115,8 @@ public class StoredProfile extends Profile {
     @Override
     public synchronized boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof StoredProfile)) return false;
+        if (!(o instanceof StoredProfile that)) return false;
         if (!super.equals(o)) return false;
-        StoredProfile that = (StoredProfile) o;
         return rowId == that.rowId && premium == that.premium
                 && Objects.equals(lastIp, that.lastIp) && lastLogin.equals(that.lastLogin);
     }

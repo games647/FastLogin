@@ -40,9 +40,10 @@ import com.velocitypowered.api.event.connection.PluginMessageEvent;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ServerConnection;
 import com.velocitypowered.api.proxy.messages.MinecraftChannelIdentifier;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 
 import java.util.Arrays;
+
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 
 public class PluginMessageListener {
 
@@ -66,7 +67,7 @@ public class PluginMessageListener {
         }
 
         //the client shouldn't be able to read the messages in order to know something about server internal states
-        //moreover the client shouldn't be able fake a running premium check by sending the result message
+        //moreover the client shouldn't be able to fake a running premium check by sending the result message
         pluginMessageEvent.setResult(PluginMessageEvent.ForwardResult.handled());
 
         if (!(pluginMessageEvent.getSource() instanceof ServerConnection)) {

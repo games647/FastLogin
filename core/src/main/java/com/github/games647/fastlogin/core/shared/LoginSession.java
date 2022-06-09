@@ -27,7 +27,6 @@ package com.github.games647.fastlogin.core.shared;
 
 import com.github.games647.fastlogin.core.StoredProfile;
 import com.google.common.base.MoreObjects;
-import com.google.common.base.Objects;
 
 import java.util.UUID;
 
@@ -35,7 +34,7 @@ public abstract class LoginSession {
 
     private final StoredProfile profile;
 
-    private String requestUsername;
+    private final String requestUsername;
     private String username;
     private UUID uuid;
 
