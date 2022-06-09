@@ -84,8 +84,7 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
     private final Collection<UUID> pendingConfirms = new HashSet<>();
     private final T plugin;
 
-    //private final MojangResolver resolver = new MojangResolver();
-    private final MojangResolver resolver = new ProxyAgnosticMojangResolver();
+    private MojangResolver resolver;
 
     private Configuration config;
     private SQLStorage storage;
@@ -119,6 +118,9 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
             plugin.getLog().error("Failed to load yaml files", ioEx);
             return;
         }
+
+        // Initialize the resolver based on the config parameter
+        this.resolver = this.config.getBoolean("useProxyAgnosticResolver", false) ? new ProxyAgnosticMojangResolver() : new MojangResolver();
 
         rateLimiter = createRateLimiter(config.getSection("anti-bot"));
         Set<Proxy> proxies = config.getStringList("proxies")
