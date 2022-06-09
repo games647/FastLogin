@@ -35,7 +35,7 @@
     <packaging>pom</packaging>
 
     <name>FastLogin</name>
-    <version>1.11-SNAPSHOT</version>
+    <version>1.12-SNAPSHOT</version>
 
     <url>https://www.spigotmc.org/resources/fastlogin.14153/</url>
     <description>
