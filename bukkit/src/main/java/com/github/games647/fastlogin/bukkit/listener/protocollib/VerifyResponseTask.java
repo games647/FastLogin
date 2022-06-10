@@ -164,9 +164,7 @@ public class VerifyResponseTask implements Runnable {
                 receiveFakeStartPacket(realUsername);
             } else {
                 //user tried to fake an authentication
-                disconnect("invalid-session",
-                    String.format("GameProfile %s (%s) tried to log in with an invalid session. ServerId: %s",
-                    session.getRequestUsername(), socketAddress, serverId));
+                disconnect("invalid-session", "GameProfile {} ({}) tried to log in with an invalid session. ServerId: {}", session.getRequestUsername(), socketAddress, serverId);
             }
         } catch (IOException ioEx) {
             disconnect("error-kick", "Failed to connect to session server", ioEx);
