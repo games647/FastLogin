@@ -28,7 +28,7 @@ package com.github.games647.fastlogin.bukkit.listener.protocollib;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
-import com.comphenix.protocol.injector.server.TemporaryPlayerFactory;
+import com.comphenix.protocol.injector.temporary.TemporaryPlayerFactory;
 import com.comphenix.protocol.reflect.FieldUtils;
 import com.comphenix.protocol.reflect.FuzzyReflection;
 import com.comphenix.protocol.utility.MinecraftReflection;
@@ -37,18 +37,14 @@ import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
 import com.github.games647.craftapi.model.auth.Verification;
 import com.github.games647.craftapi.model.skin.SkinProperty;
-import com.github.games647.craftapi.resolver.AbstractResolver;
 import com.github.games647.craftapi.resolver.MojangResolver;
 import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.Reader;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.net.*;
-import java.nio.charset.StandardCharsets;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.security.GeneralSecurityException;
 import java.security.Key;
 import java.security.KeyPair;
@@ -263,15 +259,11 @@ public class VerifyResponseTask implements Runnable {
     private void kickPlayer(String reason) {
         PacketContainer kickPacket = new PacketContainer(DISCONNECT);
         kickPacket.getChatComponents().write(0, WrappedChatComponent.fromText(reason));
-        try {
-            //send kick packet at login state
-            //the normal event.getPlayer.kickPlayer(String) method does only work at play state
-            ProtocolLibrary.getProtocolManager().sendServerPacket(player, kickPacket);
-            //tell the server that we want to close the connection
-            player.kickPlayer("Disconnect");
-        } catch (InvocationTargetException ex) {
-            plugin.getLog().error("Error sending kick packet for: {}", player, ex);
-        }
+        //send kick packet at login state
+        //the normal event.getPlayer.kickPlayer(String) method does only work at play state
+        ProtocolLibrary.getProtocolManager().sendServerPacket(player, kickPacket);
+        //tell the server that we want to close the connection
+        player.kickPlayer("Disconnect");
     }
 
     //fake a new login packet in order to let the server handle all the other stuff
@@ -287,14 +279,8 @@ public class VerifyResponseTask implements Runnable {
             startPacket.getGameProfiles().write(0, fakeProfile);
         }
 
-        try {
-            //we don't want to handle our own packets so ignore filters
-            startPacket.setMeta(ProtocolLibListener.SOURCE_META_KEY, plugin.getName());
-            ProtocolLibrary.getProtocolManager().recieveClientPacket(player, startPacket, true);
-        } catch (InvocationTargetException | IllegalAccessException ex) {
-            plugin.getLog().warn("Failed to fake a new start packet for: {}", username, ex);
-            //cancel the event in order to prevent the server receiving an invalid packet
-            kickPlayer(plugin.getCore().getMessage("error-kick"));
-        }
+        //we don't want to handle our own packets so ignore filters
+        startPacket.setMeta(ProtocolLibListener.SOURCE_META_KEY, plugin.getName());
+        ProtocolLibrary.getProtocolManager().receiveClientPacket(player, startPacket, true);
     }
 }
