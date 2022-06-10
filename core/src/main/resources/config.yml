@@ -159,7 +159,7 @@ premium-warning: true
 # negligible to no security impact.
 #
 # This setting works on a similar principle as 'prevent-proxy' setting in server.properties.
-# When set to false, the server behaves like prevent-proxy was set to false and vice-versa.
+# When set to false, the server behaves like prevent-proxy was set to true and vice-versa.
 # Normally, when you use the prevent-proxy=true, you would want this disabled.
 #
 # Please note that this setting has no effect when used outside of Spigot+ProtocolLib context.
