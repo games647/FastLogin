@@ -42,21 +42,34 @@ import java.util.Optional;
  * @author games647, Enginecrafter77
  */
 public class ProxyAgnosticMojangResolver extends MojangResolver {
+	/**
+	 * A formatting string containing an URL used to call the {@code hasJoined} method on mojang session servers.
+	 *
+	 * Formatting parameters:
+	 *  1. The username of the player in question
+	 *  2. The serverId of this server
+	 */
+	public static final String MOJANG_SESSIONSERVER_HASJOINED_CALL_URLFMT = "https://sessionserver.mojang.com/session/minecraft/hasJoined?username=%s&serverId=%s";
+
 	@Override
 	public Optional<Verification> hasJoined(String username, String serverHash, InetAddress hostIp) throws IOException
 	{
-		String url = String.format("https://sessionserver.mojang.com/session/minecraft/hasJoined?username=%s&serverId=%s", username, serverHash);
+		String url = String.format(MOJANG_SESSIONSERVER_HASJOINED_CALL_URLFMT, username, serverHash);
 
 		HttpURLConnection conn = this.getConnection(url);
 		int responseCode = conn.getResponseCode();
 
 		Verification verification = null;
-		if(responseCode != 204)
+
+		// Mojang session servers send HTTP 204 (NO CONTENT) when the authentication seems invalid
+		// If that's not our case, the authentication is valid, and so we can parse the response.
+		if(responseCode != HttpURLConnection.HTTP_NO_CONTENT)
 			verification = this.parseRequest(conn, this::parseVerification);
+
 		return Optional.ofNullable(verification);
 	}
 
-	// Functional implementation of InputStreamAction
+	// Functional implementation of InputStreamAction, used in hasJoined method in parseRequest call
 	protected Verification parseVerification(InputStream input) throws IOException
 	{
 		return this.readJson(input, Verification.class);
