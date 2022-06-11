@@ -31,6 +31,7 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
+import com.comphenix.protocol.wrappers.WrappedGameProfile;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 import com.github.games647.fastlogin.core.antibot.AntiBotService;
 import com.github.games647.fastlogin.core.antibot.AntiBotService.Action;
@@ -94,7 +95,7 @@ public class ProtocolLibListener extends PacketAdapter {
             PacketContainer packet = packetEvent.getPacket();
 
             InetSocketAddress address = sender.getAddress();
-            String username = packet.getGameProfiles().read(0).getName();
+            String username = getUsername(packet);
 
             Action action = antiBotService.onIncomingConnection(address, username);
             switch (action) {
@@ -153,5 +154,15 @@ public class ProtocolLibListener extends PacketAdapter {
         packetEvent.getAsyncMarker().incrementProcessingDelay();
         Runnable nameCheckTask = new NameCheckTask(plugin, random, player, packetEvent, username, keyPair.getPublic());
         plugin.getScheduler().runAsync(nameCheckTask);
+    }
+
+    private String getUsername(PacketContainer packet) {
+        WrappedGameProfile profile = packet.getGameProfiles().readSafely(0);
+        if (profile == null) {
+            return packet.getStrings().read(0);
+        }
+
+        //player.getName() won't work at this state
+        return profile.getName();
     }
 }
