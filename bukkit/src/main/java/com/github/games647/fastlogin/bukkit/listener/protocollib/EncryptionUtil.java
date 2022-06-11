@@ -25,15 +25,28 @@
  */
 package com.github.games647.fastlogin.bukkit.listener.protocollib;
 
+import com.github.games647.fastlogin.bukkit.listener.protocollib.packet.ClientPublicKey;
+import com.google.common.io.Resources;
+
+import java.io.IOException;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
+import java.security.InvalidKeyException;
+import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.security.Signature;
+import java.security.SignatureException;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.X509EncodedKeySpec;
+import java.time.Instant;
+import java.util.Base64;
+import java.util.Base64.Encoder;
 import java.util.Random;
 
 import javax.crypto.Cipher;
@@ -46,10 +59,24 @@ import javax.crypto.spec.SecretKeySpec;
  *
  * @see net.minecraft.server.MinecraftEncryption
  */
-public class EncryptionUtil {
+class EncryptionUtil {
 
     public static final int VERIFY_TOKEN_LENGTH = 4;
     public static final String KEY_PAIR_ALGORITHM = "RSA";
+
+    private static final int RSA_LENGTH = 1_024;
+
+    private static final PublicKey mojangSessionKey;
+    private static final int LINE_LENGTH = 76;
+    private static final Encoder KEY_ENCODER = Base64.getMimeEncoder(LINE_LENGTH, "\n".getBytes(StandardCharsets.UTF_8));
+
+    static {
+        try {
+            mojangSessionKey = loadMojangSessionKey();
+        } catch (IOException | NoSuchAlgorithmException | InvalidKeySpecException ex) {
+            throw new RuntimeException("Failed to load Mojang session key", ex);
+        }
+    }
 
     private EncryptionUtil() {
         // utility
@@ -65,7 +92,7 @@ public class EncryptionUtil {
         try {
             KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(KEY_PAIR_ALGORITHM);
 
-            keyPairGenerator.initialize(1_024);
+            keyPairGenerator.initialize(RSA_LENGTH);
             return keyPairGenerator.generateKeyPair();
         } catch (NoSuchAlgorithmException nosuchalgorithmexception) {
             // Should be existing in every vm
@@ -118,6 +145,33 @@ public class EncryptionUtil {
     public static SecretKey decryptSharedKey(PrivateKey privateKey, byte[] sharedKey) throws GeneralSecurityException {
         // SecretKey a(PrivateKey var0, byte[] var1)
         return new SecretKeySpec(decrypt(privateKey, sharedKey), "AES");
+    }
+
+    public static boolean verifyClientKey(ClientPublicKey clientKey, Instant verifyTimstamp)
+        throws SignatureException, NoSuchAlgorithmException, InvalidKeyException {
+        if (!verifyTimstamp.isBefore(clientKey.getExpiry())) {
+            return false;
+        }
+
+        Signature signature = Signature.getInstance("SHA1withRSA");
+        signature.initVerify(mojangSessionKey);
+        signature.update(toSignable(clientKey).getBytes(StandardCharsets.US_ASCII));
+        return signature.verify(clientKey.getSignature());
+    }
+
+    private static PublicKey loadMojangSessionKey()
+        throws IOException, NoSuchAlgorithmException, InvalidKeySpecException {
+        var keyUrl = Resources.getResource("yggdrasil_session_pubkey.der");
+        var keyData = Resources.toByteArray(keyUrl);
+        var keySpec = new X509EncodedKeySpec(keyData);
+
+        return KeyFactory.getInstance("RSA").generatePublic(keySpec);
+    }
+
+    private static String toSignable(ClientPublicKey clientPublicKey) {
+        long expiry = clientPublicKey.getExpiry().toEpochMilli();
+        String encoded = KEY_ENCODER.encodeToString(clientPublicKey.getKey());
+        return expiry + "-----BEGIN RSA PUBLIC KEY-----\n" + encoded + "\n-----END RSA PUBLIC KEY-----\n";
     }
 
     public static byte[] decrypt(PrivateKey key, byte[] data) throws GeneralSecurityException {

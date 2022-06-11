@@ -27,18 +27,27 @@ package com.github.games647.fastlogin.bukkit.listener.protocollib;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.events.InternalStructure;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
-import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
+import com.comphenix.protocol.reflect.FuzzyReflection;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
+import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
+import com.github.games647.fastlogin.bukkit.listener.protocollib.packet.ClientPublicKey;
 import com.github.games647.fastlogin.core.antibot.AntiBotService;
 import com.github.games647.fastlogin.core.antibot.AntiBotService.Action;
 
 import java.net.InetSocketAddress;
+import java.security.InvalidKeyException;
 import java.security.KeyPair;
+import java.security.NoSuchAlgorithmException;
+import java.security.PublicKey;
 import java.security.SecureRandom;
+import java.security.SignatureException;
+import java.time.Instant;
+import java.util.Optional;
 
 import org.bukkit.entity.Player;
 
@@ -149,11 +158,34 @@ public class ProtocolLibListener extends PacketAdapter {
             username = (String) packetEvent.getPacket().getMeta("original_name").get();
         }
 
+        if (!verifyPublicKey(packet)) {
+            plugin.getLog().warn("Invalid public key from player {}", username);
+            return;
+        }
+
         plugin.getLog().trace("GameProfile {} with {} connecting", sessionKey, username);
 
         packetEvent.getAsyncMarker().incrementProcessingDelay();
         Runnable nameCheckTask = new NameCheckTask(plugin, random, player, packetEvent, username, keyPair.getPublic());
         plugin.getScheduler().runAsync(nameCheckTask);
+    }
+
+    private boolean verifyPublicKey(PacketContainer packet) {
+        Optional<InternalStructure> internalStructure = packet.getOptionalStructures().readSafely(0);
+        if (internalStructure == null) {
+            return true;
+        }
+
+        Object instance = internalStructure.get().getHandle();
+        Instant expires = FuzzyReflection.getFieldValue(instance, Instant.class, true);
+        PublicKey key = FuzzyReflection.getFieldValue(instance, PublicKey.class, true);
+        byte[] signature = FuzzyReflection.getFieldValue(instance, byte[].class, true);
+        ClientPublicKey clientKey = new ClientPublicKey(expires, key.getEncoded(), signature);
+        try {
+            return EncryptionUtil.verifyClientKey(clientKey, Instant.now());
+        } catch (SignatureException | InvalidKeyException | NoSuchAlgorithmException ex) {
+            return false;
+        }
     }
 
     private String getUsername(PacketContainer packet) {
