@@ -36,15 +36,18 @@ import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
 import com.github.games647.craftapi.model.auth.Verification;
 import com.github.games647.craftapi.model.skin.SkinProperty;
+import com.github.games647.craftapi.resolver.AbstractResolver;
 import com.github.games647.craftapi.resolver.MojangResolver;
 import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.Reader;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
+import java.net.*;
+import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.security.Key;
 import java.security.KeyPair;
@@ -161,9 +164,7 @@ public class VerifyResponseTask implements Runnable {
                 receiveFakeStartPacket(realUsername);
             } else {
                 //user tried to fake an authentication
-                disconnect("invalid-session",
-                    "GameProfile {0} ({1}) tried to log in with an invalid session ServerId: {2}",
-                    session.getRequestUsername(), socketAddress, serverId);
+                disconnect("invalid-session", "GameProfile {} ({}) tried to log in with an invalid session. ServerId: {}", session.getRequestUsername(), socketAddress, serverId);
             }
         } catch (IOException ioEx) {
             disconnect("error-kick", "Failed to connect to session server", ioEx);
