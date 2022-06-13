@@ -27,12 +27,12 @@ package com.github.games647.fastlogin.bukkit.listener.protocollib;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.events.InternalStructure;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
-import com.comphenix.protocol.reflect.FuzzyReflection;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
+import com.comphenix.protocol.wrappers.WrappedProfilePublicKey;
+import com.comphenix.protocol.wrappers.WrappedProfilePublicKey.WrappedProfileKeyData;
 import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 import com.github.games647.fastlogin.bukkit.listener.protocollib.packet.ClientPublicKey;
@@ -47,7 +47,6 @@ import java.security.PublicKey;
 import java.security.SecureRandom;
 import java.security.SignatureException;
 import java.time.Instant;
-import java.util.Optional;
 
 import org.bukkit.entity.Player;
 
@@ -171,15 +170,15 @@ public class ProtocolLibListener extends PacketAdapter {
     }
 
     private boolean verifyPublicKey(PacketContainer packet) {
-        Optional<InternalStructure> internalStructure = packet.getOptionalStructures().readSafely(0);
-        if (internalStructure == null) {
+        WrappedProfileKeyData profileKey = packet.getProfilePublicKeys().optionRead(0)
+            .map(WrappedProfilePublicKey::getKeyData).orElse(null);
+        if (profileKey == null) {
             return true;
         }
 
-        Object instance = internalStructure.get().getHandle();
-        Instant expires = FuzzyReflection.getFieldValue(instance, Instant.class, true);
-        PublicKey key = FuzzyReflection.getFieldValue(instance, PublicKey.class, true);
-        byte[] signature = FuzzyReflection.getFieldValue(instance, byte[].class, true);
+        Instant expires = profileKey.getExpireTime();
+        PublicKey key = profileKey.getKey();
+        byte[] signature = profileKey.getSignature();
         ClientPublicKey clientKey = new ClientPublicKey(expires, key.getEncoded(), signature);
         try {
             return EncryptionUtil.verifyClientKey(clientKey, Instant.now());
