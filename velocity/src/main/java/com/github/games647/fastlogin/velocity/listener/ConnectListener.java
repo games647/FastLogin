@@ -28,10 +28,12 @@ package com.github.games647.fastlogin.velocity.listener;
 import com.github.games647.craftapi.UUIDAdapter;
 import com.github.games647.fastlogin.core.RateLimiter;
 import com.github.games647.fastlogin.core.StoredProfile;
+import com.github.games647.fastlogin.core.hooks.FloodgateService;
 import com.github.games647.fastlogin.core.shared.LoginSession;
 import com.github.games647.fastlogin.velocity.FastLoginVelocity;
 import com.github.games647.fastlogin.velocity.VelocityLoginSession;
 import com.github.games647.fastlogin.velocity.task.AsyncPremiumCheck;
+import com.github.games647.fastlogin.velocity.task.FloodgateAuthTask;
 import com.github.games647.fastlogin.velocity.task.ForceLoginTask;
 import com.velocitypowered.api.event.Continuation;
 import com.velocitypowered.api.event.Subscribe;
@@ -43,6 +45,7 @@ import com.velocitypowered.api.proxy.InboundConnection;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 import com.velocitypowered.api.util.GameProfile;
+import org.geysermc.floodgate.api.player.FloodgatePlayer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -117,6 +120,16 @@ public class ConnectListener {
     public void onServerConnected(ServerConnectedEvent serverConnectedEvent) {
         Player player = serverConnectedEvent.getPlayer();
         RegisteredServer server = serverConnectedEvent.getServer();
+
+        FloodgateService floodgateService = plugin.getFloodgateService();
+        if (floodgateService != null) {
+            FloodgatePlayer floodgatePlayer = floodgateService.getFloodgatePlayer(player.getUniqueId());
+            if (floodgatePlayer != null) {
+                Runnable floodgateAuthTask = new FloodgateAuthTask(plugin.getCore(), player, floodgatePlayer, server);
+                plugin.getScheduler().runAsync(floodgateAuthTask);
+                return;
+            }
+        }
 
         VelocityLoginSession session = plugin.getSession().get(player.getRemoteAddress());
         if (session == null) {

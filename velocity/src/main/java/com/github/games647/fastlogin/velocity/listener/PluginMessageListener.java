@@ -26,6 +26,7 @@
 package com.github.games647.fastlogin.velocity.listener;
 
 import com.github.games647.fastlogin.core.StoredProfile;
+import com.github.games647.fastlogin.core.hooks.FloodgateService;
 import com.github.games647.fastlogin.core.message.ChangePremiumMessage;
 import com.github.games647.fastlogin.core.message.SuccessMessage;
 import com.github.games647.fastlogin.core.shared.FastLoginCore;
@@ -113,7 +114,15 @@ public class PluginMessageListener {
     }
 
     private void onSuccessMessage(Player forPlayer) {
-        if (forPlayer.isOnlineMode()){
+        boolean shouldPersist = forPlayer.isOnlineMode();
+
+        FloodgateService floodgateService = plugin.getFloodgateService();
+        if (!shouldPersist && floodgateService != null) {
+            // always save floodgate players to lock this username
+            shouldPersist = floodgateService.isFloodgatePlayer(forPlayer.getUniqueId());
+        }
+
+        if (shouldPersist){
             //bukkit module successfully received and force logged in the user
             //update only on success to prevent corrupt data
             VelocityLoginSession loginSession = plugin.getSession().get(forPlayer.getRemoteAddress());
