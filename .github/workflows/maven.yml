@@ -7,37 +7,37 @@ name: Java CI
 # Build on every pull request regardless of the branch
 # Wiki: https://help.github.com/en/actions/reference/events-that-trigger-workflows
 on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+    push:
+        branches:
+            - main
+    pull_request:
+        branches:
+            - main
 
 jobs:
-  # job id
-  build_and_test:
+    # job id
+    build_and_test:
 
-    # Environment image - always use the newest OS
-    runs-on: ubuntu-latest
+        # Environment image - always use the newest OS
+        runs-on: ubuntu-latest
 
-    # Run steps
-    steps:
-      # Pull changes
-      - uses: actions/checkout@v3
+        # Run steps
+        steps:
+            # Pull changes
+            -   uses: actions/checkout@v3
 
-      # Setup Java
-      - name: Set up JDK
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'temurin'
-          # Use Java 16, because it's minimum required version by Geyser
-          java-version: 16
-          cache: 'maven'
+            # Setup Java
+            -   name: Set up JDK
+                uses: actions/setup-java@v3
+                with:
+                    distribution: 'temurin'
+                    # Use Java 16+, because it's minimum required version by Geyser
+                    java-version: 17
+                    cache: 'maven'
 
-      # Build and test (included in package)
-      - name: Build with Maven and test
-        # Run non-interactive, package (with compile+test),
-        # ignore snapshot updates, because they are likely to have breaking changes, enforce checksums to validate
-        # possible errors in dependencies
-        run: mvn test --batch-mode --no-snapshot-updates --strict-checksums --file pom.xml
+            # Build and test (included in package)
+            -   name: Build with Maven and test
+                # Run non-interactive, package (with compile+test),
+                # ignore snapshot updates, because they are likely to have breaking changes, enforce checksums to validate
+                # possible errors in dependencies
+                run: mvn test --batch-mode --no-snapshot-updates --strict-checksums --file pom.xml
