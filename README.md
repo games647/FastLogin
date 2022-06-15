@@ -60,7 +60,7 @@ Possible values: `Premium`, `Cracked`, `Unknown`
 
 ## Requirements
 
-* Java 8+
+* Java 17+
 * Server software in offlinemode:
   * Spigot (or a fork e.g. Paper) 1.8.8+
     * Protocol plugin:
