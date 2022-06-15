@@ -56,8 +56,6 @@ import javax.crypto.spec.SecretKeySpec;
 /**
  * Encryption and decryption minecraft util for connection between servers
  * and paid Minecraft account clients.
- *
- * @see net.minecraft.server.MinecraftEncryption
  */
 class EncryptionUtil {
 
@@ -170,7 +168,7 @@ class EncryptionUtil {
 
     private static String toSignable(ClientPublicKey clientPublicKey) {
         long expiry = clientPublicKey.getExpiry().toEpochMilli();
-        String encoded = KEY_ENCODER.encodeToString(clientPublicKey.getKey());
+        String encoded = KEY_ENCODER.encodeToString(clientPublicKey.getKey().getEncoded());
         return expiry + "-----BEGIN RSA PUBLIC KEY-----\n" + encoded + "\n-----END RSA PUBLIC KEY-----\n";
     }
 
@@ -195,8 +193,7 @@ class EncryptionUtil {
         return cipher.doFinal(data);
     }
 
-    private static byte[] getServerIdHash(
-            String sessionId, PublicKey publicKey, SecretKey sharedSecret)
+    private static byte[] getServerIdHash(String sessionId, PublicKey publicKey, SecretKey sharedSecret)
             throws NoSuchAlgorithmException {
         // byte[] a(String var0, PublicKey var1, SecretKey var2)
         MessageDigest digest = MessageDigest.getInstance("SHA-1");

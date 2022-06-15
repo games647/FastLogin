@@ -25,15 +25,16 @@
  */
 package com.github.games647.fastlogin.bukkit.listener.protocollib.packet;
 
+import java.security.PublicKey;
 import java.time.Instant;
 
 public class ClientPublicKey {
 
     private final Instant expiry;
-    private final byte[] key;
+    private final PublicKey key;
     private final byte[] signature;
 
-    public ClientPublicKey(Instant expiry, byte[] key, byte[] signature) {
+    public ClientPublicKey(Instant expiry, PublicKey key, byte[] signature) {
         this.expiry = expiry;
         this.key = key;
         this.signature = signature;
@@ -43,7 +44,7 @@ public class ClientPublicKey {
         return expiry;
     }
 
-    public byte[] getKey() {
+    public PublicKey getKey() {
         return key;
     }
 

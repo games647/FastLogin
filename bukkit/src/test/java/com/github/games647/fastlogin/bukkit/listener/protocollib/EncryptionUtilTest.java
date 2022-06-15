@@ -117,7 +117,7 @@ public class EncryptionUtilTest {
         RSAPublicKey publicKey = parsePublicKey(key);
 
         byte[] signature = Base64.getDecoder().decode(object.getAsJsonPrimitive("signature").getAsString());
-        return new ClientPublicKey(expires, publicKey.getEncoded(), signature);
+        return new ClientPublicKey(expires, publicKey, signature);
     }
 
     private RSAPublicKey parsePublicKey(String lines)
@@ -126,7 +126,6 @@ public class EncryptionUtilTest {
             Reader reader = new StringReader(lines);
             PemReader pemReader = new PemReader(reader)
         ) {
-
             PemObject pemObject = pemReader.readPemObject();
             byte[] content = pemObject.getContent();
             var pubKeySpec = new X509EncodedKeySpec(content);

@@ -179,7 +179,7 @@ public class ProtocolLibListener extends PacketAdapter {
         Instant expires = profileKey.getExpireTime();
         PublicKey key = profileKey.getKey();
         byte[] signature = profileKey.getSignature();
-        ClientPublicKey clientKey = new ClientPublicKey(expires, key.getEncoded(), signature);
+        ClientPublicKey clientKey = new ClientPublicKey(expires, key, signature);
         try {
             return EncryptionUtil.verifyClientKey(clientKey, Instant.now());
         } catch (SignatureException | InvalidKeyException | NoSuchAlgorithmException ex) {
