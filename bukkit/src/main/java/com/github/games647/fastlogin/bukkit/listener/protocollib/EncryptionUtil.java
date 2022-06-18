@@ -153,6 +153,7 @@ class EncryptionUtil {
         }
 
         Signature verifier = Signature.getInstance("SHA1withRSA");
+        // key of the signer
         verifier.initVerify(mojangSessionKey);
         verifier.update(toSignable(clientKey).getBytes(StandardCharsets.US_ASCII));
         return verifier.verify(clientKey.getSignature());
@@ -161,6 +162,7 @@ class EncryptionUtil {
     public static boolean verifySignedNonce(byte[] nonce, PublicKey clientKey, long signatureSalt, byte[] signature)
         throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
         Signature verifier = Signature.getInstance("SHA256withRSA");
+        // key of the signer
         verifier.initVerify(clientKey);
 
         verifier.update(nonce);
