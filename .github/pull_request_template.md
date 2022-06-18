@@ -2,7 +2,7 @@
 [//]: # (If your work is in progress, please consider making a draft pull request.)
 
 ### Summary of your change
-[//]: # (Example: motiviation, enhancement)
+[//]: # (Example: motivation, enhancement)
 
 ### Related issue
 [//]: # (Reference it using '#NUMBER'. Ex: Fixes/Related #...)
