@@ -29,12 +29,15 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.injector.temporary.TemporaryPlayerFactory;
+import com.comphenix.protocol.reflect.EquivalentConverter;
 import com.comphenix.protocol.reflect.FieldUtils;
 import com.comphenix.protocol.reflect.FuzzyReflection;
 import com.comphenix.protocol.utility.MinecraftReflection;
 import com.comphenix.protocol.utility.MinecraftVersion;
+import com.comphenix.protocol.wrappers.BukkitConverters;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
+import com.comphenix.protocol.wrappers.WrappedProfilePublicKey.WrappedProfileKeyData;
 import com.github.games647.craftapi.model.auth.Verification;
 import com.github.games647.craftapi.model.skin.SkinProperty;
 import com.github.games647.craftapi.resolver.MojangResolver;
@@ -120,7 +123,7 @@ public class VerifyResponseTask implements Runnable {
         }
 
         try {
-            if (!checkVerifyToken(session) || !enableEncryption(loginKey)) {
+            if (!enableEncryption(loginKey)) {
                 return;
             }
         } catch (Exception ex) {
@@ -178,23 +181,6 @@ public class VerifyResponseTask implements Runnable {
                 plugin.getLog().error("Error setting premium uuid of {}", player, exc);
             }
         }
-    }
-
-    private boolean checkVerifyToken(BukkitLoginSession session) throws GeneralSecurityException {
-        byte[] requestVerify = session.getVerifyToken();
-        //encrypted verify token
-        byte[] responseVerify = packetEvent.getPacket().getByteArrays().read(1);
-
-        //https://github.com/bergerkiller/CraftSource/blob/master/net.minecraft.server/LoginListener.java#L182
-        if (!Arrays.equals(requestVerify, EncryptionUtil.decrypt(serverKey.getPrivate(), responseVerify))) {
-            //check if the verify-token are equal to the server sent one
-            disconnect("invalid-verify-token",
-                "GameProfile {0} ({1}) tried to login with an invalid verify token. Server: {2} Client: {3}",
-                session.getRequestUsername(), packetEvent.getPlayer().getAddress(), requestVerify, responseVerify);
-            return false;
-        }
-
-        return true;
     }
 
     //try to get the networkManager from ProtocolLib
@@ -273,6 +259,9 @@ public class VerifyResponseTask implements Runnable {
 
         if (MinecraftVersion.atOrAbove(new MinecraftVersion(1, 19, 0))) {
             startPacket.getStrings().write(0, username);
+
+            EquivalentConverter<WrappedProfileKeyData> converter = BukkitConverters.getWrappedPublicKeyDataConverter();
+            startPacket.getOptionals(converter).write(0, Optional.empty());
         } else {
             //uuid is ignored by the packet definition
             WrappedGameProfile fakeProfile = new WrappedGameProfile(UUID.randomUUID(), username);

@@ -27,21 +27,25 @@ package com.github.games647.fastlogin.bukkit.listener.protocollib;
 
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketEvent;
+import com.comphenix.protocol.wrappers.BukkitConverters;
+import com.comphenix.protocol.wrappers.WrappedProfilePublicKey.WrappedProfileKeyData;
 import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 import com.github.games647.fastlogin.bukkit.event.BukkitFastLoginPreLoginEvent;
+import com.github.games647.fastlogin.bukkit.listener.protocollib.packet.ClientPublicKey;
 import com.github.games647.fastlogin.core.StoredProfile;
 import com.github.games647.fastlogin.core.shared.JoinManagement;
 import com.github.games647.fastlogin.core.shared.event.FastLoginPreLoginEvent;
 
 import java.security.PublicKey;
+import java.util.Optional;
 import java.util.Random;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class NameCheckTask extends JoinManagement<Player, CommandSender, ProtocolLibLoginSource>
-        implements Runnable {
+    implements Runnable {
 
     private final FastLoginBukkit plugin;
     private final PacketEvent packetEvent;
@@ -67,7 +71,9 @@ public class NameCheckTask extends JoinManagement<Player, CommandSender, Protoco
     @Override
     public void run() {
         try {
-            super.onLogin(username, new ProtocolLibLoginSource(player, random, publicKey));
+            Optional<WrappedProfileKeyData> publicKey = packetEvent.getPacket().getOptionals(BukkitConverters.getWrappedPublicKeyDataConverter()).read(0);
+
+            super.onLogin(username, new ProtocolLibLoginSource(player, random, publicKey.get(), this.publicKey));
         } finally {
             ProtocolLibrary.getProtocolManager().getAsynchronousManager().signalPacketTransmission(packetEvent);
         }
@@ -85,7 +91,7 @@ public class NameCheckTask extends JoinManagement<Player, CommandSender, Protoco
     //https://github.com/bergerkiller/CraftSource/blob/master/net.minecraft.server/LoginListener.java#L161
     @Override
     public void requestPremiumLogin(ProtocolLibLoginSource source, StoredProfile profile
-            , String username, boolean registered) {
+        , String username, boolean registered) {
         try {
             source.enableOnlinemode();
         } catch (Exception ex) {
@@ -97,8 +103,10 @@ public class NameCheckTask extends JoinManagement<Player, CommandSender, Protoco
         core.getPendingLogin().put(ip + username, new Object());
 
         byte[] verify = source.getVerifyToken();
+        WrappedProfileKeyData key = source.getClientPublicKey();
+        ClientPublicKey clientKey = new ClientPublicKey(key.getExpireTime(), key.getKey(), key.getSignature());
 
-        BukkitLoginSession playerSession = new BukkitLoginSession(username, verify, registered, profile);
+        BukkitLoginSession playerSession = new BukkitLoginSession(username, verify, clientKey, registered, profile);
         plugin.putSession(player.getAddress(), playerSession);
         //cancel only if the player has a paid account otherwise login as normal offline player
         synchronized (packetEvent.getAsyncMarker().getProcessingLock()) {

@@ -27,6 +27,7 @@ package com.github.games647.fastlogin.bukkit.listener.protocollib;
 
 import com.github.games647.fastlogin.bukkit.listener.protocollib.packet.ClientPublicKey;
 import com.google.common.io.Resources;
+import com.google.common.primitives.Longs;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -115,9 +116,9 @@ class EncryptionUtil {
     /**
      * Generate the server id based on client and server data.
      *
-     * @param sessionId session for the current login attempt
+     * @param sessionId    session for the current login attempt
      * @param sharedSecret shared secret between the client and the server
-     * @param publicKey public key of the server
+     * @param publicKey    public key of the server
      * @return the server id formatted as a hexadecimal string.
      */
     public static String getServerIdHashString(String sessionId, SecretKey sharedSecret, PublicKey publicKey) {
@@ -136,7 +137,7 @@ class EncryptionUtil {
      * Decrypts the content and extracts the key spec.
      *
      * @param privateKey private server key
-     * @param sharedKey the encrypted shared key
+     * @param sharedKey  the encrypted shared key
      * @return shared secret key
      * @throws GeneralSecurityException if it fails to decrypt the data
      */
@@ -151,10 +152,20 @@ class EncryptionUtil {
             return false;
         }
 
-        Signature signature = Signature.getInstance("SHA1withRSA");
-        signature.initVerify(mojangSessionKey);
-        signature.update(toSignable(clientKey).getBytes(StandardCharsets.US_ASCII));
-        return signature.verify(clientKey.getSignature());
+        Signature verifier = Signature.getInstance("SHA1withRSA");
+        verifier.initVerify(mojangSessionKey);
+        verifier.update(toSignable(clientKey).getBytes(StandardCharsets.US_ASCII));
+        return verifier.verify(clientKey.getSignature());
+    }
+
+    public static boolean verifySignedNonce(byte[] nonce, PublicKey clientKey, long signatureSalt, byte[] signature)
+        throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
+        Signature verifier = Signature.getInstance("SHA256withRSA");
+        verifier.initVerify(clientKey);
+
+        verifier.update(nonce);
+        verifier.update(Longs.toByteArray(signatureSalt));
+        return verifier.verify(signature);
     }
 
     private static PublicKey loadMojangSessionKey()
@@ -183,7 +194,7 @@ class EncryptionUtil {
      * Decrypted the given data using the cipher.
      *
      * @param cipher decryption cypher initialized with the private key
-     * @param data the encrypted data
+     * @param data   the encrypted data
      * @return clear text data
      * @throws GeneralSecurityException if it fails to decrypt the data
      */
@@ -194,7 +205,7 @@ class EncryptionUtil {
     }
 
     private static byte[] getServerIdHash(String sessionId, PublicKey publicKey, SecretKey sharedSecret)
-            throws NoSuchAlgorithmException {
+        throws NoSuchAlgorithmException {
         // byte[] a(String var0, PublicKey var1, SecretKey var2)
         MessageDigest digest = MessageDigest.getInstance("SHA-1");
 

@@ -30,6 +30,7 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
+import com.comphenix.protocol.reflect.FuzzyReflection;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
 import com.comphenix.protocol.wrappers.WrappedProfilePublicKey;
 import com.comphenix.protocol.wrappers.WrappedProfilePublicKey.WrappedProfileKeyData;
@@ -38,6 +39,7 @@ import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 import com.github.games647.fastlogin.bukkit.listener.protocollib.packet.ClientPublicKey;
 import com.github.games647.fastlogin.core.antibot.AntiBotService;
 import com.github.games647.fastlogin.core.antibot.AntiBotService.Action;
+import com.mojang.datafixers.util.Either;
 
 import java.net.InetSocketAddress;
 import java.security.InvalidKeyException;
@@ -139,9 +141,24 @@ public class ProtocolLibListener extends PacketAdapter {
             plugin.getLog().warn("GameProfile {} tried to send encryption response at invalid state", sender.getAddress());
             sender.kickPlayer(plugin.getCore().getMessage("invalid-request"));
         } else {
-            packetEvent.getAsyncMarker().incrementProcessingDelay();
-            Runnable verifyTask = new VerifyResponseTask(plugin, packetEvent, sender, session, sharedSecret, keyPair);
-            plugin.getScheduler().runAsync(verifyTask);
+            Either<byte[], ?> either = packetEvent.getPacket().getSpecificModifier(Either.class).read(0);
+            Object signatureData = either.right().get();
+            long salt = FuzzyReflection.getFieldValue(signatureData, Long.TYPE, true);
+            byte[] signature = FuzzyReflection.getFieldValue(signatureData, byte[].class, true);
+
+            BukkitLoginSession session = plugin.getSession(sender.getAddress());
+            PublicKey publicKey = session.getClientPublicKey().getKey();
+            try {
+                if (EncryptionUtil.verifySignedNonce(session.getVerifyToken(), publicKey, salt, signature)) {
+                    packetEvent.getAsyncMarker().incrementProcessingDelay();
+                    Runnable verifyTask = new VerifyResponseTask(plugin, packetEvent, sender, session, sharedSecret, keyPair);
+                    plugin.getScheduler().runAsync(verifyTask);
+                } else {
+                    sender.kickPlayer("Invalid signature");
+                }
+            } catch (NoSuchAlgorithmException | InvalidKeyException | SignatureException e) {
+                sender.kickPlayer("Invalid signature");
+            }
         }
     }
 
