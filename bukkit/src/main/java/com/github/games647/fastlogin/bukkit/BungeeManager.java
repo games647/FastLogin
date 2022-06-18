@@ -33,6 +33,7 @@ import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
@@ -102,10 +103,29 @@ public class BungeeManager {
     private boolean isProxySupported(String className, String fieldName) {
         try {
             return Class.forName(className).getDeclaredField(fieldName).getBoolean(null);
-        } catch (ClassNotFoundException notFoundEx) {
+        } catch (ClassNotFoundException | NoSuchFieldException notFoundEx) {
             //ignore server has no proxy support
-        } catch (NoSuchFieldException | IllegalAccessException noSuchFieldException) {
+        } catch (IllegalAccessException noSuchFieldException) {
             plugin.getLog().warn("Cannot access proxy field", noSuchFieldException);
+        }
+
+        return false;
+    }
+
+    private boolean isVelocityEnabled() {
+        if (isProxySupported("com.destroystokyo.paper.PaperConfig", "velocitySupport")) {
+            return true;
+        }
+
+        try {
+            Object global = Class.forName("io.papermc.paper.configuration.GlobalConfiguration").getDeclaredMethod("get").invoke(null);
+            Object proxiesConfiguration = global.getClass().getDeclaredField("proxies").get(global);
+            Object velocityConfig = proxiesConfiguration.getClass().getDeclaredField("velocity").get(proxiesConfiguration);
+
+            return velocityConfig.getClass().getDeclaredField("enabled").getBoolean(velocityConfig);
+        } catch (NoSuchMethodException | ClassNotFoundException | InvocationTargetException | IllegalAccessException |
+                 NoSuchFieldException e) {
+            plugin.getLog().info("Errror", e);
         }
 
         return false;
@@ -113,7 +133,7 @@ public class BungeeManager {
 
     private boolean detectProxy() {
         return isProxySupported("org.spigotmc.SpigotConfig", "bungee")
-                || isProxySupported("com.destroystokyo.paper.PaperConfig", "velocitySupport");
+                || isVelocityEnabled();
     }
 
     private void registerPluginChannels() {
