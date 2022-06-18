@@ -23,7 +23,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.github.games647.fastlogin.core;
+package com.github.games647.fastlogin.core.antibot;
 
 import com.google.common.base.Ticker;
 

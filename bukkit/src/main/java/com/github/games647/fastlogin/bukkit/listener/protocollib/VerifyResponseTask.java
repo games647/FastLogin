@@ -79,16 +79,20 @@ public class VerifyResponseTask implements Runnable {
 
     private final Player player;
 
+    private final BukkitLoginSession session;
+
     private final byte[] sharedSecret;
 
     private static Method encryptMethod;
     private static Method cipherMethod;
 
-    public VerifyResponseTask(FastLoginBukkit plugin, PacketEvent packetEvent, Player player,
+    public VerifyResponseTask(FastLoginBukkit plugin, PacketEvent packetEvent,
+                              Player player, BukkitLoginSession session,
                               byte[] sharedSecret, KeyPair keyPair) {
         this.plugin = plugin;
         this.packetEvent = packetEvent;
         this.player = player;
+        this.session = session;
         this.sharedSecret = Arrays.copyOf(sharedSecret, sharedSecret.length);
         this.serverKey = keyPair;
     }
@@ -96,14 +100,7 @@ public class VerifyResponseTask implements Runnable {
     @Override
     public void run() {
         try {
-            BukkitLoginSession session = plugin.getSession(player.getAddress());
-            if (session == null) {
-                disconnect("invalid-request",
-                    "GameProfile {0} tried to send encryption response at invalid state",
-                    player.getAddress());
-            } else {
-                verifyResponse(session);
-            }
+            verifyResponse(session);
         } finally {
             //this is a fake packet; it shouldn't be sent to the server
             synchronized (packetEvent.getAsyncMarker().getProcessingLock()) {
@@ -143,25 +140,7 @@ public class VerifyResponseTask implements Runnable {
             InetAddress address = socketAddress.getAddress();
             Optional<Verification> response = resolver.hasJoined(requestedUsername, serverId, address);
             if (response.isPresent()) {
-                Verification verification = response.get();
-                plugin.getLog().info("Profile {} has a verified premium account", requestedUsername);
-                String realUsername = verification.getName();
-                if (realUsername == null) {
-                    disconnect("invalid-session", "Username field null for {}", requestedUsername);
-                    return;
-                }
-
-                SkinProperty[] properties = verification.getProperties();
-                if (properties.length > 0) {
-                    session.setSkinProperty(properties[0]);
-                }
-
-                session.setVerifiedUsername(realUsername);
-                session.setUuid(verification.getId());
-                session.setVerified(true);
-
-                setPremiumUUID(session.getUuid());
-                receiveFakeStartPacket(realUsername);
+                encryptConnection(session, requestedUsername, response.get());
             } else {
                 //user tried to fake an authentication
                 disconnect("invalid-session", "GameProfile {} ({}) tried to log in with an invalid session. ServerId: {}", session.getRequestUsername(), socketAddress, serverId);
@@ -169,6 +148,27 @@ public class VerifyResponseTask implements Runnable {
         } catch (IOException ioEx) {
             disconnect("error-kick", "Failed to connect to session server", ioEx);
         }
+    }
+
+    private void encryptConnection(BukkitLoginSession session, String requestedUsername, Verification verification) {
+        plugin.getLog().info("Profile {} has a verified premium account", requestedUsername);
+        String realUsername = verification.getName();
+        if (realUsername == null) {
+            disconnect("invalid-session", "Username field null for {}", requestedUsername);
+            return;
+        }
+
+        SkinProperty[] properties = verification.getProperties();
+        if (properties.length > 0) {
+            session.setSkinProperty(properties[0]);
+        }
+
+        session.setVerifiedUsername(realUsername);
+        session.setUuid(verification.getId());
+        session.setVerified(true);
+
+        setPremiumUUID(session.getUuid());
+        receiveFakeStartPacket(realUsername);
     }
 
     private void setPremiumUUID(UUID premiumUUID) {

@@ -30,9 +30,12 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
+import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
-import com.github.games647.fastlogin.core.RateLimiter;
+import com.github.games647.fastlogin.core.antibot.AntiBotService;
+import com.github.games647.fastlogin.core.antibot.AntiBotService.Action;
 
+import java.net.InetSocketAddress;
 import java.security.KeyPair;
 import java.security.SecureRandom;
 
@@ -50,9 +53,9 @@ public class ProtocolLibListener extends PacketAdapter {
     //just create a new once on plugin enable. This used for verify token generation
     private final SecureRandom random = new SecureRandom();
     private final KeyPair keyPair = EncryptionUtil.generateKeyPair();
-    private final RateLimiter rateLimiter;
+    private final AntiBotService antiBotService;
 
-    public ProtocolLibListener(FastLoginBukkit plugin, RateLimiter rateLimiter) {
+    public ProtocolLibListener(FastLoginBukkit plugin, AntiBotService antiBotService) {
         //run async in order to not block the server, because we are making api calls to Mojang
         super(params()
                 .plugin(plugin)
@@ -60,15 +63,15 @@ public class ProtocolLibListener extends PacketAdapter {
                 .optionAsync());
 
         this.plugin = plugin;
-        this.rateLimiter = rateLimiter;
+        this.antiBotService = antiBotService;
     }
 
-    public static void register(FastLoginBukkit plugin, RateLimiter rateLimiter) {
+    public static void register(FastLoginBukkit plugin, AntiBotService antiBotService) {
         // they will be created with a static builder, because otherwise it will throw a NoClassDefFoundError
         // TODO: make synchronous processing, but do web or database requests async
         ProtocolLibrary.getProtocolManager()
                 .getAsynchronousManager()
-                .registerAsyncHandler(new ProtocolLibListener(plugin, rateLimiter))
+                .registerAsyncHandler(new ProtocolLibListener(plugin, antiBotService))
                 .start();
     }
 
@@ -88,12 +91,26 @@ public class ProtocolLibListener extends PacketAdapter {
         Player sender = packetEvent.getPlayer();
         PacketType packetType = packetEvent.getPacketType();
         if (packetType == START) {
-            if (!rateLimiter.tryAcquire()) {
-                plugin.getLog().warn("Simple Anti-Bot join limit - Ignoring {}", sender);
-                return;
-            }
+            PacketContainer packet = packetEvent.getPacket();
 
-            onLogin(packetEvent, sender);
+            InetSocketAddress address = sender.getAddress();
+            String username = packet.getGameProfiles().read(0).getName();
+
+            Action action = antiBotService.onIncomingConnection(address, username);
+            switch (action) {
+                case Ignore:
+                    // just ignore
+                    return;
+                case Block:
+                    String message = plugin.getCore().getMessage("kick-antibot");
+                    sender.kickPlayer(message);
+                    break;
+                case Continue:
+                default:
+                    //player.getName() won't work at this state
+                    onLogin(packetEvent, sender, username);
+                    break;
+            }
         } else {
             onEncryptionBegin(packetEvent, sender);
         }
@@ -108,22 +125,23 @@ public class ProtocolLibListener extends PacketAdapter {
     private void onEncryptionBegin(PacketEvent packetEvent, Player sender) {
         byte[] sharedSecret = packetEvent.getPacket().getByteArrays().read(0);
 
-        packetEvent.getAsyncMarker().incrementProcessingDelay();
-        Runnable verifyTask = new VerifyResponseTask(plugin, packetEvent, sender, sharedSecret, keyPair);
-        plugin.getScheduler().runAsync(verifyTask);
+        BukkitLoginSession session = plugin.getSession(sender.getAddress());
+        if (session == null) {
+            plugin.getLog().warn("GameProfile {} tried to send encryption response at invalid state", sender.getAddress());
+            sender.kickPlayer(plugin.getCore().getMessage("invalid-request"));
+        } else {
+            packetEvent.getAsyncMarker().incrementProcessingDelay();
+            Runnable verifyTask = new VerifyResponseTask(plugin, packetEvent, sender, session, sharedSecret, keyPair);
+            plugin.getScheduler().runAsync(verifyTask);
+        }
     }
 
-    private void onLogin(PacketEvent packetEvent, Player player) {
+    private void onLogin(PacketEvent packetEvent, Player player, String username) {
         //this includes ip:port. Should be unique for an incoming login request with a timeout of 2 minutes
         String sessionKey = player.getAddress().toString();
 
         //remove old data every time on a new login in order to keep the session only for one person
         plugin.removeSession(player.getAddress());
-
-        //player.getName() won't work at this state
-        PacketContainer packet = packetEvent.getPacket();
-
-        String username = packet.getGameProfiles().read(0).getName();
 
         if (packetEvent.getPacket().getMeta("original_name").isPresent()) {
             //username has been injected by ManualNameChange.java

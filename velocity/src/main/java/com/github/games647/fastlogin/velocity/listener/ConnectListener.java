@@ -26,8 +26,9 @@
 package com.github.games647.fastlogin.velocity.listener;
 
 import com.github.games647.craftapi.UUIDAdapter;
-import com.github.games647.fastlogin.core.RateLimiter;
 import com.github.games647.fastlogin.core.StoredProfile;
+import com.github.games647.fastlogin.core.antibot.AntiBotService;
+import com.github.games647.fastlogin.core.antibot.AntiBotService.Action;
 import com.github.games647.fastlogin.core.shared.LoginSession;
 import com.github.games647.fastlogin.velocity.FastLoginVelocity;
 import com.github.games647.fastlogin.velocity.VelocityLoginSession;
@@ -37,6 +38,7 @@ import com.velocitypowered.api.event.Continuation;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.connection.DisconnectEvent;
 import com.velocitypowered.api.event.connection.PreLoginEvent;
+import com.velocitypowered.api.event.connection.PreLoginEvent.PreLoginComponentResult;
 import com.velocitypowered.api.event.player.GameProfileRequestEvent;
 import com.velocitypowered.api.event.player.ServerConnectedEvent;
 import com.velocitypowered.api.proxy.InboundConnection;
@@ -44,19 +46,23 @@ import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 import com.velocitypowered.api.util.GameProfile;
 
+import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+
 public class ConnectListener {
 
     private final FastLoginVelocity plugin;
-    private final RateLimiter rateLimiter;
+    private final AntiBotService antiBotService;
 
-    public ConnectListener(FastLoginVelocity plugin, RateLimiter rateLimiter) {
+    public ConnectListener(FastLoginVelocity plugin, AntiBotService antiBotService) {
         this.plugin = plugin;
-        this.rateLimiter = rateLimiter;
+        this.antiBotService = antiBotService;
     }
 
     @Subscribe
@@ -66,16 +72,28 @@ public class ConnectListener {
         }
 
         InboundConnection connection = preLoginEvent.getConnection();
-        if (!rateLimiter.tryAcquire()) {
-            plugin.getLog().warn("Simple Anti-Bot join limit - Ignoring {}", connection);
-            return;
-        }
-
         String username = preLoginEvent.getUsername();
-        plugin.getLog().info("Incoming login request for {} from {}", username, connection.getRemoteAddress());
+        InetSocketAddress address = connection.getRemoteAddress();
+        plugin.getLog().info("Incoming login request for {} from {}", username, address);
 
-        Runnable asyncPremiumCheck = new AsyncPremiumCheck(plugin, connection, username, continuation, preLoginEvent);
-        plugin.getScheduler().runAsync(asyncPremiumCheck);
+        Action action = antiBotService.onIncomingConnection(address, username);
+        switch (action) {
+            case Ignore:
+                // just ignore
+                return;
+            case Block:
+                String message = plugin.getCore().getMessage("kick-antibot");
+                TextComponent messageParsed = LegacyComponentSerializer.legacyAmpersand().deserialize(message);
+
+                PreLoginComponentResult reason = PreLoginComponentResult.denied(messageParsed);
+                preLoginEvent.setResult(reason);
+                break;
+            case Continue:
+            default:
+                Runnable asyncPremiumCheck = new AsyncPremiumCheck(plugin, connection, username, continuation, preLoginEvent);
+                plugin.getScheduler().runAsync(asyncPremiumCheck);
+                break;
+        }
     }
 
     @Subscribe

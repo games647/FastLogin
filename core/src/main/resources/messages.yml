@@ -48,6 +48,9 @@ not-premium-other: '&4Player is not in the premium list'
 # Admin wanted to change the premium of a user that isn't known to the plugin
 player-unknown: '&4Player not in the database'
 
+# Player kicked from anti bot feature
+kick-antibot: '&4Please wait a moment!'
+
 # ========= Bukkit/Spigot ================
 
 # The user skipped the authentication, because it was a premium player

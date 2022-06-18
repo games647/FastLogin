@@ -28,8 +28,10 @@ package com.github.games647.fastlogin.core.shared;
 import com.github.games647.craftapi.resolver.MojangResolver;
 import com.github.games647.craftapi.resolver.http.RotatingProxySelector;
 import com.github.games647.fastlogin.core.CommonUtil;
-import com.github.games647.fastlogin.core.RateLimiter;
-import com.github.games647.fastlogin.core.TickingRateLimiter;
+import com.github.games647.fastlogin.core.antibot.AntiBotService;
+import com.github.games647.fastlogin.core.antibot.AntiBotService.Action;
+import com.github.games647.fastlogin.core.antibot.RateLimiter;
+import com.github.games647.fastlogin.core.antibot.TickingRateLimiter;
 import com.github.games647.fastlogin.core.hooks.AuthPlugin;
 import com.github.games647.fastlogin.core.hooks.DefaultPasswordGenerator;
 import com.github.games647.fastlogin.core.hooks.PasswordGenerator;
@@ -88,7 +90,7 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
 
     private Configuration config;
     private SQLStorage storage;
-    private RateLimiter rateLimiter;
+    private AntiBotService antiBot;
     private PasswordGenerator<P> passwordGenerator = new DefaultPasswordGenerator<>();
     private AuthPlugin<P> authPlugin;
 
@@ -122,7 +124,7 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
         // Initialize the resolver based on the config parameter
         this.resolver = this.config.getBoolean("useProxyAgnosticResolver", false) ? new ProxyAgnosticMojangResolver() : new MojangResolver();
 
-        rateLimiter = createRateLimiter(config.getSection("anti-bot"));
+        antiBot = createAntiBotService(config.getSection("anti-bot"));
         Set<Proxy> proxies = config.getStringList("proxies")
                 .stream()
                 .map(HostAndPort::fromString)
@@ -144,20 +146,34 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
         resolver.setOutgoingAddresses(addresses);
     }
 
-    private RateLimiter createRateLimiter(Configuration botSection) {
-        boolean enabled = botSection.getBoolean("enabled", true);
-        if (!enabled) {
+    private AntiBotService createAntiBotService(Configuration botSection) {
+        RateLimiter rateLimiter;
+        if (botSection.getBoolean("enabled", true)) {
+            int maxCon = botSection.getInt("connections", 200);
+            long expireTime = botSection.getLong("expire", 5) * 60 * 1_000L;
+            if (expireTime > MAX_EXPIRE_RATE) {
+                expireTime = MAX_EXPIRE_RATE;
+            }
+
+            rateLimiter = new TickingRateLimiter(Ticker.systemTicker(), maxCon, expireTime);
+        } else {
             // no-op rate limiter
-            return () -> true;
+            rateLimiter = () -> true;
         }
 
-        int maxCon = botSection.getInt("anti-bot.connections", 200);
-        long expireTime = botSection.getLong("anti-bot.expire", 5) * 60 * 1_000L;
-        if (expireTime > MAX_EXPIRE_RATE) {
-            expireTime = MAX_EXPIRE_RATE;
+        Action action = Action.Ignore;
+        switch (botSection.getString("action", "ignore")) {
+            case "ignore":
+                action = Action.Ignore;
+                break;
+            case "block":
+                action = Action.Block;
+                break;
+            default:
+                plugin.getLog().warn("Invalid anti bot action - defaulting to ignore");
         }
 
-        return new TickingRateLimiter(Ticker.systemTicker(), maxCon, expireTime);
+        return new AntiBotService(plugin.getLog(), rateLimiter, action);
     }
 
     private Configuration loadFile(String fileName) throws IOException {
@@ -285,8 +301,8 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
         return authPlugin;
     }
 
-    public RateLimiter getRateLimiter() {
-        return rateLimiter;
+    public AntiBotService getAntiBot() {
+        return antiBot;
     }
 
     public void setAuthPluginHook(AuthPlugin<P> authPlugin) {

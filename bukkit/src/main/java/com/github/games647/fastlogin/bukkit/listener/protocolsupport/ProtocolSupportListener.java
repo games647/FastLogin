@@ -29,8 +29,9 @@ import com.github.games647.craftapi.UUIDAdapter;
 import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 import com.github.games647.fastlogin.bukkit.event.BukkitFastLoginPreLoginEvent;
-import com.github.games647.fastlogin.core.RateLimiter;
 import com.github.games647.fastlogin.core.StoredProfile;
+import com.github.games647.fastlogin.core.antibot.AntiBotService;
+import com.github.games647.fastlogin.core.antibot.AntiBotService.Action;
 import com.github.games647.fastlogin.core.shared.JoinManagement;
 import com.github.games647.fastlogin.core.shared.event.FastLoginPreLoginEvent;
 
@@ -49,13 +50,13 @@ public class ProtocolSupportListener extends JoinManagement<Player, CommandSende
         implements Listener {
 
     private final FastLoginBukkit plugin;
-    private final RateLimiter rateLimiter;
+    private final AntiBotService antiBotService;
 
-    public ProtocolSupportListener(FastLoginBukkit plugin, RateLimiter rateLimiter) {
+    public ProtocolSupportListener(FastLoginBukkit plugin, AntiBotService antiBotService) {
         super(plugin.getCore(), plugin.getCore().getAuthPluginHook(), plugin.getBedrockService());
 
         this.plugin = plugin;
-        this.rateLimiter = rateLimiter;
+        this.antiBotService = antiBotService;
     }
 
     @EventHandler
@@ -64,19 +65,28 @@ public class ProtocolSupportListener extends JoinManagement<Player, CommandSende
             return;
         }
 
-        if (!rateLimiter.tryAcquire()) {
-            plugin.getLog().warn("Simple Anti-Bot join limit - Ignoring {}", loginStartEvent.getConnection());
-            return;
-        }
-
         String username = loginStartEvent.getConnection().getProfile().getName();
         InetSocketAddress address = loginStartEvent.getAddress();
+        plugin.getLog().info("Incoming login request for {} from {}", username, address);
 
-        //remove old data every time on a new login in order to keep the session only for one person
-        plugin.removeSession(address);
+        Action action = antiBotService.onIncomingConnection(address, username);
+        switch (action) {
+            case Ignore:
+                // just ignore
+                return;
+            case Block:
+                String message = plugin.getCore().getMessage("kick-antibot");
+                loginStartEvent.denyLogin(message);
+                break;
+            case Continue:
+            default:
+                //remove old data every time on a new login in order to keep the session only for one person
+                plugin.removeSession(address);
 
-        ProtocolLoginSource source = new ProtocolLoginSource(loginStartEvent);
-        super.onLogin(username, source);
+                ProtocolLoginSource source = new ProtocolLoginSource(loginStartEvent);
+                super.onLogin(username, source);
+                break;
+        }
     }
 
     @EventHandler

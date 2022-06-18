@@ -23,3 +23,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+package com.github.games647.fastlogin.core.antibot;
+
+@FunctionalInterface
+public interface RateLimiter {
+
+    boolean tryAcquire();
+}

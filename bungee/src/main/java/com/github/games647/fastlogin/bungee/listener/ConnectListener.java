@@ -31,8 +31,9 @@ import com.github.games647.fastlogin.bungee.FastLoginBungee;
 import com.github.games647.fastlogin.bungee.task.AsyncPremiumCheck;
 import com.github.games647.fastlogin.bungee.task.FloodgateAuthTask;
 import com.github.games647.fastlogin.bungee.task.ForceLoginTask;
-import com.github.games647.fastlogin.core.RateLimiter;
 import com.github.games647.fastlogin.core.StoredProfile;
+import com.github.games647.fastlogin.core.antibot.AntiBotService;
+import com.github.games647.fastlogin.core.antibot.AntiBotService.Action;
 import com.github.games647.fastlogin.core.hooks.bedrock.FloodgateService;
 import com.github.games647.fastlogin.core.shared.LoginSession;
 import com.google.common.base.Throwables;
@@ -41,8 +42,10 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Field;
+import java.net.InetSocketAddress;
 import java.util.UUID;
 
+import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.PendingConnection;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.connection.Server;
@@ -92,12 +95,12 @@ public class ConnectListener implements Listener {
     }
 
     private final FastLoginBungee plugin;
-    private final RateLimiter rateLimiter;
+    private final AntiBotService antiBotService;
     private final Property[] emptyProperties = {};
 
-    public ConnectListener(FastLoginBungee plugin, RateLimiter rateLimiter) {
+    public ConnectListener(FastLoginBungee plugin, AntiBotService antiBotService) {
         this.plugin = plugin;
-        this.rateLimiter = rateLimiter;
+        this.antiBotService = antiBotService;
     }
 
     @EventHandler
@@ -107,17 +110,28 @@ public class ConnectListener implements Listener {
             return;
         }
 
-        if (!rateLimiter.tryAcquire()) {
-            plugin.getLog().warn("Simple Anti-Bot join limit - Ignoring {}", connection);
-            return;
-        }
-
+        InetSocketAddress address = preLoginEvent.getConnection().getAddress();
         String username = connection.getName();
+
         plugin.getLog().info("Incoming login request for {} from {}", username, connection.getSocketAddress());
 
-        preLoginEvent.registerIntent(plugin);
-        Runnable asyncPremiumCheck = new AsyncPremiumCheck(plugin, preLoginEvent, connection, username);
-        plugin.getScheduler().runAsync(asyncPremiumCheck);
+        Action action = antiBotService.onIncomingConnection(address, username);
+        switch (action) {
+            case Ignore:
+                // just ignore
+                return;
+            case Block:
+                String message = plugin.getCore().getMessage("kick-antibot");
+                preLoginEvent.setCancelReason(TextComponent.fromLegacyText(message));
+                preLoginEvent.setCancelled(true);
+                break;
+            case Continue:
+            default:
+                preLoginEvent.registerIntent(plugin);
+                Runnable asyncPremiumCheck = new AsyncPremiumCheck(plugin, preLoginEvent, connection, username);
+                plugin.getScheduler().runAsync(asyncPremiumCheck);
+                break;
+        }
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -140,7 +154,7 @@ public class ConnectListener implements Listener {
             StoredProfile playerProfile = session.getProfile();
             playerProfile.setId(verifiedUUID);
 
-            // bungeecord will do this automatically so override it on disabled option
+            // BungeeCord will do this automatically so override it on disabled option
             if (uniqueIdSetter != null) {
                 InitialHandler initialHandler = (InitialHandler) connection;
 
