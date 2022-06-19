@@ -25,6 +25,7 @@
  */
 package com.github.games647.fastlogin.bukkit;
 
+import com.comphenix.protocol.ProtocolLibrary;
 import com.github.games647.fastlogin.bukkit.command.CrackedCommand;
 import com.github.games647.fastlogin.bukkit.command.PremiumCommand;
 import com.github.games647.fastlogin.bukkit.listener.ConnectionListener;
@@ -201,6 +202,10 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
             } catch (Exception | NoSuchMethodError exception) {
                 logger.error("Failed to unregister placeholder", exception);
             }
+        }
+
+        if (isPluginInstalled("ProtocolLib")) {
+            ProtocolLibrary.getProtocolManager().getAsynchronousManager().unregisterAsyncHandlers(this);
         }
     }
 
