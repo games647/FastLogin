@@ -119,7 +119,7 @@ public class ProtocolLibListener extends PacketAdapter {
                 case Continue:
                 default:
                     //player.getName() won't work at this state
-                    onLogin(packetEvent, sender, username);
+                    onLoginStart(packetEvent, sender, username);
                     break;
             }
         } else {
@@ -146,7 +146,6 @@ public class ProtocolLibListener extends PacketAdapter {
             long salt = FuzzyReflection.getFieldValue(signatureData, Long.TYPE, true);
             byte[] signature = FuzzyReflection.getFieldValue(signatureData, byte[].class, true);
 
-            BukkitLoginSession session = plugin.getSession(sender.getAddress());
             PublicKey publicKey = session.getClientPublicKey().getKey();
             try {
                 if (EncryptionUtil.verifySignedNonce(session.getVerifyToken(), publicKey, salt, signature)) {
@@ -162,7 +161,7 @@ public class ProtocolLibListener extends PacketAdapter {
         }
     }
 
-    private void onLogin(PacketEvent packetEvent, Player player, String username) {
+    private void onLoginStart(PacketEvent packetEvent, Player player, String username) {
         //this includes ip:port. Should be unique for an incoming login request with a timeout of 2 minutes
         String sessionKey = player.getAddress().toString();
 

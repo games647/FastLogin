@@ -43,6 +43,7 @@ import com.github.games647.craftapi.model.skin.SkinProperty;
 import com.github.games647.craftapi.resolver.MojangResolver;
 import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
+import com.github.games647.fastlogin.bukkit.listener.protocollib.packet.ClientPublicKey;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -168,7 +169,7 @@ public class VerifyResponseTask implements Runnable {
         session.setVerified(true);
 
         setPremiumUUID(session.getUuid());
-        receiveFakeStartPacket(realUsername);
+        receiveFakeStartPacket(realUsername, session.getClientPublicKey());
     }
 
     private void setPremiumUUID(UUID premiumUUID) {
@@ -253,7 +254,7 @@ public class VerifyResponseTask implements Runnable {
     }
 
     //fake a new login packet in order to let the server handle all the other stuff
-    private void receiveFakeStartPacket(String username) {
+    private void receiveFakeStartPacket(String username, ClientPublicKey clientKey) {
         //see StartPacketListener for packet information
         PacketContainer startPacket = new PacketContainer(START);
 
@@ -261,7 +262,8 @@ public class VerifyResponseTask implements Runnable {
             startPacket.getStrings().write(0, username);
 
             EquivalentConverter<WrappedProfileKeyData> converter = BukkitConverters.getWrappedPublicKeyDataConverter();
-            startPacket.getOptionals(converter).write(0, Optional.empty());
+            var key = new WrappedProfileKeyData(clientKey.getExpiry(), clientKey.getKey(), sharedSecret);
+            startPacket.getOptionals(converter).write(0, Optional.of(key));
         } else {
             //uuid is ignored by the packet definition
             WrappedGameProfile fakeProfile = new WrappedGameProfile(UUID.randomUUID(), username);
