@@ -26,6 +26,8 @@
 package com.github.games647.fastlogin.bukkit.listener.protocollib;
 
 import com.github.games647.fastlogin.bukkit.listener.protocollib.packet.ClientPublicKey;
+import com.google.common.hash.Hasher;
+import com.google.common.hash.Hashing;
 import com.google.common.io.Resources;
 import com.google.common.primitives.Longs;
 
@@ -37,7 +39,6 @@ import java.security.InvalidKeyException;
 import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
@@ -50,7 +51,10 @@ import java.util.Base64;
 import java.util.Base64.Encoder;
 import java.util.Random;
 
+import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
@@ -123,14 +127,8 @@ class EncryptionUtil {
      */
     public static String getServerIdHashString(String sessionId, SecretKey sharedSecret, PublicKey publicKey) {
         // found in LoginListener
-        try {
-            byte[] serverHash = getServerIdHash(sessionId, publicKey, sharedSecret);
-            return (new BigInteger(serverHash)).toString(16);
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
-
-        return "";
+        byte[] serverHash = getServerIdHash(sessionId, publicKey, sharedSecret);
+        return (new BigInteger(serverHash)).toString(16);
     }
 
     /**
@@ -141,7 +139,9 @@ class EncryptionUtil {
      * @return shared secret key
      * @throws GeneralSecurityException if it fails to decrypt the data
      */
-    public static SecretKey decryptSharedKey(PrivateKey privateKey, byte[] sharedKey) throws GeneralSecurityException {
+    public static SecretKey decryptSharedKey(PrivateKey privateKey, byte[] sharedKey)
+        throws NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException,
+        BadPaddingException, InvalidKeyException {
         // SecretKey a(PrivateKey var0, byte[] var1)
         return new SecretKeySpec(decrypt(privateKey, sharedKey), "AES");
     }
@@ -185,37 +185,24 @@ class EncryptionUtil {
         return expiry + "-----BEGIN RSA PUBLIC KEY-----\n" + encoded + "\n-----END RSA PUBLIC KEY-----\n";
     }
 
-    public static byte[] decrypt(PrivateKey key, byte[] data) throws GeneralSecurityException {
+    public static byte[] decrypt(PrivateKey key, byte[] data)
+        throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException,
+        IllegalBlockSizeException, BadPaddingException {
         // b(Key var0, byte[] var1)
         Cipher cipher = Cipher.getInstance(key.getAlgorithm());
         cipher.init(Cipher.DECRYPT_MODE, key);
-        return decrypt(cipher, data);
-    }
-
-    /**
-     * Decrypted the given data using the cipher.
-     *
-     * @param cipher decryption cypher initialized with the private key
-     * @param data   the encrypted data
-     * @return clear text data
-     * @throws GeneralSecurityException if it fails to decrypt the data
-     */
-    private static byte[] decrypt(Cipher cipher, byte[] data) throws GeneralSecurityException {
-        // inlined: byte[] a(int var0, Key var1, byte[] var2), Cipher a(int var0, String var1, Key
-        // var2)
         return cipher.doFinal(data);
     }
 
-    private static byte[] getServerIdHash(String sessionId, PublicKey publicKey, SecretKey sharedSecret)
-        throws NoSuchAlgorithmException {
+    private static byte[] getServerIdHash(String sessionId, PublicKey publicKey, SecretKey sharedSecret) {
         // byte[] a(String var0, PublicKey var1, SecretKey var2)
-        MessageDigest digest = MessageDigest.getInstance("SHA-1");
+        Hasher hasher = Hashing.sha1().newHasher();
 
         // inlined from byte[] a(String var0, byte[]... var1)
-        digest.update(sessionId.getBytes(StandardCharsets.ISO_8859_1));
-        digest.update(sharedSecret.getEncoded());
-        digest.update(publicKey.getEncoded());
+        hasher.putBytes(sessionId.getBytes(StandardCharsets.ISO_8859_1));
+        hasher.putBytes(sharedSecret.getEncoded());
+        hasher.putBytes(publicKey.getEncoded());
 
-        return digest.digest();
+        return hasher.hash().asBytes();
     }
 }
