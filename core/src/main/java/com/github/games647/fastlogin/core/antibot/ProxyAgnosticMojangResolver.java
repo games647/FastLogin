@@ -43,7 +43,7 @@ import java.util.Optional;
  */
 public class ProxyAgnosticMojangResolver extends MojangResolver {
 	/**
-	 * A formatting string containing an URL used to call the {@code hasJoined} method on mojang session servers.
+	 * A formatting string containing a URL used to call the {@code hasJoined} method on mojang session servers.
 	 *
 	 * Formatting parameters:
 	 *  1. The username of the player in question

@@ -1,6 +1,6 @@
 # About
 
-This contains test resources for the unit tests. The file are extracted from the Minecraft directory with slight
+This contains test resources for the unit tests. The files are extracted from the Minecraft directory with slight
 modifications. The files are found in `$MINECRAFT_HOME$/profilekeys/`, where `$MINECRAFT_HOME$` represents the
 OS-dependent minecraft folder.
 
