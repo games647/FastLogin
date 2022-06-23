@@ -27,6 +27,7 @@ package com.github.games647.fastlogin.bukkit.listener.protocollib;
 
 import com.github.games647.fastlogin.bukkit.listener.protocollib.SignatureTestData.SignatureData;
 import com.github.games647.fastlogin.bukkit.listener.protocollib.packet.ClientPublicKey;
+import com.google.common.hash.Hashing;
 import com.google.common.io.Resources;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -34,13 +35,14 @@ import com.google.gson.JsonObject;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
+import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
+import java.security.InvalidKeyException;
+import java.security.Key;
 import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.NoSuchAlgorithmException;
-import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.security.SecureRandom;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.InvalidKeySpecException;
@@ -49,12 +51,22 @@ import java.security.spec.X509EncodedKeySpec;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Base64;
+import java.util.concurrent.ThreadLocalRandom;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 
 import org.bouncycastle.util.io.pem.PemObject;
 import org.bouncycastle.util.io.pem.PemReader;
+import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
@@ -95,7 +107,6 @@ public class EncryptionUtilTest {
         assertThat(EncryptionUtil.verifyClientKey(clientKey, expiredTimestamp), is(false));
     }
 
-    // @Test(expected = Exception.class)
     @Test
     public void testInvalidChangedExpiration() throws Exception {
         // expiration date changed should make the signature invalid
@@ -106,7 +117,6 @@ public class EncryptionUtilTest {
         assertThat(EncryptionUtil.verifyClientKey(clientKey, expireTimestamp), is(false));
     }
 
-    // @Test(expected = Exception.class)
     @Test
     public void testInvalidChangedKey() throws Exception {
         // changed public key no longer corresponding to the signature
@@ -131,6 +141,84 @@ public class EncryptionUtilTest {
         var verificationTimestamp = clientKey.expiry().minus(5, ChronoUnit.HOURS);
 
         assertThat(EncryptionUtil.verifyClientKey(clientKey, verificationTimestamp), is(true));
+    }
+
+    @Test
+    public void testDecryptSharedSecret() throws Exception {
+        KeyPair serverPair = EncryptionUtil.generateKeyPair();
+        var serverPK = serverPair.getPublic();
+
+        SecretKey secretKey = generateSharedKey();
+        byte[] encryptedSecret = encrypt(serverPK, secretKey.getEncoded());
+
+        SecretKey decryptSharedKey = EncryptionUtil.decryptSharedKey(serverPair.getPrivate(), encryptedSecret);
+        assertThat(decryptSharedKey, is(secretKey));
+    }
+
+    private byte[] encrypt(PublicKey receiverKey, byte[] message)
+        throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException,
+        IllegalBlockSizeException, BadPaddingException {
+        var encryptCipher = Cipher.getInstance(receiverKey.getAlgorithm());
+        encryptCipher.init(Cipher.ENCRYPT_MODE, receiverKey);
+        return encryptCipher.doFinal(message);
+    }
+
+    private SecretKeySpec generateSharedKey() {
+        // according to wiki.vg 16 bytes long
+        byte[] sharedKey = new byte[16];
+        ThreadLocalRandom.current().nextBytes(sharedKey);
+        // shared key is to be used for the AES/CFB8 stream cipher to encrypt the traffic
+        // therefore the encryption/decryption has to be AES
+        return new SecretKeySpec(sharedKey, "AES");
+    }
+
+    @Test
+    public void testServerIdHash() throws Exception {
+        var serverId = "";
+        var sharedSecret = generateSharedKey();
+        var serverPK = loadClientKey("client_keys/valid_public_key.json").key();
+
+        String sessionHash = getServerHash(serverId, sharedSecret, serverPK);
+        assertThat(EncryptionUtil.getServerIdHashString(serverId, sharedSecret, serverPK), is(sessionHash));
+    }
+
+    @NotNull
+    private String getServerHash(String serverId, SecretKey sharedSecret, PublicKey serverPK) {
+        // https://wiki.vg/Protocol_Encryption#Client
+        // sha1 := Sha1()
+        // sha1.update(ASCII encoding of the server id string from Encryption Request)
+        // sha1.update(shared secret)
+        // sha1.update(server's encoded public key from Encryption Request)
+        // hash := sha1.hexdigest() # String of hex characters
+        var hasher = Hashing.sha1().newHasher();
+        hasher.putString(serverId, StandardCharsets.US_ASCII);
+        hasher.putBytes(sharedSecret.getEncoded());
+        hasher.putBytes(serverPK.getEncoded());
+        //  It works by treating the sha1 output bytes as one large integer in two's complement and then printing the
+        //  integer in base 16, placing a minus sign if the interpreted number is negative.
+        // reference: https://github.com/SpigotMC/BungeeCord/blob/ff5727c5ef9c0b56ad35f9816ae6bd660b622cf0/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java#L456
+        return new BigInteger(hasher.hash().asBytes()).toString(16);
+    }
+
+    @Test
+    public void testServerIdHashWrongSecret() throws Exception {
+        var serverId = "";
+        var sharedSecret = generateSharedKey();
+        var serverPK = loadClientKey("client_keys/valid_public_key.json").key();
+
+        String sessionHash = getServerHash(serverId, sharedSecret, serverPK);
+        assertThat(EncryptionUtil.getServerIdHashString("", generateSharedKey(), serverPK), not(sessionHash));
+    }
+
+    @Test
+    public void testServerIdHashWrongServerKey() throws Exception {
+        var serverId = "";
+        var sharedSecret = generateSharedKey();
+        var serverPK = EncryptionUtil.generateKeyPair().getPublic();
+
+        String sessionHash = getServerHash(serverId, sharedSecret, serverPK);
+        var wrongPK = EncryptionUtil.generateKeyPair().getPublic();
+        assertThat(EncryptionUtil.getServerIdHashString("", sharedSecret, wrongPK), not(sessionHash));
     }
 
     @Test
