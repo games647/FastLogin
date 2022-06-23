@@ -147,8 +147,8 @@ class EncryptionUtil {
     }
 
     public static boolean verifyClientKey(ClientPublicKey clientKey, Instant verifyTimstamp)
-        throws SignatureException, NoSuchAlgorithmException, InvalidKeyException {
-        if (!verifyTimstamp.isBefore(clientKey.getExpiry())) {
+        throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
+        if (!verifyTimstamp.isBefore(clientKey.expiry())) {
             return false;
         }
 
@@ -156,7 +156,7 @@ class EncryptionUtil {
         // key of the signer
         verifier.initVerify(mojangSessionKey);
         verifier.update(toSignable(clientKey).getBytes(StandardCharsets.US_ASCII));
-        return verifier.verify(clientKey.getSignature());
+        return verifier.verify(clientKey.signature());
     }
 
     public static boolean verifySignedNonce(byte[] nonce, PublicKey clientKey, long signatureSalt, byte[] signature)
@@ -180,8 +180,8 @@ class EncryptionUtil {
     }
 
     private static String toSignable(ClientPublicKey clientPublicKey) {
-        long expiry = clientPublicKey.getExpiry().toEpochMilli();
-        String encoded = KEY_ENCODER.encodeToString(clientPublicKey.getKey().getEncoded());
+        long expiry = clientPublicKey.expiry().toEpochMilli();
+        String encoded = KEY_ENCODER.encodeToString(clientPublicKey.key().getEncoded());
         return expiry + "-----BEGIN RSA PUBLIC KEY-----\n" + encoded + "\n-----END RSA PUBLIC KEY-----\n";
     }
 

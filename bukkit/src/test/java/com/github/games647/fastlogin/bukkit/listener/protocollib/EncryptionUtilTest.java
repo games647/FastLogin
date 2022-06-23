@@ -90,7 +90,7 @@ public class EncryptionUtilTest {
         var clientKey = loadClientKey("client_keys/valid_public_key.json");
 
         // Client expires at the exact second mentioned, so use it for verification
-        var expiredTimestamp = clientKey.getExpiry();
+        var expiredTimestamp = clientKey.expiry();
         assertThat(EncryptionUtil.verifyClientKey(clientKey, expiredTimestamp), is(false));
     }
 
@@ -100,7 +100,7 @@ public class EncryptionUtilTest {
         // expiration date changed should make the signature invalid
         // expiration should still be valid
         var clientKey = loadClientKey("client_keys/invalid_wrong_expiration.json");
-        Instant expireTimestamp = clientKey.getExpiry().minus(5, ChronoUnit.HOURS);
+        Instant expireTimestamp = clientKey.expiry().minus(5, ChronoUnit.HOURS);
 
         assertThat(EncryptionUtil.verifyClientKey(clientKey, expireTimestamp), is(false));
     }
@@ -110,7 +110,7 @@ public class EncryptionUtilTest {
     public void testInvalidChangedKey() throws Exception {
         // changed public key no longer corresponding to the signature
         var clientKey = loadClientKey("client_keys/invalid_wrong_key.json");
-        Instant expireTimestamp = clientKey.getExpiry().minus(5, ChronoUnit.HOURS);
+        Instant expireTimestamp = clientKey.expiry().minus(5, ChronoUnit.HOURS);
 
         assertThat(EncryptionUtil.verifyClientKey(clientKey, expireTimestamp), is(false));
     }
@@ -119,7 +119,7 @@ public class EncryptionUtilTest {
     public void testInvalidChangedSignature() throws Exception {
         // signature modified no longer corresponding to key and expiration date
         var clientKey = loadClientKey("client_keys/invalid_wrong_signature.json");
-        Instant expireTimestamp = clientKey.getExpiry().minus(5, ChronoUnit.HOURS);
+        Instant expireTimestamp = clientKey.expiry().minus(5, ChronoUnit.HOURS);
 
         assertThat(EncryptionUtil.verifyClientKey(clientKey, expireTimestamp), is(false));
     }
@@ -127,7 +127,7 @@ public class EncryptionUtilTest {
     @Test
     public void testValidClientKey() throws Exception {
         var clientKey = loadClientKey("client_keys/valid_public_key.json");
-        var verificationTimestamp = clientKey.getExpiry().minus(5, ChronoUnit.HOURS);
+        var verificationTimestamp = clientKey.expiry().minus(5, ChronoUnit.HOURS);
 
         assertThat(EncryptionUtil.verifyClientKey(clientKey, verificationTimestamp), is(true));
     }
@@ -135,7 +135,7 @@ public class EncryptionUtilTest {
     @Test
     public void testValidSignedNonce() throws Exception {
         ClientPublicKey clientKey = loadClientKey("client_keys/valid_public_key.json");
-        PublicKey clientPublicKey = clientKey.getKey();
+        PublicKey clientPublicKey = clientKey.key();
 
         SignatureTestData testData = loadSignatureResource("signature/valid_signature.json");
         byte[] nonce = testData.getNonce();
@@ -147,7 +147,7 @@ public class EncryptionUtilTest {
     @Test
     public void testIncorrectNonce() throws Exception {
         ClientPublicKey clientKey = loadClientKey("client_keys/valid_public_key.json");
-        PublicKey clientPublicKey = clientKey.getKey();
+        PublicKey clientPublicKey = clientKey.key();
 
         SignatureTestData testData = loadSignatureResource("signature/incorrect_nonce.json");
         byte[] nonce = testData.getNonce();
@@ -160,7 +160,7 @@ public class EncryptionUtilTest {
     public void testIncorrectSalt() throws Exception {
         // client generated
         ClientPublicKey clientKey = loadClientKey("client_keys/valid_public_key.json");
-        PublicKey clientPublicKey = clientKey.getKey();
+        PublicKey clientPublicKey = clientKey.key();
 
         SignatureTestData testData = loadSignatureResource("signature/incorrect_salt.json");
         byte[] nonce = testData.getNonce();
@@ -173,7 +173,7 @@ public class EncryptionUtilTest {
     public void testIncorrectSignature() throws Exception {
         // client generated
         ClientPublicKey clientKey = loadClientKey("client_keys/valid_public_key.json");
-        PublicKey clientPublicKey = clientKey.getKey();
+        PublicKey clientPublicKey = clientKey.key();
 
         SignatureTestData testData = loadSignatureResource("signature/incorrect_signature.json");
         byte[] nonce = testData.getNonce();
@@ -186,7 +186,7 @@ public class EncryptionUtilTest {
     public void testWrongPublicKeySigned() throws Exception {
         // load a different public key
         ClientPublicKey clientKey = loadClientKey("client_keys/invalid_wrong_key.json");
-        PublicKey clientPublicKey = clientKey.getKey();
+        PublicKey clientPublicKey = clientKey.key();
 
         SignatureTestData testData = loadSignatureResource("signature/valid_signature.json");
         byte[] nonce = testData.getNonce();

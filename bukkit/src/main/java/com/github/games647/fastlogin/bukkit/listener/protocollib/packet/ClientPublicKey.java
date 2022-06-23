@@ -28,27 +28,6 @@ package com.github.games647.fastlogin.bukkit.listener.protocollib.packet;
 import java.security.PublicKey;
 import java.time.Instant;
 
-public class ClientPublicKey {
+public record ClientPublicKey(Instant expiry, PublicKey key, byte[] signature) {
 
-    private final Instant expiry;
-    private final PublicKey key;
-    private final byte[] signature;
-
-    public ClientPublicKey(Instant expiry, PublicKey key, byte[] signature) {
-        this.expiry = expiry;
-        this.key = key;
-        this.signature = signature;
-    }
-
-    public Instant getExpiry() {
-        return expiry;
-    }
-
-    public PublicKey getKey() {
-        return key;
-    }
-
-    public byte[] getSignature() {
-        return signature;
-    }
 }
