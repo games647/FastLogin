@@ -52,7 +52,7 @@ public abstract class LoginSession {
         return requestUsername;
     }
 
-    public String getUsername() {
+    public synchronized String getUsername() {
         return username;
     }
 
