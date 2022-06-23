@@ -36,7 +36,9 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyFactory;
+import java.security.KeyPair;
 import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.SecureRandom;
 import java.security.interfaces.RSAPrivateKey;
@@ -56,6 +58,8 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
+import static org.junit.Assert.assertTrue;
+
 public class EncryptionUtilTest {
 
     @Test
@@ -65,6 +69,20 @@ public class EncryptionUtilTest {
 
         assertThat(token, notNullValue());
         assertThat(token.length, is(4));
+    }
+
+    @Test
+    public void testServerKey() {
+        KeyPair keyPair = EncryptionUtil.generateKeyPair();
+
+        PrivateKey privateKey = keyPair.getPrivate();
+        assertThat(privateKey.getAlgorithm(), is("RSA"));
+
+        PublicKey publicKey = keyPair.getPublic();
+        assertThat(publicKey.getAlgorithm(), is("RSA"));
+
+        // clients accept larger values, but we shouldn't crash them
+        assertTrue(publicKey.getEncoded().length > (1024 / 8));
     }
 
     @Test
