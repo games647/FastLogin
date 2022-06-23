@@ -28,6 +28,7 @@ package com.github.games647.fastlogin.bukkit.event;
 import com.github.games647.fastlogin.core.StoredProfile;
 import com.github.games647.fastlogin.core.shared.LoginSession;
 import com.github.games647.fastlogin.core.shared.event.FastLoginAutoLoginEvent;
+
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;

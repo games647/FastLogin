@@ -127,7 +127,7 @@ public class ProtocolLibListener extends PacketAdapter {
         }
     }
 
-    private Boolean isFastLoginPacket(PacketEvent packetEvent) {
+    private boolean isFastLoginPacket(PacketEvent packetEvent) {
         return packetEvent.getPacket().getMeta(SOURCE_META_KEY)
                 .map(val -> val.equals(plugin.getName()))
                 .orElse(false);
@@ -146,7 +146,7 @@ public class ProtocolLibListener extends PacketAdapter {
             long salt = FuzzyReflection.getFieldValue(signatureData, Long.TYPE, true);
             byte[] signature = FuzzyReflection.getFieldValue(signatureData, byte[].class, true);
 
-            PublicKey publicKey = session.getClientPublicKey().getKey();
+            PublicKey publicKey = session.getClientPublicKey().key();
             try {
                 if (EncryptionUtil.verifySignedNonce(session.getVerifyToken(), publicKey, salt, signature)) {
                     packetEvent.getAsyncMarker().incrementProcessingDelay();

@@ -33,7 +33,6 @@ import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.comphenix.protocol.wrappers.WrappedProfilePublicKey.WrappedProfileKeyData;
 import com.github.games647.fastlogin.core.shared.LoginSource;
 
-import java.lang.reflect.InvocationTargetException;
 import java.net.InetSocketAddress;
 import java.security.PublicKey;
 import java.util.Arrays;
@@ -64,7 +63,7 @@ class ProtocolLibLoginSource implements LoginSource {
     }
 
     @Override
-    public void enableOnlinemode() throws InvocationTargetException {
+    public void enableOnlinemode() {
         verifyToken = EncryptionUtil.generateVerifyToken(random);
 
         /*
@@ -92,7 +91,7 @@ class ProtocolLibLoginSource implements LoginSource {
     }
 
     @Override
-    public void kick(String message) throws InvocationTargetException {
+    public void kick(String message) {
         ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
 
         PacketContainer kickPacket = new PacketContainer(DISCONNECT);

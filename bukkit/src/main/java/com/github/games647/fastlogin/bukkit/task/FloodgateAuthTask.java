@@ -25,6 +25,11 @@
  */
 package com.github.games647.fastlogin.bukkit.task;
 
+import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
+import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
+import com.github.games647.fastlogin.core.shared.FastLoginCore;
+import com.github.games647.fastlogin.core.shared.FloodgateManagement;
+
 import java.net.InetSocketAddress;
 import java.util.UUID;
 
@@ -32,11 +37,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.geysermc.floodgate.api.player.FloodgatePlayer;
-
-import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
-import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
-import com.github.games647.fastlogin.core.shared.FastLoginCore;
-import com.github.games647.fastlogin.core.shared.FloodgateManagement;
 
 public class FloodgateAuthTask extends FloodgateManagement<Player, CommandSender, BukkitLoginSession, FastLoginBukkit> {
 

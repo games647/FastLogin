@@ -54,14 +54,13 @@ public class FloodgateService extends BedrockService<FloodgatePlayer> {
      * <li>autoLoginFloodgate
      * <li>autoRegisterFloodgate
      * </ul>
-     * </p>
      *
      * @param key the key of the entry in config.yml
      * @return <b>true</b> if the entry's value is "true", "false", or "linked"
      */
     public boolean isValidFloodgateConfigString(String key) {
         String value = core.getConfig().get(key).toString().toLowerCase(Locale.ENGLISH);
-        if (!value.equals("true") && !value.equals("linked") && !value.equals("false") && !value.equals("no-conflict")) {
+        if (!"true".equals(value) && !"linked".equals(value) && !"false".equals(value) && !"no-conflict".equals(value)) {
             core.getPlugin().getLog().error("Invalid value detected for {} in FastLogin/config.yml.", key);
             return false;
         }
@@ -87,7 +86,7 @@ public class FloodgateService extends BedrockService<FloodgatePlayer> {
         } else {
             core.getPlugin().getLog().info("Skipping name conflict checking for player {}", username);
         }
-        
+
         //Floodgate users don't need Java specific checks
         return true;
     }
@@ -98,7 +97,7 @@ public class FloodgateService extends BedrockService<FloodgatePlayer> {
      * username can be found
      * <br>
      * <i>Falls back to non-prefixed name checks, if ProtocolLib is installed</i>
-     * 
+     *
      * @param prefixedUsername the name of the player with the prefix appended
      * @return FloodgatePlayer if found, null otherwise
      */

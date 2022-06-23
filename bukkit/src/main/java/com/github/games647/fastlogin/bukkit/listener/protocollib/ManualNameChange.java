@@ -25,6 +25,7 @@
  */
 package com.github.games647.fastlogin.bukkit.listener.protocollib;
 
+import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
@@ -35,8 +36,6 @@ import com.github.games647.fastlogin.core.hooks.bedrock.FloodgateService;
 import org.geysermc.floodgate.api.FloodgateApi;
 
 import static com.comphenix.protocol.PacketType.Login.Client.START;
-
-import com.comphenix.protocol.ProtocolLibrary;
 
 /**
  * Manually inject Floodgate player name prefixes.

@@ -25,19 +25,19 @@
  */
 package com.github.games647.fastlogin.bungee.task;
 
+import com.github.games647.fastlogin.bungee.BungeeLoginSession;
+import com.github.games647.fastlogin.bungee.FastLoginBungee;
+import com.github.games647.fastlogin.core.shared.FastLoginCore;
+import com.github.games647.fastlogin.core.shared.FloodgateManagement;
+
 import java.net.InetSocketAddress;
 import java.util.UUID;
-
-import org.geysermc.floodgate.api.player.FloodgatePlayer;
 
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.connection.Server;
 
-import com.github.games647.fastlogin.bungee.BungeeLoginSession;
-import com.github.games647.fastlogin.bungee.FastLoginBungee;
-import com.github.games647.fastlogin.core.shared.FastLoginCore;
-import com.github.games647.fastlogin.core.shared.FloodgateManagement;
+import org.geysermc.floodgate.api.player.FloodgatePlayer;
 
 public class FloodgateAuthTask
         extends FloodgateManagement<ProxiedPlayer, CommandSender, BungeeLoginSession, FastLoginBungee> {

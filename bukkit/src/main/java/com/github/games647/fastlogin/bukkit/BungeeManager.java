@@ -35,6 +35,7 @@ import com.google.common.io.ByteStreams;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -61,7 +62,7 @@ public class BungeeManager {
     private final FastLoginBukkit plugin;
     private boolean enabled;
 
-    private final Set<UUID> firedJoinEvents = new HashSet<>();
+    private final Collection<UUID> firedJoinEvents = new HashSet<>();
 
     public BungeeManager(FastLoginBukkit plugin) {
         this.plugin = plugin;

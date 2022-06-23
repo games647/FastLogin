@@ -32,6 +32,7 @@ import com.github.games647.fastlogin.velocity.FastLoginVelocity;
 import com.github.games647.fastlogin.velocity.event.VelocityFastLoginPremiumToggleEvent;
 import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.proxy.Player;
+
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 
 public class AsyncToggleMessage implements Runnable {

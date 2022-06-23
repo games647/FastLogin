@@ -32,8 +32,8 @@ import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public class TickingRateLimiterTest {
 
@@ -43,7 +43,7 @@ public class TickingRateLimiterTest {
      * Always expired
      */
     @Test
-    public void allowExpire() throws InterruptedException {
+    public void allowExpire() {
         int size = 3;
 
         FakeTicker ticker = new FakeTicker(5_000_000L);
@@ -51,17 +51,17 @@ public class TickingRateLimiterTest {
         // run twice the size to fill it first and then test it
         TickingRateLimiter rateLimiter = new TickingRateLimiter(ticker, size, 0);
         for (int i = 0; i < size; i++) {
-            assertTrue("Filling up", rateLimiter.tryAcquire());
+            assertThat("Filling up", rateLimiter.tryAcquire(), is(true));
         }
 
         for (int i = 0; i < size; i++) {
             ticker.add(Duration.ofSeconds(1));
-            assertTrue("Should be expired", rateLimiter.tryAcquire());
+            assertThat("Should be expired", rateLimiter.tryAcquire(), is(true));
         }
     }
 
     @Test
-    public void allowExpireNegative() throws InterruptedException {
+    public void allowExpireNegative() {
         int size = 3;
 
         FakeTicker ticker = new FakeTicker(-5_000_000L);
@@ -69,12 +69,12 @@ public class TickingRateLimiterTest {
         // run twice the size to fill it first and then test it
         TickingRateLimiter rateLimiter = new TickingRateLimiter(ticker, size, 0);
         for (int i = 0; i < size; i++) {
-            assertTrue("Filling up", rateLimiter.tryAcquire());
+            assertThat("Filling up", rateLimiter.tryAcquire(), is(true));
         }
 
         for (int i = 0; i < size; i++) {
             ticker.add(Duration.ofSeconds(1));
-            assertTrue("Should be expired", rateLimiter.tryAcquire());
+            assertThat("Should be expired", rateLimiter.tryAcquire(), is(true));
         }
     }
 
@@ -90,10 +90,10 @@ public class TickingRateLimiterTest {
         // fill the size
         TickingRateLimiter rateLimiter = new TickingRateLimiter(ticker, size, TimeUnit.SECONDS.toMillis(30));
         for (int i = 0; i < size; i++) {
-            assertTrue("Filling up", rateLimiter.tryAcquire());
+            assertThat("Filling up", rateLimiter.tryAcquire(), is(true));
         }
 
-        assertFalse("Should be full and no entry should be expired", rateLimiter.tryAcquire());
+        assertThat("Should be full and no entry should be expired", rateLimiter.tryAcquire(), is(false));
     }
 
     /**
@@ -108,51 +108,51 @@ public class TickingRateLimiterTest {
         // fill the size
         TickingRateLimiter rateLimiter = new TickingRateLimiter(ticker, size, TimeUnit.SECONDS.toMillis(30));
         for (int i = 0; i < size; i++) {
-            assertTrue("Filling up", rateLimiter.tryAcquire());
+            assertThat("Filling up", rateLimiter.tryAcquire(), is(true));
         }
 
-        assertFalse("Should be full and no entry should be expired", rateLimiter.tryAcquire());
+        assertThat("Should be full and no entry should be expired", rateLimiter.tryAcquire(), is(false));
     }
 
     /**
      * Blocked attempts shouldn't replace existing ones.
      */
     @Test
-    public void blockedNotAdded() throws InterruptedException {
+    public void blockedNotAdded() {
         FakeTicker ticker = new FakeTicker(5_000_000L);
 
         // fill the size - 100ms should be reasonable high
         TickingRateLimiter rateLimiter = new TickingRateLimiter(ticker, 1, 100);
-        assertTrue("Filling up", rateLimiter.tryAcquire());
+        assertThat("Filling up", rateLimiter.tryAcquire(), is(true));
 
         ticker.add(Duration.ofMillis(50));
 
         // still is full - should fail
-        assertFalse("Expired too early", rateLimiter.tryAcquire());
+        assertThat("Expired too early", rateLimiter.tryAcquire(), is(false));
 
         // wait the remaining time and add a threshold, because
         ticker.add(Duration.ofMillis(50));
-        assertTrue("Request not released", rateLimiter.tryAcquire());
+        assertThat("Request not released", rateLimiter.tryAcquire(), is(true));
     }
 
     /**
      * Blocked attempts shouldn't replace existing ones.
      */
     @Test
-    public void blockedNotAddedNegative() throws InterruptedException {
+    public void blockedNotAddedNegative() {
         FakeTicker ticker = new FakeTicker(-5_000_000L);
 
         // fill the size - 100ms should be reasonable high
         TickingRateLimiter rateLimiter = new TickingRateLimiter(ticker, 1, 100);
-        assertTrue("Filling up", rateLimiter.tryAcquire());
+        assertThat("Filling up", rateLimiter.tryAcquire(), is(true));
 
         ticker.add(Duration.ofMillis(50));
 
         // still is full - should fail
-        assertFalse("Expired too early", rateLimiter.tryAcquire());
+        assertThat("Expired too early", rateLimiter.tryAcquire(), is(false));
 
         // wait the remaining time and add a threshold, because
         ticker.add(Duration.ofMillis(50));
-        assertTrue("Request not released", rateLimiter.tryAcquire());
+        assertThat("Request not released", rateLimiter.tryAcquire(), is(true));
     }
 }

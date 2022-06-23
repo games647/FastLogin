@@ -45,9 +45,11 @@ import com.velocitypowered.api.proxy.InboundConnection;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 import com.velocitypowered.api.util.GameProfile;
+import com.velocitypowered.api.util.GameProfile.Property;
 
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -121,7 +123,7 @@ public class ConnectListener {
         }
     }
 
-    private List<GameProfile.Property> removeSkin(List<GameProfile.Property> oldProperties) {
+    private List<GameProfile.Property> removeSkin(Collection<Property> oldProperties) {
         List<GameProfile.Property> newProperties = new ArrayList<>(oldProperties.size() - 1);
         for (GameProfile.Property property : oldProperties) {
             if (!"textures".equals(property.getName()))

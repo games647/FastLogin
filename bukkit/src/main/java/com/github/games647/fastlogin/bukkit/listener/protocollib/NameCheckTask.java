@@ -49,7 +49,7 @@ public class NameCheckTask extends JoinManagement<Player, CommandSender, Protoco
 
     private final FastLoginBukkit plugin;
     private final PacketEvent packetEvent;
-    private final PublicKey publicKey;
+    private final PublicKey serverKey;
 
     private final Random random;
 
@@ -57,12 +57,12 @@ public class NameCheckTask extends JoinManagement<Player, CommandSender, Protoco
     private final String username;
 
     public NameCheckTask(FastLoginBukkit plugin, Random random, Player player, PacketEvent packetEvent,
-                         String username, PublicKey publicKey) {
+                         String username, PublicKey serverKey) {
         super(plugin.getCore(), plugin.getCore().getAuthPluginHook(), plugin.getBedrockService());
 
         this.plugin = plugin;
         this.packetEvent = packetEvent;
-        this.publicKey = publicKey;
+        this.serverKey = serverKey;
         this.random = random;
         this.player = player;
         this.username = username;
@@ -71,9 +71,9 @@ public class NameCheckTask extends JoinManagement<Player, CommandSender, Protoco
     @Override
     public void run() {
         try {
-            Optional<WrappedProfileKeyData> publicKey = packetEvent.getPacket().getOptionals(BukkitConverters.getWrappedPublicKeyDataConverter()).read(0);
+            Optional<WrappedProfileKeyData> clientKey = packetEvent.getPacket().getOptionals(BukkitConverters.getWrappedPublicKeyDataConverter()).read(0);
 
-            super.onLogin(username, new ProtocolLibLoginSource(player, random, publicKey.get(), this.publicKey));
+            super.onLogin(username, new ProtocolLibLoginSource(player, random, clientKey.get(), serverKey));
         } finally {
             ProtocolLibrary.getProtocolManager().getAsynchronousManager().signalPacketTransmission(packetEvent);
         }
