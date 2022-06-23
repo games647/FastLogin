@@ -49,7 +49,7 @@ import java.security.spec.X509EncodedKeySpec;
 import java.time.Instant;
 import java.util.Base64;
 import java.util.Base64.Encoder;
-import java.util.Random;
+import java.util.random.RandomGenerator;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -110,7 +110,7 @@ class EncryptionUtil {
      * @param random random generator
      * @return an error with 4 bytes long
      */
-    public static byte[] generateVerifyToken(Random random) {
+    public static byte[] generateVerifyToken(RandomGenerator random) {
         // extracted from LoginListener
         byte[] token = new byte[VERIFY_TOKEN_LENGTH];
         random.nextBytes(token);
@@ -120,14 +120,14 @@ class EncryptionUtil {
     /**
      * Generate the server id based on client and server data.
      *
-     * @param sessionId    session for the current login attempt
+     * @param serverId    session for the current login attempt
      * @param sharedSecret shared secret between the client and the server
      * @param publicKey    public key of the server
      * @return the server id formatted as a hexadecimal string.
      */
-    public static String getServerIdHashString(String sessionId, SecretKey sharedSecret, PublicKey publicKey) {
+    public static String getServerIdHashString(String serverId, SecretKey sharedSecret, PublicKey publicKey) {
         // found in LoginListener
-        byte[] serverHash = getServerIdHash(sessionId, publicKey, sharedSecret);
+        byte[] serverHash = getServerIdHash(serverId, publicKey, sharedSecret);
         return (new BigInteger(serverHash)).toString(16);
     }
 
@@ -185,7 +185,7 @@ class EncryptionUtil {
         return expiry + "-----BEGIN RSA PUBLIC KEY-----\n" + encoded + "\n-----END RSA PUBLIC KEY-----\n";
     }
 
-    public static byte[] decrypt(PrivateKey key, byte[] data)
+    private static byte[] decrypt(PrivateKey key, byte[] data)
         throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException,
         IllegalBlockSizeException, BadPaddingException {
         // b(Key var0, byte[] var1)
