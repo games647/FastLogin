@@ -64,7 +64,7 @@ public class EncryptionUtilTest {
 
     @Test
     public void testVerifyToken() {
-        SecureRandom random = new SecureRandom();
+        var random = ThreadLocalRandom.current();
         byte[] token = EncryptionUtil.generateVerifyToken(random);
 
         assertThat(token, notNullValue());
