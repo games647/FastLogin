@@ -44,7 +44,7 @@ import com.comphenix.protocol.ProtocolLibrary;
  * This is used as a workaround, because Floodgate fails to inject
  * the prefixes when it's used together with ProtocolLib and FastLogin.
  * <br>
- * For more information visit: https://github.com/games647/FastLogin/issues/493
+ * For more information visit: <a href="https://github.com/games647/FastLogin/issues/493">...</a>
  */
 public class ManualNameChange extends PacketAdapter {
 

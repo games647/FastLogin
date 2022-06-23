@@ -38,11 +38,11 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 /**
  * GitHub:
- * https://github.com/xXSchrandXx/SpigotPlugins/tree/master/BungeeCordAuthenticator
+ * <a href="https://github.com/xXSchrandXx/SpigotPlugins/tree/master/BungeeCordAuthenticator">...</a>
  * <p>
  * Project page:
  * <p>
- * Spigot: https://www.spigotmc.org/resources/bungeecordauthenticator.87669/
+ * Spigot: <a href="https://www.spigotmc.org/resources/bungeecordauthenticator.87669/">...</a>
  */
 public class BungeeCordAuthenticatorBungeeHook implements AuthPlugin<ProxiedPlayer> {
 

@@ -36,13 +36,13 @@ import com.lenis0012.bukkit.loginsecurity.session.action.RegisterAction;
 import org.bukkit.entity.Player;
 
 /**
- * GitHub: https://github.com/lenis0012/LoginSecurity-2
+ * GitHub: <a href="https://github.com/lenis0012/LoginSecurity-2">...</a>
  * <p>
  * Project page:
  * <p>
- * Bukkit: https://dev.bukkit.org/bukkit-plugins/loginsecurity/
+ * Bukkit: <a href="https://dev.bukkit.org/bukkit-plugins/loginsecurity/">...</a>
  * <p>
- * Spigot: https://www.spigotmc.org/resources/loginsecurity.19362/
+ * Spigot: <a href="https://www.spigotmc.org/resources/loginsecurity.19362/">...</a>
  */
 public class LoginSecurityHook implements AuthPlugin<Player> {
 

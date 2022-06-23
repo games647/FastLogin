@@ -41,13 +41,13 @@ import org.bukkit.event.Listener;
 import java.lang.reflect.Field;
 
 /**
- * GitHub: https://github.com/Xephi/AuthMeReloaded/
+ * GitHub: <a href="https://github.com/Xephi/AuthMeReloaded/">...</a>
  * <p>
  * Project page:
  * <p>
- * Bukkit: https://dev.bukkit.org/bukkit-plugins/authme-reloaded/
+ * Bukkit: <a href="https://dev.bukkit.org/bukkit-plugins/authme-reloaded/">...</a>
  * <p>
- * Spigot: https://www.spigotmc.org/resources/authme-reloaded.6269/
+ * Spigot: <a href="https://www.spigotmc.org/resources/authme-reloaded.6269/">...</a>
  */
 public class AuthMeHook implements AuthPlugin<Player>, Listener {
 

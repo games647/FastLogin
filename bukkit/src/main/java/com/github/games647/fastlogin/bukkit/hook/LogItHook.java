@@ -38,7 +38,7 @@ import java.time.Instant;
 import org.bukkit.entity.Player;
 
 /**
- * GitHub: https://github.com/XziomekX/LogIt
+ * GitHub: <a href="https://github.com/XziomekX/LogIt">...</a>
  * <p>
  * Project page:
  * <p>
