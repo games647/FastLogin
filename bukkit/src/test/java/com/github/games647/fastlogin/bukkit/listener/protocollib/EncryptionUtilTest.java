@@ -75,14 +75,15 @@ public class EncryptionUtilTest {
     public void testServerKey() {
         KeyPair keyPair = EncryptionUtil.generateKeyPair();
 
-        PrivateKey privateKey = keyPair.getPrivate();
+        Key privateKey = keyPair.getPrivate();
         assertThat(privateKey.getAlgorithm(), is("RSA"));
 
-        PublicKey publicKey = keyPair.getPublic();
+        RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();
         assertThat(publicKey.getAlgorithm(), is("RSA"));
 
-        // clients accept larger values, but we shouldn't crash them
-        assertTrue(publicKey.getEncoded().length > (1024 / 8));
+        // clients accept larger values than the standard vanilla server, but we shouldn't crash them
+        assertTrue(publicKey.getModulus().bitLength() >= 1024);
+        assertTrue(publicKey.getModulus().bitLength() < 8192);
     }
 
     @Test
