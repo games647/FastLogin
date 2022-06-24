@@ -30,4 +30,7 @@ import java.time.Instant;
 
 public record ClientPublicKey(Instant expiry, PublicKey key, byte[] signature) {
 
+    public boolean isExpired(Instant verifyTimestamp) {
+        return verifyTimestamp.isBefore(expiry);
+    }
 }

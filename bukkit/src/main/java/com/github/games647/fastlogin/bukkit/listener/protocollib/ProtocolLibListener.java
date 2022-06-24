@@ -31,8 +31,8 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.reflect.FuzzyReflection;
+import com.comphenix.protocol.wrappers.BukkitConverters;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
-import com.comphenix.protocol.wrappers.WrappedProfilePublicKey;
 import com.comphenix.protocol.wrappers.WrappedProfilePublicKey.WrappedProfileKeyData;
 import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
@@ -173,7 +173,10 @@ public class ProtocolLibListener extends PacketAdapter {
             username = (String) packetEvent.getPacket().getMeta("original_name").get();
         }
 
-        if (!verifyPublicKey(packet)) {
+        PacketContainer packet = packetEvent.getPacket();
+        WrappedProfileKeyData profileKey = packet.getOptionals(BukkitConverters.getWrappedPublicKeyDataConverter())
+            .read(0).orElse(null);
+        if (profileKey != null && !verifyPublicKey(profileKey)) {
             plugin.getLog().warn("Invalid public key from player {}", username);
             return;
         }
@@ -185,13 +188,7 @@ public class ProtocolLibListener extends PacketAdapter {
         plugin.getScheduler().runAsync(nameCheckTask);
     }
 
-    private boolean verifyPublicKey(PacketContainer packet) {
-        WrappedProfileKeyData profileKey = packet.getProfilePublicKeys().optionRead(0)
-            .map(WrappedProfilePublicKey::getKeyData).orElse(null);
-        if (profileKey == null) {
-            return true;
-        }
-
+    private boolean verifyPublicKey(WrappedProfileKeyData profileKey) {
         Instant expires = profileKey.getExpireTime();
         PublicKey key = profileKey.getKey();
         byte[] signature = profileKey.getSignature();

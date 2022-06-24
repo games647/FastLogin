@@ -148,7 +148,7 @@ class EncryptionUtil {
 
     public static boolean verifyClientKey(ClientPublicKey clientKey, Instant verifyTimstamp)
         throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
-        if (!verifyTimstamp.isBefore(clientKey.expiry())) {
+        if (clientKey.isExpired(verifyTimstamp)) {
             return false;
         }
 

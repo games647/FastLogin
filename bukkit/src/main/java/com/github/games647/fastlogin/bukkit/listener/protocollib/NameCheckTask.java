@@ -71,9 +71,10 @@ public class NameCheckTask extends JoinManagement<Player, CommandSender, Protoco
     @Override
     public void run() {
         try {
-            Optional<WrappedProfileKeyData> clientKey = packetEvent.getPacket().getOptionals(BukkitConverters.getWrappedPublicKeyDataConverter()).read(0);
+            Optional<WrappedProfileKeyData> clientKey = packetEvent.getPacket()
+                .getOptionals(BukkitConverters.getWrappedPublicKeyDataConverter()).read(0);
 
-            super.onLogin(username, new ProtocolLibLoginSource(player, random, clientKey.get(), serverKey));
+            super.onLogin(username, new ProtocolLibLoginSource(player, random, serverKey, clientKey.orElse(null)));
         } finally {
             ProtocolLibrary.getProtocolManager().getAsynchronousManager().signalPacketTransmission(packetEvent);
         }

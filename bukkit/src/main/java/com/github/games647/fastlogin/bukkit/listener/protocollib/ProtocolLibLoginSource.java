@@ -55,11 +55,11 @@ class ProtocolLibLoginSource implements LoginSource {
     private final String serverId = "";
     private byte[] verifyToken;
 
-    public ProtocolLibLoginSource(Player player, Random random, WrappedProfileKeyData clientPublicKey, PublicKey serverPublicKey) {
+    public ProtocolLibLoginSource(Player player, Random random, PublicKey serverPublicKey, WrappedProfileKeyData clientPublicKey) {
         this.player = player;
         this.random = random;
-        this.clientPublicKey = clientPublicKey;
         this.publicKey = serverPublicKey;
+        this.clientPublicKey = clientPublicKey;
     }
 
     @Override
