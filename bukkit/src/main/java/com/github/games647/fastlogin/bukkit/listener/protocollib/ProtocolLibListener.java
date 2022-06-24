@@ -153,11 +153,11 @@ public class ProtocolLibListener extends PacketAdapter {
                     Runnable verifyTask = new VerifyResponseTask(plugin, packetEvent, sender, session, sharedSecret, keyPair);
                     plugin.getScheduler().runAsync(verifyTask);
                 } else {
-                    sender.kickPlayer("Invalid signature");
+                    sender.kickPlayer(plugin.getCore().getMessage("invalid-verify-token"));
                     plugin.getLog().error("Invalid signature from player {}", sender);
                 }
             } catch (NoSuchAlgorithmException | InvalidKeyException | SignatureException signatureEx) {
-                sender.kickPlayer("Invalid signature");
+                sender.kickPlayer(plugin.getCore().getMessage("invalid-verify-token"));
                 plugin.getLog().error("Invalid signature from player {}", sender, signatureEx);
             }
         }
