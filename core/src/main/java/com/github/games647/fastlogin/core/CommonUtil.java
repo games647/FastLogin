@@ -61,7 +61,7 @@ public class CommonUtil {
     public static String translateColorCodes(String rawMessage) {
         char[] chars = rawMessage.toCharArray();
         for (int i = 0; i < chars.length - 1; i++) {
-            if (chars[i] == COLOR_CHAR && "0123456789AaBbCcDdEeFfKkLlMmNnOoRr".indexOf(chars[i + 1]) > -1) {
+            if (chars[i] == COLOR_CHAR && "x0123456789AaBbCcDdEeFfKkLlMmNnOoRr".indexOf(chars[i + 1]) > -1) {
                 chars[i] = TRANSLATED_CHAR;
                 chars[i + 1] = Character.toLowerCase(chars[i + 1]);
             }
