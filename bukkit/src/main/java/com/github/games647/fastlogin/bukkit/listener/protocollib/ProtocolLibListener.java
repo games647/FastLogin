@@ -154,9 +154,11 @@ public class ProtocolLibListener extends PacketAdapter {
                     plugin.getScheduler().runAsync(verifyTask);
                 } else {
                     sender.kickPlayer("Invalid signature");
+                    plugin.getLog().error("Invalid signature from player {}", sender);
                 }
-            } catch (NoSuchAlgorithmException | InvalidKeyException | SignatureException e) {
+            } catch (NoSuchAlgorithmException | InvalidKeyException | SignatureException signatureEx) {
                 sender.kickPlayer("Invalid signature");
+                plugin.getLog().error("Invalid signature from player {}", sender, signatureEx);
             }
         }
     }
