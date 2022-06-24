@@ -179,6 +179,7 @@ public class ProtocolLibListener extends PacketAdapter {
         WrappedProfileKeyData profileKey = packet.getOptionals(BukkitConverters.getWrappedPublicKeyDataConverter())
             .read(0).orElse(null);
         if (profileKey != null && !verifyPublicKey(profileKey)) {
+            player.kickPlayer(plugin.getCore().getMessage("invalid-public-key"));
             plugin.getLog().warn("Invalid public key from player {}", username);
             return;
         }

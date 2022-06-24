@@ -80,7 +80,7 @@ error-kick: '&4Error occurred'
 
 # The server sends a verify-token within the premium authentication request. If this doesn't match on response,
 # it could be another client sending malicious packets
-invalid-verify-token: '&4Invalid token'
+invalid-verify-token: '&4Invalid nonce token. Please verify you are using the correct server address'
 
 # The client sent no request join server request to the mojang servers which would proof that it's owner of that
 # account. Only modified clients would do this.
@@ -95,6 +95,9 @@ not-started: '&cServer is not fully started yet. Please retry'
 # Warning message if a user invoked /premium command
 premium-warning: '&c&lWARNING: &6This command should&l only&6 be invoked if you are the owner of this paid Minecraft account
 Type &a/premium&6 again to confirm'
+
+# Invalid client public key that will be used in the future to send authenticated chat messages from clients
+invalid-public-key: '&cInvalid client public key. Please try to restart your game.'
 
 # ========= Bungee/Waterfall only ================================
 
