@@ -37,8 +37,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 public class TickingRateLimiterTest {
 
-    private static final long THRESHOLD_MILLI = 10;
-
     /**
      * Always expired
      */

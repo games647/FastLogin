@@ -15,10 +15,10 @@ stripped before including it.**
 
 ## Directory structure
 
+* `valid_public_key.json`: Extracted from the actual file
 * `invalid_wrong_expiration.json`: Changed the expiration date
 * `invalid_wrong_key.json`: Modified public key while keeping the RSA structure valid
 * `invalid_wrong_signature.json`: Changed a character in the public key signature
-* `valid_public_key.json`: Extracted from actual file
 
 ## File content
 

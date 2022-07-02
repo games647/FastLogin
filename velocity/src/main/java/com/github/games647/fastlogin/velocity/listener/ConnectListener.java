@@ -118,13 +118,14 @@ public class ConnectListener {
             }
 
             if (!plugin.getCore().getConfig().get("forwardSkin", true)) {
-                event.setGameProfile(event.getGameProfile().withProperties(removeSkin(event.getGameProfile().getProperties())));
+                List<Property> skinFreeProp = removeSkin(event.getGameProfile().getProperties());
+                event.setGameProfile(event.getGameProfile().withProperties(skinFreeProp));
             }
         }
     }
 
     private List<GameProfile.Property> removeSkin(Collection<Property> oldProperties) {
-        List<GameProfile.Property> newProperties = new ArrayList<>(oldProperties.size() - 1);
+        List<GameProfile.Property> newProperties = new ArrayList<>(oldProperties.size());
         for (GameProfile.Property property : oldProperties) {
             if (!"textures".equals(property.getName()))
                 newProperties.add(property);

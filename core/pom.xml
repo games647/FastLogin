@@ -52,9 +52,6 @@
         <repository>
             <id>codemc-repo</id>
             <url>https://repo.codemc.io/repository/maven-public/</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
         </repository>
         <!-- Floodgate -->
         <repository>
@@ -73,7 +70,7 @@
         <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
-            <version>4.0.3</version>
+            <version>5.0.1</version>
             <exclusions>
                 <!-- HikariCP uses an old version of this API that has a typo in the service interface -->
                 <!-- We will use the api provided by the jdk14 dependency -->
@@ -95,7 +92,7 @@
         <dependency>
             <groupId>net.md-5</groupId>
             <artifactId>bungeecord-config</artifactId>
-            <version>1.16-R0.4</version>
+            <version>1.19-R0.1-20220702.004052-16</version>
             <exclusions>
                 <exclusion>
                     <groupId>*</groupId>

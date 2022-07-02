@@ -91,7 +91,6 @@ class EncryptionUtil {
      * @return The RSA key pair.
      */
     public static KeyPair generateKeyPair() {
-        // KeyPair b()
         try {
             KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(KEY_PAIR_ALGORITHM);
 
@@ -111,7 +110,6 @@ class EncryptionUtil {
      * @return an error with 4 bytes long
      */
     public static byte[] generateVerifyToken(RandomGenerator random) {
-        // extracted from LoginListener
         byte[] token = new byte[VERIFY_TOKEN_LENGTH];
         random.nextBytes(token);
         return token;
@@ -126,7 +124,6 @@ class EncryptionUtil {
      * @return the server id formatted as a hexadecimal string.
      */
     public static String getServerIdHashString(String serverId, SecretKey sharedSecret, PublicKey publicKey) {
-        // found in LoginListener
         byte[] serverHash = getServerIdHash(serverId, publicKey, sharedSecret);
         return (new BigInteger(serverHash)).toString(16);
     }
@@ -142,7 +139,6 @@ class EncryptionUtil {
     public static SecretKey decryptSharedKey(PrivateKey privateKey, byte[] sharedKey)
         throws NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException,
         BadPaddingException, InvalidKeyException {
-        // SecretKey a(PrivateKey var0, byte[] var1)
         return new SecretKeySpec(decrypt(privateKey, sharedKey), "AES");
     }
 
@@ -188,17 +184,14 @@ class EncryptionUtil {
     private static byte[] decrypt(PrivateKey key, byte[] data)
         throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException,
         IllegalBlockSizeException, BadPaddingException {
-        // b(Key var0, byte[] var1)
         Cipher cipher = Cipher.getInstance(key.getAlgorithm());
         cipher.init(Cipher.DECRYPT_MODE, key);
         return cipher.doFinal(data);
     }
 
     private static byte[] getServerIdHash(String sessionId, PublicKey publicKey, SecretKey sharedSecret) {
-        // byte[] a(String var0, PublicKey var1, SecretKey var2)
         Hasher hasher = Hashing.sha1().newHasher();
 
-        // inlined from byte[] a(String var0, byte[]... var1)
         hasher.putBytes(sessionId.getBytes(StandardCharsets.ISO_8859_1));
         hasher.putBytes(sharedSecret.getEncoded());
         hasher.putBytes(publicKey.getEncoded());
