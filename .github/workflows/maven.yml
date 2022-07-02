@@ -31,8 +31,7 @@ jobs:
                 uses: actions/setup-java@v3
                 with:
                     distribution: 'temurin'
-                    # Use Java 16+, because it's minimum required version by Geyser
-                    java-version: 17
+                    java-version: 18
                     cache: 'maven'
 
             # Build and test (included in package)
