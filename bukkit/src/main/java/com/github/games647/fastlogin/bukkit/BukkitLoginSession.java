@@ -32,6 +32,8 @@ import com.github.games647.fastlogin.core.shared.LoginSession;
 
 import java.util.Optional;
 
+import javax.annotation.Nullable;
+
 /**
  * Represents a client connecting to the server.
  *
@@ -83,6 +85,7 @@ public class BukkitLoginSession extends LoginSession {
         return verifyToken.clone();
     }
 
+    @Nullable
     public ClientPublicKey getClientPublicKey() {
         return clientPublicKey;
     }

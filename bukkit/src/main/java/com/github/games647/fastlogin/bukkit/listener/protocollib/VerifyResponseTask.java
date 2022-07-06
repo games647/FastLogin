@@ -263,7 +263,7 @@ public class VerifyResponseTask implements Runnable {
 
             EquivalentConverter<WrappedProfileKeyData> converter = BukkitConverters.getWrappedPublicKeyDataConverter();
             var key = new WrappedProfileKeyData(clientKey.expiry(), clientKey.key(), sharedSecret);
-            startPacket.getOptionals(converter).write(0, Optional.of(key));
+            startPacket.getOptionals(converter).write(0, Optional.ofNullable(key));
         } else {
             //uuid is ignored by the packet definition
             WrappedGameProfile fakeProfile = new WrappedGameProfile(UUID.randomUUID(), username);

@@ -272,6 +272,15 @@ autoRegisterFloodgate: false
 # Enabling this might lead to people gaining unauthorized access to other's accounts!
 floodgatePrefixWorkaround: false
 
+# This option resembles the vanilla configuration option 'enforce-secure-profile' in the 'server.properties' file.
+# It verifies if the incoming cryptographic key in the login request from the player is signed by Mojang. This key
+# is necessary for servers where you or other in-game players want to verify that a chat message sent and signed by
+# this player is not modified by any third-party. Modifications by your server would also invalidate the message.
+#
+# This feature is only relevant if you use the plugin in ProtocolLib mode. This also the case if you don't have any
+# proxies in use.
+verifyClientKeys: true
+
 # Database configuration
 # Recommended is the use of MariaDB (a better version of MySQL)
 

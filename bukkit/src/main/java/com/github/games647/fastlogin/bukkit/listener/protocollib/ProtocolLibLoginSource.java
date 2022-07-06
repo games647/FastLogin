@@ -30,7 +30,7 @@ import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.reflect.StructureModifier;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
-import com.comphenix.protocol.wrappers.WrappedProfilePublicKey.WrappedProfileKeyData;
+import com.github.games647.fastlogin.bukkit.listener.protocollib.packet.ClientPublicKey;
 import com.github.games647.fastlogin.core.shared.LoginSource;
 
 import java.net.InetSocketAddress;
@@ -49,17 +49,17 @@ class ProtocolLibLoginSource implements LoginSource {
 
     private final Random random;
 
-    private final WrappedProfileKeyData clientPublicKey;
+    private final ClientPublicKey clientKey;
     private final PublicKey publicKey;
 
     private final String serverId = "";
     private byte[] verifyToken;
 
-    public ProtocolLibLoginSource(Player player, Random random, PublicKey serverPublicKey, WrappedProfileKeyData clientPublicKey) {
+    public ProtocolLibLoginSource(Player player, Random random, PublicKey serverPublicKey, ClientPublicKey clientKey) {
         this.player = player;
         this.random = random;
         this.publicKey = serverPublicKey;
-        this.clientPublicKey = clientPublicKey;
+        this.clientKey = clientKey;
     }
 
     @Override
@@ -112,8 +112,8 @@ class ProtocolLibLoginSource implements LoginSource {
         return player.getAddress();
     }
 
-    public WrappedProfileKeyData getClientPublicKey() {
-        return clientPublicKey;
+    public ClientPublicKey getClientKey() {
+        return clientKey;
     }
 
     public String getServerId() {

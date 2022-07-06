@@ -49,6 +49,7 @@ import java.security.PublicKey;
 import java.security.SecureRandom;
 import java.security.SignatureException;
 import java.time.Instant;
+import java.util.Optional;
 
 import org.bukkit.entity.Player;
 
@@ -66,7 +67,9 @@ public class ProtocolLibListener extends PacketAdapter {
     private final KeyPair keyPair = EncryptionUtil.generateKeyPair();
     private final AntiBotService antiBotService;
 
-    public ProtocolLibListener(FastLoginBukkit plugin, AntiBotService antiBotService) {
+    private final boolean verifyClientKeys;
+
+    public ProtocolLibListener(FastLoginBukkit plugin, AntiBotService antiBotService, boolean verifyClientKeys) {
         //run async in order to not block the server, because we are making api calls to Mojang
         super(params()
                 .plugin(plugin)
@@ -75,14 +78,15 @@ public class ProtocolLibListener extends PacketAdapter {
 
         this.plugin = plugin;
         this.antiBotService = antiBotService;
+        this.verifyClientKeys = verifyClientKeys;
     }
 
-    public static void register(FastLoginBukkit plugin, AntiBotService antiBotService) {
+    public static void register(FastLoginBukkit plugin, AntiBotService antiBotService, boolean verifyClientKeys) {
         // they will be created with a static builder, because otherwise it will throw a NoClassDefFoundError
         // TODO: make synchronous processing, but do web or database requests async
         ProtocolLibrary.getProtocolManager()
                 .getAsynchronousManager()
-                .registerAsyncHandler(new ProtocolLibListener(plugin, antiBotService))
+                .registerAsyncHandler(new ProtocolLibListener(plugin, antiBotService, verifyClientKeys))
                 .start();
     }
 
@@ -141,6 +145,13 @@ public class ProtocolLibListener extends PacketAdapter {
             plugin.getLog().warn("GameProfile {} tried to send encryption response at invalid state", sender.getAddress());
             sender.kickPlayer(plugin.getCore().getMessage("invalid-request"));
         } else {
+            if (session.getClientPublicKey() == null) {
+                // we cannot verify the signature if no public was provided
+                plugin.getLog().error("No public key provided for signed nonce {}", sender);
+                sender.kickPlayer(plugin.getCore().getMessage("invalid-verify-token"));
+                return;
+            }
+
             Either<byte[], ?> either = packetEvent.getPacket().getSpecificModifier(Either.class).read(0);
             Object signatureData = either.right().get();
             long salt = FuzzyReflection.getFieldValue(signatureData, Long.TYPE, true);
@@ -176,9 +187,13 @@ public class ProtocolLibListener extends PacketAdapter {
         }
 
         PacketContainer packet = packetEvent.getPacket();
-        WrappedProfileKeyData profileKey = packet.getOptionals(BukkitConverters.getWrappedPublicKeyDataConverter())
-            .read(0).orElse(null);
-        if (profileKey != null && !verifyPublicKey(profileKey)) {
+        var profileKey = packet.getOptionals(BukkitConverters.getWrappedPublicKeyDataConverter())
+            .read(0);
+
+        var clientKey = profileKey.flatMap(this::verifyPublicKey);
+        if (verifyClientKeys && !clientKey.isPresent()) {
+            // missing or incorrect
+            // expired always not allowed
             player.kickPlayer(plugin.getCore().getMessage("invalid-public-key"));
             plugin.getLog().warn("Invalid public key from player {}", username);
             return;
@@ -187,20 +202,24 @@ public class ProtocolLibListener extends PacketAdapter {
         plugin.getLog().trace("GameProfile {} with {} connecting", sessionKey, username);
 
         packetEvent.getAsyncMarker().incrementProcessingDelay();
-        Runnable nameCheckTask = new NameCheckTask(plugin, random, player, packetEvent, username, keyPair.getPublic());
+        Runnable nameCheckTask = new NameCheckTask(plugin, random, player, packetEvent, username, clientKey.orElse(null), keyPair.getPublic());
         plugin.getScheduler().runAsync(nameCheckTask);
     }
 
-    private boolean verifyPublicKey(WrappedProfileKeyData profileKey) {
+    private Optional<ClientPublicKey> verifyPublicKey(WrappedProfileKeyData profileKey) {
         Instant expires = profileKey.getExpireTime();
         PublicKey key = profileKey.getKey();
         byte[] signature = profileKey.getSignature();
         ClientPublicKey clientKey = new ClientPublicKey(expires, key, signature);
         try {
-            return EncryptionUtil.verifyClientKey(clientKey, Instant.now());
+            if (EncryptionUtil.verifyClientKey(clientKey, Instant.now())) {
+                return Optional.of(clientKey);
+            }
         } catch (SignatureException | InvalidKeyException | NoSuchAlgorithmException ex) {
-            return false;
+            return Optional.empty();
         }
+
+        return Optional.empty();
     }
 
     private String getUsername(PacketContainer packet) {

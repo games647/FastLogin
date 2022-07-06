@@ -27,8 +27,6 @@ package com.github.games647.fastlogin.bukkit.listener.protocollib;
 
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketEvent;
-import com.comphenix.protocol.wrappers.BukkitConverters;
-import com.comphenix.protocol.wrappers.WrappedProfilePublicKey.WrappedProfileKeyData;
 import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 import com.github.games647.fastlogin.bukkit.event.BukkitFastLoginPreLoginEvent;
@@ -38,7 +36,6 @@ import com.github.games647.fastlogin.core.shared.JoinManagement;
 import com.github.games647.fastlogin.core.shared.event.FastLoginPreLoginEvent;
 
 import java.security.PublicKey;
-import java.util.Optional;
 import java.util.Random;
 
 import org.bukkit.command.CommandSender;
@@ -49,6 +46,8 @@ public class NameCheckTask extends JoinManagement<Player, CommandSender, Protoco
 
     private final FastLoginBukkit plugin;
     private final PacketEvent packetEvent;
+
+    private final ClientPublicKey clientKey;
     private final PublicKey serverKey;
 
     private final Random random;
@@ -57,11 +56,12 @@ public class NameCheckTask extends JoinManagement<Player, CommandSender, Protoco
     private final String username;
 
     public NameCheckTask(FastLoginBukkit plugin, Random random, Player player, PacketEvent packetEvent,
-                         String username, PublicKey serverKey) {
+                         String username, ClientPublicKey clientKey, PublicKey serverKey) {
         super(plugin.getCore(), plugin.getCore().getAuthPluginHook(), plugin.getBedrockService());
 
         this.plugin = plugin;
         this.packetEvent = packetEvent;
+        this.clientKey = clientKey;
         this.serverKey = serverKey;
         this.random = random;
         this.player = player;
@@ -71,10 +71,7 @@ public class NameCheckTask extends JoinManagement<Player, CommandSender, Protoco
     @Override
     public void run() {
         try {
-            Optional<WrappedProfileKeyData> clientKey = packetEvent.getPacket()
-                .getOptionals(BukkitConverters.getWrappedPublicKeyDataConverter()).read(0);
-
-            super.onLogin(username, new ProtocolLibLoginSource(player, random, serverKey, clientKey.orElse(null)));
+            super.onLogin(username, new ProtocolLibLoginSource(player, random, serverKey, clientKey));
         } finally {
             ProtocolLibrary.getProtocolManager().getAsynchronousManager().signalPacketTransmission(packetEvent);
         }
@@ -104,8 +101,7 @@ public class NameCheckTask extends JoinManagement<Player, CommandSender, Protoco
         core.getPendingLogin().put(ip + username, new Object());
 
         byte[] verify = source.getVerifyToken();
-        WrappedProfileKeyData key = source.getClientPublicKey();
-        ClientPublicKey clientKey = new ClientPublicKey(key.getExpireTime(), key.getKey(), key.getSignature());
+        ClientPublicKey clientKey = source.getClientKey();
 
         BukkitLoginSession playerSession = new BukkitLoginSession(username, verify, clientKey, registered, profile);
         plugin.putSession(player.getAddress(), playerSession);
