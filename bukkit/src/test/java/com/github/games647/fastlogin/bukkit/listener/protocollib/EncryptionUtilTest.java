@@ -142,7 +142,7 @@ public class EncryptionUtilTest {
         assertThat(decryptSharedKey, is(secretKey));
     }
 
-    private static byte[] encrypt(PublicKey receiverKey, byte[] message)
+    private static byte[] encrypt(PublicKey receiverKey, byte... message)
         throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException,
         IllegalBlockSizeException, BadPaddingException {
         var encryptCipher = Cipher.getInstance(receiverKey.getAlgorithm());
@@ -169,13 +169,14 @@ public class EncryptionUtilTest {
         assertThat(EncryptionUtil.getServerIdHashString(serverId, sharedSecret, serverPK), is(sessionHash));
     }
 
-    private static String getServerHash(String serverId, SecretKey sharedSecret, PublicKey serverPK) {
+    private static String getServerHash(CharSequence serverId, SecretKey sharedSecret, PublicKey serverPK) {
         // https://wiki.vg/Protocol_Encryption#Client
         // sha1 := Sha1()
         // sha1.update(ASCII encoding of the server id string from Encryption Request)
         // sha1.update(shared secret)
         // sha1.update(server's encoded public key from Encryption Request)
         // hash := sha1.hexdigest() # String of hex characters
+        @SuppressWarnings("deprecation")
         var hasher = Hashing.sha1().newHasher();
         hasher.putString(serverId, StandardCharsets.US_ASCII);
         hasher.putBytes(sharedSecret.getEncoded());
@@ -197,7 +198,7 @@ public class EncryptionUtilTest {
     }
 
     @Test
-    public void testServerIdHashWrongServerKey() throws Exception {
+    public void testServerIdHashWrongServerKey() {
         var serverId = "";
         var sharedSecret = generateSharedKey();
         var serverPK = EncryptionUtil.generateKeyPair().getPublic();

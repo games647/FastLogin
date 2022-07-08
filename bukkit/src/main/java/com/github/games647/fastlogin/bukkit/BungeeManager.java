@@ -110,17 +110,17 @@ public class BungeeManager {
         throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException, ClassNotFoundException,
         NoSuchMethodException, InvocationTargetException {
         try {
-            if (isProxySupported("com.destroystokyo.paper.PaperConfig", "velocitySupport")) {
-                return true;
-            }
-        } catch (ClassNotFoundException classNotFoundException) {
-            // try again using the newer Paper configuration
             Class<?> globalConfig = Class.forName("io.papermc.paper.configuration.GlobalConfiguration");
             Object global = globalConfig.getDeclaredMethod("get").invoke(null);
             Object proxiesConfiguration = global.getClass().getDeclaredField("proxies").get(global);
             Object velocityConfig = proxiesConfiguration.getClass().getDeclaredField("velocity").get(proxiesConfiguration);
 
             return velocityConfig.getClass().getDeclaredField("enabled").getBoolean(velocityConfig);
+        } catch (ClassNotFoundException classNotFoundException) {
+            // try again using the older Paper configuration, because the old class file still exists in newer versions
+            if (isProxySupported("com.destroystokyo.paper.PaperConfig", "velocitySupport")) {
+                return true;
+            }
         }
 
         return false;
