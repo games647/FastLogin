@@ -47,6 +47,7 @@ import java.security.SignatureException;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.Base64.Encoder;
 import java.util.random.RandomGenerator;
@@ -142,9 +143,9 @@ class EncryptionUtil {
         return new SecretKeySpec(decrypt(privateKey, sharedKey), "AES");
     }
 
-    public static boolean verifyClientKey(ClientPublicKey clientKey, Instant verifyTimstamp)
+    public static boolean verifyClientKey(ClientPublicKey clientKey, Instant verifyTimestamp)
         throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
-        if (clientKey.isExpired(verifyTimstamp)) {
+        if (clientKey.isExpired(verifyTimestamp)) {
             return false;
         }
 
@@ -153,6 +154,13 @@ class EncryptionUtil {
         verifier.initVerify(mojangSessionKey);
         verifier.update(toSignable(clientKey).getBytes(StandardCharsets.US_ASCII));
         return verifier.verify(clientKey.signature());
+    }
+
+    public static boolean verifyNonce(byte[] exptected, PrivateKey decryptionKey, byte[] encryptedNonce)
+        throws NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException,
+        BadPaddingException, InvalidKeyException {
+        byte[] decryptedNonce = decrypt(decryptionKey, encryptedNonce);
+        return Arrays.equals(exptected, decryptedNonce);
     }
 
     public static boolean verifySignedNonce(byte[] nonce, PublicKey clientKey, long signatureSalt, byte[] signature)

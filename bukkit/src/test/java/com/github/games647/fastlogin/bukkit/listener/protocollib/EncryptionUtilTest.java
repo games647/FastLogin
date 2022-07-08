@@ -28,29 +28,19 @@ package com.github.games647.fastlogin.bukkit.listener.protocollib;
 import com.github.games647.fastlogin.bukkit.listener.protocollib.SignatureTestData.SignatureData;
 import com.github.games647.fastlogin.bukkit.listener.protocollib.packet.ClientPublicKey;
 import com.google.common.hash.Hashing;
-import com.google.common.io.Resources;
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 
-import java.io.IOException;
-import java.io.Reader;
-import java.io.StringReader;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
+import java.security.GeneralSecurityException;
 import java.security.InvalidKeyException;
 import java.security.Key;
-import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
-import java.security.interfaces.RSAPrivateKey;
+import java.security.SignatureException;
 import java.security.interfaces.RSAPublicKey;
-import java.security.spec.InvalidKeySpecException;
-import java.security.spec.PKCS8EncodedKeySpec;
-import java.security.spec.X509EncodedKeySpec;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.Base64;
 import java.util.concurrent.ThreadLocalRandom;
 
 import javax.crypto.BadPaddingException;
@@ -60,9 +50,6 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
-import org.bouncycastle.util.io.pem.PemObject;
-import org.bouncycastle.util.io.pem.PemReader;
-import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -100,7 +87,7 @@ public class EncryptionUtilTest {
 
     @Test
     public void testExpiredClientKey() throws Exception {
-        var clientKey = loadClientKey("client_keys/valid_public_key.json");
+        var clientKey = ResourceLoader.loadClientKey("client_keys/valid_public_key.json");
 
         // Client expires at the exact second mentioned, so use it for verification
         var expiredTimestamp = clientKey.expiry();
@@ -111,7 +98,7 @@ public class EncryptionUtilTest {
     public void testInvalidChangedExpiration() throws Exception {
         // expiration date changed should make the signature invalid
         // expiration should still be valid
-        var clientKey = loadClientKey("client_keys/invalid_wrong_expiration.json");
+        var clientKey = ResourceLoader.loadClientKey("client_keys/invalid_wrong_expiration.json");
         Instant expireTimestamp = clientKey.expiry().minus(5, ChronoUnit.HOURS);
 
         assertThat(EncryptionUtil.verifyClientKey(clientKey, expireTimestamp), is(false));
@@ -120,7 +107,7 @@ public class EncryptionUtilTest {
     @Test
     public void testInvalidChangedKey() throws Exception {
         // changed public key no longer corresponding to the signature
-        var clientKey = loadClientKey("client_keys/invalid_wrong_key.json");
+        var clientKey = ResourceLoader.loadClientKey("client_keys/invalid_wrong_key.json");
         Instant expireTimestamp = clientKey.expiry().minus(5, ChronoUnit.HOURS);
 
         assertThat(EncryptionUtil.verifyClientKey(clientKey, expireTimestamp), is(false));
@@ -129,7 +116,7 @@ public class EncryptionUtilTest {
     @Test
     public void testInvalidChangedSignature() throws Exception {
         // signature modified no longer corresponding to key and expiration date
-        var clientKey = loadClientKey("client_keys/invalid_wrong_signature.json");
+        var clientKey = ResourceLoader.loadClientKey("client_keys/invalid_wrong_signature.json");
         Instant expireTimestamp = clientKey.expiry().minus(5, ChronoUnit.HOURS);
 
         assertThat(EncryptionUtil.verifyClientKey(clientKey, expireTimestamp), is(false));
@@ -137,7 +124,7 @@ public class EncryptionUtilTest {
 
     @Test
     public void testValidClientKey() throws Exception {
-        var clientKey = loadClientKey("client_keys/valid_public_key.json");
+        var clientKey = ResourceLoader.loadClientKey("client_keys/valid_public_key.json");
         var verificationTimestamp = clientKey.expiry().minus(5, ChronoUnit.HOURS);
 
         assertThat(EncryptionUtil.verifyClientKey(clientKey, verificationTimestamp), is(true));
@@ -155,7 +142,7 @@ public class EncryptionUtilTest {
         assertThat(decryptSharedKey, is(secretKey));
     }
 
-    private byte[] encrypt(PublicKey receiverKey, byte[] message)
+    private static byte[] encrypt(PublicKey receiverKey, byte[] message)
         throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException,
         IllegalBlockSizeException, BadPaddingException {
         var encryptCipher = Cipher.getInstance(receiverKey.getAlgorithm());
@@ -163,7 +150,7 @@ public class EncryptionUtilTest {
         return encryptCipher.doFinal(message);
     }
 
-    private SecretKeySpec generateSharedKey() {
+    private static SecretKeySpec generateSharedKey() {
         // according to wiki.vg 16 bytes long
         byte[] sharedKey = new byte[16];
         ThreadLocalRandom.current().nextBytes(sharedKey);
@@ -176,14 +163,13 @@ public class EncryptionUtilTest {
     public void testServerIdHash() throws Exception {
         var serverId = "";
         var sharedSecret = generateSharedKey();
-        var serverPK = loadClientKey("client_keys/valid_public_key.json").key();
+        var serverPK = ResourceLoader.loadClientKey("client_keys/valid_public_key.json").key();
 
         String sessionHash = getServerHash(serverId, sharedSecret, serverPK);
         assertThat(EncryptionUtil.getServerIdHashString(serverId, sharedSecret, serverPK), is(sessionHash));
     }
 
-    @NotNull
-    private String getServerHash(String serverId, SecretKey sharedSecret, PublicKey serverPK) {
+    private static String getServerHash(String serverId, SecretKey sharedSecret, PublicKey serverPK) {
         // https://wiki.vg/Protocol_Encryption#Client
         // sha1 := Sha1()
         // sha1.update(ASCII encoding of the server id string from Encryption Request)
@@ -204,7 +190,7 @@ public class EncryptionUtilTest {
     public void testServerIdHashWrongSecret() throws Exception {
         var serverId = "";
         var sharedSecret = generateSharedKey();
-        var serverPK = loadClientKey("client_keys/valid_public_key.json").key();
+        var serverPK = ResourceLoader.loadClientKey("client_keys/valid_public_key.json").key();
 
         String sessionHash = getServerHash(serverId, sharedSecret, serverPK);
         assertThat(EncryptionUtil.getServerIdHashString("", generateSharedKey(), serverPK), not(sessionHash));
@@ -223,116 +209,88 @@ public class EncryptionUtilTest {
 
     @Test
     public void testValidSignedNonce() throws Exception {
-        ClientPublicKey clientKey = loadClientKey("client_keys/valid_public_key.json");
-        PublicKey clientPublicKey = clientKey.key();
-
-        SignatureTestData testData = loadSignatureResource("signature/valid_signature.json");
-        byte[] nonce = testData.getNonce();
-        SignatureData signature = testData.getSignature();
-        long salt = signature.getSalt();
-        assertThat(EncryptionUtil.verifySignedNonce(nonce, clientPublicKey, salt, signature.getSignature()), is(true));
+        ClientPublicKey clientKey = ResourceLoader.loadClientKey("client_keys/valid_public_key.json");
+        SignatureTestData testData = SignatureTestData.fromResource("signature/valid_signature.json");
+        assertThat(verifySignedNonce(testData, clientKey), is(true));
     }
 
     @Test
     public void testIncorrectNonce() throws Exception {
-        ClientPublicKey clientKey = loadClientKey("client_keys/valid_public_key.json");
-        PublicKey clientPublicKey = clientKey.key();
-
-        SignatureTestData testData = loadSignatureResource("signature/incorrect_nonce.json");
-        byte[] nonce = testData.getNonce();
-        SignatureData signature = testData.getSignature();
-        long salt = signature.getSalt();
-        assertThat(EncryptionUtil.verifySignedNonce(nonce, clientPublicKey, salt, signature.getSignature()), is(false));
+        ClientPublicKey clientKey = ResourceLoader.loadClientKey("client_keys/valid_public_key.json");
+        SignatureTestData testData = SignatureTestData.fromResource("signature/incorrect_nonce.json");
+        assertThat(verifySignedNonce(testData, clientKey), is(false));
     }
 
     @Test
     public void testIncorrectSalt() throws Exception {
         // client generated
-        ClientPublicKey clientKey = loadClientKey("client_keys/valid_public_key.json");
-        PublicKey clientPublicKey = clientKey.key();
-
-        SignatureTestData testData = loadSignatureResource("signature/incorrect_salt.json");
-        byte[] nonce = testData.getNonce();
-        SignatureData signature = testData.getSignature();
-        long salt = signature.getSalt();
-        assertThat(EncryptionUtil.verifySignedNonce(nonce, clientPublicKey, salt, signature.getSignature()), is(false));
+        ClientPublicKey clientKey = ResourceLoader.loadClientKey("client_keys/valid_public_key.json");
+        SignatureTestData testData = SignatureTestData.fromResource("signature/incorrect_salt.json");
+        assertThat(verifySignedNonce(testData, clientKey), is(false));
     }
 
     @Test
     public void testIncorrectSignature() throws Exception {
         // client generated
-        ClientPublicKey clientKey = loadClientKey("client_keys/valid_public_key.json");
-        PublicKey clientPublicKey = clientKey.key();
-
-        SignatureTestData testData = loadSignatureResource("signature/incorrect_signature.json");
-        byte[] nonce = testData.getNonce();
-        SignatureData signature = testData.getSignature();
-        long salt = signature.getSalt();
-        assertThat(EncryptionUtil.verifySignedNonce(nonce, clientPublicKey, salt, signature.getSignature()), is(false));
+        ClientPublicKey clientKey = ResourceLoader.loadClientKey("client_keys/valid_public_key.json");
+        SignatureTestData testData = SignatureTestData.fromResource("signature/incorrect_signature.json");
+        assertThat(verifySignedNonce(testData, clientKey), is(false));
     }
 
     @Test
     public void testWrongPublicKeySigned() throws Exception {
         // load a different public key
-        ClientPublicKey clientKey = loadClientKey("client_keys/invalid_wrong_key.json");
+        ClientPublicKey clientKey = ResourceLoader.loadClientKey("client_keys/invalid_wrong_key.json");
+        SignatureTestData testData = SignatureTestData.fromResource("signature/valid_signature.json");
+        assertThat(verifySignedNonce(testData, clientKey), is(false));
+    }
+
+    private static boolean verifySignedNonce(SignatureTestData testData, ClientPublicKey clientKey)
+        throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
         PublicKey clientPublicKey = clientKey.key();
 
-        SignatureTestData testData = loadSignatureResource("signature/valid_signature.json");
         byte[] nonce = testData.getNonce();
         SignatureData signature = testData.getSignature();
         long salt = signature.getSalt();
-        assertThat(EncryptionUtil.verifySignedNonce(nonce, clientPublicKey, salt, signature.getSignature()), is(false));
+        return EncryptionUtil.verifySignedNonce(nonce, clientPublicKey, salt, signature.getSignature());
     }
 
-    private SignatureTestData loadSignatureResource(String resourceName) throws IOException {
-        var keyUrl = Resources.getResource(resourceName);
-        var encodedSignature = Resources.toString(keyUrl, StandardCharsets.US_ASCII);
+    @Test
+    public void testNonce() throws Exception {
+        byte[] expected = {1, 2, 3, 4};
+        var serverKey = EncryptionUtil.generateKeyPair();
+        var encryptedNonce = encrypt(serverKey.getPublic(), expected);
 
-        return new Gson().fromJson(encodedSignature, SignatureTestData.class);
+        assertThat(EncryptionUtil.verifyNonce(expected, serverKey.getPrivate(), encryptedNonce), is(true));
     }
 
-    private RSAPrivateKey parsePrivateKey(String keySpec)
-        throws IOException, NoSuchAlgorithmException, InvalidKeySpecException {
-        try (
-            Reader reader = new StringReader(keySpec);
-            PemReader pemReader = new PemReader(reader)
-        ) {
-            PemObject pemObject = pemReader.readPemObject();
-            byte[] content = pemObject.getContent();
-            var privateKeySpec = new PKCS8EncodedKeySpec(content);
+    @Test
+    public void testNonceIncorrect() throws Exception {
+        byte[] expected = {1, 2, 3, 4};
+        var serverKey = EncryptionUtil.generateKeyPair();
 
-            var factory = KeyFactory.getInstance("RSA");
-            return (RSAPrivateKey) factory.generatePrivate(privateKeySpec);
-        }
+        // flipped first character
+        var encryptedNonce = encrypt(serverKey.getPublic(), new byte[]{0, 2, 3 , 4});
+
+        assertThat(EncryptionUtil.verifyNonce(expected, serverKey.getPrivate(), encryptedNonce), is(false));
     }
 
-    private ClientPublicKey loadClientKey(String path)
-        throws NoSuchAlgorithmException, IOException, InvalidKeySpecException {
-        var keyUrl = Resources.getResource(path);
+    @Test(expected = GeneralSecurityException.class)
+    public void testNonceFailedDecryption() throws Exception {
+        byte[] expected = {1, 2, 3, 4};
+        var serverKey = EncryptionUtil.generateKeyPair();
+        // generate a new keypair that iss different
+        var encryptedNonce = encrypt(EncryptionUtil.generateKeyPair().getPublic(), expected);
 
-        var lines = Resources.toString(keyUrl, StandardCharsets.US_ASCII);
-        var object = new Gson().fromJson(lines, JsonObject.class);
-
-        Instant expires = Instant.parse(object.getAsJsonPrimitive("expires_at").getAsString());
-        String key = object.getAsJsonPrimitive("key").getAsString();
-        RSAPublicKey publicKey = parsePublicKey(key);
-
-        byte[] signature = Base64.getDecoder().decode(object.getAsJsonPrimitive("signature").getAsString());
-        return new ClientPublicKey(expires, publicKey, signature);
+        EncryptionUtil.verifyNonce(expected, serverKey.getPrivate(), encryptedNonce);
     }
 
-    private RSAPublicKey parsePublicKey(String keySpec)
-        throws IOException, InvalidKeySpecException, NoSuchAlgorithmException {
-        try (
-            Reader reader = new StringReader(keySpec);
-            PemReader pemReader = new PemReader(reader)
-        ) {
-            PemObject pemObject = pemReader.readPemObject();
-            byte[] content = pemObject.getContent();
-            var pubKeySpec = new X509EncodedKeySpec(content);
+    @Test(expected = GeneralSecurityException.class)
+    public void testNonceIncorrectEmpty() throws Exception {
+        byte[] expected = {1, 2, 3, 4};
+        var serverKey = EncryptionUtil.generateKeyPair();
+        byte[] encryptedNonce = {};
 
-            var factory = KeyFactory.getInstance("RSA");
-            return (RSAPublicKey) factory.generatePublic(pubKeySpec);
-        }
+        assertThat(EncryptionUtil.verifyNonce(expected, serverKey.getPrivate(), encryptedNonce), is(false));
     }
 }

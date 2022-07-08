@@ -31,6 +31,7 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.reflect.FuzzyReflection;
+import com.comphenix.protocol.utility.MinecraftVersion;
 import com.comphenix.protocol.wrappers.BukkitConverters;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
 import com.comphenix.protocol.wrappers.WrappedProfilePublicKey.WrappedProfileKeyData;
@@ -50,6 +51,10 @@ import java.security.SecureRandom;
 import java.security.SignatureException;
 import java.time.Instant;
 import java.util.Optional;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 
 import org.bukkit.entity.Player;
 
@@ -145,32 +150,52 @@ public class ProtocolLibListener extends PacketAdapter {
             plugin.getLog().warn("GameProfile {} tried to send encryption response at invalid state", sender.getAddress());
             sender.kickPlayer(plugin.getCore().getMessage("invalid-request"));
         } else {
-            if (session.getClientPublicKey() == null) {
-                // we cannot verify the signature if no public was provided
-                plugin.getLog().error("No public key provided for signed nonce {}", sender);
+            byte[] expectedVerifyToken = session.getVerifyToken();
+            if (verifyNonce(sender, packetEvent.getPacket(), session.getClientPublicKey(), expectedVerifyToken)) {
+                packetEvent.getAsyncMarker().incrementProcessingDelay();
+                Runnable verifyTask = new VerifyResponseTask(plugin, packetEvent, sender, session, sharedSecret, keyPair);
+                plugin.getScheduler().runAsync(verifyTask);
+            } else {
                 sender.kickPlayer(plugin.getCore().getMessage("invalid-verify-token"));
-                return;
             }
+        }
+    }
 
-            Either<byte[], ?> either = packetEvent.getPacket().getSpecificModifier(Either.class).read(0);
-            Object signatureData = either.right().get();
-            long salt = FuzzyReflection.getFieldValue(signatureData, Long.TYPE, true);
-            byte[] signature = FuzzyReflection.getFieldValue(signatureData, byte[].class, true);
+    private boolean verifyNonce(Player sender, PacketContainer packet,
+                                ClientPublicKey clientPublicKey, byte[] expectedToken) {
+        try {
+            if (MinecraftVersion.atOrAbove(new MinecraftVersion(1, 19, 0))) {
+                Either<byte[], ?> either = packet.getSpecificModifier(Either.class).read(0);
+                if (clientPublicKey == null) {
+                    Optional<byte[]> left = either.left();
+                    if (left.isEmpty()) {
+                        plugin.getLog().error("No verify token sent if requested without player signed key {}", sender);
+                        return false;
+                    }
 
-            PublicKey publicKey = session.getClientPublicKey().key();
-            try {
-                if (EncryptionUtil.verifySignedNonce(session.getVerifyToken(), publicKey, salt, signature)) {
-                    packetEvent.getAsyncMarker().incrementProcessingDelay();
-                    Runnable verifyTask = new VerifyResponseTask(plugin, packetEvent, sender, session, sharedSecret, keyPair);
-                    plugin.getScheduler().runAsync(verifyTask);
+                    return EncryptionUtil.verifyNonce(expectedToken, keyPair.getPrivate(), left.get());
                 } else {
-                    sender.kickPlayer(plugin.getCore().getMessage("invalid-verify-token"));
-                    plugin.getLog().error("Invalid signature from player {}", sender);
+                    Optional<?> optSignatureData = either.right();
+                    if (optSignatureData.isEmpty()) {
+                        plugin.getLog().error("No signature given to sent player signing key {}", sender);
+                        return false;
+                    }
+
+                    Object signatureData = optSignatureData.get();
+                    long salt = FuzzyReflection.getFieldValue(signatureData, Long.TYPE, true);
+                    byte[] signature = FuzzyReflection.getFieldValue(signatureData, byte[].class, true);
+
+                    PublicKey publicKey = clientPublicKey.key();
+                    return EncryptionUtil.verifySignedNonce(expectedToken, publicKey, salt, signature);
                 }
-            } catch (NoSuchAlgorithmException | InvalidKeyException | SignatureException signatureEx) {
-                sender.kickPlayer(plugin.getCore().getMessage("invalid-verify-token"));
-                plugin.getLog().error("Invalid signature from player {}", sender, signatureEx);
+            } else {
+                byte[] nonce = packet.getByteArrays().read(1);
+                return EncryptionUtil.verifyNonce(expectedToken, keyPair.getPrivate(), nonce);
             }
+        } catch (NoSuchAlgorithmException | InvalidKeyException | SignatureException | NoSuchPaddingException |
+                 IllegalBlockSizeException | BadPaddingException signatureEx) {
+            plugin.getLog().error("Invalid signature from player {}", sender, signatureEx);
+            return false;
         }
     }
 
@@ -188,10 +213,10 @@ public class ProtocolLibListener extends PacketAdapter {
 
         PacketContainer packet = packetEvent.getPacket();
         var profileKey = packet.getOptionals(BukkitConverters.getWrappedPublicKeyDataConverter())
-            .read(0);
+            .optionRead(0);
 
-        var clientKey = profileKey.flatMap(this::verifyPublicKey);
-        if (verifyClientKeys && !clientKey.isPresent()) {
+        var clientKey = profileKey.flatMap(opt -> opt).flatMap(this::verifyPublicKey);
+        if (verifyClientKeys && clientKey.isEmpty()) {
             // missing or incorrect
             // expired always not allowed
             player.kickPlayer(plugin.getCore().getMessage("invalid-public-key"));

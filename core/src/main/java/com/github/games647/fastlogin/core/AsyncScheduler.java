@@ -58,16 +58,18 @@ public class AsyncScheduler {
     }
 
     public CompletableFuture<Void> runAsync(Runnable task) {
-        return CompletableFuture.runAsync(() -> {
-            currentlyRunning.incrementAndGet();
-             try {
-                 task.run();
-             } finally {
-                 currentlyRunning.getAndDecrement();
-             }
-        }, processingPool).exceptionally(error -> {
+        return CompletableFuture.runAsync(() -> process(task), processingPool).exceptionally(error -> {
             logger.warn("Error occurred on thread pool", error);
             return null;
         });
+    }
+
+    private void process(Runnable task) {
+        currentlyRunning.incrementAndGet();
+        try {
+            task.run();
+        } finally {
+            currentlyRunning.getAndDecrement();
+        }
     }
 }
