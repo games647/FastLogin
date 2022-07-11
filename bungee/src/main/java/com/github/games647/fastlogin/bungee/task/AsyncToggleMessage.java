@@ -73,8 +73,8 @@ public class AsyncToggleMessage implements Runnable {
         playerProfile.setPremium(false);
         playerProfile.setId(null);
         core.getStorage().save(playerProfile);
-        PremiumToggleReason reason = (!isPlayerSender || !sender.getName().equalsIgnoreCase(playerProfile.getName())) ?
-                PremiumToggleReason.COMMAND_OTHER : PremiumToggleReason.COMMAND_SELF;
+        PremiumToggleReason reason = (!isPlayerSender || !sender.getName().equalsIgnoreCase(playerProfile.getName()))
+            ? PremiumToggleReason.COMMAND_OTHER : PremiumToggleReason.COMMAND_SELF;
         core.getPlugin().getProxy().getPluginManager().callEvent(
                 new BungeeFastLoginPremiumToggleEvent(playerProfile, reason));
         sendMessage("remove-premium");
@@ -89,8 +89,8 @@ public class AsyncToggleMessage implements Runnable {
 
         playerProfile.setPremium(true);
         core.getStorage().save(playerProfile);
-        PremiumToggleReason reason = (!isPlayerSender || !sender.getName().equalsIgnoreCase(playerProfile.getName())) ?
-                PremiumToggleReason.COMMAND_OTHER : PremiumToggleReason.COMMAND_SELF;
+        PremiumToggleReason reason = (!isPlayerSender || !sender.getName().equalsIgnoreCase(playerProfile.getName()))
+            ? PremiumToggleReason.COMMAND_OTHER : PremiumToggleReason.COMMAND_SELF;
         core.getPlugin().getProxy().getPluginManager().callEvent(
                 new BungeeFastLoginPremiumToggleEvent(playerProfile, reason));
         sendMessage("add-premium");

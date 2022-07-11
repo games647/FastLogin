@@ -92,11 +92,11 @@ public class LoginActionMessage implements ChannelMessage {
 
     @Override
     public String toString() {
-        return this.getClass().getSimpleName() + '{' +
-                "type='" + type + '\'' +
-                ", playerName='" + playerName + '\'' +
-                ", proxyId=" + proxyId +
-                '}';
+        return this.getClass().getSimpleName() + '{'
+            + "type='" + type + '\''
+            + ", playerName='" + playerName + '\''
+            + ", proxyId=" + proxyId
+            + '}';
     }
 
     public enum Type {

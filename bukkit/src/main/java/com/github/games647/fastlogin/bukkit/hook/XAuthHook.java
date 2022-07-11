@@ -44,12 +44,12 @@ import org.bukkit.entity.Player;
  * <p>
  * Bukkit: <a href="https://dev.bukkit.org/bukkit-plugins/xauth/">...</a>
  */
-public class xAuthHook implements AuthPlugin<Player> {
+public class XAuthHook implements AuthPlugin<Player> {
 
     private final xAuth xAuthPlugin = xAuth.getPlugin();
     private final FastLoginBukkit plugin;
 
-    public xAuthHook(FastLoginBukkit plugin) {
+    public XAuthHook(FastLoginBukkit plugin) {
         this.plugin = plugin;
     }
 

@@ -71,7 +71,9 @@ public class VerifyResponseTask implements Runnable {
     private static final Class<?> ENCRYPTION_CLASS;
 
     static {
-        ENCRYPTION_CLASS = MinecraftReflection.getMinecraftClass("util." + ENCRYPTION_CLASS_NAME, ENCRYPTION_CLASS_NAME);
+        ENCRYPTION_CLASS = MinecraftReflection.getMinecraftClass(
+            "util." + ENCRYPTION_CLASS_NAME, ENCRYPTION_CLASS_NAME
+        );
     }
 
     private final FastLoginBukkit plugin;
@@ -144,7 +146,11 @@ public class VerifyResponseTask implements Runnable {
                 encryptConnection(session, requestedUsername, response.get());
             } else {
                 //user tried to fake an authentication
-                disconnect("invalid-session", "GameProfile {} ({}) tried to log in with an invalid session. ServerId: {}", session.getRequestUsername(), socketAddress, serverId);
+                disconnect(
+                    "invalid-session",
+                    "GameProfile {} ({}) tried to log in with an invalid session. ServerId: {}",
+                    session.getRequestUsername(), socketAddress, serverId
+                );
             }
         } catch (IOException ioEx) {
             disconnect("error-kick", "Failed to connect to session server", ioEx);

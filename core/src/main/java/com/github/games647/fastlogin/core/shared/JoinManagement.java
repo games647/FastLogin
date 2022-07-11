@@ -106,9 +106,9 @@ public abstract class JoinManagement<P extends C, C, S extends LoginSource> {
                 }
             }
         } catch (RateLimitException rateLimitEx) {
-            core.getPlugin().getLog().error("Mojang's rate limit reached for {}. The public IPv4 address of this" +
-                    " server issued more than 600 Name -> UUID requests within 10 minutes. After those 10" +
-                    " minutes we can make requests again.", username);
+            core.getPlugin().getLog().error("Mojang's rate limit reached for {}. The public IPv4 address of this"
+                + " server issued more than 600 Name -> UUID requests within 10 minutes. After those 10"
+                + " minutes we can make requests again.", username);
         } catch (Exception ex) {
             core.getPlugin().getLog().error("Failed to check premium state for {}", username, ex);
             core.getPlugin().getLog().error("Failed to check premium state of {}", username, ex);

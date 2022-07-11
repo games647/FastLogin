@@ -36,42 +36,46 @@ import java.util.Optional;
 
 /**
  * An extension to {@link MojangResolver} which allows connection using transparent reverse proxies.
- * The significant difference is that unlike MojangResolver from the CraftAPI implementation, which sends the "ip" parameter
- * when the hostIp parameter is an IPv4 address, but skips it for IPv6, this implementation leaves out the "ip" parameter
- * also for IPv4, effectively enabling transparent proxies to work.
+ * The significant difference is that unlike MojangResolver from the CraftAPI implementation, which sends the
+ * "ip" parameter when the hostIp parameter is an IPv4 address, but skips it for IPv6, this implementation leaves out
+ * the "ip" parameter also for IPv4, effectively enabling transparent proxies to work.
+ *
  * @author games647, Enginecrafter77
  */
 public class ProxyAgnosticMojangResolver extends MojangResolver {
-	/**
-	 * A formatting string containing a URL used to call the {@code hasJoined} method on mojang session servers.
-	 *
-	 * Formatting parameters:
-	 *  1. The username of the player in question
-	 *  2. The serverId of this server
-	 */
-	public static final String MOJANG_SESSIONSERVER_HASJOINED_CALL_URLFMT = "https://sessionserver.mojang.com/session/minecraft/hasJoined?username=%s&serverId=%s";
 
-	@Override
-	public Optional<Verification> hasJoined(String username, String serverHash, InetAddress hostIp) throws IOException
-	{
-		String url = String.format(MOJANG_SESSIONSERVER_HASJOINED_CALL_URLFMT, username, serverHash);
+    private static final String HOST = "sessionserver.mojang.com";
 
-		HttpURLConnection conn = this.getConnection(url);
-		int responseCode = conn.getResponseCode();
+    /**
+     * A formatting string containing a URL used to call the {@code hasJoined} method on mojang session servers.
+     * <p>
+     * Formatting parameters:
+     * 1. The username of the player in question
+     * 2. The serverId of this server
+     */
+    public static final String ENDPOINT = "https://" + HOST + "/session/minecraft/hasJoined?username=%s&serverId=%s";
 
-		Verification verification = null;
+    @Override
+    public Optional<Verification> hasJoined(String username, String serverHash, InetAddress hostIp)
+        throws IOException {
+        String url = String.format(ENDPOINT, username, serverHash);
 
-		// Mojang session servers send HTTP 204 (NO CONTENT) when the authentication seems invalid
-		// If that's not our case, the authentication is valid, and so we can parse the response.
-		if(responseCode != HttpURLConnection.HTTP_NO_CONTENT)
-			verification = this.parseRequest(conn, this::parseVerification);
+        HttpURLConnection conn = this.getConnection(url);
+        int responseCode = conn.getResponseCode();
 
-		return Optional.ofNullable(verification);
-	}
+        Verification verification = null;
 
-	// Functional implementation of InputStreamAction, used in hasJoined method in parseRequest call
-	protected Verification parseVerification(InputStream input) throws IOException
-	{
-		return this.readJson(input, Verification.class);
-	}
+        // Mojang session servers send HTTP 204 (NO CONTENT) when the authentication seems invalid
+        // If that's not our case, the authentication is valid, and so we can parse the response.
+        if (responseCode != HttpURLConnection.HTTP_NO_CONTENT) {
+            verification = this.parseRequest(conn, this::parseVerification);
+        }
+
+        return Optional.ofNullable(verification);
+    }
+
+    // Functional implementation of InputStreamAction, used in hasJoined method in parseRequest call
+    protected Verification parseVerification(InputStream input) throws IOException {
+        return this.readJson(input, Verification.class);
+    }
 }

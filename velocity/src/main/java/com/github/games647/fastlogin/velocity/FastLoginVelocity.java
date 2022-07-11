@@ -46,6 +46,7 @@ import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
+import com.velocitypowered.api.proxy.messages.ChannelRegistrar;
 import com.velocitypowered.api.proxy.messages.MinecraftChannelIdentifier;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 
@@ -73,7 +74,7 @@ public class FastLoginVelocity implements PlatformPlugin<CommandSource> {
     private final Path dataDirectory;
     private final Logger logger;
     private final ConcurrentMap<InetSocketAddress, VelocityLoginSession> session = new MapMaker().weakKeys().makeMap();
-    private static final String PROXY_ID_fILE = "proxyId.txt";
+    private static final String PROXY_ID_FILE = "proxyId.txt";
 
     private FastLoginCore<Player, CommandSource, FastLoginVelocity> core;
     private AsyncScheduler scheduler;
@@ -98,8 +99,10 @@ public class FastLoginVelocity implements PlatformPlugin<CommandSource> {
 
         server.getEventManager().register(this, new ConnectListener(this, core.getAntiBot()));
         server.getEventManager().register(this, new PluginMessageListener(this));
-        server.getChannelRegistrar().register(MinecraftChannelIdentifier.create(getName(), ChangePremiumMessage.CHANGE_CHANNEL));
-        server.getChannelRegistrar().register(MinecraftChannelIdentifier.create(getName(), SuccessMessage.SUCCESS_CHANNEL));
+
+        ChannelRegistrar channelRegistry = server.getChannelRegistrar();
+        channelRegistry.register(MinecraftChannelIdentifier.create(getName(), ChangePremiumMessage.CHANGE_CHANNEL));
+        channelRegistry.register(MinecraftChannelIdentifier.create(getName(), SuccessMessage.SUCCESS_CHANNEL));
     }
 
     @Subscribe
@@ -167,7 +170,7 @@ public class FastLoginVelocity implements PlatformPlugin<CommandSource> {
     }
 
     private void loadOrGenerateProxyId() {
-        Path idFile = dataDirectory.resolve(PROXY_ID_fILE);
+        Path idFile = dataDirectory.resolve(PROXY_ID_FILE);
         boolean shouldGenerate = false;
 
         if (Files.exists(idFile)) {
@@ -182,7 +185,8 @@ public class FastLoginVelocity implements PlatformPlugin<CommandSource> {
                 logger.error("Unable to load proxy id from '{}'", idFile.toAbsolutePath());
                 logger.error("Detailed exception:", e);
             } catch (IllegalArgumentException e) {
-                logger.error("'{}' contains an invalid uuid! FastLogin will not work without a valid id.", idFile.toAbsolutePath());
+                Path filePath = idFile.toAbsolutePath();
+                logger.error("'{}' contains an invalid uuid! FastLogin will not work without a valid id.", filePath);
             }
         } else {
             shouldGenerate = true;

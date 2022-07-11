@@ -40,7 +40,8 @@ import org.geysermc.floodgate.api.player.FloodgatePlayer;
 
 public class FloodgateAuthTask extends FloodgateManagement<Player, CommandSender, BukkitLoginSession, FastLoginBukkit> {
 
-    public FloodgateAuthTask(FastLoginCore<Player, CommandSender, FastLoginBukkit> core, Player player, FloodgatePlayer floodgatePlayer) {
+    public FloodgateAuthTask(FastLoginCore<Player, CommandSender, FastLoginBukkit> core, Player player,
+                             FloodgatePlayer floodgatePlayer) {
         super(core, player, floodgatePlayer);
     }
 

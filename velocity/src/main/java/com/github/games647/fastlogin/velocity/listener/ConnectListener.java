@@ -92,7 +92,9 @@ public class ConnectListener {
                 break;
             case Continue:
             default:
-                Runnable asyncPremiumCheck = new AsyncPremiumCheck(plugin, connection, username, continuation, preLoginEvent);
+                Runnable asyncPremiumCheck = new AsyncPremiumCheck(
+                    plugin, connection, username, continuation, preLoginEvent
+                );
                 plugin.getScheduler().runAsync(asyncPremiumCheck);
                 break;
         }
@@ -118,8 +120,8 @@ public class ConnectListener {
             }
 
             if (!plugin.getCore().getConfig().get("forwardSkin", true)) {
-                List<Property> skinFreeProp = removeSkin(event.getGameProfile().getProperties());
-                event.setGameProfile(event.getGameProfile().withProperties(skinFreeProp));
+                List<Property> newProp = removeSkin(event.getGameProfile().getProperties());
+                event.setGameProfile(event.getGameProfile().withProperties(newProp));
             }
         }
     }
@@ -127,8 +129,9 @@ public class ConnectListener {
     private List<GameProfile.Property> removeSkin(Collection<Property> oldProperties) {
         List<GameProfile.Property> newProperties = new ArrayList<>(oldProperties.size());
         for (GameProfile.Property property : oldProperties) {
-            if (!"textures".equals(property.getName()))
+            if (!"textures".equals(property.getName())) {
                 newProperties.add(property);
+            }
         }
 
         return newProperties;

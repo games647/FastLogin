@@ -36,7 +36,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class BukkitFastLoginAutoLoginEvent extends Event implements FastLoginAutoLoginEvent, Cancellable {
 
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList HANDLERS = new HandlerList();
     private final LoginSession session;
     private final StoredProfile profile;
     private boolean cancelled;
@@ -70,10 +70,10 @@ public class BukkitFastLoginAutoLoginEvent extends Event implements FastLoginAut
 
     @Override
     public @NotNull HandlerList getHandlers() {
-        return handlers;
+        return HANDLERS;
     }
 
     public static HandlerList getHandlerList() {
-        return handlers;
+        return HANDLERS;
     }
 }

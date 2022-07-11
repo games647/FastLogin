@@ -33,6 +33,7 @@ import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -113,7 +114,9 @@ public class BungeeManager {
             Class<?> globalConfig = Class.forName("io.papermc.paper.configuration.GlobalConfiguration");
             Object global = globalConfig.getDeclaredMethod("get").invoke(null);
             Object proxiesConfiguration = global.getClass().getDeclaredField("proxies").get(global);
-            Object velocityConfig = proxiesConfiguration.getClass().getDeclaredField("velocity").get(proxiesConfiguration);
+
+            Field velocitySectionField = proxiesConfiguration.getClass().getDeclaredField("velocity");
+            Object velocityConfig = velocitySectionField.get(proxiesConfiguration);
 
             return velocityConfig.getClass().getDeclaredField("enabled").getBoolean(velocityConfig);
         } catch (ClassNotFoundException classNotFoundException) {
@@ -128,7 +131,9 @@ public class BungeeManager {
 
     private boolean detectProxy() {
         try {
-            if (isProxySupported("org.spigotmc.SpigotConfig", "bungee")) return true;
+            if (isProxySupported("org.spigotmc.SpigotConfig", "bungee")) {
+                return true;
+            }
         } catch (ClassNotFoundException classNotFoundException) {
             // leave stacktrace for class not found out
             plugin.getLog().warn("Cannot check for BungeeCord support: {}", classNotFoundException.getMessage());

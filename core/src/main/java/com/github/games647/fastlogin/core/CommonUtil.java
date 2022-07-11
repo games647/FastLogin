@@ -37,7 +37,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.jul.JDK14LoggerAdapter;
 
-public class CommonUtil {
+public final class CommonUtil {
 
     private static final char COLOR_CHAR = '&';
     private static final char TRANSLATED_CHAR = '§';

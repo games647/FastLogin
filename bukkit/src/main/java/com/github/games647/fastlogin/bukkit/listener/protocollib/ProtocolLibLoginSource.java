@@ -55,7 +55,7 @@ class ProtocolLibLoginSource implements LoginSource {
     private final String serverId = "";
     private byte[] verifyToken;
 
-    public ProtocolLibLoginSource(Player player, Random random, PublicKey serverPublicKey, ClientPublicKey clientKey) {
+    ProtocolLibLoginSource(Player player, Random random, PublicKey serverPublicKey, ClientPublicKey clientKey) {
         this.player = player;
         this.random = random;
         this.publicKey = serverPublicKey;
@@ -126,11 +126,11 @@ class ProtocolLibLoginSource implements LoginSource {
 
     @Override
     public String toString() {
-        return this.getClass().getSimpleName() + '{' +
-                "player=" + player +
-                ", random=" + random +
-                ", serverId='" + serverId + '\'' +
-                ", verifyToken=" + Arrays.toString(verifyToken) +
-                '}';
+        return this.getClass().getSimpleName() + '{'
+            + "player=" + player
+            + ", random=" + random
+            + ", serverId='" + serverId + '\''
+            + ", verifyToken=" + Arrays.toString(verifyToken)
+            + '}';
     }
 }

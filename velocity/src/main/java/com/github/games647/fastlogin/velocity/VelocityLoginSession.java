@@ -58,10 +58,10 @@ public class VelocityLoginSession extends LoginSession {
 
     @Override
     public synchronized String toString() {
-        return this.getClass().getSimpleName() + '{' +
-                "alreadySaved=" + alreadySaved +
-                ", alreadyLogged=" + alreadyLogged +
-                ", registered=" + registered +
-                "} " + super.toString();
+        return this.getClass().getSimpleName() + '{'
+            + "alreadySaved=" + alreadySaved
+            + ", alreadyLogged=" + alreadyLogged
+            + ", registered=" + registered
+            + "} " + super.toString();
     }
 }

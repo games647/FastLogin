@@ -147,13 +147,16 @@ public class ProtocolLibListener extends PacketAdapter {
 
         BukkitLoginSession session = plugin.getSession(sender.getAddress());
         if (session == null) {
-            plugin.getLog().warn("GameProfile {} tried to send encryption response at invalid state", sender.getAddress());
+            plugin.getLog().warn("Profile {} tried to send encryption response at invalid state", sender.getAddress());
             sender.kickPlayer(plugin.getCore().getMessage("invalid-request"));
         } else {
             byte[] expectedVerifyToken = session.getVerifyToken();
             if (verifyNonce(sender, packetEvent.getPacket(), session.getClientPublicKey(), expectedVerifyToken)) {
                 packetEvent.getAsyncMarker().incrementProcessingDelay();
-                Runnable verifyTask = new VerifyResponseTask(plugin, packetEvent, sender, session, sharedSecret, keyPair);
+
+                Runnable verifyTask = new VerifyResponseTask(
+                    plugin, packetEvent, sender, session, sharedSecret, keyPair
+                );
                 plugin.getScheduler().runAsync(verifyTask);
             } else {
                 sender.kickPlayer(plugin.getCore().getMessage("invalid-verify-token"));
@@ -192,8 +195,8 @@ public class ProtocolLibListener extends PacketAdapter {
                 byte[] nonce = packet.getByteArrays().read(1);
                 return EncryptionUtil.verifyNonce(expectedToken, keyPair.getPrivate(), nonce);
             }
-        } catch (NoSuchAlgorithmException | InvalidKeyException | SignatureException | NoSuchPaddingException |
-                 IllegalBlockSizeException | BadPaddingException signatureEx) {
+        } catch (NoSuchAlgorithmException | InvalidKeyException | SignatureException | NoSuchPaddingException
+                 | IllegalBlockSizeException | BadPaddingException signatureEx) {
             plugin.getLog().error("Invalid signature from player {}", sender, signatureEx);
             return false;
         }
@@ -227,7 +230,9 @@ public class ProtocolLibListener extends PacketAdapter {
         plugin.getLog().trace("GameProfile {} with {} connecting", sessionKey, username);
 
         packetEvent.getAsyncMarker().incrementProcessingDelay();
-        Runnable nameCheckTask = new NameCheckTask(plugin, random, player, packetEvent, username, clientKey.orElse(null), keyPair.getPublic());
+        Runnable nameCheckTask = new NameCheckTask(
+            plugin, random, player, packetEvent, username, clientKey.orElse(null), keyPair.getPublic()
+        );
         plugin.getScheduler().runAsync(nameCheckTask);
     }
 
