@@ -96,8 +96,7 @@ public class AsyncToggleMessage implements Runnable {
         playerProfile.setPremium(true);
         core.getStorage().save(playerProfile);
         PremiumToggleReason reason = (!isPlayerSender || !senderName.equalsIgnoreCase(playerProfile.getName()))
-            ?
-            PremiumToggleReason.COMMAND_OTHER : PremiumToggleReason.COMMAND_SELF;
+            ? PremiumToggleReason.COMMAND_OTHER : PremiumToggleReason.COMMAND_SELF;
         core.getPlugin().getProxy().getEventManager().fire(
             new VelocityFastLoginPremiumToggleEvent(playerProfile, reason));
         sendMessage("add-premium");
