@@ -26,10 +26,13 @@
 package com.github.games647.fastlogin.bukkit;
 
 import com.github.games647.craftapi.model.skin.SkinProperty;
+import com.github.games647.fastlogin.bukkit.listener.protocollib.packet.ClientPublicKey;
 import com.github.games647.fastlogin.core.StoredProfile;
 import com.github.games647.fastlogin.core.shared.LoginSession;
 
 import java.util.Optional;
+
+import javax.annotation.Nullable;
 
 /**
  * Represents a client connecting to the server.
@@ -42,30 +45,33 @@ public class BukkitLoginSession extends LoginSession {
 
     private final byte[] verifyToken;
 
+    private final ClientPublicKey clientPublicKey;
+
     private boolean verified;
 
     private SkinProperty skinProperty;
 
-    public BukkitLoginSession(String username, byte[] verifyToken, boolean registered
+    public BukkitLoginSession(String username, byte[] verifyToken, ClientPublicKey publicKey, boolean registered
             , StoredProfile profile) {
         super(username, registered, profile);
 
+        this.clientPublicKey = publicKey;
         this.verifyToken = verifyToken.clone();
     }
 
     //available for BungeeCord
     public BukkitLoginSession(String username, boolean registered) {
-        this(username, EMPTY_ARRAY, registered, null);
+        this(username, EMPTY_ARRAY, null, registered, null);
     }
 
     //cracked player
     public BukkitLoginSession(String username, StoredProfile profile) {
-        this(username, EMPTY_ARRAY, false, profile);
+        this(username, EMPTY_ARRAY, null, false, profile);
     }
 
     //ProtocolSupport
     public BukkitLoginSession(String username, boolean registered, StoredProfile profile) {
-        this(username, EMPTY_ARRAY, registered, profile);
+        this(username, EMPTY_ARRAY, null, registered, profile);
     }
 
     /**
@@ -77,6 +83,11 @@ public class BukkitLoginSession extends LoginSession {
      */
     public synchronized byte[] getVerifyToken() {
         return verifyToken.clone();
+    }
+
+    @Nullable
+    public ClientPublicKey getClientPublicKey() {
+        return clientPublicKey;
     }
 
     /**

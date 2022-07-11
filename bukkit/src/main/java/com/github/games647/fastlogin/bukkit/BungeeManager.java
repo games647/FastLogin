@@ -33,8 +33,10 @@ import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -61,7 +63,7 @@ public class BungeeManager {
     private final FastLoginBukkit plugin;
     private boolean enabled;
 
-    private final Set<UUID> firedJoinEvents = new HashSet<>();
+    private final Collection<UUID> firedJoinEvents = new HashSet<>();
 
     public BungeeManager(FastLoginBukkit plugin) {
         this.plugin = plugin;
@@ -87,33 +89,62 @@ public class BungeeManager {
     }
 
     public void initialize() {
-        try {
-            enabled = detectProxy();
-        } catch (Exception ex) {
-            plugin.getLog().warn("Cannot check proxy support. Fallback to non-proxy mode", ex);
-        }
+        enabled = detectProxy();
 
         if (enabled) {
             proxyIds = loadBungeeCordIds();
             registerPluginChannels();
+            plugin.getLog().info("Found enabled proxy configuration");
+            plugin.getLog().info("Remember to follow the proxy guide to complete your setup");
+        } else {
+            plugin.getLog().warn("Disabling Minecraft proxy configuration. Assuming direct connections from now on.");
         }
     }
 
-    private boolean isProxySupported(String className, String fieldName) {
+    private boolean isProxySupported(String className, String fieldName)
+        throws ClassNotFoundException, NoSuchFieldException, IllegalAccessException {
+        return Class.forName(className).getDeclaredField(fieldName).getBoolean(null);
+    }
+
+    private boolean isVelocityEnabled()
+        throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException, ClassNotFoundException,
+        NoSuchMethodException, InvocationTargetException {
         try {
-            return Class.forName(className).getDeclaredField(fieldName).getBoolean(null);
-        } catch (ClassNotFoundException notFoundEx) {
-            //ignore server has no proxy support
-        } catch (NoSuchFieldException | IllegalAccessException noSuchFieldException) {
-            plugin.getLog().warn("Cannot access proxy field", noSuchFieldException);
+            Class<?> globalConfig = Class.forName("io.papermc.paper.configuration.GlobalConfiguration");
+            Object global = globalConfig.getDeclaredMethod("get").invoke(null);
+            Object proxiesConfiguration = global.getClass().getDeclaredField("proxies").get(global);
+            Object velocityConfig = proxiesConfiguration.getClass().getDeclaredField("velocity").get(proxiesConfiguration);
+
+            return velocityConfig.getClass().getDeclaredField("enabled").getBoolean(velocityConfig);
+        } catch (ClassNotFoundException classNotFoundException) {
+            // try again using the older Paper configuration, because the old class file still exists in newer versions
+            if (isProxySupported("com.destroystokyo.paper.PaperConfig", "velocitySupport")) {
+                return true;
+            }
         }
 
         return false;
     }
 
     private boolean detectProxy() {
-        return isProxySupported("org.spigotmc.SpigotConfig", "bungee")
-                || isProxySupported("com.destroystokyo.paper.PaperConfig", "velocitySupport");
+        try {
+            if (isProxySupported("org.spigotmc.SpigotConfig", "bungee")) return true;
+        } catch (ClassNotFoundException classNotFoundException) {
+            // leave stacktrace for class not found out
+            plugin.getLog().warn("Cannot check for BungeeCord support: {}", classNotFoundException.getMessage());
+        } catch (NoSuchFieldException | IllegalAccessException ex) {
+            plugin.getLog().warn("Cannot check for BungeeCord support", ex);
+        }
+
+        try {
+            return isVelocityEnabled();
+        } catch (ClassNotFoundException classNotFoundException) {
+            plugin.getLog().warn("Cannot check for Velocity support in Paper: {}", classNotFoundException.getMessage());
+        } catch (NoSuchFieldException | IllegalAccessException | NoSuchMethodException | InvocationTargetException ex) {
+            plugin.getLog().warn("Cannot check for Velocity support in Paper", ex);
+        }
+
+        return false;
     }
 
     private void registerPluginChannels() {
@@ -147,9 +178,7 @@ public class BungeeManager {
 
             Files.deleteIfExists(legacyFile);
             try (Stream<String> lines = Files.lines(proxiesFile)) {
-                return lines.map(String::trim)
-                        .map(UUID::fromString)
-                        .collect(toSet());
+                return lines.map(String::trim).map(UUID::fromString).collect(toSet());
             }
         } catch (IOException ex) {
             plugin.getLog().error("Failed to read proxies", ex);
@@ -176,7 +205,7 @@ public class BungeeManager {
     /**
      * Check if the event fired including with the task delay. This necessary to restore the order of processing the
      * BungeeCord messages after the PlayerJoinEvent fires including the delay.
-     *
+     * <p>
      * If the join event fired, the delay exceeded, but it ran earlier and couldn't find the recently started login
      * session. If not fired, we can start a new force login task. This will still match the requirement that we wait
      * a certain time after the player join event fired.

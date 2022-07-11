@@ -28,26 +28,28 @@ package com.github.games647.fastlogin.bukkit.hook;
 import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 import com.github.games647.fastlogin.core.hooks.AuthPlugin;
+
 import fr.xephi.authme.api.v3.AuthMeApi;
 import fr.xephi.authme.events.RestoreSessionEvent;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.process.register.executors.ApiPasswordRegisterParams;
 import fr.xephi.authme.process.register.executors.RegistrationMethod;
+
+import java.lang.reflect.Field;
+
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 
-import java.lang.reflect.Field;
-
 /**
- * GitHub: https://github.com/Xephi/AuthMeReloaded/
+ * GitHub: <a href="https://github.com/Xephi/AuthMeReloaded/">...</a>
  * <p>
  * Project page:
  * <p>
- * Bukkit: https://dev.bukkit.org/bukkit-plugins/authme-reloaded/
+ * Bukkit: <a href="https://dev.bukkit.org/bukkit-plugins/authme-reloaded/">...</a>
  * <p>
- * Spigot: https://www.spigotmc.org/resources/authme-reloaded.6269/
+ * Spigot: <a href="https://www.spigotmc.org/resources/authme-reloaded.6269/">...</a>
  */
 public class AuthMeHook implements AuthPlugin<Player>, Listener {
 

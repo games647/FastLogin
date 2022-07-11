@@ -25,6 +25,7 @@
  */
 package com.github.games647.fastlogin.bukkit.listener.protocollib;
 
+import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
@@ -36,15 +37,13 @@ import org.geysermc.floodgate.api.FloodgateApi;
 
 import static com.comphenix.protocol.PacketType.Login.Client.START;
 
-import com.comphenix.protocol.ProtocolLibrary;
-
 /**
  * Manually inject Floodgate player name prefixes.
  * <br>
  * This is used as a workaround, because Floodgate fails to inject
  * the prefixes when it's used together with ProtocolLib and FastLogin.
  * <br>
- * For more information visit: https://github.com/games647/FastLogin/issues/493
+ * For more information visit: <a href="https://github.com/games647/FastLogin/issues/493">...</a>
  */
 public class ManualNameChange extends PacketAdapter {
 

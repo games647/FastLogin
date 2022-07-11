@@ -32,7 +32,7 @@
     <parent>
         <groupId>com.github.games647</groupId>
         <artifactId>fastlogin</artifactId>
-        <version>1.11-SNAPSHOT</version>
+        <version>1.12-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -113,7 +113,7 @@
     <repositories>
         <repository>
             <id>velocity</id>
-            <url>https://nexus.velocitypowered.com/repository/maven-public/</url>
+            <url>https://repo.papermc.io/repository/maven-public/</url>
         </repository>
     </repositories>
 
@@ -129,7 +129,7 @@
         <dependency>
             <groupId>com.velocitypowered</groupId>
             <artifactId>velocity-api</artifactId>
-            <version>3.1.0</version>
+            <version>3.1.1</version>
             <scope>provided</scope>
         </dependency>
 
@@ -137,7 +137,7 @@
         <dependency>
             <groupId>org.mariadb.jdbc</groupId>
             <artifactId>mariadb-java-client</artifactId>
-            <version>3.0.5</version>
+            <version>3.0.6</version>
         </dependency>
     </dependencies>
 </project>

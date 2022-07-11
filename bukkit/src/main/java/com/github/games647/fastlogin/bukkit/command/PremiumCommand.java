@@ -51,7 +51,7 @@ public class PremiumCommand extends ToggleCommand {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
         if (args.length == 0) {
-            onPremiumSelf(sender, command, args);
+            onPremiumSelf(sender);
         } else {
             onPremiumOther(sender, command, args);
         }
@@ -59,7 +59,7 @@ public class PremiumCommand extends ToggleCommand {
         return true;
     }
 
-    private void onPremiumSelf(CommandSender sender, Command cmd, String[] args) {
+    private void onPremiumSelf(CommandSender sender) {
         if (isConsole(sender)) {
             return;
         }

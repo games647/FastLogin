@@ -43,11 +43,11 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 /**
- * GitHub: https://github.com/ST-DDT/CrazyLogin
+ * GitHub: <a href="https://github.com/ST-DDT/CrazyLogin">...</a>
  * <p>
  * Project page:
  * <p>
- * Bukkit: https://dev.bukkit.org/server-mods/crazylogin/
+ * Bukkit: <a href="https://dev.bukkit.org/server-mods/crazylogin/">...</a>
  */
 public class CrazyLoginHook implements AuthPlugin<Player> {
 

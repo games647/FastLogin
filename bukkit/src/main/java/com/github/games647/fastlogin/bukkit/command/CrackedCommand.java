@@ -44,7 +44,7 @@ public class CrackedCommand extends ToggleCommand {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
         if (args.length == 0) {
-            onCrackedSelf(sender, command, args);
+            onCrackedSelf(sender);
         } else {
             onCrackedOther(sender, command, args);
         }
@@ -52,7 +52,7 @@ public class CrackedCommand extends ToggleCommand {
         return true;
     }
 
-    private void onCrackedSelf(CommandSender sender, Command cmd, String[] args) {
+    private void onCrackedSelf(CommandSender sender) {
         if (isConsole(sender)) {
             return;
         }

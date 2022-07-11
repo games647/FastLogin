@@ -35,7 +35,7 @@
     <packaging>pom</packaging>
 
     <name>FastLogin</name>
-    <version>1.11-SNAPSHOT</version>
+    <version>1.12-SNAPSHOT</version>
 
     <url>https://www.spigotmc.org/resources/fastlogin.14153/</url>
     <description>
@@ -129,7 +129,18 @@
 
         <resources>
             <resource>
+                <!-- Certificate should not be filtered, as it would make it invalid -->
                 <directory>src/main/resources</directory>
+                <includes>
+                    <include>yggdrasil_session_pubkey.der</include>
+                </includes>
+                <filtering>false</filtering>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <excludes>
+                    <exclude>yggdrasil_session_pubkey.der</exclude>
+                </excludes>
                 <!--Replace variables-->
                 <filtering>true</filtering>
             </resource>

@@ -30,9 +30,9 @@ import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.reflect.StructureModifier;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
+import com.github.games647.fastlogin.bukkit.listener.protocollib.packet.ClientPublicKey;
 import com.github.games647.fastlogin.core.shared.LoginSource;
 
-import java.lang.reflect.InvocationTargetException;
 import java.net.InetSocketAddress;
 import java.security.PublicKey;
 import java.util.Arrays;
@@ -48,19 +48,22 @@ class ProtocolLibLoginSource implements LoginSource {
     private final Player player;
 
     private final Random random;
+
+    private final ClientPublicKey clientKey;
     private final PublicKey publicKey;
 
     private final String serverId = "";
     private byte[] verifyToken;
 
-    public ProtocolLibLoginSource(Player player, Random random, PublicKey publicKey) {
+    public ProtocolLibLoginSource(Player player, Random random, PublicKey serverPublicKey, ClientPublicKey clientKey) {
         this.player = player;
         this.random = random;
-        this.publicKey = publicKey;
+        this.publicKey = serverPublicKey;
+        this.clientKey = clientKey;
     }
 
     @Override
-    public void enableOnlinemode() throws InvocationTargetException {
+    public void enableOnlinemode() {
         verifyToken = EncryptionUtil.generateVerifyToken(random);
 
         /*
@@ -88,7 +91,7 @@ class ProtocolLibLoginSource implements LoginSource {
     }
 
     @Override
-    public void kick(String message) throws InvocationTargetException {
+    public void kick(String message) {
         ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
 
         PacketContainer kickPacket = new PacketContainer(DISCONNECT);
@@ -107,6 +110,10 @@ class ProtocolLibLoginSource implements LoginSource {
     @Override
     public InetSocketAddress getAddress() {
         return player.getAddress();
+    }
+
+    public ClientPublicKey getClientKey() {
+        return clientKey;
     }
 
     public String getServerId() {

@@ -29,6 +29,7 @@ import com.destroystokyo.paper.profile.ProfileProperty;
 import com.github.games647.craftapi.model.skin.Textures;
 import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
+
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;

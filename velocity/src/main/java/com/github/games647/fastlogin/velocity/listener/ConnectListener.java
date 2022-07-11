@@ -45,9 +45,11 @@ import com.velocitypowered.api.proxy.InboundConnection;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 import com.velocitypowered.api.util.GameProfile;
+import com.velocitypowered.api.util.GameProfile.Property;
 
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -116,13 +118,14 @@ public class ConnectListener {
             }
 
             if (!plugin.getCore().getConfig().get("forwardSkin", true)) {
-                event.setGameProfile(event.getGameProfile().withProperties(removeSkin(event.getGameProfile().getProperties())));
+                List<Property> skinFreeProp = removeSkin(event.getGameProfile().getProperties());
+                event.setGameProfile(event.getGameProfile().withProperties(skinFreeProp));
             }
         }
     }
 
-    private List<GameProfile.Property> removeSkin(List<GameProfile.Property> oldProperties) {
-        List<GameProfile.Property> newProperties = new ArrayList<>(oldProperties.size() - 1);
+    private List<GameProfile.Property> removeSkin(Collection<Property> oldProperties) {
+        List<GameProfile.Property> newProperties = new ArrayList<>(oldProperties.size());
         for (GameProfile.Property property : oldProperties) {
             if (!"textures".equals(property.getName()))
                 newProperties.add(property);

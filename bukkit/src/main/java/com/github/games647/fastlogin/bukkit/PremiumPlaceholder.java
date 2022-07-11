@@ -25,6 +25,8 @@
  */
 package com.github.games647.fastlogin.bukkit;
 
+import java.util.List;
+
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 
 import org.bukkit.OfflinePlayer;
@@ -38,6 +40,16 @@ public class PremiumPlaceholder extends PlaceholderExpansion {
 
     public PremiumPlaceholder(FastLoginBukkit plugin) {
         this.plugin = plugin;
+    }
+
+    @Override
+    public boolean persist() {
+        return true;
+    }
+
+    @Override
+    public @NotNull List<String> getPlaceholders() {
+        return List.of(PLACEHOLDER_VARIABLE);
     }
 
     @Override

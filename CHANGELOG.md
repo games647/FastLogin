@@ -35,7 +35,7 @@
 * Automatically register accounts if they are not in the auth plugin database but in the FastLogin database
 * Update BungeeAuth dependency and use the new API. Please update your plugin if you still use the old one.
 * Remove deprecated API methods from the last version
-* Finally update the IP column on every login
+* Finally, update the IP column on every login
 * No duplicate session login
 * Fix timestamp parsing in newer versions of SQLite
 * Fix Spigot console command invocation sends result to in game players
@@ -82,7 +82,7 @@
 * Fix player entry is not saved if namechangecheck is enabled
 * Fix skin applies for third-party plugins
 * Switch to mcapi.ca for uuid lookups
-* Fix BungeeCord not setting an premium uuid
+* Fix BungeeCord not setting a premium uuid
 * Fix setting skin on Cauldron
 * Fix saving on name change
 
@@ -148,7 +148,7 @@
 ### 1.2
 
 * Fix race condition in BungeeCord
-* Fix dead lock in xAuth
+* Fix deadlock in xAuth
 * Added API methods for plugins to set their own password generator
 * Added API methods for plugins to set their own auth plugin hook
 => Added support for AdvancedLogin
@@ -182,7 +182,7 @@
 * Added a forwardSkin config option
 * Added premium UUID support
 * Updated to the newest changes of Spigot
-* Removes the need of an Bukkit auth plugin if you use a bungeecord one
+* Removes the need of a Bukkit auth plugin if you use a bungeecord one
 * Optimize performance and thread-safety
 * Fixed BungeeCord support
 * Changed config option auto-login to auto-register to clarify the usage

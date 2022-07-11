@@ -34,11 +34,13 @@ import me.vik1395.BungeeAuthAPI.RequestHandler;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 /**
- * GitHub: https://github.com/vik1395/BungeeAuth-Minecraft
+ * GitHub:
+ * <a href="https://github.com/vik1395/BungeeAuth-Minecraft">...</a>
  *
  * Project page:
  *
- * Spigot: https://www.spigotmc.org/resources/bungeeauth.493/
+ * Spigot:
+ * <a href="https://www.spigotmc.org/resources/bungeeauth.493/">...</a>
  */
 public class BungeeAuthHook implements AuthPlugin<ProxiedPlayer> {
 

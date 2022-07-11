@@ -30,14 +30,31 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
+import com.comphenix.protocol.reflect.FuzzyReflection;
+import com.comphenix.protocol.utility.MinecraftVersion;
+import com.comphenix.protocol.wrappers.BukkitConverters;
+import com.comphenix.protocol.wrappers.WrappedGameProfile;
+import com.comphenix.protocol.wrappers.WrappedProfilePublicKey.WrappedProfileKeyData;
 import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
+import com.github.games647.fastlogin.bukkit.listener.protocollib.packet.ClientPublicKey;
 import com.github.games647.fastlogin.core.antibot.AntiBotService;
 import com.github.games647.fastlogin.core.antibot.AntiBotService.Action;
+import com.mojang.datafixers.util.Either;
 
 import java.net.InetSocketAddress;
+import java.security.InvalidKeyException;
 import java.security.KeyPair;
+import java.security.NoSuchAlgorithmException;
+import java.security.PublicKey;
 import java.security.SecureRandom;
+import java.security.SignatureException;
+import java.time.Instant;
+import java.util.Optional;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 
 import org.bukkit.entity.Player;
 
@@ -55,7 +72,9 @@ public class ProtocolLibListener extends PacketAdapter {
     private final KeyPair keyPair = EncryptionUtil.generateKeyPair();
     private final AntiBotService antiBotService;
 
-    public ProtocolLibListener(FastLoginBukkit plugin, AntiBotService antiBotService) {
+    private final boolean verifyClientKeys;
+
+    public ProtocolLibListener(FastLoginBukkit plugin, AntiBotService antiBotService, boolean verifyClientKeys) {
         //run async in order to not block the server, because we are making api calls to Mojang
         super(params()
                 .plugin(plugin)
@@ -64,14 +83,15 @@ public class ProtocolLibListener extends PacketAdapter {
 
         this.plugin = plugin;
         this.antiBotService = antiBotService;
+        this.verifyClientKeys = verifyClientKeys;
     }
 
-    public static void register(FastLoginBukkit plugin, AntiBotService antiBotService) {
+    public static void register(FastLoginBukkit plugin, AntiBotService antiBotService, boolean verifyClientKeys) {
         // they will be created with a static builder, because otherwise it will throw a NoClassDefFoundError
         // TODO: make synchronous processing, but do web or database requests async
         ProtocolLibrary.getProtocolManager()
                 .getAsynchronousManager()
-                .registerAsyncHandler(new ProtocolLibListener(plugin, antiBotService))
+                .registerAsyncHandler(new ProtocolLibListener(plugin, antiBotService, verifyClientKeys))
                 .start();
     }
 
@@ -94,7 +114,7 @@ public class ProtocolLibListener extends PacketAdapter {
             PacketContainer packet = packetEvent.getPacket();
 
             InetSocketAddress address = sender.getAddress();
-            String username = packet.getGameProfiles().read(0).getName();
+            String username = getUsername(packet);
 
             Action action = antiBotService.onIncomingConnection(address, username);
             switch (action) {
@@ -108,7 +128,7 @@ public class ProtocolLibListener extends PacketAdapter {
                 case Continue:
                 default:
                     //player.getName() won't work at this state
-                    onLogin(packetEvent, sender, username);
+                    onLoginStart(packetEvent, sender, username);
                     break;
             }
         } else {
@@ -116,7 +136,7 @@ public class ProtocolLibListener extends PacketAdapter {
         }
     }
 
-    private Boolean isFastLoginPacket(PacketEvent packetEvent) {
+    private boolean isFastLoginPacket(PacketEvent packetEvent) {
         return packetEvent.getPacket().getMeta(SOURCE_META_KEY)
                 .map(val -> val.equals(plugin.getName()))
                 .orElse(false);
@@ -130,13 +150,56 @@ public class ProtocolLibListener extends PacketAdapter {
             plugin.getLog().warn("GameProfile {} tried to send encryption response at invalid state", sender.getAddress());
             sender.kickPlayer(plugin.getCore().getMessage("invalid-request"));
         } else {
-            packetEvent.getAsyncMarker().incrementProcessingDelay();
-            Runnable verifyTask = new VerifyResponseTask(plugin, packetEvent, sender, session, sharedSecret, keyPair);
-            plugin.getScheduler().runAsync(verifyTask);
+            byte[] expectedVerifyToken = session.getVerifyToken();
+            if (verifyNonce(sender, packetEvent.getPacket(), session.getClientPublicKey(), expectedVerifyToken)) {
+                packetEvent.getAsyncMarker().incrementProcessingDelay();
+                Runnable verifyTask = new VerifyResponseTask(plugin, packetEvent, sender, session, sharedSecret, keyPair);
+                plugin.getScheduler().runAsync(verifyTask);
+            } else {
+                sender.kickPlayer(plugin.getCore().getMessage("invalid-verify-token"));
+            }
         }
     }
 
-    private void onLogin(PacketEvent packetEvent, Player player, String username) {
+    private boolean verifyNonce(Player sender, PacketContainer packet,
+                                ClientPublicKey clientPublicKey, byte[] expectedToken) {
+        try {
+            if (MinecraftVersion.atOrAbove(new MinecraftVersion(1, 19, 0))) {
+                Either<byte[], ?> either = packet.getSpecificModifier(Either.class).read(0);
+                if (clientPublicKey == null) {
+                    Optional<byte[]> left = either.left();
+                    if (left.isEmpty()) {
+                        plugin.getLog().error("No verify token sent if requested without player signed key {}", sender);
+                        return false;
+                    }
+
+                    return EncryptionUtil.verifyNonce(expectedToken, keyPair.getPrivate(), left.get());
+                } else {
+                    Optional<?> optSignatureData = either.right();
+                    if (optSignatureData.isEmpty()) {
+                        plugin.getLog().error("No signature given to sent player signing key {}", sender);
+                        return false;
+                    }
+
+                    Object signatureData = optSignatureData.get();
+                    long salt = FuzzyReflection.getFieldValue(signatureData, Long.TYPE, true);
+                    byte[] signature = FuzzyReflection.getFieldValue(signatureData, byte[].class, true);
+
+                    PublicKey publicKey = clientPublicKey.key();
+                    return EncryptionUtil.verifySignedNonce(expectedToken, publicKey, salt, signature);
+                }
+            } else {
+                byte[] nonce = packet.getByteArrays().read(1);
+                return EncryptionUtil.verifyNonce(expectedToken, keyPair.getPrivate(), nonce);
+            }
+        } catch (NoSuchAlgorithmException | InvalidKeyException | SignatureException | NoSuchPaddingException |
+                 IllegalBlockSizeException | BadPaddingException signatureEx) {
+            plugin.getLog().error("Invalid signature from player {}", sender, signatureEx);
+            return false;
+        }
+    }
+
+    private void onLoginStart(PacketEvent packetEvent, Player player, String username) {
         //this includes ip:port. Should be unique for an incoming login request with a timeout of 2 minutes
         String sessionKey = player.getAddress().toString();
 
@@ -148,10 +211,49 @@ public class ProtocolLibListener extends PacketAdapter {
             username = (String) packetEvent.getPacket().getMeta("original_name").get();
         }
 
+        PacketContainer packet = packetEvent.getPacket();
+        var profileKey = packet.getOptionals(BukkitConverters.getWrappedPublicKeyDataConverter())
+            .optionRead(0);
+
+        var clientKey = profileKey.flatMap(opt -> opt).flatMap(this::verifyPublicKey);
+        if (verifyClientKeys && clientKey.isEmpty()) {
+            // missing or incorrect
+            // expired always not allowed
+            player.kickPlayer(plugin.getCore().getMessage("invalid-public-key"));
+            plugin.getLog().warn("Invalid public key from player {}", username);
+            return;
+        }
+
         plugin.getLog().trace("GameProfile {} with {} connecting", sessionKey, username);
 
         packetEvent.getAsyncMarker().incrementProcessingDelay();
-        Runnable nameCheckTask = new NameCheckTask(plugin, random, player, packetEvent, username, keyPair.getPublic());
+        Runnable nameCheckTask = new NameCheckTask(plugin, random, player, packetEvent, username, clientKey.orElse(null), keyPair.getPublic());
         plugin.getScheduler().runAsync(nameCheckTask);
+    }
+
+    private Optional<ClientPublicKey> verifyPublicKey(WrappedProfileKeyData profileKey) {
+        Instant expires = profileKey.getExpireTime();
+        PublicKey key = profileKey.getKey();
+        byte[] signature = profileKey.getSignature();
+        ClientPublicKey clientKey = new ClientPublicKey(expires, key, signature);
+        try {
+            if (EncryptionUtil.verifyClientKey(clientKey, Instant.now())) {
+                return Optional.of(clientKey);
+            }
+        } catch (SignatureException | InvalidKeyException | NoSuchAlgorithmException ex) {
+            return Optional.empty();
+        }
+
+        return Optional.empty();
+    }
+
+    private String getUsername(PacketContainer packet) {
+        WrappedGameProfile profile = packet.getGameProfiles().readSafely(0);
+        if (profile == null) {
+            return packet.getStrings().read(0);
+        }
+
+        //player.getName() won't work at this state
+        return profile.getName();
     }
 }

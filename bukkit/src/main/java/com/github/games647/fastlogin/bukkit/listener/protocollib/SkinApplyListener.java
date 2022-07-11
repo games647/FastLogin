@@ -34,14 +34,15 @@ import com.comphenix.protocol.wrappers.WrappedSignedProperty;
 import com.github.games647.craftapi.model.skin.Textures;
 import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
+
+import java.lang.reflect.InvocationTargetException;
+
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerLoginEvent.Result;
-
-import java.lang.reflect.InvocationTargetException;
 
 public class SkinApplyListener implements Listener {
 
