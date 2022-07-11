@@ -60,12 +60,16 @@ public class FloodgateService extends BedrockService<FloodgatePlayer> {
      */
     public boolean isValidFloodgateConfigString(String key) {
         String value = core.getConfig().get(key).toString().toLowerCase(Locale.ENGLISH);
-        if (!"true".equals(value) && !"linked".equals(value) && !"false".equals(value) && !"no-conflict".equals(value)) {
-            core.getPlugin().getLog().error("Invalid value detected for {} in FastLogin/config.yml.", key);
-            return false;
+        switch (value) {
+            case "true":
+            case "linked":
+            case "false":
+            case "no-conflict":
+                return true;
+            default:
+                core.getPlugin().getLog().error("Invalid value detected for {} in FastLogin/config.yml.", key);
+                return false;
         }
-
-        return true;
     }
 
     @Override
@@ -82,7 +86,7 @@ public class FloodgateService extends BedrockService<FloodgatePlayer> {
 
         if ("false".equals(allowConflict)
             || "linked".equals(allowConflict) && !isLinked) {
-                super.checkNameConflict(username, source);
+            super.checkNameConflict(username, source);
         } else {
             core.getPlugin().getLog().info("Skipping name conflict checking for player {}", username);
         }

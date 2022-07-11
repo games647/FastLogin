@@ -52,7 +52,8 @@ public class ForceLoginTask
     private final boolean forcedOnlineMode;
 
     public ForceLoginTask(FastLoginCore<Player, CommandSource, FastLoginVelocity> core,
-                          Player player, RegisteredServer server, VelocityLoginSession session, boolean forcedOnlineMode) {
+                          Player player, RegisteredServer server, VelocityLoginSession session,
+                          boolean forcedOnlineMode) {
         super(core, player, session);
 
         this.server = server;

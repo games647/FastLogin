@@ -74,12 +74,12 @@ public abstract class BedrockService<B> {
                 "Could not check whether Bedrock Player {}'s name conflicts a premium Java player's name.",
                 username);
 
-            kickPlayer(source, username, "Could not check if your name conflicts an existing " +
-                "premium Java account's name. This is usually a serverside error.");
+            kickPlayer(source, username, "Could not check if your name conflicts an existing "
+                + "premium Java account's name. This is usually a serverside error.");
         } catch (RateLimitException rateLimitException) {
             core.getPlugin().getLog().warn("Mojang API rate limit hit");
-            kickPlayer(source, username, "Could not check if your name conflicts an existing premium " +
-                "Java account's name. Try again in a few minutes");
+            kickPlayer(source, username, "Could not check if your name conflicts an existing premium "
+                + "Java account's name. Try again in a few minutes");
         }
 
         if (premiumUUID.isPresent()) {

@@ -122,7 +122,8 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
         }
 
         // Initialize the resolver based on the config parameter
-        this.resolver = this.config.getBoolean("useProxyAgnosticResolver", false) ? new ProxyAgnosticMojangResolver() : new MojangResolver();
+        this.resolver = this.config.getBoolean("useProxyAgnosticResolver", false)
+            ? new ProxyAgnosticMojangResolver() : new MojangResolver();
 
         antiBot = createAntiBotService(config.getSection("anti-bot"));
         Set<Proxy> proxies = config.getStringList("proxies")
@@ -191,7 +192,7 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
             config = configProvider.load(reader, defaults);
         }
 
-        // explicitly add keys here, because Configuration.getKeys doesn't return the keys from the default configuration
+        // explicitly add keys here, because Configuration.getKeys doesn't return the keys from the default config
         for (String key : defaults.getKeys()) {
             config.set(key, config.get(key));
         }
@@ -244,9 +245,13 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
             boolean useSSL = config.get("useSSL", false);
 
             if (useSSL) {
-                databaseConfig.addDataSourceProperty("allowPublicKeyRetrieval", config.getBoolean("allowPublicKeyRetrieval", false));
-                databaseConfig.addDataSourceProperty("serverRSAPublicKeyFile", config.getString("ServerRSAPublicKeyFile"));
-                databaseConfig.addDataSourceProperty("sslMode", config.getString("sslMode", "Required"));
+                boolean publicKeyRetrieval = config.getBoolean("allowPublicKeyRetrieval", false);
+                String rsaPublicKeyFile = config.getString("ServerRSAPublicKeyFile");
+                String sslMode = config.getString("sslMode", "Required");
+
+                databaseConfig.addDataSourceProperty("allowPublicKeyRetrieval", publicKeyRetrieval);
+                databaseConfig.addDataSourceProperty("serverRSAPublicKeyFile", rsaPublicKeyFile);
+                databaseConfig.addDataSourceProperty("sslMode", sslMode);
             }
 
             databaseConfig.setUsername(config.get("username", ""));
@@ -270,8 +275,8 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
         } catch (ClassNotFoundException notFoundEx) {
             Logger log = plugin.getLog();
             log.warn("This driver {} is not supported on this platform", className);
-            log.warn("Please choose either MySQL (Spigot, BungeeCord), SQLite (Spigot, Sponge) or " +
-                "MariaDB (Sponge, Velocity)", notFoundEx);
+            log.warn("Please choose either MySQL (Spigot, BungeeCord), SQLite (Spigot, Sponge) or "
+                + "MariaDB (Sponge, Velocity)", notFoundEx);
         }
 
         return false;

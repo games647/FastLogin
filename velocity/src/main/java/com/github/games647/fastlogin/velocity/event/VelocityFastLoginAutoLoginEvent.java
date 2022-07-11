@@ -33,7 +33,7 @@ import com.velocitypowered.api.event.ResultedEvent;
 import java.util.Objects;
 
 public class VelocityFastLoginAutoLoginEvent
-        implements FastLoginAutoLoginEvent, ResultedEvent<ResultedEvent.GenericResult> {
+    implements FastLoginAutoLoginEvent, ResultedEvent<ResultedEvent.GenericResult> {
 
     private final LoginSession session;
     private final StoredProfile profile;
@@ -67,11 +67,11 @@ public class VelocityFastLoginAutoLoginEvent
 
     @Override
     public GenericResult getResult() {
-        return cancelled ? GenericResult.denied(): GenericResult.allowed();
+        return cancelled ? GenericResult.denied() : GenericResult.allowed();
     }
 
     @Override
     public void setResult(GenericResult result) {
-         cancelled = Objects.requireNonNull(result) != GenericResult.allowed();
+        cancelled = Objects.requireNonNull(result) != GenericResult.allowed();
     }
 }

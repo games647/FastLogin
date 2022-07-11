@@ -55,8 +55,9 @@ public class PluginMessageListener {
     public PluginMessageListener(FastLoginVelocity plugin) {
         this.plugin = plugin;
 
-        this.successChannel = MinecraftChannelIdentifier.create(plugin.getName(), SuccessMessage.SUCCESS_CHANNEL).getId();
-        this.changeChannel = MinecraftChannelIdentifier.create(plugin.getName(), ChangePremiumMessage.CHANGE_CHANNEL).getId();
+        String prefix = plugin.getName();
+        this.successChannel = MinecraftChannelIdentifier.create(prefix, SuccessMessage.SUCCESS_CHANNEL).getId();
+        this.changeChannel = MinecraftChannelIdentifier.create(prefix, ChangePremiumMessage.CHANGE_CHANNEL).getId();
     }
 
     @Subscribe
@@ -95,8 +96,9 @@ public class PluginMessageListener {
             String playerName = changeMessage.getPlayerName();
             boolean isSourceInvoker = changeMessage.isSourceInvoker();
             if (changeMessage.shouldEnable()) {
-                if (playerName.equals(forPlayer.getUsername()) && plugin.getCore().getConfig().get("premium-warning", true)
-                        && !core.getPendingConfirms().contains(forPlayer.getUniqueId())) {
+                Boolean premiumWarning = plugin.getCore().getConfig().get("premium-warning", true);
+                if (playerName.equals(forPlayer.getUsername()) && premiumWarning
+                    && !core.getPendingConfirms().contains(forPlayer.getUniqueId())) {
                     String message = core.getMessage("premium-warning");
                     forPlayer.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(message));
                     core.getPendingConfirms().add(forPlayer.getUniqueId());
@@ -114,7 +116,7 @@ public class PluginMessageListener {
     }
 
     private void onSuccessMessage(Player forPlayer) {
-        if (forPlayer.isOnlineMode()){
+        if (forPlayer.isOnlineMode()) {
             //bukkit module successfully received and force logged in the user
             //update only on success to prevent corrupt data
             VelocityLoginSession loginSession = plugin.getSession().get(forPlayer.getRemoteAddress());

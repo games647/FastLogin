@@ -35,7 +35,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class BukkitFastLoginPreLoginEvent extends Event implements FastLoginPreLoginEvent {
 
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList HANDLERS = new HandlerList();
     private final String username;
     private final LoginSource source;
     private final StoredProfile profile;
@@ -65,10 +65,10 @@ public class BukkitFastLoginPreLoginEvent extends Event implements FastLoginPreL
 
     @Override
     public @NotNull HandlerList getHandlers() {
-        return handlers;
+        return HANDLERS;
     }
 
     public static HandlerList getHandlerList() {
-        return handlers;
+        return HANDLERS;
     }
 }

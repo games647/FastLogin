@@ -71,7 +71,7 @@ import org.slf4j.LoggerFactory;
 public class ConnectListener implements Listener {
 
     private static final String UUID_FIELD_NAME = "uniqueId";
-    private static final MethodHandle uniqueIdSetter;
+    private static final MethodHandle UNIQUE_ID_SETTER;
 
     static {
         MethodHandle setHandle = null;
@@ -91,7 +91,7 @@ public class ConnectListener implements Listener {
             );
         }
 
-        uniqueIdSetter = setHandle;
+        UNIQUE_ID_SETTER = setHandle;
     }
 
     private final FastLoginBungee plugin;
@@ -155,7 +155,7 @@ public class ConnectListener implements Listener {
             playerProfile.setId(verifiedUUID);
 
             // BungeeCord will do this automatically so override it on disabled option
-            if (uniqueIdSetter != null) {
+            if (UNIQUE_ID_SETTER != null) {
                 InitialHandler initialHandler = (InitialHandler) connection;
 
                 if (!plugin.getCore().getConfig().get("premiumUuid", true)) {
@@ -179,7 +179,7 @@ public class ConnectListener implements Listener {
             // BungeeCord only allows setting the UUID in PreLogin events and before requesting online mode
             // However if online mode is requested, it will override previous values
             // So we have to do it with reflection
-            uniqueIdSetter.invokeExact(connection, offlineUUID);
+            UNIQUE_ID_SETTER.invokeExact(connection, offlineUUID);
 
             String format = "Overridden UUID from {} to {} (based of {}) on {}";
             plugin.getLog().info(format, oldPremiumId, offlineUUID, username, connection);

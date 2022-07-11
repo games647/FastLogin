@@ -79,10 +79,10 @@ public class ChangePremiumMessage implements ChannelMessage {
 
     @Override
     public String toString() {
-        return this.getClass().getSimpleName() + '{' +
-                "playerName='" + playerName + '\'' +
-                ", shouldEnable=" + willEnable +
-                ", isSourceInvoker=" + isSourceInvoker +
-                '}';
+        return this.getClass().getSimpleName() + '{'
+            + "playerName='" + playerName + '\''
+            + ", shouldEnable=" + willEnable
+            + ", isSourceInvoker=" + isSourceInvoker
+            + '}';
     }
 }

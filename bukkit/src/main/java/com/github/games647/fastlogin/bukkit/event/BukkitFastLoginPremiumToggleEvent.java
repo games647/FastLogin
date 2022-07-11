@@ -34,7 +34,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class BukkitFastLoginPremiumToggleEvent extends Event implements FastLoginPremiumToggleEvent {
 
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList HANDLERS = new HandlerList();
     private final StoredProfile profile;
     private final PremiumToggleReason reason;
 
@@ -56,10 +56,10 @@ public class BukkitFastLoginPremiumToggleEvent extends Event implements FastLogi
 
     @Override
     public @NotNull HandlerList getHandlers() {
-        return handlers;
+        return HANDLERS;
     }
 
     public static HandlerList getHandlerList() {
-        return handlers;
+        return HANDLERS;
     }
 }

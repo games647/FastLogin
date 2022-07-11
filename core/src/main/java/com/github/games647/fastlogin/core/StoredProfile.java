@@ -114,11 +114,20 @@ public class StoredProfile extends Profile {
 
     @Override
     public synchronized boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof StoredProfile that)) return false;
-        if (!super.equals(o)) return false;
+        if (this == o) {
+            return true;
+        }
+
+        if (!(o instanceof StoredProfile that)) {
+            return false;
+        }
+
+        if (!super.equals(o)) {
+            return false;
+        }
+
         return rowId == that.rowId && premium == that.premium
-                && Objects.equals(lastIp, that.lastIp) && lastLogin.equals(that.lastLogin);
+            && Objects.equals(lastIp, that.lastIp) && lastLogin.equals(that.lastLogin);
     }
 
     @Override
@@ -128,11 +137,11 @@ public class StoredProfile extends Profile {
 
     @Override
     public synchronized String toString() {
-        return this.getClass().getSimpleName() + '{' +
-                "rowId=" + rowId +
-                ", premium=" + premium +
-                ", lastIp='" + lastIp + '\'' +
-                ", lastLogin=" + lastLogin +
-                "} " + super.toString();
+        return this.getClass().getSimpleName() + '{'
+            + "rowId=" + rowId
+            + ", premium=" + premium
+            + ", lastIp='" + lastIp + '\''
+            + ", lastLogin=" + lastLogin
+            + "} " + super.toString();
     }
 }

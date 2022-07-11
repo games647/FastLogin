@@ -51,8 +51,8 @@ public class BukkitLoginSession extends LoginSession {
 
     private SkinProperty skinProperty;
 
-    public BukkitLoginSession(String username, byte[] verifyToken, ClientPublicKey publicKey, boolean registered
-            , StoredProfile profile) {
+    public BukkitLoginSession(String username, byte[] verifyToken, ClientPublicKey publicKey, boolean registered,
+                              StoredProfile profile) {
         super(username, registered, profile);
 
         this.clientPublicKey = publicKey;

@@ -113,7 +113,7 @@ public class TickingRateLimiter implements RateLimiter {
         private final long expireTime;
         private int count;
 
-        public TimeRecord(long firstMinuteRecord, long expireTime) {
+        TimeRecord(long firstMinuteRecord, long expireTime) {
             this.firstMinuteRecord = firstMinuteRecord;
             this.expireTime = expireTime;
             this.count = 1;

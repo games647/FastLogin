@@ -60,8 +60,8 @@ public class ProtocolLoginSource implements LoginSource {
 
     @Override
     public String toString() {
-        return this.getClass().getSimpleName() + '{' +
-                "loginStartEvent=" + loginStartEvent +
-                '}';
+        return this.getClass().getSimpleName() + '{'
+            + "loginStartEvent=" + loginStartEvent
+            + '}';
     }
 }

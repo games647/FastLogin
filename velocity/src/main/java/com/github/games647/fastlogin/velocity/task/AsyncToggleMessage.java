@@ -31,6 +31,7 @@ import com.github.games647.fastlogin.core.shared.event.FastLoginPremiumToggleEve
 import com.github.games647.fastlogin.velocity.FastLoginVelocity;
 import com.github.games647.fastlogin.velocity.event.VelocityFastLoginPremiumToggleEvent;
 import com.velocitypowered.api.command.CommandSource;
+import com.velocitypowered.api.proxy.ConsoleCommandSource;
 import com.velocitypowered.api.proxy.Player;
 
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
@@ -45,16 +46,17 @@ public class AsyncToggleMessage implements Runnable {
     private final boolean isPlayerSender;
 
     public AsyncToggleMessage(FastLoginCore<Player, CommandSource, FastLoginVelocity> core,
-             CommandSource sender, String playerName, boolean toPremium, boolean playerSender) {
+                              CommandSource sender, String playerName, boolean toPremium, boolean playerSender) {
         this.core = core;
         this.sender = sender;
         this.targetPlayer = playerName;
         this.toPremium = toPremium;
         this.isPlayerSender = playerSender;
-        if (sender instanceof Player)
+        if (sender instanceof Player) {
             senderName = ((Player) sender).getUsername();
-        else
+        } else {
             senderName = "";
+        }
     }
 
     @Override
@@ -77,10 +79,10 @@ public class AsyncToggleMessage implements Runnable {
         playerProfile.setPremium(false);
         playerProfile.setId(null);
         core.getStorage().save(playerProfile);
-        PremiumToggleReason reason = (!isPlayerSender || !senderName.equalsIgnoreCase(playerProfile.getName())) ?
-                PremiumToggleReason.COMMAND_OTHER : PremiumToggleReason.COMMAND_SELF;
+        PremiumToggleReason reason = (!isPlayerSender || !senderName.equalsIgnoreCase(playerProfile.getName()))
+            ? PremiumToggleReason.COMMAND_OTHER : PremiumToggleReason.COMMAND_SELF;
         core.getPlugin().getProxy().getEventManager().fire(
-                new VelocityFastLoginPremiumToggleEvent(playerProfile, reason));
+            new VelocityFastLoginPremiumToggleEvent(playerProfile, reason));
         sendMessage("remove-premium");
     }
 
@@ -93,10 +95,11 @@ public class AsyncToggleMessage implements Runnable {
 
         playerProfile.setPremium(true);
         core.getStorage().save(playerProfile);
-        PremiumToggleReason reason = (!isPlayerSender || !senderName.equalsIgnoreCase(playerProfile.getName())) ?
-                PremiumToggleReason.COMMAND_OTHER : PremiumToggleReason.COMMAND_SELF;
+        PremiumToggleReason reason = (!isPlayerSender || !senderName.equalsIgnoreCase(playerProfile.getName()))
+            ?
+            PremiumToggleReason.COMMAND_OTHER : PremiumToggleReason.COMMAND_SELF;
         core.getPlugin().getProxy().getEventManager().fire(
-                new VelocityFastLoginPremiumToggleEvent(playerProfile, reason));
+            new VelocityFastLoginPremiumToggleEvent(playerProfile, reason));
         sendMessage("add-premium");
     }
 
@@ -105,7 +108,8 @@ public class AsyncToggleMessage implements Runnable {
         if (isPlayerSender) {
             sender.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(message));
         } else {
-            core.getPlugin().getProxy().getConsoleCommandSource().sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(message));
+            ConsoleCommandSource console = core.getPlugin().getProxy().getConsoleCommandSource();
+            console.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(message));
         }
     }
 }

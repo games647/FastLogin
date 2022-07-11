@@ -49,7 +49,8 @@ public class PremiumCommand extends ToggleCommand {
     }
 
     @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label,
+                             String[] args) {
         if (args.length == 0) {
             onPremiumSelf(sender);
         } else {

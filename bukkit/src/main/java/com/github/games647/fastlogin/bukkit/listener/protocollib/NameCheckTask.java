@@ -88,8 +88,8 @@ public class NameCheckTask extends JoinManagement<Player, CommandSender, Protoco
     //Minecraft server implementation
     //https://github.com/bergerkiller/CraftSource/blob/master/net.minecraft.server/LoginListener.java#L161
     @Override
-    public void requestPremiumLogin(ProtocolLibLoginSource source, StoredProfile profile
-        , String username, boolean registered) {
+    public void requestPremiumLogin(ProtocolLibLoginSource source, StoredProfile profile,
+                                    String username, boolean registered) {
         try {
             source.enableOnlinemode();
         } catch (Exception ex) {

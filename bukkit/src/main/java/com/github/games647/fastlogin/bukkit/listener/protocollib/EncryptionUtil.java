@@ -34,7 +34,6 @@ import com.google.common.primitives.Longs;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
-import java.security.GeneralSecurityException;
 import java.security.InvalidKeyException;
 import java.security.KeyFactory;
 import java.security.KeyPair;
@@ -63,20 +62,22 @@ import javax.crypto.spec.SecretKeySpec;
  * Encryption and decryption minecraft util for connection between servers
  * and paid Minecraft account clients.
  */
-class EncryptionUtil {
+final class EncryptionUtil {
 
     public static final int VERIFY_TOKEN_LENGTH = 4;
     public static final String KEY_PAIR_ALGORITHM = "RSA";
 
     private static final int RSA_LENGTH = 1_024;
 
-    private static final PublicKey mojangSessionKey;
+    private static final PublicKey MOJANG_SESSION_KEY;
     private static final int LINE_LENGTH = 76;
-    private static final Encoder KEY_ENCODER = Base64.getMimeEncoder(LINE_LENGTH, "\n".getBytes(StandardCharsets.UTF_8));
+    private static final Encoder KEY_ENCODER = Base64.getMimeEncoder(
+        LINE_LENGTH, "\n".getBytes(StandardCharsets.UTF_8)
+    );
 
     static {
         try {
-            mojangSessionKey = loadMojangSessionKey();
+            MOJANG_SESSION_KEY = loadMojangSessionKey();
         } catch (IOException | NoSuchAlgorithmException | InvalidKeySpecException ex) {
             throw new RuntimeException("Failed to load Mojang session key", ex);
         }
@@ -119,7 +120,7 @@ class EncryptionUtil {
     /**
      * Generate the server id based on client and server data.
      *
-     * @param serverId    session for the current login attempt
+     * @param serverId     session for the current login attempt
      * @param sharedSecret shared secret between the client and the server
      * @param publicKey    public key of the server
      * @return the server id formatted as a hexadecimal string.
@@ -135,7 +136,6 @@ class EncryptionUtil {
      * @param privateKey private server key
      * @param sharedKey  the encrypted shared key
      * @return shared secret key
-     * @throws GeneralSecurityException if it fails to decrypt the data
      */
     public static SecretKey decryptSharedKey(PrivateKey privateKey, byte[] sharedKey)
         throws NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException,
@@ -151,7 +151,7 @@ class EncryptionUtil {
 
         Signature verifier = Signature.getInstance("SHA1withRSA");
         // key of the signer
-        verifier.initVerify(mojangSessionKey);
+        verifier.initVerify(MOJANG_SESSION_KEY);
         verifier.update(toSignable(clientKey).getBytes(StandardCharsets.US_ASCII));
         return verifier.verify(clientKey.signature());
     }
