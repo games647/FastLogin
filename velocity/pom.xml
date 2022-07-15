@@ -63,6 +63,8 @@
                 <artifactId>maven-shade-plugin</artifactId>
                 <version>3.3.0</version>
                 <configuration>
+                    <minimizeJar>true</minimizeJar>
+
                     <createDependencyReducedPom>false</createDependencyReducedPom>
                     <shadedArtifactAttached>false</shadedArtifactAttached>
                     <relocations>
@@ -95,6 +97,12 @@
                             <excludes>
                                 <exclude>META-INF/MANIFEST.MF</exclude>
                             </excludes>
+                        </filter>
+                        <filter>
+                            <artifact>org.mariadb.jdbc:*</artifact>
+                            <includes>
+                                <include>**</include>
+                            </includes>
                         </filter>
                     </filters>
                 </configuration>

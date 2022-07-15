@@ -19,7 +19,7 @@ So they don't need to enter passwords. This is also called auto login (auto-logi
 * No client modifications needed
 * Good performance by using async operations
 * Locale messages
-* Support for Bedrock players proxied through FloodGate
+* Support for Bedrock players proxies through FloodGate
 
 ## Issues
 
@@ -78,7 +78,6 @@ Possible values: `Premium`, `Cracked`, `Unknown`
 * [CrazyLogin](https://dev.bukkit.org/bukkit-plugins/crazylogin/)
 * [LoginSecurity](https://dev.bukkit.org/bukkit-plugins/loginsecurity/)
 * [LogIt](https://github.com/games647/LogIt)
-* [SodionAuth (2.0+)](https://github.com/MohistMC/SodionAuth)
 * [UltraAuth](https://dev.bukkit.org/bukkit-plugins/ultraauth-aa/)
 * [UserLogin](https://www.spigotmc.org/resources/userlogin.80669/)
 * [xAuth](https://dev.bukkit.org/bukkit-plugins/xauth/)
@@ -87,7 +86,6 @@ Possible values: `Premium`, `Cracked`, `Unknown`
 
 * [BungeeAuth](https://www.spigotmc.org/resources/bungeeauth.493/)
 * [BungeeAuthenticator](https://www.spigotmc.org/resources/bungeecordauthenticator.87669/)
-* [SodionAuth (2.0+)](https://github.com/MohistMC/SodionAuth)
 
 ## Network requests
 
