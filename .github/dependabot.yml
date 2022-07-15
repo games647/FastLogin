@@ -14,22 +14,3 @@ updates:
     directory: "/"
     schedule:
       interval: weekly
-    ignore:
-      - dependency-name: com.google.code.gson:gson
-        versions:
-          - "> 2.2.4"
-      - dependency-name: com.google.guava
-      - dependency-name: me.clip:placeholderapi
-        versions:
-          - "> 2.10.8, < 2.11"
-      - dependency-name: net.md-5:bungeecord-config
-        versions:
-          - "> 1.12-SNAPSHOT"
-      - dependency-name: de.xxschrandxx.bca:BungeeCordAuthenticator
-        versions:
-          - 0.0.3
-      - dependency-name: com.zaxxer:HikariCP
-        versions:
-          - 4.0.0
-          - 4.0.2
-          - 4.0.3
