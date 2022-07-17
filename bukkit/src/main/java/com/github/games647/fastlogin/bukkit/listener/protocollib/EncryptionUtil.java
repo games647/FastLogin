@@ -25,6 +25,7 @@
  */
 package com.github.games647.fastlogin.bukkit.listener.protocollib;
 
+import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 import com.github.games647.fastlogin.bukkit.listener.protocollib.packet.ClientPublicKey;
 import com.google.common.hash.Hasher;
 import com.google.common.hash.Hashing;
@@ -72,7 +73,7 @@ final class EncryptionUtil {
     private static final PublicKey MOJANG_SESSION_KEY;
     private static final int LINE_LENGTH = 76;
     private static final Encoder KEY_ENCODER = Base64.getMimeEncoder(
-        LINE_LENGTH, "\n".getBytes(StandardCharsets.UTF_8)
+            LINE_LENGTH, "\n".getBytes(StandardCharsets.UTF_8)
     );
 
     static {
@@ -138,13 +139,13 @@ final class EncryptionUtil {
      * @return shared secret key
      */
     public static SecretKey decryptSharedKey(PrivateKey privateKey, byte[] sharedKey)
-        throws NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException,
-        BadPaddingException, InvalidKeyException {
+            throws NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException,
+            BadPaddingException, InvalidKeyException {
         return new SecretKeySpec(decrypt(privateKey, sharedKey), "AES");
     }
 
     public static boolean verifyClientKey(ClientPublicKey clientKey, Instant verifyTimestamp)
-        throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
+            throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
         if (clientKey.isExpired(verifyTimestamp)) {
             return false;
         }
@@ -157,14 +158,14 @@ final class EncryptionUtil {
     }
 
     public static boolean verifyNonce(byte[] exptected, PrivateKey decryptionKey, byte[] encryptedNonce)
-        throws NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException,
-        BadPaddingException, InvalidKeyException {
+            throws NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException,
+            BadPaddingException, InvalidKeyException {
         byte[] decryptedNonce = decrypt(decryptionKey, encryptedNonce);
         return Arrays.equals(exptected, decryptedNonce);
     }
 
     public static boolean verifySignedNonce(byte[] nonce, PublicKey clientKey, long signatureSalt, byte[] signature)
-        throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
+            throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
         Signature verifier = Signature.getInstance("SHA256withRSA");
         // key of the signer
         verifier.initVerify(clientKey);
@@ -175,8 +176,8 @@ final class EncryptionUtil {
     }
 
     private static PublicKey loadMojangSessionKey()
-        throws IOException, NoSuchAlgorithmException, InvalidKeySpecException {
-        var keyUrl = Resources.getResource("yggdrasil_session_pubkey.der");
+            throws IOException, NoSuchAlgorithmException, InvalidKeySpecException {
+        var keyUrl = FastLoginBukkit.class.getClassLoader().getResource("yggdrasil_session_pubkey.der");
         var keyData = Resources.toByteArray(keyUrl);
         var keySpec = new X509EncodedKeySpec(keyData);
 
@@ -190,8 +191,8 @@ final class EncryptionUtil {
     }
 
     private static byte[] decrypt(PrivateKey key, byte[] data)
-        throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException,
-        IllegalBlockSizeException, BadPaddingException {
+            throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException,
+            IllegalBlockSizeException, BadPaddingException {
         Cipher cipher = Cipher.getInstance(key.getAlgorithm());
         cipher.init(Cipher.DECRYPT_MODE, key);
         return cipher.doFinal(data);
