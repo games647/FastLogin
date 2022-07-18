@@ -50,19 +50,23 @@ public abstract class SQLStorage implements AuthStorage {
             + "`UUID` CHAR(36), "
             + "`Name` VARCHAR(16) NOT NULL, "
             + "`Premium` BOOLEAN NOT NULL, "
+            + "`Floodgate` BOOLEAN NOT NULL, "
             + "`LastIp` VARCHAR(255) NOT NULL, "
             + "`LastLogin` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
             //the premium shouldn't steal the cracked account by changing the name
             + "UNIQUE (`Name`) "
             + ')';
 
-    protected static final String LOAD_BY_NAME = "SELECT * FROM `" + PREMIUM_TABLE + "` WHERE `Name`=? LIMIT 1";
-    protected static final String LOAD_BY_UUID = "SELECT * FROM `" + PREMIUM_TABLE + "` WHERE `UUID`=? LIMIT 1";
+    protected static final String LOAD_BY_NAME = "SELECT * FROM `" + PREMIUM_TABLE
+            + "` WHERE `Name`=? LIMIT 1";
+    protected static final String LOAD_BY_UUID = "SELECT * FROM `" + PREMIUM_TABLE
+            + "` WHERE `UUID`=? LIMIT 1";
     protected static final String INSERT_PROFILE = "INSERT INTO `" + PREMIUM_TABLE
-            + "` (`UUID`, `Name`, `Premium`, `LastIp`) " + "VALUES (?, ?, ?, ?) ";
+            + "` (`UUID`, `Name`, `Premium`, `Floodgate`, `LastIp`) " + "VALUES (?, ?, ?, ?, ?) ";
     // limit not necessary here, because it's unique
     protected static final String UPDATE_PROFILE = "UPDATE `" + PREMIUM_TABLE
-            + "` SET `UUID`=?, `Name`=?, `Premium`=?, `LastIp`=?, `LastLogin`=CURRENT_TIMESTAMP WHERE `UserID`=?";
+            + "` SET `UUID`=?, `Name`=?, `Premium`=?, `Floodgate`=?, `LastIp`=?, "
+            + "`LastLogin`=CURRENT_TIMESTAMP WHERE `UserID`=?";
 
     protected final Logger log;
     protected final HikariDataSource dataSource;
@@ -97,7 +101,7 @@ public abstract class SQLStorage implements AuthStorage {
             loadStmt.setString(1, name);
 
             try (ResultSet resultSet = loadStmt.executeQuery()) {
-                return parseResult(resultSet).orElseGet(() -> new StoredProfile(null, name, false, ""));
+                return parseResult(resultSet).orElseGet(() -> new StoredProfile(null, name, false, false, ""));
             }
         } catch (SQLException sqlEx) {
             log.error("Failed to query profile: {}", name, sqlEx);
@@ -124,14 +128,14 @@ public abstract class SQLStorage implements AuthStorage {
 
     private Optional<StoredProfile> parseResult(ResultSet resultSet) throws SQLException {
         if (resultSet.next()) {
-            long userId = resultSet.getInt(1);
+            long userId = resultSet.getInt("UserID");
 
-            UUID uuid = Optional.ofNullable(resultSet.getString(2)).map(UUIDAdapter::parseId).orElse(null);
+            UUID uuid = Optional.ofNullable(resultSet.getString("UUID")).map(UUIDAdapter::parseId).orElse(null);
 
-            String name = resultSet.getString(3);
-            boolean premium = resultSet.getBoolean(4);
-            String lastIp = resultSet.getString(5);
-            Instant lastLogin = resultSet.getTimestamp(6).toInstant();
+            String name = resultSet.getString("Name");
+            boolean premium = resultSet.getBoolean("Premium");
+            String lastIp = resultSet.getString("LastIp");
+            Instant lastLogin = resultSet.getTimestamp("LastLogin").toInstant();
             return Optional.of(new StoredProfile(userId, uuid, name, premium, lastIp, lastLogin));
         }
 
