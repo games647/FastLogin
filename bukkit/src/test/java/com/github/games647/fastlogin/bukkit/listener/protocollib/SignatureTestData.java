@@ -32,6 +32,8 @@ import com.google.gson.annotations.JsonAdapter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
+import lombok.var;
+
 public class SignatureTestData {
 
     public static SignatureTestData fromResource(String resourceName) throws IOException {

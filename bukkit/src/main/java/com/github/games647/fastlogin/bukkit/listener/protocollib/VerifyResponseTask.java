@@ -60,6 +60,7 @@ import java.util.UUID;
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 
+import lombok.var;
 import org.bukkit.entity.Player;
 
 import static com.comphenix.protocol.PacketType.Login.Client.START;

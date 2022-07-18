@@ -50,7 +50,7 @@ import java.time.Instant;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Base64.Encoder;
-import java.util.random.RandomGenerator;
+import java.util.Random;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -58,6 +58,8 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
+
+import lombok.var;
 
 /**
  * Encryption and decryption minecraft util for connection between servers
@@ -112,7 +114,7 @@ final class EncryptionUtil {
      * @param random random generator
      * @return a token with 4 bytes long
      */
-    public static byte[] generateVerifyToken(RandomGenerator random) {
+    public static byte[] generateVerifyToken(Random random) {
         byte[] token = new byte[VERIFY_TOKEN_LENGTH];
         random.nextBytes(token);
         return token;

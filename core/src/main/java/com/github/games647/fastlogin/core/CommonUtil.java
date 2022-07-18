@@ -25,8 +25,7 @@
  */
 package com.github.games647.fastlogin.core;
 
-import com.github.games647.craftapi.cache.SafeCacheBuilder;
-import com.google.common.cache.CacheLoader;
+import com.google.common.cache.CacheBuilder;
 
 import java.lang.reflect.Constructor;
 import java.util.concurrent.ConcurrentMap;
@@ -43,7 +42,7 @@ public final class CommonUtil {
     private static final char TRANSLATED_CHAR = '§';
 
     public static <K, V> ConcurrentMap<K, V> buildCache(int expireAfterWrite, int maxSize) {
-        SafeCacheBuilder<Object, Object> builder = SafeCacheBuilder.newBuilder();
+        CacheBuilder<Object, Object> builder = CacheBuilder.newBuilder();
 
         if (expireAfterWrite > 0) {
             builder.expireAfterWrite(expireAfterWrite, TimeUnit.MINUTES);
@@ -53,9 +52,7 @@ public final class CommonUtil {
             builder.maximumSize(maxSize);
         }
 
-        return builder.build(CacheLoader.from(() -> {
-            throw new UnsupportedOperationException();
-        }));
+        return (ConcurrentMap<K, V>) builder.build().asMap();
     }
 
     public static String translateColorCodes(String rawMessage) {

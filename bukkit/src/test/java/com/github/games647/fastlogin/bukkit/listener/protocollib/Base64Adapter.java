@@ -32,6 +32,8 @@ import com.google.gson.stream.JsonWriter;
 import java.io.IOException;
 import java.util.Base64;
 
+import lombok.var;
+
 public class Base64Adapter extends TypeAdapter<byte[]> {
 
     @Override

@@ -27,8 +27,62 @@ package com.github.games647.fastlogin.bukkit.listener.protocollib.packet;
 
 import java.security.PublicKey;
 import java.time.Instant;
+import java.util.Arrays;
+import java.util.Objects;
+import java.util.StringJoiner;
 
-public record ClientPublicKey(Instant expiry, PublicKey key, byte[] signature) {
+public final class ClientPublicKey {
+    private final Instant expiry;
+    private final PublicKey key;
+    private final byte[] signature;
+
+    public ClientPublicKey(Instant expiry, PublicKey key, byte[] signature) {
+        this.expiry = expiry;
+        this.key = key;
+        this.signature = signature;
+    }
+
+    public Instant expiry() {
+        return expiry;
+    }
+
+    public PublicKey key() {
+        return key;
+    }
+
+    public byte[] signature() {
+        return signature;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) {
+            return true;
+        }
+
+        if (obj == null || obj.getClass() != this.getClass()) {
+            return false;
+        }
+
+        ClientPublicKey that = (ClientPublicKey) obj;
+        return Objects.equals(this.expiry, that.expiry)
+                && Objects.equals(this.key, that.key)
+                && Arrays.equals(this.signature, that.signature);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(expiry, key, signature);
+    }
+
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", ClientPublicKey.class.getSimpleName() + "[", "]")
+                .add("expiry=" + expiry)
+                .add("key=" + key)
+                .add("signature=" + Arrays.toString(signature))
+                .toString();
+    }
 
     public boolean isExpired(Instant verifyTimestamp) {
         return !verifyTimestamp.isBefore(expiry);
