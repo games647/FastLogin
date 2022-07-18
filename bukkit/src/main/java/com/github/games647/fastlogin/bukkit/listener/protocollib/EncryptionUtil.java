@@ -110,7 +110,7 @@ final class EncryptionUtil {
      * in a login session.
      *
      * @param random random generator
-     * @return an error with 4 bytes long
+     * @return a token with 4 bytes long
      */
     public static byte[] generateVerifyToken(RandomGenerator random) {
         byte[] token = new byte[VERIFY_TOKEN_LENGTH];
@@ -157,11 +157,11 @@ final class EncryptionUtil {
         return verifier.verify(clientKey.signature());
     }
 
-    public static boolean verifyNonce(byte[] exptected, PrivateKey decryptionKey, byte[] encryptedNonce)
+    public static boolean verifyNonce(byte[] expected, PrivateKey decryptionKey, byte[] encryptedNonce)
             throws NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException,
             BadPaddingException, InvalidKeyException {
         byte[] decryptedNonce = decrypt(decryptionKey, encryptedNonce);
-        return Arrays.equals(exptected, decryptedNonce);
+        return Arrays.equals(expected, decryptedNonce);
     }
 
     public static boolean verifySignedNonce(byte[] nonce, PublicKey clientKey, long signatureSalt, byte[] signature)
@@ -199,6 +199,7 @@ final class EncryptionUtil {
     }
 
     private static byte[] getServerIdHash(String sessionId, PublicKey publicKey, SecretKey sharedSecret) {
+        @SuppressWarnings("deprecation")
         Hasher hasher = Hashing.sha1().newHasher();
 
         hasher.putBytes(sessionId.getBytes(StandardCharsets.ISO_8859_1));

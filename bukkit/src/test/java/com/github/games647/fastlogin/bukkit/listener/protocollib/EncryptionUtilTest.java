@@ -50,88 +50,77 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 
-import static org.junit.Assert.assertTrue;
-
-public class EncryptionUtilTest {
+class EncryptionUtilTest {
 
     @Test
-    public void testVerifyToken() {
+    void testVerifyToken() {
         var random = ThreadLocalRandom.current();
         byte[] token = EncryptionUtil.generateVerifyToken(random);
 
-        assertThat(token, notNullValue());
-        assertThat(token.length, is(4));
+        assertAll(
+                () -> assertNotNull(token),
+                () -> assertEquals(token.length, 4)
+        );
     }
 
     @Test
-    public void testServerKey() {
+    void testServerKey() {
         KeyPair keyPair = EncryptionUtil.generateKeyPair();
 
         Key privateKey = keyPair.getPrivate();
-        assertThat(privateKey.getAlgorithm(), is("RSA"));
+        assertEquals(privateKey.getAlgorithm(), "RSA");
 
         RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();
-        assertThat(publicKey.getAlgorithm(), is("RSA"));
+        assertEquals(publicKey.getAlgorithm(), "RSA");
 
         // clients accept larger values than the standard vanilla server, but we shouldn't crash them
-        assertTrue(publicKey.getModulus().bitLength() >= 1024);
-        assertTrue(publicKey.getModulus().bitLength() < 8192);
+        assertAll(
+                () -> assertTrue(publicKey.getModulus().bitLength() >= 1024),
+                () -> assertTrue(publicKey.getModulus().bitLength() < 8192)
+        );
     }
 
     @Test
-    public void testExpiredClientKey() throws Exception {
+    void testExpiredClientKey() throws Exception {
         var clientKey = ResourceLoader.loadClientKey("client_keys/valid_public_key.json");
 
         // Client expires at the exact second mentioned, so use it for verification
         var expiredTimestamp = clientKey.expiry();
-        assertThat(EncryptionUtil.verifyClientKey(clientKey, expiredTimestamp), is(false));
+        assertFalse(EncryptionUtil.verifyClientKey(clientKey, expiredTimestamp));
     }
 
-    @Test
-    public void testInvalidChangedExpiration() throws Exception {
-        // expiration date changed should make the signature invalid
-        // expiration should still be valid
-        var clientKey = ResourceLoader.loadClientKey("client_keys/invalid_wrong_expiration.json");
+    @ParameterizedTest
+    @ValueSource(strings = {
+            // expiration date changed should make the signature invalid while still being not expired
+            "client_keys/invalid_wrong_expiration.json",
+            // changed public key no longer corresponding to the signature
+            "client_keys/invalid_wrong_key.json",
+            // signature modified no longer corresponding to key and expiration date
+            "client_keys/invalid_wrong_signature.json"
+    })
+    void testInvalidClientKey(String clientKeySource) throws Exception {
+        var clientKey = ResourceLoader.loadClientKey(clientKeySource);
         Instant expireTimestamp = clientKey.expiry().minus(5, ChronoUnit.HOURS);
 
-        assertThat(EncryptionUtil.verifyClientKey(clientKey, expireTimestamp), is(false));
+        assertFalse(EncryptionUtil.verifyClientKey(clientKey, expireTimestamp));
     }
 
     @Test
-    public void testInvalidChangedKey() throws Exception {
-        // changed public key no longer corresponding to the signature
-        var clientKey = ResourceLoader.loadClientKey("client_keys/invalid_wrong_key.json");
-        Instant expireTimestamp = clientKey.expiry().minus(5, ChronoUnit.HOURS);
-
-        assertThat(EncryptionUtil.verifyClientKey(clientKey, expireTimestamp), is(false));
-    }
-
-    @Test
-    public void testInvalidChangedSignature() throws Exception {
-        // signature modified no longer corresponding to key and expiration date
-        var clientKey = ResourceLoader.loadClientKey("client_keys/invalid_wrong_signature.json");
-        Instant expireTimestamp = clientKey.expiry().minus(5, ChronoUnit.HOURS);
-
-        assertThat(EncryptionUtil.verifyClientKey(clientKey, expireTimestamp), is(false));
-    }
-
-    @Test
-    public void testValidClientKey() throws Exception {
+    void testValidClientKey() throws Exception {
         var clientKey = ResourceLoader.loadClientKey("client_keys/valid_public_key.json");
         var verificationTimestamp = clientKey.expiry().minus(5, ChronoUnit.HOURS);
 
-        assertThat(EncryptionUtil.verifyClientKey(clientKey, verificationTimestamp), is(true));
+        assertTrue(EncryptionUtil.verifyClientKey(clientKey, verificationTimestamp));
     }
 
     @Test
-    public void testDecryptSharedSecret() throws Exception {
+    void testDecryptSharedSecret() throws Exception {
         KeyPair serverPair = EncryptionUtil.generateKeyPair();
         var serverPK = serverPair.getPublic();
 
@@ -139,12 +128,12 @@ public class EncryptionUtilTest {
         byte[] encryptedSecret = encrypt(serverPK, secretKey.getEncoded());
 
         SecretKey decryptSharedKey = EncryptionUtil.decryptSharedKey(serverPair.getPrivate(), encryptedSecret);
-        assertThat(decryptSharedKey, is(secretKey));
+        assertEquals(decryptSharedKey, secretKey);
     }
 
     private static byte[] encrypt(PublicKey receiverKey, byte... message)
-        throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException,
-        IllegalBlockSizeException, BadPaddingException {
+            throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException,
+            IllegalBlockSizeException, BadPaddingException {
         var encryptCipher = Cipher.getInstance(receiverKey.getAlgorithm());
         encryptCipher.init(Cipher.ENCRYPT_MODE, receiverKey);
         return encryptCipher.doFinal(message);
@@ -160,13 +149,13 @@ public class EncryptionUtilTest {
     }
 
     @Test
-    public void testServerIdHash() throws Exception {
+    void testServerIdHash() throws Exception {
         var serverId = "";
         var sharedSecret = generateSharedKey();
         var serverPK = ResourceLoader.loadClientKey("client_keys/valid_public_key.json").key();
 
         String sessionHash = getServerHash(serverId, sharedSecret, serverPK);
-        assertThat(EncryptionUtil.getServerIdHashString(serverId, sharedSecret, serverPK), is(sessionHash));
+        assertEquals(EncryptionUtil.getServerIdHashString(serverId, sharedSecret, serverPK), sessionHash);
     }
 
     private static String getServerHash(CharSequence serverId, SecretKey sharedSecret, PublicKey serverPK) {
@@ -183,71 +172,61 @@ public class EncryptionUtilTest {
         hasher.putBytes(serverPK.getEncoded());
         //  It works by treating the sha1 output bytes as one large integer in two's complement and then printing the
         //  integer in base 16, placing a minus sign if the interpreted number is negative.
-        // reference: https://github.com/SpigotMC/BungeeCord/blob/ff5727c5ef9c0b56ad35f9816ae6bd660b622cf0/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java#L456
+        // reference: 
+        // https://github.com/SpigotMC/BungeeCord/blob/ff5727c5ef9c0b56ad35f9816ae6bd660b622cf0/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java#L456
         return new BigInteger(hasher.hash().asBytes()).toString(16);
     }
 
     @Test
-    public void testServerIdHashWrongSecret() throws Exception {
+    void testServerIdHashWrongSecret() throws Exception {
         var serverId = "";
         var sharedSecret = generateSharedKey();
         var serverPK = ResourceLoader.loadClientKey("client_keys/valid_public_key.json").key();
 
         String sessionHash = getServerHash(serverId, sharedSecret, serverPK);
-        assertThat(EncryptionUtil.getServerIdHashString("", generateSharedKey(), serverPK), not(sessionHash));
+        assertNotEquals(EncryptionUtil.getServerIdHashString("", generateSharedKey(), serverPK), sessionHash);
     }
 
     @Test
-    public void testServerIdHashWrongServerKey() {
+    void testServerIdHashWrongServerKey() {
         var serverId = "";
         var sharedSecret = generateSharedKey();
         var serverPK = EncryptionUtil.generateKeyPair().getPublic();
 
         String sessionHash = getServerHash(serverId, sharedSecret, serverPK);
         var wrongPK = EncryptionUtil.generateKeyPair().getPublic();
-        assertThat(EncryptionUtil.getServerIdHashString("", sharedSecret, wrongPK), not(sessionHash));
+        assertNotEquals(EncryptionUtil.getServerIdHashString("", sharedSecret, wrongPK), sessionHash);
     }
 
     @Test
-    public void testValidSignedNonce() throws Exception {
+    void testValidSignedNonce() throws Exception {
         ClientPublicKey clientKey = ResourceLoader.loadClientKey("client_keys/valid_public_key.json");
         SignatureTestData testData = SignatureTestData.fromResource("signature/valid_signature.json");
-        assertThat(verifySignedNonce(testData, clientKey), is(true));
+        assertTrue(verifySignedNonce(testData, clientKey));
     }
 
-    @Test
-    public void testIncorrectNonce() throws Exception {
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "signature/incorrect_nonce.json",
+            "signature/incorrect_salt.json",
+            "signature/incorrect_signature.json",
+    })
+    void testIncorrectNonce(String signatureSource) throws Exception {
         ClientPublicKey clientKey = ResourceLoader.loadClientKey("client_keys/valid_public_key.json");
-        SignatureTestData testData = SignatureTestData.fromResource("signature/incorrect_nonce.json");
-        assertThat(verifySignedNonce(testData, clientKey), is(false));
+        SignatureTestData testData = SignatureTestData.fromResource(signatureSource);
+        assertFalse(verifySignedNonce(testData, clientKey));
     }
 
     @Test
-    public void testIncorrectSalt() throws Exception {
-        // client generated
-        ClientPublicKey clientKey = ResourceLoader.loadClientKey("client_keys/valid_public_key.json");
-        SignatureTestData testData = SignatureTestData.fromResource("signature/incorrect_salt.json");
-        assertThat(verifySignedNonce(testData, clientKey), is(false));
-    }
-
-    @Test
-    public void testIncorrectSignature() throws Exception {
-        // client generated
-        ClientPublicKey clientKey = ResourceLoader.loadClientKey("client_keys/valid_public_key.json");
-        SignatureTestData testData = SignatureTestData.fromResource("signature/incorrect_signature.json");
-        assertThat(verifySignedNonce(testData, clientKey), is(false));
-    }
-
-    @Test
-    public void testWrongPublicKeySigned() throws Exception {
+    void testWrongPublicKeySigned() throws Exception {
         // load a different public key
         ClientPublicKey clientKey = ResourceLoader.loadClientKey("client_keys/invalid_wrong_key.json");
         SignatureTestData testData = SignatureTestData.fromResource("signature/valid_signature.json");
-        assertThat(verifySignedNonce(testData, clientKey), is(false));
+        assertFalse(verifySignedNonce(testData, clientKey));
     }
 
     private static boolean verifySignedNonce(SignatureTestData testData, ClientPublicKey clientKey)
-        throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
+            throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
         PublicKey clientPublicKey = clientKey.key();
 
         byte[] nonce = testData.getNonce();
@@ -257,41 +236,44 @@ public class EncryptionUtilTest {
     }
 
     @Test
-    public void testNonce() throws Exception {
+    void testNonce() throws Exception {
         byte[] expected = {1, 2, 3, 4};
         var serverKey = EncryptionUtil.generateKeyPair();
         var encryptedNonce = encrypt(serverKey.getPublic(), expected);
 
-        assertThat(EncryptionUtil.verifyNonce(expected, serverKey.getPrivate(), encryptedNonce), is(true));
+        assertTrue(EncryptionUtil.verifyNonce(expected, serverKey.getPrivate(), encryptedNonce));
     }
 
     @Test
-    public void testNonceIncorrect() throws Exception {
+    void testNonceIncorrect() throws Exception {
         byte[] expected = {1, 2, 3, 4};
         var serverKey = EncryptionUtil.generateKeyPair();
 
         // flipped first character
-        var encryptedNonce = encrypt(serverKey.getPublic(), new byte[]{0, 2, 3 , 4});
-
-        assertThat(EncryptionUtil.verifyNonce(expected, serverKey.getPrivate(), encryptedNonce), is(false));
+        var encryptedNonce = encrypt(serverKey.getPublic(), new byte[]{0, 2, 3, 4});
+        assertFalse(EncryptionUtil.verifyNonce(expected, serverKey.getPrivate(), encryptedNonce));
     }
 
-    @Test(expected = GeneralSecurityException.class)
-    public void testNonceFailedDecryption() throws Exception {
+    @Test
+    void testNonceFailedDecryption() throws Exception {
         byte[] expected = {1, 2, 3, 4};
         var serverKey = EncryptionUtil.generateKeyPair();
-        // generate a new keypair that iss different
+        // generate a new keypair that is different
         var encryptedNonce = encrypt(EncryptionUtil.generateKeyPair().getPublic(), expected);
 
-        EncryptionUtil.verifyNonce(expected, serverKey.getPrivate(), encryptedNonce);
+        assertThrows(GeneralSecurityException.class,
+                () -> EncryptionUtil.verifyNonce(expected, serverKey.getPrivate(), encryptedNonce)
+        );
     }
 
-    @Test(expected = GeneralSecurityException.class)
-    public void testNonceIncorrectEmpty() throws Exception {
+    @Test
+    void testNonceIncorrectEmpty() {
         byte[] expected = {1, 2, 3, 4};
         var serverKey = EncryptionUtil.generateKeyPair();
         byte[] encryptedNonce = {};
 
-        assertThat(EncryptionUtil.verifyNonce(expected, serverKey.getPrivate(), encryptedNonce), is(false));
+        assertThrows(GeneralSecurityException.class,
+                () -> EncryptionUtil.verifyNonce(expected, serverKey.getPrivate(), encryptedNonce)
+        );
     }
 }
