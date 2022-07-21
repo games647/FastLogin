@@ -59,7 +59,7 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
-import lombok.var;
+import lombok.val;
 
 /**
  * Encryption and decryption minecraft util for connection between servers
@@ -179,9 +179,9 @@ final class EncryptionUtil {
 
     private static PublicKey loadMojangSessionKey()
             throws IOException, NoSuchAlgorithmException, InvalidKeySpecException {
-        var keyUrl = FastLoginBukkit.class.getClassLoader().getResource("yggdrasil_session_pubkey.der");
-        var keyData = Resources.toByteArray(keyUrl);
-        var keySpec = new X509EncodedKeySpec(keyData);
+        val keyUrl = FastLoginBukkit.class.getClassLoader().getResource("yggdrasil_session_pubkey.der");
+        val keyData = Resources.toByteArray(keyUrl);
+        val keySpec = new X509EncodedKeySpec(keyData);
 
         return KeyFactory.getInstance("RSA").generatePublic(keySpec);
     }

@@ -30,7 +30,7 @@ import com.github.games647.fastlogin.core.CommonUtil;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
 
-import lombok.var;
+import lombok.val;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -39,12 +39,12 @@ class FastLoginBukkitTest {
 
     @Test
     void testRGB() {
-        var message = "&x00002a00002b&lText";
-        var msg = CommonUtil.translateColorCodes(message);
+        val message = "&x00002a00002b&lText";
+        val msg = CommonUtil.translateColorCodes(message);
         assertEquals(msg, "§x00002a00002b§lText");
 
-        var components = TextComponent.fromLegacyText(msg);
-        var expected = "{\"bold\":true,\"color\":\"#00a00b\",\"text\":\"Text\"}";
+        val components = TextComponent.fromLegacyText(msg);
+        val expected = "{\"bold\":true,\"color\":\"#00a00b\",\"text\":\"Text\"}";
         assertEquals(ComponentSerializer.toString(components), expected);
     }
 }

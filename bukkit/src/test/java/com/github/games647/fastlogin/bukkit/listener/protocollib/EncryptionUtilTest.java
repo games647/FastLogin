@@ -50,7 +50,7 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
-import lombok.var;
+import lombok.val;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -61,7 +61,7 @@ class EncryptionUtilTest {
 
     @Test
     void testVerifyToken() {
-        var random = ThreadLocalRandom.current();
+        val random = ThreadLocalRandom.current();
         byte[] token = EncryptionUtil.generateVerifyToken(random);
 
         assertAll(
@@ -89,10 +89,10 @@ class EncryptionUtilTest {
 
     @Test
     void testExpiredClientKey() throws Exception {
-        var clientKey = ResourceLoader.loadClientKey("client_keys/valid_public_key.json");
+        val clientKey = ResourceLoader.loadClientKey("client_keys/valid_public_key.json");
 
         // Client expires at the exact second mentioned, so use it for verification
-        var expiredTimestamp = clientKey.expiry();
+        val expiredTimestamp = clientKey.expiry();
         assertFalse(EncryptionUtil.verifyClientKey(clientKey, expiredTimestamp));
     }
 
@@ -106,7 +106,7 @@ class EncryptionUtilTest {
             "client_keys/invalid_wrong_signature.json"
     })
     void testInvalidClientKey(String clientKeySource) throws Exception {
-        var clientKey = ResourceLoader.loadClientKey(clientKeySource);
+        val clientKey = ResourceLoader.loadClientKey(clientKeySource);
         Instant expireTimestamp = clientKey.expiry().minus(5, ChronoUnit.HOURS);
 
         assertFalse(EncryptionUtil.verifyClientKey(clientKey, expireTimestamp));
@@ -114,8 +114,8 @@ class EncryptionUtilTest {
 
     @Test
     void testValidClientKey() throws Exception {
-        var clientKey = ResourceLoader.loadClientKey("client_keys/valid_public_key.json");
-        var verificationTimestamp = clientKey.expiry().minus(5, ChronoUnit.HOURS);
+        val clientKey = ResourceLoader.loadClientKey("client_keys/valid_public_key.json");
+        val verificationTimestamp = clientKey.expiry().minus(5, ChronoUnit.HOURS);
 
         assertTrue(EncryptionUtil.verifyClientKey(clientKey, verificationTimestamp));
     }
@@ -123,7 +123,7 @@ class EncryptionUtilTest {
     @Test
     void testDecryptSharedSecret() throws Exception {
         KeyPair serverPair = EncryptionUtil.generateKeyPair();
-        var serverPK = serverPair.getPublic();
+        val serverPK = serverPair.getPublic();
 
         SecretKey secretKey = generateSharedKey();
         byte[] encryptedSecret = encrypt(serverPK, secretKey.getEncoded());
@@ -135,7 +135,7 @@ class EncryptionUtilTest {
     private static byte[] encrypt(PublicKey receiverKey, byte... message)
             throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException,
             IllegalBlockSizeException, BadPaddingException {
-        var encryptCipher = Cipher.getInstance(receiverKey.getAlgorithm());
+        val encryptCipher = Cipher.getInstance(receiverKey.getAlgorithm());
         encryptCipher.init(Cipher.ENCRYPT_MODE, receiverKey);
         return encryptCipher.doFinal(message);
     }
@@ -151,9 +151,9 @@ class EncryptionUtilTest {
 
     @Test
     void testServerIdHash() throws Exception {
-        var serverId = "";
-        var sharedSecret = generateSharedKey();
-        var serverPK = ResourceLoader.loadClientKey("client_keys/valid_public_key.json").key();
+        val serverId = "";
+        val sharedSecret = generateSharedKey();
+        val serverPK = ResourceLoader.loadClientKey("client_keys/valid_public_key.json").key();
 
         String sessionHash = getServerHash(serverId, sharedSecret, serverPK);
         assertEquals(EncryptionUtil.getServerIdHashString(serverId, sharedSecret, serverPK), sessionHash);
@@ -167,7 +167,7 @@ class EncryptionUtilTest {
         // sha1.update(server's encoded public key from Encryption Request)
         // hash := sha1.hexdigest() # String of hex characters
         @SuppressWarnings("deprecation")
-        var hasher = Hashing.sha1().newHasher();
+        val hasher = Hashing.sha1().newHasher();
         hasher.putString(serverId, StandardCharsets.US_ASCII);
         hasher.putBytes(sharedSecret.getEncoded());
         hasher.putBytes(serverPK.getEncoded());
@@ -180,9 +180,9 @@ class EncryptionUtilTest {
 
     @Test
     void testServerIdHashWrongSecret() throws Exception {
-        var serverId = "";
-        var sharedSecret = generateSharedKey();
-        var serverPK = ResourceLoader.loadClientKey("client_keys/valid_public_key.json").key();
+        val serverId = "";
+        val sharedSecret = generateSharedKey();
+        val serverPK = ResourceLoader.loadClientKey("client_keys/valid_public_key.json").key();
 
         String sessionHash = getServerHash(serverId, sharedSecret, serverPK);
         assertNotEquals(EncryptionUtil.getServerIdHashString("", generateSharedKey(), serverPK), sessionHash);
@@ -190,12 +190,12 @@ class EncryptionUtilTest {
 
     @Test
     void testServerIdHashWrongServerKey() {
-        var serverId = "";
-        var sharedSecret = generateSharedKey();
-        var serverPK = EncryptionUtil.generateKeyPair().getPublic();
+        val serverId = "";
+        val sharedSecret = generateSharedKey();
+        val serverPK = EncryptionUtil.generateKeyPair().getPublic();
 
         String sessionHash = getServerHash(serverId, sharedSecret, serverPK);
-        var wrongPK = EncryptionUtil.generateKeyPair().getPublic();
+        val wrongPK = EncryptionUtil.generateKeyPair().getPublic();
         assertNotEquals(EncryptionUtil.getServerIdHashString("", sharedSecret, wrongPK), sessionHash);
     }
 
@@ -239,8 +239,8 @@ class EncryptionUtilTest {
     @Test
     void testNonce() throws Exception {
         byte[] expected = {1, 2, 3, 4};
-        var serverKey = EncryptionUtil.generateKeyPair();
-        var encryptedNonce = encrypt(serverKey.getPublic(), expected);
+        val serverKey = EncryptionUtil.generateKeyPair();
+        val encryptedNonce = encrypt(serverKey.getPublic(), expected);
 
         assertTrue(EncryptionUtil.verifyNonce(expected, serverKey.getPrivate(), encryptedNonce));
     }
@@ -248,19 +248,19 @@ class EncryptionUtilTest {
     @Test
     void testNonceIncorrect() throws Exception {
         byte[] expected = {1, 2, 3, 4};
-        var serverKey = EncryptionUtil.generateKeyPair();
+        val serverKey = EncryptionUtil.generateKeyPair();
 
         // flipped first character
-        var encryptedNonce = encrypt(serverKey.getPublic(), new byte[]{0, 2, 3, 4});
+        val encryptedNonce = encrypt(serverKey.getPublic(), new byte[]{0, 2, 3, 4});
         assertFalse(EncryptionUtil.verifyNonce(expected, serverKey.getPrivate(), encryptedNonce));
     }
 
     @Test
     void testNonceFailedDecryption() throws Exception {
         byte[] expected = {1, 2, 3, 4};
-        var serverKey = EncryptionUtil.generateKeyPair();
+        val serverKey = EncryptionUtil.generateKeyPair();
         // generate a new keypair that is different
-        var encryptedNonce = encrypt(EncryptionUtil.generateKeyPair().getPublic(), expected);
+        val encryptedNonce = encrypt(EncryptionUtil.generateKeyPair().getPublic(), expected);
 
         assertThrows(GeneralSecurityException.class,
                 () -> EncryptionUtil.verifyNonce(expected, serverKey.getPrivate(), encryptedNonce)
@@ -270,7 +270,7 @@ class EncryptionUtilTest {
     @Test
     void testNonceIncorrectEmpty() {
         byte[] expected = {1, 2, 3, 4};
-        var serverKey = EncryptionUtil.generateKeyPair();
+        val serverKey = EncryptionUtil.generateKeyPair();
         byte[] encryptedNonce = {};
 
         assertThrows(GeneralSecurityException.class,

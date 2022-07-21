@@ -57,6 +57,7 @@ import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.PendingConnection;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.connection.Server;
+import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.api.plugin.PluginManager;
 import net.md_5.bungee.api.scheduler.GroupedThreadFactory;
@@ -100,7 +101,7 @@ public class FastLoginBungee extends Plugin implements PlatformPlugin<CommandSen
         //events
         PluginManager pluginManager = getProxy().getPluginManager();
 
-        ConnectListener connectListener = new ConnectListener(this, core.getAntiBot());
+        Listener connectListener = new ConnectListener(this, core.getAntiBot());
         pluginManager.registerListener(this, connectListener);
         pluginManager.registerListener(this, new PluginMessageListener(this));
 

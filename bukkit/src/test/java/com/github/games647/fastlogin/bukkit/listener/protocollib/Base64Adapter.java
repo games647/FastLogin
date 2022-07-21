@@ -32,13 +32,13 @@ import com.google.gson.stream.JsonWriter;
 import java.io.IOException;
 import java.util.Base64;
 
-import lombok.var;
+import lombok.val;
 
 public class Base64Adapter extends TypeAdapter<byte[]> {
 
     @Override
     public void write(JsonWriter out, byte[] value) throws IOException {
-        var encoded = Base64.getEncoder().encodeToString(value);
+        val encoded = Base64.getEncoder().encodeToString(value);
         out.value(encoded);
     }
 
