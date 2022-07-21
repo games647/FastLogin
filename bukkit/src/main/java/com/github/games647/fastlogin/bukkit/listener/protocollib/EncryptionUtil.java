@@ -87,7 +87,7 @@ final class EncryptionUtil {
     }
 
     private EncryptionUtil() {
-        // utility
+        throw new RuntimeException("No instantiation of utility classes allowed");
     }
 
     /**

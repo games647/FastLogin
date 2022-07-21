@@ -28,6 +28,7 @@ package com.github.games647.fastlogin.core;
 import com.google.common.cache.CacheBuilder;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
@@ -71,7 +72,7 @@ public final class CommonUtil {
      * This creates a SLF4J logger. In the process it initializes the SLF4J service provider. This method looks
      * for the provider in the plugin jar instead of in the server jar when creating a Logger. The provider is only
      * initialized once, so this method should be called early.
-     *
+     * <p>
      * The provider is bound to the service class `SLF4JServiceProvider`. Relocating this class makes it available
      * for exclusive own usage. Other dependencies will use the relocated service too, and therefore will find the
      * initialized provider.
@@ -95,7 +96,8 @@ public final class CommonUtil {
             Constructor<JDK14LoggerAdapter> cons = adapterClass.getDeclaredConstructor(java.util.logging.Logger.class);
             cons.setAccessible(true);
             return cons.newInstance(parent);
-        } catch (ReflectiveOperationException reflectEx) {
+        } catch (IllegalAccessException | InstantiationException | InvocationTargetException
+                 | NoSuchMethodException reflectEx) {
             parent.log(Level.WARNING, "Cannot create slf4j logging adapter", reflectEx);
             parent.log(Level.WARNING, "Creating logger instance manually...");
             return LoggerFactory.getLogger(parent.getName());
@@ -106,6 +108,6 @@ public final class CommonUtil {
     }
 
     private CommonUtil() {
-        //Utility class
+        throw new RuntimeException("No instantiation of utility classes allowed");
     }
 }
