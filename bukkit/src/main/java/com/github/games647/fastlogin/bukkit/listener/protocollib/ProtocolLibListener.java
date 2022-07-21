@@ -241,7 +241,7 @@ public class ProtocolLibListener extends PacketAdapter {
         Instant expires = profileKey.getExpireTime();
         PublicKey key = profileKey.getKey();
         byte[] signature = profileKey.getSignature();
-        ClientPublicKey clientKey = new ClientPublicKey(expires, key, signature);
+        ClientPublicKey clientKey = ClientPublicKey.of(expires, key, signature);
         try {
             if (EncryptionUtil.verifyClientKey(clientKey, Instant.now())) {
                 return Optional.of(clientKey);

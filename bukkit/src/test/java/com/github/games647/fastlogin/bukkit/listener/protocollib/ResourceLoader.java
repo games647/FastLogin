@@ -77,7 +77,7 @@ public class ResourceLoader {
         RSAPublicKey publicKey = parsePublicKey(key);
 
         byte[] signature = Base64.getDecoder().decode(object.getAsJsonPrimitive("signature").getAsString());
-        return new ClientPublicKey(expires, publicKey, signature);
+        return ClientPublicKey.of(expires, publicKey, signature);
     }
 
     private static RSAPublicKey parsePublicKey(String keySpec)
