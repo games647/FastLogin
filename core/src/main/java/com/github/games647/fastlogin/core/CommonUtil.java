@@ -53,7 +53,7 @@ public final class CommonUtil {
             builder.maximumSize(maxSize);
         }
 
-        return (ConcurrentMap<K, V>) builder.build().asMap();
+        return builder.<K, V>build().asMap();
     }
 
     public static String translateColorCodes(String rawMessage) {
