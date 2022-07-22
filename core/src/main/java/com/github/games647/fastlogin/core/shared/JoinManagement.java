@@ -93,7 +93,7 @@ public abstract class JoinManagement<P extends C, C, S extends LoginSource> {
                     premiumUUID = core.getResolver().findProfile(username);
                 }
 
-                if (premiumUUID.isEmpty()
+                if (!premiumUUID.isPresent()
                         || (!checkNameChange(source, username, premiumUUID.get())
                         && !checkPremiumName(source, username, profile))) {
                     //nothing detected the player as premium -> start a cracked session

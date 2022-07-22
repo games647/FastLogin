@@ -25,6 +25,7 @@
  */
 package com.github.games647.fastlogin.bukkit;
 
+import java.util.Collections;
 import java.util.List;
 
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
@@ -49,7 +50,7 @@ public class PremiumPlaceholder extends PlaceholderExpansion {
 
     @Override
     public @NotNull List<String> getPlaceholders() {
-        return List.of(PLACEHOLDER_VARIABLE);
+        return Collections.singletonList(PLACEHOLDER_VARIABLE);
     }
 
     @Override
