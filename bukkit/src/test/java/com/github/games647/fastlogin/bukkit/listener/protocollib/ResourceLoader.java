@@ -33,6 +33,7 @@ import com.google.gson.JsonObject;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
@@ -57,26 +58,26 @@ public class ResourceLoader {
         ) {
             PemObject pemObject = pemReader.readPemObject();
             byte[] content = pemObject.getContent();
-            var privateKeySpec = new PKCS8EncodedKeySpec(content);
+            PKCS8EncodedKeySpec privateKeySpec = new PKCS8EncodedKeySpec(content);
 
-            var factory = KeyFactory.getInstance("RSA");
+            KeyFactory factory = KeyFactory.getInstance("RSA");
             return (RSAPrivateKey) factory.generatePrivate(privateKeySpec);
         }
     }
 
     protected static ClientPublicKey loadClientKey(String path)
         throws NoSuchAlgorithmException, IOException, InvalidKeySpecException {
-        var keyUrl = Resources.getResource(path);
+        URL keyUrl = Resources.getResource(path);
 
-        var lines = Resources.toString(keyUrl, StandardCharsets.US_ASCII);
-        var object = new Gson().fromJson(lines, JsonObject.class);
+        String lines = Resources.toString(keyUrl, StandardCharsets.US_ASCII);
+        JsonObject object = new Gson().fromJson(lines, JsonObject.class);
 
         Instant expires = Instant.parse(object.getAsJsonPrimitive("expires_at").getAsString());
         String key = object.getAsJsonPrimitive("key").getAsString();
         RSAPublicKey publicKey = parsePublicKey(key);
 
         byte[] signature = Base64.getDecoder().decode(object.getAsJsonPrimitive("signature").getAsString());
-        return new ClientPublicKey(expires, publicKey, signature);
+        return ClientPublicKey.of(expires, publicKey, signature);
     }
 
     private static RSAPublicKey parsePublicKey(String keySpec)
@@ -87,9 +88,9 @@ public class ResourceLoader {
         ) {
             PemObject pemObject = pemReader.readPemObject();
             byte[] content = pemObject.getContent();
-            var pubKeySpec = new X509EncodedKeySpec(content);
+            X509EncodedKeySpec pubKeySpec = new X509EncodedKeySpec(content);
 
-            var factory = KeyFactory.getInstance("RSA");
+            KeyFactory factory = KeyFactory.getInstance("RSA");
             return (RSAPublicKey) factory.generatePublic(pubKeySpec);
         }
     }

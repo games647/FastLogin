@@ -60,6 +60,7 @@ import java.util.UUID;
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 
+import lombok.val;
 import org.bukkit.entity.Player;
 
 import static com.comphenix.protocol.PacketType.Login.Client.START;
@@ -268,7 +269,7 @@ public class VerifyResponseTask implements Runnable {
             startPacket.getStrings().write(0, username);
 
             EquivalentConverter<WrappedProfileKeyData> converter = BukkitConverters.getWrappedPublicKeyDataConverter();
-            var wrappedKey = Optional.ofNullable(clientKey).map(key ->
+            val wrappedKey = Optional.ofNullable(clientKey).map(key ->
                 new WrappedProfileKeyData(clientKey.expiry(), clientKey.key(), clientKey.signature())
             );
 

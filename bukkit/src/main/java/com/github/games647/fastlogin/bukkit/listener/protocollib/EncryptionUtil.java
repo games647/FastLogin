@@ -50,7 +50,7 @@ import java.time.Instant;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Base64.Encoder;
-import java.util.random.RandomGenerator;
+import java.util.Random;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -58,6 +58,8 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
+
+import lombok.val;
 
 /**
  * Encryption and decryption minecraft util for connection between servers
@@ -85,7 +87,7 @@ final class EncryptionUtil {
     }
 
     private EncryptionUtil() {
-        // utility
+        throw new RuntimeException("No instantiation of utility classes allowed");
     }
 
     /**
@@ -112,7 +114,7 @@ final class EncryptionUtil {
      * @param random random generator
      * @return a token with 4 bytes long
      */
-    public static byte[] generateVerifyToken(RandomGenerator random) {
+    public static byte[] generateVerifyToken(Random random) {
         byte[] token = new byte[VERIFY_TOKEN_LENGTH];
         random.nextBytes(token);
         return token;
@@ -177,9 +179,9 @@ final class EncryptionUtil {
 
     private static PublicKey loadMojangSessionKey()
             throws IOException, NoSuchAlgorithmException, InvalidKeySpecException {
-        var keyUrl = FastLoginBukkit.class.getClassLoader().getResource("yggdrasil_session_pubkey.der");
-        var keyData = Resources.toByteArray(keyUrl);
-        var keySpec = new X509EncodedKeySpec(keyData);
+        val keyUrl = FastLoginBukkit.class.getClassLoader().getResource("yggdrasil_session_pubkey.der");
+        val keyData = Resources.toByteArray(keyUrl);
+        val keySpec = new X509EncodedKeySpec(keyData);
 
         return KeyFactory.getInstance("RSA").generatePublic(keySpec);
     }

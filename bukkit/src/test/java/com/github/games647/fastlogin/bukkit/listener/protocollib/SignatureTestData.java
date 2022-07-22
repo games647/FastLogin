@@ -32,11 +32,13 @@ import com.google.gson.annotations.JsonAdapter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
+import lombok.val;
+
 public class SignatureTestData {
 
     public static SignatureTestData fromResource(String resourceName) throws IOException {
-        var keyUrl = Resources.getResource(resourceName);
-        var encodedSignature = Resources.toString(keyUrl, StandardCharsets.US_ASCII);
+        val keyUrl = Resources.getResource(resourceName);
+        val encodedSignature = Resources.toString(keyUrl, StandardCharsets.US_ASCII);
 
         return new Gson().fromJson(encodedSignature, SignatureTestData.class);
     }

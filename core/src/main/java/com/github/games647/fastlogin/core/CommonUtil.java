@@ -25,10 +25,10 @@
  */
 package com.github.games647.fastlogin.core;
 
-import com.github.games647.craftapi.cache.SafeCacheBuilder;
-import com.google.common.cache.CacheLoader;
+import com.google.common.cache.CacheBuilder;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
@@ -43,7 +43,7 @@ public final class CommonUtil {
     private static final char TRANSLATED_CHAR = '§';
 
     public static <K, V> ConcurrentMap<K, V> buildCache(int expireAfterWrite, int maxSize) {
-        SafeCacheBuilder<Object, Object> builder = SafeCacheBuilder.newBuilder();
+        CacheBuilder<Object, Object> builder = CacheBuilder.newBuilder();
 
         if (expireAfterWrite > 0) {
             builder.expireAfterWrite(expireAfterWrite, TimeUnit.MINUTES);
@@ -53,9 +53,7 @@ public final class CommonUtil {
             builder.maximumSize(maxSize);
         }
 
-        return builder.build(CacheLoader.from(() -> {
-            throw new UnsupportedOperationException();
-        }));
+        return builder.<K, V>build().asMap();
     }
 
     public static String translateColorCodes(String rawMessage) {
@@ -74,7 +72,7 @@ public final class CommonUtil {
      * This creates a SLF4J logger. In the process it initializes the SLF4J service provider. This method looks
      * for the provider in the plugin jar instead of in the server jar when creating a Logger. The provider is only
      * initialized once, so this method should be called early.
-     *
+     * <p>
      * The provider is bound to the service class `SLF4JServiceProvider`. Relocating this class makes it available
      * for exclusive own usage. Other dependencies will use the relocated service too, and therefore will find the
      * initialized provider.
@@ -98,7 +96,8 @@ public final class CommonUtil {
             Constructor<JDK14LoggerAdapter> cons = adapterClass.getDeclaredConstructor(java.util.logging.Logger.class);
             cons.setAccessible(true);
             return cons.newInstance(parent);
-        } catch (ReflectiveOperationException reflectEx) {
+        } catch (IllegalAccessException | InstantiationException | InvocationTargetException
+                 | NoSuchMethodException reflectEx) {
             parent.log(Level.WARNING, "Cannot create slf4j logging adapter", reflectEx);
             parent.log(Level.WARNING, "Creating logger instance manually...");
             return LoggerFactory.getLogger(parent.getName());
@@ -109,6 +108,6 @@ public final class CommonUtil {
     }
 
     private CommonUtil() {
-        //Utility class
+        throw new RuntimeException("No instantiation of utility classes allowed");
     }
 }

@@ -28,7 +28,15 @@ package com.github.games647.fastlogin.bukkit.listener.protocollib.packet;
 import java.security.PublicKey;
 import java.time.Instant;
 
-public record ClientPublicKey(Instant expiry, PublicKey key, byte[] signature) {
+import lombok.Value;
+import lombok.experimental.Accessors;
+
+@Accessors(fluent = true)
+@Value(staticConstructor = "of")
+public class ClientPublicKey {
+    Instant expiry;
+    PublicKey key;
+    byte[] signature;
 
     public boolean isExpired(Instant verifyTimestamp) {
         return !verifyTimestamp.isBefore(expiry);

@@ -56,6 +56,7 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
+import lombok.var;
 import org.bukkit.entity.Player;
 
 import static com.comphenix.protocol.PacketType.Login.Client.ENCRYPTION_BEGIN;
@@ -171,7 +172,7 @@ public class ProtocolLibListener extends PacketAdapter {
                 Either<byte[], ?> either = packet.getSpecificModifier(Either.class).read(0);
                 if (clientPublicKey == null) {
                     Optional<byte[]> left = either.left();
-                    if (left.isEmpty()) {
+                    if (!left.isPresent()) {
                         plugin.getLog().error("No verify token sent if requested without player signed key {}", sender);
                         return false;
                     }
@@ -179,7 +180,7 @@ public class ProtocolLibListener extends PacketAdapter {
                     return EncryptionUtil.verifyNonce(expectedToken, keyPair.getPrivate(), left.get());
                 } else {
                     Optional<?> optSignatureData = either.right();
-                    if (optSignatureData.isEmpty()) {
+                    if (!optSignatureData.isPresent()) {
                         plugin.getLog().error("No signature given to sent player signing key {}", sender);
                         return false;
                     }
@@ -219,7 +220,7 @@ public class ProtocolLibListener extends PacketAdapter {
             .optionRead(0);
 
         var clientKey = profileKey.flatMap(opt -> opt).flatMap(this::verifyPublicKey);
-        if (verifyClientKeys && clientKey.isEmpty()) {
+        if (verifyClientKeys && !clientKey.isPresent()) {
             // missing or incorrect
             // expired always not allowed
             player.kickPlayer(plugin.getCore().getMessage("invalid-public-key"));
@@ -240,7 +241,7 @@ public class ProtocolLibListener extends PacketAdapter {
         Instant expires = profileKey.getExpireTime();
         PublicKey key = profileKey.getKey();
         byte[] signature = profileKey.getSignature();
-        ClientPublicKey clientKey = new ClientPublicKey(expires, key, signature);
+        ClientPublicKey clientKey = ClientPublicKey.of(expires, key, signature);
         try {
             if (EncryptionUtil.verifyClientKey(clientKey, Instant.now())) {
                 return Optional.of(clientKey);
