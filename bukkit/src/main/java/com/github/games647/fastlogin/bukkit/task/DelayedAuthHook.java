@@ -94,8 +94,8 @@ public class DelayedAuthHook implements Runnable {
     private AuthPlugin<Player> getAuthHook() {
         try {
             List<Class<? extends AuthPlugin<Player>>> hooks = Arrays.asList(AuthMeHook.class,
-                CrazyLoginHook.class, LogItHook.class, LoginSecurityHook.class, UltraAuthHook.class,
-                XAuthHook.class);
+                    CrazyLoginHook.class, LogItHook.class, LoginSecurityHook.class, UltraAuthHook.class,
+                    XAuthHook.class);
 
             for (Class<? extends AuthPlugin<Player>> clazz : hooks) {
                 String pluginName = clazz.getSimpleName();
@@ -113,7 +113,7 @@ public class DelayedAuthHook implements Runnable {
         return null;
     }
 
-    private AuthPlugin<Player> newInstance(Class<? extends AuthPlugin<Player>> clazz)
+    protected AuthPlugin<Player> newInstance(Class<? extends AuthPlugin<Player>> clazz)
             throws ReflectiveOperationException {
         try {
             Constructor<? extends AuthPlugin<Player>> cons = clazz.getDeclaredConstructor(FastLoginBukkit.class);

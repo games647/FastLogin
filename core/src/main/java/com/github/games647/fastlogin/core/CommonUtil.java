@@ -91,11 +91,7 @@ public final class CommonUtil {
         LoggerFactory.getLogger(parent.getName()).info("Initialize logging service");
         try {
             parent.setLevel(Level.ALL);
-
-            Class<JDK14LoggerAdapter> adapterClass = JDK14LoggerAdapter.class;
-            Constructor<JDK14LoggerAdapter> cons = adapterClass.getDeclaredConstructor(java.util.logging.Logger.class);
-            cons.setAccessible(true);
-            return cons.newInstance(parent);
+            return createJDKLogger(parent);
         } catch (IllegalAccessException | InstantiationException | InvocationTargetException
                  | NoSuchMethodException reflectEx) {
             parent.log(Level.WARNING, "Cannot create slf4j logging adapter", reflectEx);
@@ -105,6 +101,14 @@ public final class CommonUtil {
             // restore previous class loader
             Thread.currentThread().setContextClassLoader(oldLoader);
         }
+    }
+
+    protected static JDK14LoggerAdapter createJDKLogger(java.util.logging.Logger parent)
+            throws NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
+        Class<JDK14LoggerAdapter> adapterClass = JDK14LoggerAdapter.class;
+        Constructor<JDK14LoggerAdapter> cons = adapterClass.getDeclaredConstructor(java.util.logging.Logger.class);
+        cons.setAccessible(true);
+        return cons.newInstance(parent);
     }
 
     private CommonUtil() {

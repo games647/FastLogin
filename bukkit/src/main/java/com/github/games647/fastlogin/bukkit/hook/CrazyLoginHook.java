@@ -134,7 +134,7 @@ public class CrazyLoginHook implements AuthPlugin<Player> {
         return false;
     }
 
-    private PlayerListener getListener() {
+    protected PlayerListener getListener() {
         PlayerListener listener;
         try {
             listener = (PlayerListener) FieldUtils.readField(crazyLoginPlugin, "playerListener", true);

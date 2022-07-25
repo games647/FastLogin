@@ -71,7 +71,7 @@ import org.slf4j.LoggerFactory;
 public class ConnectListener implements Listener {
 
     private static final String UUID_FIELD_NAME = "uniqueId";
-    private static final MethodHandle UNIQUE_ID_SETTER;
+    protected static final MethodHandle UNIQUE_ID_SETTER;
 
     static {
         MethodHandle setHandle = null;
@@ -87,7 +87,7 @@ public class ConnectListener implements Listener {
             Logger logger = LoggerFactory.getLogger(ConnectListener.class);
             logger.error(
                     "Cannot find Bungee initial handler; Disabling premium UUID and skin won't work.",
-                reflectiveOperationException
+                    reflectiveOperationException
             );
         }
 
@@ -171,7 +171,7 @@ public class ConnectListener implements Listener {
         }
     }
 
-    private void setOfflineId(InitialHandler connection, String username) {
+    protected void setOfflineId(InitialHandler connection, String username) {
         try {
             UUID oldPremiumId = connection.getUniqueId();
             UUID offlineUUID = UUIDAdapter.generateOfflineId(username);
