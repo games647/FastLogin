@@ -33,6 +33,8 @@ import com.comphenix.protocol.wrappers.WrappedGameProfile;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 import com.github.games647.fastlogin.core.hooks.bedrock.FloodgateService;
 
+import java.util.UUID;
+
 import org.geysermc.floodgate.api.FloodgateApi;
 
 import static com.comphenix.protocol.PacketType.Login.Client.START;
@@ -78,7 +80,15 @@ public class ManualNameChange extends PacketAdapter {
 
         packet.setMeta("original_name", originalProfile.getName());
         String prefixedName = FloodgateApi.getInstance().getPlayerPrefix() + originalProfile.getName();
-        WrappedGameProfile updatedProfile = originalProfile.withName(prefixedName);
-        packet.getGameProfiles().write(0, updatedProfile);
+        setUsername(packet, prefixedName);
+    }
+    
+    private void setUsername(PacketContainer packet, String name) {
+        if (packet.getGameProfiles().size() > 0) {
+            WrappedGameProfile updatedProfile = new WrappedGameProfile(UUID.randomUUID(), name);
+            packet.getGameProfiles().write(0, updatedProfile);
+        } else {
+            packet.getStrings().write(0, name);
+        }
     }
 }
