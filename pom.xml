@@ -48,7 +48,12 @@
         <!-- Set default for non-git clones -->
         <git.commit.id>Unknown</git.commit.id>
 
+        <!-- Verify Java 8 compatibility while compiling with a newer toolchain 
+        (i.e. check for unavailable methods) -->
         <java.version>8</java.version>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
+        <maven.compiler.release>${java.version}</maven.compiler.release>
 
         <floodgate.version>2.2.0-SNAPSHOT</floodgate.version>
         <geyser.version>2.0.0-SNAPSHOT</geyser.version>
@@ -124,7 +129,6 @@
                 </executions>
             </plugin>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
                 <version>3.1.2</version>
                 <configuration>
@@ -156,23 +160,6 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.22.2</version>
             </plugin>
-            <plugin>
-                <artifactId>maven-failsafe-plugin</artifactId>
-                <version>2.22.2</version>
-            </plugin>
-
-            <!-- Verify Java 8 compatibility while compiling with a newer toolchain 
-            (i.e. check for unavailable methods) -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.10.1</version>
-                <configuration>
-                    <source>${java.version}</source>
-                    <target>${java.version}</target>
-                    <release>${java.version}</release>
-                </configuration>
-            </plugin>
         </plugins>
 
         <resources>
@@ -196,6 +183,7 @@
     </build>
 
     <dependencies>
+        <!-- Use lombok to use some newer Java syntax features in Java 8 -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
@@ -210,6 +198,7 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- Require inline to support static mocks -->
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-inline</artifactId>
