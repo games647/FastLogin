@@ -74,7 +74,7 @@ public class VerifyResponseTask implements Runnable {
 
     static {
         ENCRYPTION_CLASS = MinecraftReflection.getMinecraftClass(
-            "util." + ENCRYPTION_CLASS_NAME, ENCRYPTION_CLASS_NAME
+                "util." + ENCRYPTION_CLASS_NAME, ENCRYPTION_CLASS_NAME
         );
     }
 
@@ -108,11 +108,11 @@ public class VerifyResponseTask implements Runnable {
             verifyResponse(session);
         } finally {
             //this is a fake packet; it shouldn't be sent to the server
-            synchronized (packetEvent.getAsyncMarker().getProcessingLock()) {
-                packetEvent.setCancelled(true);
-            }
+            // synchronized (packetEvent.getAsyncMarker().getProcessingLock()) {
+            packetEvent.setCancelled(true);
+            // }
 
-            ProtocolLibrary.getProtocolManager().getAsynchronousManager().signalPacketTransmission(packetEvent);
+            // ProtocolLibrary.getProtocolManager().getAsynchronousManager().signalPacketTransmission(packetEvent);
         }
     }
 
@@ -149,9 +149,9 @@ public class VerifyResponseTask implements Runnable {
             } else {
                 //user tried to fake an authentication
                 disconnect(
-                    "invalid-session",
-                    "GameProfile {} ({}) tried to log in with an invalid session. ServerId: {}",
-                    session.getRequestUsername(), socketAddress, serverId
+                        "invalid-session",
+                        "GameProfile {} ({}) tried to log in with an invalid session. ServerId: {}",
+                        session.getRequestUsername(), socketAddress, serverId
                 );
             }
         } catch (IOException ioEx) {
@@ -217,15 +217,15 @@ public class VerifyResponseTask implements Runnable {
             try {
                 // Try to get the old (pre MC 1.16.4) encryption method
                 encryptMethod = FuzzyReflection.fromClass(networkManagerClass)
-                    .getMethodByParameters("a", SecretKey.class);
+                        .getMethodByParameters("a", SecretKey.class);
             } catch (IllegalArgumentException exception) {
                 // Get the new encryption method
                 encryptMethod = FuzzyReflection.fromClass(networkManagerClass)
-                    .getMethodByParameters("a", Cipher.class, Cipher.class);
+                        .getMethodByParameters("a", Cipher.class, Cipher.class);
 
                 // Get the needed Cipher helper method (used to generate ciphers from login key)
                 cipherMethod = FuzzyReflection.fromClass(ENCRYPTION_CLASS)
-                    .getMethodByParameters("a", int.class, Key.class);
+                        .getMethodByParameters("a", int.class, Key.class);
             }
         }
 
@@ -277,7 +277,7 @@ public class VerifyResponseTask implements Runnable {
 
             EquivalentConverter<WrappedProfileKeyData> converter = BukkitConverters.getWrappedPublicKeyDataConverter();
             val wrappedKey = Optional.ofNullable(clientKey).map(key ->
-                new WrappedProfileKeyData(clientKey.expiry(), clientKey.key(), clientKey.signature())
+                    new WrappedProfileKeyData(clientKey.expiry(), clientKey.key(), clientKey.signature())
             );
 
             startPacket.getOptionals(converter).write(0, wrappedKey);

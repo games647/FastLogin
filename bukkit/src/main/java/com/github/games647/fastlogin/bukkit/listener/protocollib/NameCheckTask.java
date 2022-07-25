@@ -25,7 +25,6 @@
  */
 package com.github.games647.fastlogin.bukkit.listener.protocollib;
 
-import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketEvent;
 import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
@@ -42,7 +41,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class NameCheckTask extends JoinManagement<Player, CommandSender, ProtocolLibLoginSource>
-    implements Runnable {
+        implements Runnable {
 
     private final FastLoginBukkit plugin;
     private final PacketEvent packetEvent;
@@ -70,11 +69,11 @@ public class NameCheckTask extends JoinManagement<Player, CommandSender, Protoco
 
     @Override
     public void run() {
-        try {
-            super.onLogin(username, new ProtocolLibLoginSource(player, random, serverKey, clientKey));
-        } finally {
-            ProtocolLibrary.getProtocolManager().getAsynchronousManager().signalPacketTransmission(packetEvent);
-        }
+        // try {
+        super.onLogin(username, new ProtocolLibLoginSource(player, random, serverKey, clientKey));
+        // } finally {
+        // ProtocolLibrary.getProtocolManager().getAsynchronousManager().signalPacketTransmission(packetEvent);
+        // }
     }
 
     @Override
@@ -106,9 +105,9 @@ public class NameCheckTask extends JoinManagement<Player, CommandSender, Protoco
         BukkitLoginSession playerSession = new BukkitLoginSession(username, verify, clientKey, registered, profile);
         plugin.putSession(player.getAddress(), playerSession);
         //cancel only if the player has a paid account otherwise login as normal offline player
-        synchronized (packetEvent.getAsyncMarker().getProcessingLock()) {
-            packetEvent.setCancelled(true);
-        }
+        // synchronized (packetEvent.getAsyncMarker().getProcessingLock()) {
+        packetEvent.setCancelled(true);
+        // }
     }
 
     @Override

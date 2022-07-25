@@ -152,12 +152,13 @@ public class ProtocolLibListener extends PacketAdapter {
         } else {
             byte[] expectedVerifyToken = session.getVerifyToken();
             if (verifyNonce(sender, packetEvent.getPacket(), session.getClientPublicKey(), expectedVerifyToken)) {
-                packetEvent.getAsyncMarker().incrementProcessingDelay();
+                // packetEvent.getAsyncMarker().incrementProcessingDelay();
 
                 Runnable verifyTask = new VerifyResponseTask(
                         plugin, packetEvent, sender, session, sharedSecret, keyPair
                 );
-                plugin.getScheduler().runAsync(verifyTask);
+                verifyTask.run();
+                // plugin.getScheduler().runAsync(verifyTask);
             } else {
                 sender.kickPlayer(plugin.getCore().getMessage("invalid-verify-token"));
             }
@@ -229,11 +230,12 @@ public class ProtocolLibListener extends PacketAdapter {
 
         plugin.getLog().trace("GameProfile {} with {} connecting", sessionKey, username);
 
-        packetEvent.getAsyncMarker().incrementProcessingDelay();
+        // packetEvent.getAsyncMarker().incrementProcessingDelay();
         Runnable nameCheckTask = new NameCheckTask(
                 plugin, random, player, packetEvent, username, clientKey.orElse(null), keyPair.getPublic()
         );
-        plugin.getScheduler().runAsync(nameCheckTask);
+        // plugin.getScheduler().runAsync(nameCheckTask);
+        nameCheckTask.run();
     }
 
     private Optional<ClientPublicKey> verifyPublicKey(WrappedProfileKeyData profileKey) {

@@ -25,7 +25,6 @@
  */
 package com.github.games647.fastlogin.bukkit;
 
-import com.comphenix.protocol.ProtocolLibrary;
 import com.github.games647.fastlogin.bukkit.command.CrackedCommand;
 import com.github.games647.fastlogin.bukkit.command.PremiumCommand;
 import com.github.games647.fastlogin.bukkit.listener.ConnectionListener;
@@ -164,9 +163,9 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
         } else {
             logger.warn("We have detected that you are running FastLogin alongside Floodgate and ProtocolLib.");
             logger.warn("Currently there is an issue with FastLogin that prevents Floodgate name prefixes from "
-                + "showing up when it is together used with ProtocolLib.");
+                    + "showing up when it is together used with ProtocolLib.");
             logger.warn("If you would like to use Floodgate name prefixes, you can enable an experimental "
-                + "workaround by changing the value 'floodgatePrefixWorkaround' to true in config.yml.");
+                    + "workaround by changing the value 'floodgatePrefixWorkaround' to true in config.yml.");
             logger.warn("For more information visit https://github.com/games647/FastLogin/issues/493");
         }
     }
@@ -208,9 +207,9 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
             }
         }
 
-        if (isPluginInstalled("ProtocolLib")) {
-            ProtocolLibrary.getProtocolManager().getAsynchronousManager().unregisterAsyncHandlers(this);
-        }
+        // if (isPluginInstalled("ProtocolLib")) {
+            // ProtocolLibrary.getProtocolManager().getAsynchronousManager().unregisterAsyncHandlers(this);
+        // }
     }
 
     public FastLoginCore<Player, CommandSender, FastLoginBukkit> getCore() {

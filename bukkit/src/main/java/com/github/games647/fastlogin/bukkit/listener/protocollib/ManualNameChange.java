@@ -25,7 +25,6 @@
  */
 package com.github.games647.fastlogin.bukkit.listener.protocollib;
 
-import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
@@ -62,10 +61,10 @@ public class ManualNameChange extends PacketAdapter {
 
     public static void register(FastLoginBukkit plugin, FloodgateService floodgate) {
         // they will be created with a static builder, because otherwise it will throw a NoClassDefFoundError
-        ProtocolLibrary.getProtocolManager()
-                .getAsynchronousManager()
-                .registerAsyncHandler(new ManualNameChange(plugin, floodgate))
-                .start();
+        // ProtocolLibrary.getProtocolManager()
+        //         .getAsynchronousManager()
+        //         .registerAsyncHandler(new ManualNameChange(plugin, floodgate))
+        //         .start();
     }
 
     @Override
