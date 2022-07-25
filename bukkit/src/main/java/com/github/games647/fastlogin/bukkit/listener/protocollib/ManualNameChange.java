@@ -82,7 +82,7 @@ public class ManualNameChange extends PacketAdapter {
         String prefixedName = FloodgateApi.getInstance().getPlayerPrefix() + originalProfile.getName();
         setUsername(packet, prefixedName);
     }
-    
+
     private void setUsername(PacketContainer packet, String name) {
         if (packet.getGameProfiles().size() > 0) {
             WrappedGameProfile updatedProfile = new WrappedGameProfile(UUID.randomUUID(), name);

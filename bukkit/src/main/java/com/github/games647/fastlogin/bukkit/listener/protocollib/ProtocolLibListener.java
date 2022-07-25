@@ -109,6 +109,8 @@ public class ProtocolLibListener extends PacketAdapter {
             return;
         }
 
+        plugin.getLog().info("New packet {} from {}", packetEvent.getPacketType(), packetEvent.getPlayer());
+
         Player sender = packetEvent.getPlayer();
         PacketType packetType = packetEvent.getPacketType();
         if (packetType == START) {
@@ -156,7 +158,7 @@ public class ProtocolLibListener extends PacketAdapter {
                 packetEvent.getAsyncMarker().incrementProcessingDelay();
 
                 Runnable verifyTask = new VerifyResponseTask(
-                    plugin, packetEvent, sender, session, sharedSecret, keyPair
+                        plugin, packetEvent, sender, session, sharedSecret, keyPair
                 );
                 plugin.getScheduler().runAsync(verifyTask);
             } else {
@@ -217,7 +219,7 @@ public class ProtocolLibListener extends PacketAdapter {
 
         PacketContainer packet = packetEvent.getPacket();
         var profileKey = packet.getOptionals(BukkitConverters.getWrappedPublicKeyDataConverter())
-            .optionRead(0);
+                .optionRead(0);
 
         var clientKey = profileKey.flatMap(opt -> opt).flatMap(this::verifyPublicKey);
         if (verifyClientKeys && !clientKey.isPresent()) {
@@ -232,7 +234,7 @@ public class ProtocolLibListener extends PacketAdapter {
 
         packetEvent.getAsyncMarker().incrementProcessingDelay();
         Runnable nameCheckTask = new NameCheckTask(
-            plugin, random, player, packetEvent, username, clientKey.orElse(null), keyPair.getPublic()
+                plugin, random, player, packetEvent, username, clientKey.orElse(null), keyPair.getPublic()
         );
         plugin.getScheduler().runAsync(nameCheckTask);
     }
