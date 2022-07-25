@@ -79,8 +79,7 @@ public class ProtocolLibListener extends PacketAdapter {
         //run async in order to not block the server, because we are making api calls to Mojang
         super(params()
                 .plugin(plugin)
-                .types(START, ENCRYPTION_BEGIN)
-                .optionAsync());
+                .types(START, ENCRYPTION_BEGIN));
 
         this.plugin = plugin;
         this.antiBotService = antiBotService;
@@ -91,9 +90,7 @@ public class ProtocolLibListener extends PacketAdapter {
         // they will be created with a static builder, because otherwise it will throw a NoClassDefFoundError
         // TODO: make synchronous processing, but do web or database requests async
         ProtocolLibrary.getProtocolManager()
-                .getAsynchronousManager()
-                .registerAsyncHandler(new ProtocolLibListener(plugin, antiBotService, verifyClientKeys))
-                .start();
+                .addPacketListener(new ProtocolLibListener(plugin, antiBotService, verifyClientKeys));
     }
 
     @Override
