@@ -77,7 +77,7 @@ public class AuthMeHook implements AuthPlugin<Player>, Listener {
     public void onSessionRestore(RestoreSessionEvent restoreSessionEvent) {
         Player player = restoreSessionEvent.getPlayer();
 
-        BukkitLoginSession session = plugin.getSession(player.getAddress());
+        BukkitLoginSession session = plugin.getSession(player.spigot().getRawAddress());
         if (session != null && session.isVerified()) {
             restoreSessionEvent.setCancelled(true);
         }

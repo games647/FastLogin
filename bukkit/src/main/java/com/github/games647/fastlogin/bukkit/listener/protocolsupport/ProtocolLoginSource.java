@@ -51,7 +51,7 @@ public class ProtocolLoginSource implements LoginSource {
 
     @Override
     public InetSocketAddress getAddress() {
-        return loginStartEvent.getAddress();
+        return loginStartEvent.getConnection().getRawAddress();
     }
 
     public PlayerLoginStartEvent getLoginStartEvent() {

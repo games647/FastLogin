@@ -80,7 +80,7 @@ public class ConnectionListener implements Listener {
         // session exists so the player is ready for force login
         // cases: Paper (firing BungeeCord message before PlayerJoinEvent) or not running BungeeCord and already
         // having the login session from the login process
-        BukkitLoginSession session = plugin.getSession(player.getAddress());
+        BukkitLoginSession session = plugin.getSession(player.spigot().getRawAddress());
 
         if (session == null) {
             // Floodgate players usually don't have a session at this point
@@ -95,7 +95,7 @@ public class ConnectionListener implements Listener {
                 }
             }
 
-            String sessionId = plugin.getSessionId(player.getAddress());
+            String sessionId = plugin.getSessionId(player.spigot().getRawAddress());
             plugin.getLog().info("No on-going login session for player: {} with ID {}. ", player, sessionId);
             plugin.getLog().info("Setups using Minecraft proxies will start delayed "
                 + "when the command from the proxy is received");
