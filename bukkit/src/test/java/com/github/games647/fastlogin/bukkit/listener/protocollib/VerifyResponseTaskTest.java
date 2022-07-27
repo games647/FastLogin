@@ -26,7 +26,8 @@
 package com.github.games647.fastlogin.bukkit.listener.protocollib;
 
 import com.comphenix.protocol.injector.packet.PacketRegistry;
-import com.comphenix.protocol.reflect.FieldUtils;
+import com.comphenix.protocol.reflect.accessors.Accessors;
+import com.comphenix.protocol.reflect.accessors.FieldAccessor;
 import com.comphenix.protocol.utility.MinecraftReflection;
 
 import java.util.Optional;
@@ -42,6 +43,9 @@ import static org.mockito.Mockito.mockStatic;
 
 class VerifyResponseTaskTest {
 
+    private static final String NETTY_INJECTOR_CLASS =
+            "com.comphenix.protocol.injector.netty.channel.NettyChannelInjector";
+
     @Test
     void getNetworkManagerReflection() throws ClassNotFoundException {
         try (
@@ -56,8 +60,9 @@ class VerifyResponseTaskTest {
             registryMock.when(() -> PacketRegistry.tryGetPacketClass(any())).thenReturn(Optional.empty());
             
             
-            Class<?> injectorClass = Class.forName("com.comphenix.protocol.injector.netty.channel.NettyChannelInjector");
-            assertNotNull(FieldUtils.getField(injectorClass, "networkManager", true));
+            Class<?> injectorClass = Class.forName(NETTY_INJECTOR_CLASS);
+            FieldAccessor accessor = Accessors.getFieldAccessorOrNull(injectorClass, "networkManager", Object.class);
+            assertNotNull(accessor.getField());
         }
     }
 }

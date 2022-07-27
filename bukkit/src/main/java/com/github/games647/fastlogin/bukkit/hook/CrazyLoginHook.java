@@ -25,7 +25,8 @@
  */
 package com.github.games647.fastlogin.bukkit.hook;
 
-import com.comphenix.protocol.reflect.FieldUtils;
+import com.comphenix.protocol.reflect.accessors.Accessors;
+import com.comphenix.protocol.reflect.accessors.FieldAccessor;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 import com.github.games647.fastlogin.core.hooks.AuthPlugin;
 
@@ -135,14 +136,7 @@ public class CrazyLoginHook implements AuthPlugin<Player> {
     }
 
     protected PlayerListener getListener() {
-        PlayerListener listener;
-        try {
-            listener = (PlayerListener) FieldUtils.readField(crazyLoginPlugin, "playerListener", true);
-        } catch (IllegalAccessException ex) {
-            plugin.getLog().error("Failed to get the listener instance for auto login", ex);
-            listener = null;
-        }
-
-        return listener;
+        FieldAccessor accessor = Accessors.getFieldAccessor(crazyLoginPlugin.getClass(), PlayerListener.class, true);
+        return (PlayerListener) accessor.get(crazyLoginPlugin);
     }
 }

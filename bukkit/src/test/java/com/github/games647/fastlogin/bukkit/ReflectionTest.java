@@ -25,9 +25,11 @@
  */
 package com.github.games647.fastlogin.bukkit;
 
-import com.comphenix.protocol.reflect.FieldUtils;
+import com.comphenix.protocol.reflect.accessors.Accessors;
+import com.comphenix.protocol.reflect.accessors.FieldAccessor;
 
 import fr.xephi.authme.api.v3.AuthMeApi;
+import fr.xephi.authme.process.Management;
 
 import org.junit.jupiter.api.Test;
 
@@ -37,6 +39,7 @@ class ReflectionTest {
 
     @Test
     void testAuthMeManagementField() {
-        assertNotNull(FieldUtils.getField(AuthMeApi.class, "management", true));
+        FieldAccessor accessor = Accessors.getFieldAccessor(AuthMeApi.class, Management.class, true);
+        assertNotNull(accessor.getField());
     }
 }

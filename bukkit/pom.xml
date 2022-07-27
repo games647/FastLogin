@@ -29,6 +29,10 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+    <properties>
+        <nettyVersion>4.1.77.Final</nettyVersion>
+    </properties>
+
     <parent>
         <groupId>com.github.games647</groupId>
         <artifactId>fastlogin</artifactId>
@@ -371,14 +375,22 @@
         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-transport</artifactId>
-            <version>4.1.77.Final</version>
+            <version>${nettyVersion}</version>
             <scope>test</scope>
         </dependency>        
         
         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-codec</artifactId>
-            <version>4.1.77.Final</version>
+            <version>${nettyVersion}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Provided by the spigot, required for testing ProtocolLib -->
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+            <version>2.6</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

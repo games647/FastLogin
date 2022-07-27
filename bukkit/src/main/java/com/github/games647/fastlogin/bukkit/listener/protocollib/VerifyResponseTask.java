@@ -30,8 +30,9 @@ import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.injector.temporary.TemporaryPlayerFactory;
 import com.comphenix.protocol.reflect.EquivalentConverter;
-import com.comphenix.protocol.reflect.FieldUtils;
 import com.comphenix.protocol.reflect.FuzzyReflection;
+import com.comphenix.protocol.reflect.accessors.Accessors;
+import com.comphenix.protocol.reflect.accessors.FieldAccessor;
 import com.comphenix.protocol.utility.MinecraftReflection;
 import com.comphenix.protocol.utility.MinecraftVersion;
 import com.comphenix.protocol.wrappers.BukkitConverters;
@@ -184,7 +185,10 @@ public class VerifyResponseTask implements Runnable {
             try {
                 Object networkManager = getNetworkManager();
                 //https://github.com/bergerkiller/CraftSource/blob/master/net.minecraft.server/NetworkManager.java#L69
-                FieldUtils.writeField(networkManager, "spoofedUUID", premiumUUID, true);
+
+                Class<?> managerClass = networkManager.getClass();
+                FieldAccessor accessor = Accessors.getFieldAccessorOrNull(managerClass, "spoofedUUID", UUID.class);
+                accessor.set(networkManager, premiumUUID);
             } catch (Exception exc) {
                 plugin.getLog().error("Error setting premium uuid of {}", player, exc);
             }
@@ -198,7 +202,10 @@ public class VerifyResponseTask implements Runnable {
         // ChannelInjector
         Class<?> injectorClass = Class.forName("com.comphenix.protocol.injector.netty.Injector");
         Object rawInjector = FuzzyReflection.getFieldValue(injectorContainer, injectorClass, true);
-        return FieldUtils.readField(rawInjector, "networkManager", true);
+
+        Class<?> rawInjectorClass = rawInjector.getClass();
+        FieldAccessor accessor = Accessors.getFieldAccessorOrNull(rawInjectorClass, "networkManager", Object.class);
+        return accessor.get(rawInjector);
     }
 
     private boolean enableEncryption(SecretKey loginKey) throws IllegalArgumentException {

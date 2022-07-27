@@ -25,17 +25,11 @@
  */
 package com.github.games647.fastlogin.bukkit.listener.protocollib;
 
-import com.comphenix.protocol.reflect.MethodUtils;
-import com.comphenix.protocol.reflect.accessors.Accessors;
-import com.comphenix.protocol.reflect.accessors.MethodAccessor;
-import com.comphenix.protocol.utility.MinecraftReflection;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
 import com.comphenix.protocol.wrappers.WrappedSignedProperty;
 import com.github.games647.craftapi.model.skin.Textures;
 import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
-
-import java.lang.reflect.InvocationTargetException;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -45,9 +39,6 @@ import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerLoginEvent.Result;
 
 public class SkinApplyListener implements Listener {
-
-    private static final Class<?> GAME_PROFILE = MinecraftReflection.getGameProfileClass();
-    private static final MethodAccessor GET_PROPERTIES = Accessors.getMethodAccessor(GAME_PROFILE, "getProperties");
 
     private final FastLoginBukkit plugin;
 
@@ -78,16 +69,6 @@ public class SkinApplyListener implements Listener {
         WrappedGameProfile gameProfile = WrappedGameProfile.fromPlayer(player);
 
         WrappedSignedProperty skin = WrappedSignedProperty.fromValues(Textures.KEY, skinData, signature);
-        try {
-            gameProfile.getProperties().put(Textures.KEY, skin);
-        } catch (ClassCastException castException) {
-            //Cauldron, MCPC, Thermos, ...
-            Object map = GET_PROPERTIES.invoke(gameProfile.getHandle());
-            try {
-                MethodUtils.invokeMethod(map, "put", new Object[]{Textures.KEY, skin.getHandle()});
-            } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException ex) {
-                plugin.getLog().error("Error setting premium skin of: {}", player, ex);
-            }
-        }
+        gameProfile.getProperties().put(Textures.KEY, skin);
     }
 }
