@@ -95,6 +95,12 @@ public class ProtocolLibListener extends PacketAdapter {
 
     @Override
     public void onPacketReceiving(PacketEvent packetEvent) {
+        plugin.getLog().info("New packet {} from {}; Cancellation: {}, Auth-Plugin: {}, Initialized: {}, Meta: {}",
+                packetEvent.getPacketType(), packetEvent.getPlayer(), packetEvent.isCancelled(),
+                plugin.getCore().getAuthPluginHook(), !plugin.isServerFullyStarted(),
+                packetEvent.getPacket().getMeta(SOURCE_META_KEY)
+        );
+
         if (packetEvent.isCancelled()
                 || plugin.getCore().getAuthPluginHook() == null
                 || !plugin.isServerFullyStarted()) {
@@ -105,8 +111,6 @@ public class ProtocolLibListener extends PacketAdapter {
             // this is our own packet
             return;
         }
-
-        plugin.getLog().info("New packet {} from {}", packetEvent.getPacketType(), packetEvent.getPlayer());
 
         Player sender = packetEvent.getPlayer();
         PacketType packetType = packetEvent.getPacketType();
