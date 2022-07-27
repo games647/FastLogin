@@ -196,7 +196,7 @@ public class VerifyResponseTask implements Runnable {
     }
 
     //try to get the networkManager from ProtocolLib
-    private Object getNetworkManager() throws IllegalAccessException, ClassNotFoundException {
+    private Object getNetworkManager() throws ClassNotFoundException {
         Object injectorContainer = TemporaryPlayerFactory.getInjectorFromPlayer(player);
 
         // ChannelInjector
