@@ -71,15 +71,15 @@ public class ManualNameChange extends PacketAdapter {
     @Override
     public void onPacketReceiving(PacketEvent packetEvent) {
         PacketContainer packet = packetEvent.getPacket();
-        WrappedGameProfile originalProfile = packet.getGameProfiles().read(0);
+        String username = readUsername(packet);
 
-        if (floodgate.getBedrockPlayer(originalProfile.getName()) == null) {
+        if (floodgate.getBedrockPlayer(username) == null) {
             //not a Floodgate player, no need to add a prefix
             return;
         }
 
-        packet.setMeta("original_name", originalProfile.getName());
-        String prefixedName = FloodgateApi.getInstance().getPlayerPrefix() + originalProfile.getName();
+        packet.setMeta("original_name", username);
+        String prefixedName = FloodgateApi.getInstance().getPlayerPrefix() + username;
         setUsername(packet, prefixedName);
     }
 
@@ -89,6 +89,14 @@ public class ManualNameChange extends PacketAdapter {
             packet.getGameProfiles().write(0, updatedProfile);
         } else {
             packet.getStrings().write(0, name);
+        }
+    }
+
+    private String readUsername(PacketContainer packet) {
+        if (packet.getGameProfiles().size() > 0) {
+            return packet.getGameProfiles().read(0).getName();
+        } else {
+            return packet.getStrings().read(0);
         }
     }
 }
