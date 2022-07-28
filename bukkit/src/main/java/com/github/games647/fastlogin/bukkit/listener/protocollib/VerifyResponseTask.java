@@ -196,7 +196,7 @@ public class VerifyResponseTask implements Runnable {
     }
 
     //try to get the networkManager from ProtocolLib
-    private Object getNetworkManager() throws IllegalAccessException, ClassNotFoundException {
+    private Object getNetworkManager() throws ClassNotFoundException {
         Object injectorContainer = TemporaryPlayerFactory.getInjectorFromPlayer(player);
 
         // ChannelInjector
@@ -289,7 +289,7 @@ public class VerifyResponseTask implements Runnable {
 
         //we don't want to handle our own packets so ignore filters
         startPacket.setMeta(ProtocolLibListener.SOURCE_META_KEY, plugin.getName());
-        ProtocolLibrary.getProtocolManager().receiveClientPacket(player, startPacket, true);
+        ProtocolLibrary.getProtocolManager().receiveClientPacket(player, startPacket, false);
         plugin.getLog().info("Sending new fake login start packet to {}-{}", player, username);
     }
 }
