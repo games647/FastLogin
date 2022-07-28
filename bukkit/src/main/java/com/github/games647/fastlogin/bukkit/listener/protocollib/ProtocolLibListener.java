@@ -59,6 +59,7 @@ import javax.crypto.NoSuchPaddingException;
 
 import lombok.var;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.Nullable;
 
 import static com.comphenix.protocol.PacketType.Login.Client.ENCRYPTION_BEGIN;
 import static com.comphenix.protocol.PacketType.Login.Client.START;
@@ -76,6 +77,7 @@ public class ProtocolLibListener extends PacketAdapter {
 
     private final boolean verifyClientKeys;
 
+    @Nullable
     private PacketContainer lastStartPacket;
 
     public ProtocolLibListener(FastLoginBukkit plugin, AntiBotService antiBotService, boolean verifyClientKeys) {
@@ -105,9 +107,15 @@ public class ProtocolLibListener extends PacketAdapter {
         );
 
         if (packetEvent.getPacketType() == START) {
-            plugin.getLog().info("Start-packet equality (Last/New): {}/{}, {}",
-                    lastStartPacket.hashCode(), packet.hashCode(), Objects.equals(lastStartPacket, packet)
-            );
+            if (lastStartPacket != null) {
+                plugin.getLog().info("Start-packet equality (Last/New): {}/{}, {}",
+                        lastStartPacket.getHandle().hashCode(), packet.getHandle().hashCode(),
+                        Objects.equals(lastStartPacket.getHandle(), packet.getHandle())
+                );
+
+                plugin.getLog().info("Content: {}, {}", lastStartPacket.getHandle(), packet.getHandle());
+            }
+
             lastStartPacket = packet;
         }
 
