@@ -34,7 +34,6 @@ import com.comphenix.protocol.reflect.FuzzyReflection;
 import com.comphenix.protocol.utility.MinecraftVersion;
 import com.comphenix.protocol.wrappers.BukkitConverters;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
-import com.comphenix.protocol.wrappers.WrappedProfilePublicKey.WrappedProfileKeyData;
 import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 import com.github.games647.fastlogin.bukkit.listener.protocollib.packet.ClientPublicKey;
@@ -51,12 +50,13 @@ import java.security.SecureRandom;
 import java.security.SignatureException;
 import java.time.Instant;
 import java.util.Optional;
+import java.util.function.Function;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
-import lombok.var;
+import lombok.val;
 import org.bukkit.entity.Player;
 
 import static com.comphenix.protocol.PacketType.Login.Client.ENCRYPTION_BEGIN;
@@ -205,11 +205,17 @@ public class ProtocolLibListener extends PacketAdapter {
         }
 
         PacketContainer packet = packetEvent.getPacket();
-        var profileKey = packet.getOptionals(BukkitConverters.getWrappedPublicKeyDataConverter())
+        val profileKey = packet.getOptionals(BukkitConverters.getWrappedPublicKeyDataConverter())
                 .optionRead(0);
 
-        var clientKey = profileKey.flatMap(opt -> opt).flatMap(this::verifyPublicKey);
-        if (verifyClientKeys && !clientKey.isPresent()) {
+        val clientKey = profileKey.flatMap(Function.identity()).flatMap(data -> {
+            Instant expires = data.getExpireTime();
+            PublicKey key = data.getKey();
+            byte[] signature = data.getSignature();
+            return Optional.of(ClientPublicKey.of(expires, key, signature));
+        });
+
+        if (verifyClientKeys && clientKey.isPresent() && verifyPublicKey(clientKey.get())) {
             // missing or incorrect
             // expired always not allowed
             player.kickPlayer(plugin.getCore().getMessage("invalid-public-key"));
@@ -226,20 +232,12 @@ public class ProtocolLibListener extends PacketAdapter {
         plugin.getScheduler().runAsync(nameCheckTask);
     }
 
-    private Optional<ClientPublicKey> verifyPublicKey(WrappedProfileKeyData profileKey) {
-        Instant expires = profileKey.getExpireTime();
-        PublicKey key = profileKey.getKey();
-        byte[] signature = profileKey.getSignature();
-        ClientPublicKey clientKey = ClientPublicKey.of(expires, key, signature);
+    private boolean verifyPublicKey(ClientPublicKey clientKey) {
         try {
-            if (EncryptionUtil.verifyClientKey(clientKey, Instant.now())) {
-                return Optional.of(clientKey);
-            }
+            return EncryptionUtil.verifyClientKey(clientKey, Instant.now());
         } catch (SignatureException | InvalidKeyException | NoSuchAlgorithmException ex) {
-            return Optional.empty();
+            return false;
         }
-
-        return Optional.empty();
     }
 
     private String getUsername(PacketContainer packet) {
