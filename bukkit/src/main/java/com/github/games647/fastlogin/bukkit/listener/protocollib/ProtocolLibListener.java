@@ -50,6 +50,7 @@ import java.security.PublicKey;
 import java.security.SecureRandom;
 import java.security.SignatureException;
 import java.time.Instant;
+import java.util.Objects;
 import java.util.Optional;
 
 import javax.crypto.BadPaddingException;
@@ -75,6 +76,8 @@ public class ProtocolLibListener extends PacketAdapter {
 
     private final boolean verifyClientKeys;
 
+    private PacketContainer lastStartPacket;
+
     public ProtocolLibListener(FastLoginBukkit plugin, AntiBotService antiBotService, boolean verifyClientKeys) {
         //run async in order to not block the server, because we are making api calls to Mojang
         super(params()
@@ -95,10 +98,18 @@ public class ProtocolLibListener extends PacketAdapter {
 
     @Override
     public void onPacketReceiving(PacketEvent packetEvent) {
+        PacketContainer packet = packetEvent.getPacket();
         plugin.getLog().info("New packet {} from {}; Cancellation: {}, Meta: {}",
                 packetEvent.getPacketType(), packetEvent.getPlayer(), packetEvent.isCancelled(),
-                packetEvent.getPacket().getMeta(SOURCE_META_KEY)
+                packet.getMeta(SOURCE_META_KEY)
         );
+
+        if (packetEvent.getPacketType() == START) {
+            plugin.getLog().info("Start-packet equality (Last/New): {}/{}, {}",
+                    lastStartPacket.hashCode(), packet.hashCode(), Objects.equals(lastStartPacket, packet)
+            );
+            lastStartPacket = packet;
+        }
 
         if (packetEvent.isCancelled()
                 || plugin.getCore().getAuthPluginHook() == null
@@ -114,7 +125,7 @@ public class ProtocolLibListener extends PacketAdapter {
         Player sender = packetEvent.getPlayer();
         PacketType packetType = packetEvent.getPacketType();
         if (packetType == START) {
-            PacketContainer packet = packetEvent.getPacket();
+            // PacketContainer packet = packet;
 
             InetSocketAddress address = sender.getAddress();
             String username = getUsername(packet);
