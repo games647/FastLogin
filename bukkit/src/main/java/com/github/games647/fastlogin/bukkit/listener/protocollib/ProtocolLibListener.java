@@ -64,8 +64,6 @@ import static com.comphenix.protocol.PacketType.Login.Client.START;
 
 public class ProtocolLibListener extends PacketAdapter {
 
-    public static final String SOURCE_META_KEY = "source";
-
     private final FastLoginBukkit plugin;
 
     //just create a new once on plugin enable. This used for verify token generation
@@ -104,11 +102,6 @@ public class ProtocolLibListener extends PacketAdapter {
             return;
         }
 
-        if (isFastLoginPacket(packetEvent)) {
-            // this is our own packet
-            return;
-        }
-
         plugin.getLog().info("New packet {} from {}", packetEvent.getPacketType(), packetEvent.getPlayer());
 
         Player sender = packetEvent.getPlayer();
@@ -137,12 +130,6 @@ public class ProtocolLibListener extends PacketAdapter {
         } else {
             onEncryptionBegin(packetEvent, sender);
         }
-    }
-
-    private boolean isFastLoginPacket(PacketEvent packetEvent) {
-        return packetEvent.getPacket().getMeta(SOURCE_META_KEY)
-                .map(val -> val.equals(plugin.getName()))
-                .orElse(false);
     }
 
     private void onEncryptionBegin(PacketEvent packetEvent, Player sender) {

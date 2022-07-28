@@ -288,7 +288,6 @@ public class VerifyResponseTask implements Runnable {
         }
 
         //we don't want to handle our own packets so ignore filters
-        startPacket.setMeta(ProtocolLibListener.SOURCE_META_KEY, plugin.getName());
-        ProtocolLibrary.getProtocolManager().receiveClientPacket(player, startPacket, true);
+        ProtocolLibrary.getProtocolManager().receiveClientPacket(player, startPacket, false);
     }
 }
