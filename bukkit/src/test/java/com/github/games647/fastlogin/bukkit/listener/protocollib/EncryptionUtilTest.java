@@ -41,6 +41,7 @@ import java.security.SignatureException;
 import java.security.interfaces.RSAPublicKey;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
 import javax.crypto.BadPaddingException;
@@ -93,7 +94,7 @@ class EncryptionUtilTest {
 
         // Client expires at the exact second mentioned, so use it for verification
         val expiredTimestamp = clientKey.expiry();
-        assertFalse(EncryptionUtil.verifyClientKey(clientKey, expiredTimestamp));
+        assertFalse(EncryptionUtil.verifyClientKey(clientKey, expiredTimestamp, null));
     }
 
     @ParameterizedTest
@@ -109,7 +110,7 @@ class EncryptionUtilTest {
         val clientKey = ResourceLoader.loadClientKey(clientKeySource);
         Instant expireTimestamp = clientKey.expiry().minus(5, ChronoUnit.HOURS);
 
-        assertFalse(EncryptionUtil.verifyClientKey(clientKey, expireTimestamp));
+        assertFalse(EncryptionUtil.verifyClientKey(clientKey, expireTimestamp, null));
     }
 
     @Test
@@ -117,7 +118,25 @@ class EncryptionUtilTest {
         val clientKey = ResourceLoader.loadClientKey("client_keys/valid_public_key.json");
         val verificationTimestamp = clientKey.expiry().minus(5, ChronoUnit.HOURS);
 
-        assertTrue(EncryptionUtil.verifyClientKey(clientKey, verificationTimestamp));
+        assertTrue(EncryptionUtil.verifyClientKey(clientKey, verificationTimestamp, null));
+    }
+
+    @Test
+    void testValid191ClientKey() throws Exception {
+        val clientKey = ResourceLoader.loadClientKey("client_keys/valid_public_key_19_1.json");
+        val verificationTimestamp = clientKey.expiry().minus(5, ChronoUnit.HOURS);
+
+        val ownerPremiumId = UUID.fromString("0aaa2c13-922a-411b-b655-9b8c08404695");
+        assertTrue(EncryptionUtil.verifyClientKey(clientKey, verificationTimestamp, ownerPremiumId));
+    }
+
+    @Test
+    void testIncorrect191ClientOwner() throws Exception {
+        val clientKey = ResourceLoader.loadClientKey("client_keys/valid_public_key_19_1.json");
+        val verificationTimestamp = clientKey.expiry().minus(5, ChronoUnit.HOURS);
+
+        val ownerPremiumId = UUID.fromString("61699b2e-d327-4a01-9f1e-0ea8c3f06bc6");
+        assertFalse(EncryptionUtil.verifyClientKey(clientKey, verificationTimestamp, ownerPremiumId));
     }
 
     @Test

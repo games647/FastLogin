@@ -27,6 +27,8 @@ package com.github.games647.fastlogin.bukkit.listener.protocollib.packet;
 
 import java.security.PublicKey;
 import java.time.Instant;
+import java.util.Base64;
+import java.util.StringJoiner;
 
 import lombok.Value;
 import lombok.experimental.Accessors;
@@ -40,5 +42,14 @@ public class ClientPublicKey {
 
     public boolean isExpired(Instant verifyTimestamp) {
         return !verifyTimestamp.isBefore(expiry);
+    }
+
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", ClientPublicKey.class.getSimpleName() + '[', "]")
+                .add("expiry=" + expiry)
+                .add("key=" + Base64.getEncoder().encodeToString(key.getEncoded()))
+                .add("signature=" + Base64.getEncoder().encodeToString(signature))
+                .toString();
     }
 }

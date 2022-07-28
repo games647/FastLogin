@@ -34,6 +34,7 @@ import com.google.common.primitives.Longs;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.KeyFactory;
@@ -51,6 +52,7 @@ import java.util.Arrays;
 import java.util.Base64;
 import java.util.Base64.Encoder;
 import java.util.Random;
+import java.util.UUID;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -77,6 +79,8 @@ final class EncryptionUtil {
     private static final Encoder KEY_ENCODER = Base64.getMimeEncoder(
             LINE_LENGTH, "\n".getBytes(StandardCharsets.UTF_8)
     );
+    private static final int MILLISECOND_SIZE = 8;
+    private static final int UUID_SIZE = 2 * MILLISECOND_SIZE;
 
     static {
         try {
@@ -146,7 +150,7 @@ final class EncryptionUtil {
         return new SecretKeySpec(decrypt(privateKey, sharedKey), "AES");
     }
 
-    public static boolean verifyClientKey(ClientPublicKey clientKey, Instant verifyTimestamp)
+    public static boolean verifyClientKey(ClientPublicKey clientKey, Instant verifyTimestamp, UUID premiumId)
             throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
         if (clientKey.isExpired(verifyTimestamp)) {
             return false;
@@ -155,8 +159,25 @@ final class EncryptionUtil {
         Signature verifier = Signature.getInstance("SHA1withRSA");
         // key of the signer
         verifier.initVerify(MOJANG_SESSION_KEY);
-        verifier.update(toSignable(clientKey).getBytes(StandardCharsets.US_ASCII));
+        verifier.update(toSignable(clientKey, premiumId));
         return verifier.verify(clientKey.signature());
+    }
+
+    private static byte[] toSignable(ClientPublicKey clientPublicKey, UUID ownerPremiumId) {
+        if (ownerPremiumId == null) {
+            long expiry = clientPublicKey.expiry().toEpochMilli();
+            String encoded = KEY_ENCODER.encodeToString(clientPublicKey.key().getEncoded());
+            return (expiry + "-----BEGIN RSA PUBLIC KEY-----\n" + encoded + "\n-----END RSA PUBLIC KEY-----\n")
+                    .getBytes(StandardCharsets.US_ASCII);
+        }
+
+        byte[] keyData = clientPublicKey.key().getEncoded();
+        return ByteBuffer.allocate(keyData.length + UUID_SIZE + MILLISECOND_SIZE)
+                .putLong(ownerPremiumId.getMostSignificantBits())
+                .putLong(ownerPremiumId.getLeastSignificantBits())
+                .putLong(clientPublicKey.expiry().toEpochMilli())
+                .put(keyData)
+                .array();
     }
 
     public static boolean verifyNonce(byte[] expected, PrivateKey decryptionKey, byte[] encryptedNonce)
@@ -184,12 +205,6 @@ final class EncryptionUtil {
         val keySpec = new X509EncodedKeySpec(keyData);
 
         return KeyFactory.getInstance("RSA").generatePublic(keySpec);
-    }
-
-    private static String toSignable(ClientPublicKey clientPublicKey) {
-        long expiry = clientPublicKey.expiry().toEpochMilli();
-        String encoded = KEY_ENCODER.encodeToString(clientPublicKey.key().getEncoded());
-        return expiry + "-----BEGIN RSA PUBLIC KEY-----\n" + encoded + "\n-----END RSA PUBLIC KEY-----\n";
     }
 
     private static byte[] decrypt(PrivateKey key, byte[] data)

@@ -33,6 +33,7 @@ import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.reflect.FuzzyReflection;
 import com.comphenix.protocol.utility.MinecraftVersion;
 import com.comphenix.protocol.wrappers.BukkitConverters;
+import com.comphenix.protocol.wrappers.Converters;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
 import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
@@ -50,6 +51,7 @@ import java.security.SecureRandom;
 import java.security.SignatureException;
 import java.time.Instant;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.function.Function;
 
 import javax.crypto.BadPaddingException;
@@ -215,7 +217,10 @@ public class ProtocolLibListener extends PacketAdapter {
             return Optional.of(ClientPublicKey.of(expires, key, signature));
         });
 
-        if (verifyClientKeys && clientKey.isPresent() && verifyPublicKey(clientKey.get())) {
+        // start reading from index 1, because 0 is already used by the public key
+        Optional<UUID> sessionUUID = packet.getOptionals(Converters.passthrough(UUID.class)).readSafely(1);
+        if (verifyClientKeys && sessionUUID.isPresent() && clientKey.isPresent()
+                && verifyPublicKey(clientKey.get(), sessionUUID.get())) {
             // missing or incorrect
             // expired always not allowed
             player.kickPlayer(plugin.getCore().getMessage("invalid-public-key"));
@@ -232,9 +237,9 @@ public class ProtocolLibListener extends PacketAdapter {
         plugin.getScheduler().runAsync(nameCheckTask);
     }
 
-    private boolean verifyPublicKey(ClientPublicKey clientKey) {
+    private boolean verifyPublicKey(ClientPublicKey clientKey, UUID sessionPremiumUUID) {
         try {
-            return EncryptionUtil.verifyClientKey(clientKey, Instant.now());
+            return EncryptionUtil.verifyClientKey(clientKey, Instant.now(), sessionPremiumUUID);
         } catch (SignatureException | InvalidKeyException | NoSuchAlgorithmException ex) {
             return false;
         }
