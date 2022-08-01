@@ -145,7 +145,7 @@
         <dependency>
             <groupId>com.github.games647</groupId>
             <artifactId>craftapi</artifactId>
-            <version>0.5.3</version>
+            <version>0.6</version>
         </dependency>
 
         <!-- APIs we can use because they are available in all platforms (Spigot, Bungee, Velocity) -->
