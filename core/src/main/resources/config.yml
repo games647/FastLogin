@@ -285,14 +285,14 @@ verifyClientKeys: false
 # Recommended is the use of MariaDB (a better version of MySQL)
 
 # Single file SQLite database
-driver: 'org.sqlite.JDBC'
+driver: 'sqlite'
 # File location
 database: '{pluginDir}/FastLogin.db'
 
 # MySQL/MariaDB
 # If you want to enable it, uncomment only the lines below; this not this line.
-# If on velocity use 'fastlogin.mariadb.jdbc.Driver' as driver
-#driver: 'com.mysql.jdbc.Driver'
+# If on velocity use 'mariadb' as driver
+#driver: 'mysql'
 #host: '127.0.0.1'
 #port: 3306
 #database: 'fastlogin'
