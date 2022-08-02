@@ -39,19 +39,22 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class SQLiteStorage extends SQLStorage {
 
+    private static final String SQLITE_DRIVER = "org.sqlite.SQLiteDataSource";
     private final Lock lock = new ReentrantLock();
 
     public SQLiteStorage(FastLoginCore<?, ?, ?> core, String databasePath, HikariConfig config) {
-        super(core,
-                "sqlite://" + replacePathVariables(core.getPlugin(), databasePath),
-                setParams(config));
+        super(core, setParams(config, replacePathVariables(core.getPlugin(), databasePath)));
     }
 
-    private static HikariConfig setParams(HikariConfig config) {
+    private static HikariConfig setParams(HikariConfig config, String path) {
+        config.setDataSourceClassName(SQLITE_DRIVER);
+
         config.setConnectionTestQuery("SELECT 1");
         config.setMaximumPoolSize(1);
 
-        //a try to fix https://www.spigotmc.org/threads/fastlogin.101192/page-26#post-1874647
+        config.addDataSourceProperty("databaseName", path);
+
+        // a try to fix https://www.spigotmc.org/threads/fastlogin.101192/page-26#post-1874647
         // format strings retrieved by the timestamp column to match them from MySQL
         config.addDataSourceProperty("date_string_format", "yyyy-MM-dd HH:mm:ss");
 

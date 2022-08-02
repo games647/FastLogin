@@ -45,8 +45,6 @@ import static java.sql.Statement.RETURN_GENERATED_KEYS;
 
 public abstract class SQLStorage implements AuthStorage {
 
-    private static final String JDBC_PROTOCOL = "jdbc:";
-
     protected static final String PREMIUM_TABLE = "premium";
     protected static final String CREATE_TABLE_STMT = "CREATE TABLE IF NOT EXISTS `" + PREMIUM_TABLE + "` ("
             + "`UserID` INTEGER PRIMARY KEY AUTO_INCREMENT, "
@@ -70,7 +68,7 @@ public abstract class SQLStorage implements AuthStorage {
     protected final FastLoginCore<?, ?, ?> core;
     protected final HikariDataSource dataSource;
 
-    public SQLStorage(FastLoginCore<?, ?, ?> core, String jdbcURL, HikariConfig config) {
+    public SQLStorage(FastLoginCore<?, ?, ?> core, HikariConfig config) {
         this.core = core;
         config.setPoolName(core.getPlugin().getName());
 
@@ -79,7 +77,6 @@ public abstract class SQLStorage implements AuthStorage {
             config.setThreadFactory(platformThreadFactory);
         }
 
-        config.setJdbcUrl(JDBC_PROTOCOL + jdbcURL);
         this.dataSource = new HikariDataSource(config);
     }
 

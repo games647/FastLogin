@@ -30,23 +30,18 @@ import com.zaxxer.hikari.HikariConfig;
 
 public class MySQLStorage extends SQLStorage {
 
+    private static final String JDBC_PROTOCOL = "jdbc:";
+
     public MySQLStorage(FastLoginCore<?, ?, ?> core, String driver, String host, int port, String database,
                         HikariConfig config, boolean useSSL) {
-        super(core,
-                buildJDBCUrl(driver, host, port, database),
-                setParams(config, useSSL));
+        super(core, setParams(config, driver, host, port, database, useSSL));
     }
 
-    private static String buildJDBCUrl(String driver, String host, int port, String database) {
-        String protocol = "mysql";
-        if (driver.contains("mariadb")) {
-            protocol = "mariadb";
-        }
+    private static HikariConfig setParams(HikariConfig config,
+                                          String driver, String host, int port, String database,
+                                          boolean useSSL) {
+        config.setDriverClassName(driver);
 
-        return protocol + "://" + host + ':' + port + '/' + database;
-    }
-
-    private static HikariConfig setParams(HikariConfig config, boolean useSSL) {
         // Require SSL on the server if requested in config - this will also verify certificate
         // Those values are deprecated in favor of sslMode
         config.addDataSourceProperty("useSSL", useSSL);
@@ -56,9 +51,20 @@ public class MySQLStorage extends SQLStorage {
         // could be useful for hiding server details
         config.addDataSourceProperty("paranoid", true);
 
+        config.setJdbcUrl(JDBC_PROTOCOL + buildJDBCUrl(driver, host, port, database));
+
         // enable MySQL specific optimizations
         addPerformanceProperties(config);
         return config;
+    }
+
+    private static String buildJDBCUrl(String driver, String host, int port, String database) {
+        String protocol = "mysql";
+        if (driver.contains("mariadb")) {
+            protocol = "mariadb";
+        }
+
+        return protocol + "://" + host + ':' + port + '/' + database;
     }
 
     private static void addPerformanceProperties(HikariConfig config) {

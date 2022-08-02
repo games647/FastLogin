@@ -230,8 +230,6 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
         }
 
         HikariConfig databaseConfig = new HikariConfig();
-        databaseConfig.setDriverClassName(driver);
-
         String database = config.getString("database");
 
         databaseConfig.setConnectionTimeout(config.getInt("timeout", 30) * 1_000L);
