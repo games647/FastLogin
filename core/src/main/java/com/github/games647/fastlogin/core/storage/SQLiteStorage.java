@@ -37,6 +37,8 @@ import java.util.UUID;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import org.sqlite.SQLiteConfig;
+
 public class SQLiteStorage extends SQLStorage {
 
     private static final String SQLITE_DRIVER = "org.sqlite.SQLiteDataSource";
@@ -52,11 +54,14 @@ public class SQLiteStorage extends SQLStorage {
         config.setConnectionTestQuery("SELECT 1");
         config.setMaximumPoolSize(1);
 
-        config.addDataSourceProperty("databaseName", path);
+        config.addDataSourceProperty("url", path);
 
         // a try to fix https://www.spigotmc.org/threads/fastlogin.101192/page-26#post-1874647
         // format strings retrieved by the timestamp column to match them from MySQL
-        config.addDataSourceProperty("date_string_format", "yyyy-MM-dd HH:mm:ss");
+        // vs the default: yyyy-MM-dd HH:mm:ss.SSS
+        SQLiteConfig sqLiteConfig = new SQLiteConfig();
+        sqLiteConfig.setDateStringFormat("yyyy-MM-dd HH:mm:ss");
+        config.addDataSourceProperty("config", config);
 
         // TODO: test first for compatibility
         // config.addDataSourceProperty("date_precision", "seconds");
