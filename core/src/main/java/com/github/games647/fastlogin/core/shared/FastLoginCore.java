@@ -66,8 +66,6 @@ import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.config.ConfigurationProvider;
 import net.md_5.bungee.config.YamlConfiguration;
 
-import org.slf4j.Logger;
-
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
@@ -224,10 +222,7 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
     }
 
     public boolean setupDatabase() {
-        String driver = config.getString("driver");
-        if (!checkDriver(driver)) {
-            return false;
-        }
+        String type = config.getString("driver");
 
         HikariConfig databaseConfig = new HikariConfig();
         String database = config.getString("database");
@@ -235,7 +230,7 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
         databaseConfig.setConnectionTimeout(config.getInt("timeout", 30) * 1_000L);
         databaseConfig.setMaxLifetime(config.getInt("lifetime", 30) * 1_000L);
 
-        if (driver.contains("sqlite")) {
+        if (type.contains("sqlite")) {
             storage = new SQLiteStorage(this, database, databaseConfig);
         } else {
             String host = config.get("host", "");
@@ -254,7 +249,7 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
 
             databaseConfig.setUsername(config.get("username", ""));
             databaseConfig.setPassword(config.getString("password"));
-            storage = new MySQLStorage(this, driver, host, port, database, databaseConfig, useSSL);
+            storage = new MySQLStorage(this, type, host, port, database, databaseConfig, useSSL);
         }
 
         try {
@@ -264,20 +259,6 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
             plugin.getLog().warn("Failed to setup database. Disabling plugin...", ex);
             return false;
         }
-    }
-
-    private boolean checkDriver(String className) {
-        try {
-            Class.forName(className);
-            return true;
-        } catch (ClassNotFoundException notFoundEx) {
-            Logger log = plugin.getLog();
-            log.warn("This driver {} is not supported on this platform", className);
-            log.warn("Please choose either MySQL (Spigot, BungeeCord), SQLite (Spigot, Sponge) or "
-                + "MariaDB (Sponge, Velocity)", notFoundEx);
-        }
-
-        return false;
     }
 
     public Configuration getConfig() {
