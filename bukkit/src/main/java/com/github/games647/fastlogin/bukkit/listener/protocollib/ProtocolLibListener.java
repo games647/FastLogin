@@ -30,6 +30,8 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
+import com.comphenix.protocol.injector.PacketFilterManager;
+import com.comphenix.protocol.injector.player.PlayerInjectionHandler;
 import com.comphenix.protocol.reflect.FuzzyReflection;
 import com.comphenix.protocol.utility.MinecraftVersion;
 import com.comphenix.protocol.wrappers.BukkitConverters;
@@ -42,6 +44,7 @@ import com.github.games647.fastlogin.core.antibot.AntiBotService;
 import com.github.games647.fastlogin.core.antibot.AntiBotService.Action;
 import com.mojang.datafixers.util.Either;
 
+import java.lang.reflect.Field;
 import java.net.InetSocketAddress;
 import java.security.InvalidKeyException;
 import java.security.KeyPair;
@@ -58,6 +61,7 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
+import io.netty.channel.Channel;
 import lombok.val;
 import org.bukkit.entity.Player;
 
@@ -67,6 +71,7 @@ import static com.comphenix.protocol.PacketType.Login.Client.START;
 public class ProtocolLibListener extends PacketAdapter {
 
     private final FastLoginBukkit plugin;
+    private final PlayerInjectionHandler handler;
 
     //just create a new once on plugin enable. This used for verify token generation
     private final SecureRandom random = new SecureRandom();
@@ -85,6 +90,7 @@ public class ProtocolLibListener extends PacketAdapter {
         this.plugin = plugin;
         this.antiBotService = antiBotService;
         this.verifyClientKeys = verifyClientKeys;
+        this.handler = getHandler();
     }
 
     public static void register(FastLoginBukkit plugin, AntiBotService antiBotService, boolean verifyClientKeys) {
@@ -253,5 +259,24 @@ public class ProtocolLibListener extends PacketAdapter {
 
         //player.getName() won't work at this state
         return profile.getName();
+    }
+
+    private static PlayerInjectionHandler getHandler() {
+        try {
+            PacketFilterManager manager = (PacketFilterManager) ProtocolLibrary.getProtocolManager();
+            Field f = manager.getClass().getDeclaredField("playerInjectionHandler");
+            f.setAccessible(true);
+            PlayerInjectionHandler handler = (PlayerInjectionHandler) f.get(manager);
+            f.setAccessible(false);
+            return handler;
+        } catch (NoSuchFieldException e) {
+            throw new RuntimeException(e);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private Channel getChannel(Player player) {
+        return handler.getChannel(player);
     }
 }

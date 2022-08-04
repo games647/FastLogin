@@ -376,8 +376,8 @@
             <groupId>io.netty</groupId>
             <artifactId>netty-transport</artifactId>
             <version>${nettyVersion}</version>
-            <scope>test</scope>
-        </dependency>        
+            <scope>provided</scope>
+        </dependency>
         
         <dependency>
             <groupId>io.netty</groupId>
