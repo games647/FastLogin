@@ -62,8 +62,11 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandler;
+import io.netty.util.AttributeKey;
 import lombok.val;
 import org.bukkit.entity.Player;
+import org.geysermc.floodgate.api.player.FloodgatePlayer;
 
 import static com.comphenix.protocol.PacketType.Login.Client.ENCRYPTION_BEGIN;
 import static com.comphenix.protocol.PacketType.Login.Client.START;
@@ -115,6 +118,15 @@ public class ProtocolLibListener extends PacketAdapter {
         Player sender = packetEvent.getPlayer();
         PacketType packetType = packetEvent.getPacketType();
         if (packetType == START) {
+
+            if (plugin.getFloodgateService() != null) {
+                boolean success = processFloodgateTasks(packetEvent);
+                // don't continue execution if the player was kicked by Floodgate
+                if (!success) {
+                    return;
+                }
+            }
+
             PacketContainer packet = packetEvent.getPacket();
 
             InetSocketAddress address = sender.getAddress();
@@ -276,7 +288,49 @@ public class ProtocolLibListener extends PacketAdapter {
         }
     }
 
-    private Channel getChannel(Player player) {
-        return handler.getChannel(player);
+    private FloodgatePlayer getFloodgatePlayer(Player player) {
+        Channel channel = handler.getChannel(player);
+        AttributeKey<FloodgatePlayer> floodgateAttribute = AttributeKey.valueOf("floodgate-player");
+        return channel.attr(floodgateAttribute).get();
+    }
+
+    /**
+     * Reimplementation of the tasks injected Floodgate in ProtocolLib that are not run due to a bug
+     * @see <a href="https://github.com/GeyserMC/Floodgate/issues/143">Issue Floodgate#143</a>
+     * @see <a href="https://github.com/GeyserMC/Floodgate/blob/5d5713ed9e9eeab0f4abdaa9cf5cd8619dc1909b/spigot/src/main/java/org/geysermc/floodgate/addon/data/SpigotDataHandler.java#L121-L175">Floodgate/SpigotDataHandler</a>
+     * @param packetEvent the PacketEvent that won't be processed by Floodgate
+     * @return false if the player was kicked
+     */
+    private boolean processFloodgateTasks(PacketEvent packetEvent) {
+        PacketContainer packet = packetEvent.getPacket();
+        Player player = packetEvent.getPlayer();
+        FloodgatePlayer floodgatePlayer = getFloodgatePlayer(player);
+        if (floodgatePlayer == null) {
+            return true;
+        }
+
+        // kick the player, if necessary
+        Channel channel = handler.getChannel(packetEvent.getPlayer());
+        AttributeKey<String> kickMessageAttribute = AttributeKey.valueOf("floodgate-kick-message");
+        String kickMessage = channel.attr(kickMessageAttribute).get();
+        if (kickMessage != null) {
+            player.kickPlayer(kickMessage);
+            return false;
+        }
+
+        // add prefix
+        String username = floodgatePlayer.getCorrectUsername();
+        if (packet.getGameProfiles().size() > 0) {
+            packet.getGameProfiles().write(0,
+                    new WrappedGameProfile(floodgatePlayer.getCorrectUniqueId(), username));
+        } else {
+            packet.getStrings().write(0, username);
+        }
+
+        // remove real Floodgate data handler
+        ChannelHandler floodgateHandler = channel.pipeline().get("floodgate_data_handler");
+        channel.pipeline().remove(floodgateHandler);
+
+        return true;
     }
 }
