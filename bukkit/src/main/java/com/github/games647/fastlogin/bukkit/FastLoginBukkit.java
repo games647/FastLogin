@@ -147,8 +147,6 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
             premiumPlaceholder = new PremiumPlaceholder(this);
             premiumPlaceholder.register();
         }
-
-        dependencyWarnings();
     }
 
     private boolean initializeFloodgate() {
@@ -305,19 +303,5 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
             return floodgateService;
         }
         return geyserService;
-    }
-
-    /**
-     * Send warning messages to log if incompatible plugins are used
-     */
-    private void dependencyWarnings() {
-        if (isPluginInstalled("floodgate-bukkit")) {
-            logger.warn("We have detected that you are running Floodgate 1.0 which is not supported by the Bukkit "
-                    + "version of FastLogin.");
-            logger.warn("If you would like to use FastLogin with Floodgate, you can download development builds of "
-                    + "Floodgate 2.0 from https://ci.opencollab.dev/job/GeyserMC/job/Floodgate/job/dev%252F2.0/");
-            logger.warn("Don't forget to update Geyser to a supported version as well from "
-                    + "https://ci.opencollab.dev/job/GeyserMC/job/Geyser/job/floodgate-2.0/");
-        }
     }
 }
