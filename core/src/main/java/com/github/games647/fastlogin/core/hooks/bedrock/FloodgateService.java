@@ -99,23 +99,11 @@ public class FloodgateService extends BedrockService<FloodgatePlayer> {
      * The FloodgateApi does not support querying players by name, so this function
      * iterates over every online FloodgatePlayer and checks if the requested
      * username can be found
-     * <br>
-     * <i>Falls back to non-prefixed name checks, if ProtocolLib is installed</i>
      *
      * @param prefixedUsername the name of the player with the prefix appended
      * @return FloodgatePlayer if found, null otherwise
      */
     public FloodgatePlayer getBedrockPlayer(String prefixedUsername) {
-        //prefixes are broken with ProtocolLib, so fall back to name checks without prefixes
-        //this should be removed if #493 gets fixed
-        if (core.getPlugin().isPluginInstalled("ProtocolLib")) {
-            for (FloodgatePlayer floodgatePlayer : floodgate.getPlayers()) {
-                if (floodgatePlayer.getUsername().equals(prefixedUsername)) {
-                    return floodgatePlayer;
-                }
-            }
-            return null;
-        }
         for (FloodgatePlayer floodgatePlayer : floodgate.getPlayers()) {
             if (floodgatePlayer.getCorrectUsername().equals(prefixedUsername)) {
                 return floodgatePlayer;
