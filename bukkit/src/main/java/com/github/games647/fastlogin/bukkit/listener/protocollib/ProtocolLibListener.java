@@ -219,11 +219,6 @@ public class ProtocolLibListener extends PacketAdapter {
         //remove old data every time on a new login in order to keep the session only for one person
         plugin.removeSession(player.getAddress());
 
-        if (packetEvent.getPacket().getMeta("original_name").isPresent()) {
-            //username has been injected by ManualNameChange.java
-            username = (String) packetEvent.getPacket().getMeta("original_name").get();
-        }
-
         PacketContainer packet = packetEvent.getPacket();
         val profileKey = packet.getOptionals(BukkitConverters.getWrappedPublicKeyDataConverter())
                 .optionRead(0);
