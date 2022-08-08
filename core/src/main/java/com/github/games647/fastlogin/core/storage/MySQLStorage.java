@@ -31,6 +31,8 @@ import com.zaxxer.hikari.HikariConfig;
 public class MySQLStorage extends SQLStorage {
 
     private static final String JDBC_PROTOCOL = "jdbc:";
+    private static final String MYSQL_DRIVER = "com.mysql.cj.jdbc.Driver";
+    private static final String MARIADB_DRIVER = "fastlogin.mariadb.jdbc.Driver";
 
     public MySQLStorage(FastLoginCore<?, ?, ?> core, String driver, String host, int port, String database,
                         HikariConfig config, boolean useSSL) {
@@ -40,6 +42,12 @@ public class MySQLStorage extends SQLStorage {
     private static HikariConfig setParams(HikariConfig config,
                                           String driver, String host, int port, String database,
                                           boolean useSSL) {
+        if ("mysql".equalsIgnoreCase(driver.trim())) {
+            config.setDriverClassName(MYSQL_DRIVER);
+        } else if ("mariadb".equalsIgnoreCase(driver.trim())) {
+            config.setDriverClassName(MARIADB_DRIVER);
+        }
+
         config.setDriverClassName(driver);
 
         // Require SSL on the server if requested in config - this will also verify certificate

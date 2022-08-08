@@ -62,7 +62,6 @@ public class SQLiteStorage extends SQLStorage {
         // vs the default: yyyy-MM-dd HH:mm:ss.SSS
         SQLiteConfig sqLiteConfig = new SQLiteConfig();
         sqLiteConfig.setDateStringFormat("yyyy-MM-dd HH:mm:ss");
-        // sqLiteConfig.setDatePrecision("seconds");
 
         config.addDataSourceProperty("config", sqLiteConfig);
 
