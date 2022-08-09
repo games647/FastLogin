@@ -46,9 +46,9 @@ public class MySQLStorage extends SQLStorage {
             config.setDriverClassName(MYSQL_DRIVER);
         } else if ("mariadb".equalsIgnoreCase(driver.trim())) {
             config.setDriverClassName(MARIADB_DRIVER);
+        } else {
+            config.setDriverClassName(driver);
         }
-
-        config.setDriverClassName(driver);
 
         // Require SSL on the server if requested in config - this will also verify certificate
         // Those values are deprecated in favor of sslMode
