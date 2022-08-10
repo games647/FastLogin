@@ -30,6 +30,8 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
+import com.comphenix.protocol.injector.PacketFilterManager;
+import com.comphenix.protocol.injector.player.PlayerInjectionHandler;
 import com.comphenix.protocol.reflect.FuzzyReflection;
 import com.comphenix.protocol.utility.MinecraftVersion;
 import com.comphenix.protocol.wrappers.BukkitConverters;
@@ -42,6 +44,7 @@ import com.github.games647.fastlogin.core.antibot.AntiBotService;
 import com.github.games647.fastlogin.core.antibot.AntiBotService.Action;
 import com.mojang.datafixers.util.Either;
 
+import java.lang.reflect.Field;
 import java.net.InetSocketAddress;
 import java.security.InvalidKeyException;
 import java.security.KeyPair;
@@ -58,8 +61,12 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandler;
+import io.netty.util.AttributeKey;
 import lombok.val;
 import org.bukkit.entity.Player;
+import org.geysermc.floodgate.api.player.FloodgatePlayer;
 
 import static com.comphenix.protocol.PacketType.Login.Client.ENCRYPTION_BEGIN;
 import static com.comphenix.protocol.PacketType.Login.Client.START;
@@ -67,6 +74,7 @@ import static com.comphenix.protocol.PacketType.Login.Client.START;
 public class ProtocolLibListener extends PacketAdapter {
 
     private final FastLoginBukkit plugin;
+    private final PlayerInjectionHandler handler;
 
     //just create a new once on plugin enable. This used for verify token generation
     private final SecureRandom random = new SecureRandom();
@@ -85,6 +93,7 @@ public class ProtocolLibListener extends PacketAdapter {
         this.plugin = plugin;
         this.antiBotService = antiBotService;
         this.verifyClientKeys = verifyClientKeys;
+        this.handler = getHandler();
     }
 
     public static void register(FastLoginBukkit plugin, AntiBotService antiBotService, boolean verifyClientKeys) {
@@ -109,6 +118,15 @@ public class ProtocolLibListener extends PacketAdapter {
         Player sender = packetEvent.getPlayer();
         PacketType packetType = packetEvent.getPacketType();
         if (packetType == START) {
+
+            if (plugin.getFloodgateService() != null) {
+                boolean success = processFloodgateTasks(packetEvent);
+                // don't continue execution if the player was kicked by Floodgate
+                if (!success) {
+                    return;
+                }
+            }
+
             PacketContainer packet = packetEvent.getPacket();
 
             InetSocketAddress address = sender.getAddress();
@@ -201,11 +219,6 @@ public class ProtocolLibListener extends PacketAdapter {
         //remove old data every time on a new login in order to keep the session only for one person
         plugin.removeSession(player.getAddress());
 
-        if (packetEvent.getPacket().getMeta("original_name").isPresent()) {
-            //username has been injected by ManualNameChange.java
-            username = (String) packetEvent.getPacket().getMeta("original_name").get();
-        }
-
         PacketContainer packet = packetEvent.getPacket();
         val profileKey = packet.getOptionals(BukkitConverters.getWrappedPublicKeyDataConverter())
                 .optionRead(0);
@@ -253,5 +266,66 @@ public class ProtocolLibListener extends PacketAdapter {
 
         //player.getName() won't work at this state
         return profile.getName();
+    }
+
+    private static PlayerInjectionHandler getHandler() {
+        try {
+            PacketFilterManager manager = (PacketFilterManager) ProtocolLibrary.getProtocolManager();
+            Field f = manager.getClass().getDeclaredField("playerInjectionHandler");
+            f.setAccessible(true);
+            PlayerInjectionHandler handler = (PlayerInjectionHandler) f.get(manager);
+            f.setAccessible(false);
+            return handler;
+        } catch (NoSuchFieldException e) {
+            throw new RuntimeException(e);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private FloodgatePlayer getFloodgatePlayer(Player player) {
+        Channel channel = handler.getChannel(player);
+        AttributeKey<FloodgatePlayer> floodgateAttribute = AttributeKey.valueOf("floodgate-player");
+        return channel.attr(floodgateAttribute).get();
+    }
+
+    /**
+     * Reimplementation of the tasks injected Floodgate in ProtocolLib that are not run due to a bug
+     * @see <a href="https://github.com/GeyserMC/Floodgate/issues/143">Issue Floodgate#143</a>
+     * @see <a href="https://github.com/GeyserMC/Floodgate/blob/5d5713ed9e9eeab0f4abdaa9cf5cd8619dc1909b/spigot/src/main/java/org/geysermc/floodgate/addon/data/SpigotDataHandler.java#L121-L175">Floodgate/SpigotDataHandler</a>
+     * @param packetEvent the PacketEvent that won't be processed by Floodgate
+     * @return false if the player was kicked
+     */
+    private boolean processFloodgateTasks(PacketEvent packetEvent) {
+        PacketContainer packet = packetEvent.getPacket();
+        Player player = packetEvent.getPlayer();
+        FloodgatePlayer floodgatePlayer = getFloodgatePlayer(player);
+        if (floodgatePlayer == null) {
+            return true;
+        }
+
+        // kick the player, if necessary
+        Channel channel = handler.getChannel(packetEvent.getPlayer());
+        AttributeKey<String> kickMessageAttribute = AttributeKey.valueOf("floodgate-kick-message");
+        String kickMessage = channel.attr(kickMessageAttribute).get();
+        if (kickMessage != null) {
+            player.kickPlayer(kickMessage);
+            return false;
+        }
+
+        // add prefix
+        String username = floodgatePlayer.getCorrectUsername();
+        if (packet.getGameProfiles().size() > 0) {
+            packet.getGameProfiles().write(0,
+                    new WrappedGameProfile(floodgatePlayer.getCorrectUniqueId(), username));
+        } else {
+            packet.getStrings().write(0, username);
+        }
+
+        // remove real Floodgate data handler
+        ChannelHandler floodgateHandler = channel.pipeline().get("floodgate_data_handler");
+        channel.pipeline().remove(floodgateHandler);
+
+        return true;
     }
 }

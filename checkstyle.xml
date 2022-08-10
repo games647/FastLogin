@@ -101,6 +101,7 @@
   <module name="LineLength">
     <property name="max" value="120"/>
     <property name="fileExtensions" value="java"/>
+    <property name="ignorePattern" value="^ *\* *@see.+$"/>
   </module>
 
   <!-- Checks for whitespace                               -->
