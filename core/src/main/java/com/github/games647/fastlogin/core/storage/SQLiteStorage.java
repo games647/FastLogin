@@ -60,10 +60,15 @@ public class SQLiteStorage extends SQLStorage {
         // a try to fix https://www.spigotmc.org/threads/fastlogin.101192/page-26#post-1874647
         // format strings retrieved by the timestamp column to match them from MySQL
         // vs the default: yyyy-MM-dd HH:mm:ss.SSS
-        SQLiteConfig sqLiteConfig = new SQLiteConfig();
-        sqLiteConfig.setDateStringFormat("yyyy-MM-dd HH:mm:ss");
+        try {
+            SQLiteConfig.class.getDeclaredMethod("setDateStringFormat", String.class);
 
-        config.addDataSourceProperty("config", sqLiteConfig);
+            SQLiteConfig sqLiteConfig = new SQLiteConfig();
+            sqLiteConfig.setDateStringFormat("yyyy-MM-dd HH:mm:ss");
+            config.addDataSourceProperty("config", sqLiteConfig);
+        } catch (NoSuchMethodException noSuchMethodException) {
+            // Versions below this driver version do set the default timestamp value, so this change is not necessary
+        }
 
         return config;
     }
