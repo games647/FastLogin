@@ -25,7 +25,7 @@
     SOFTWARE.
 
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
@@ -86,7 +86,8 @@
                     <!-- Rename the service file too to let SLF4J api find our own relocated jdk logger -->
                     <!-- Located in META-INF/services -->
                     <transformers>
-                        <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+                        <transformer
+                                implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
                     </transformers>
                     <minimizeJar>true</minimizeJar>
                     <filters>
@@ -378,7 +379,7 @@
             <version>${nettyVersion}</version>
             <scope>provided</scope>
         </dependency>
-        
+
         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-codec</artifactId>

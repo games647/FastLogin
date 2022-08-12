@@ -1,6 +1,6 @@
 name: 🐞 Bug Report
 description: Something isn't working, broken, not expected behavior
-labels: [bug]
+labels: [ bug ]
 body:
   - type: markdown
     attributes:

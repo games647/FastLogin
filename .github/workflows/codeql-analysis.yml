@@ -4,63 +4,63 @@
 name: "CodeQL"
 
 on:
-    # Scan only for push on the primary branch for now
-    push:
-        branches: [ main ]
-    pull_request:
-        branches: [ main ]
+  # Scan only for push on the primary branch for now
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
-    # job i
-    analyze:
+  # job i
+  analyze:
 
-        # Display name
-        name: Analyze
+    # Display name
+    name: Analyze
 
-        # Environment
-        runs-on: ubuntu-latest
+    # Environment
+    runs-on: ubuntu-latest
 
-        permissions:
-            actions: read
-            contents: read
-            security-events: write
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
 
-        strategy:
-            fail-fast: false
-            matrix:
-                # Languages to scan
-                language: [ 'java' ]
+    strategy:
+      fail-fast: false
+      matrix:
+        # Languages to scan
+        language: [ 'java' ]
 
-        steps:
-            -   name: Checkout repository
-                uses: actions/checkout@v3
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-            # Setup Java
-            -   name: Set up JDK
-                uses: actions/setup-java@v3
-                with:
-                    distribution: 'temurin'
-                    java-version: 18
-                    cache: 'maven'
+      # Setup Java
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: 18
+          cache: 'maven'
 
-            # Initializes the CodeQL tools for scanning.
-            -   name: Initialize CodeQL
-                uses: github/codeql-action/init@v2
-                with:
-                    languages: ${{ matrix.language }}
+      # Initializes the CodeQL tools for scanning.
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v2
+        with:
+          languages: ${{ matrix.language }}
 
-            # Cache build process too like in the maven config
-            -   uses: actions/cache@v3.0.5
-                with:
-                    path: ~/.m2/repository
-                    key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-                    restore-keys: |
-                        ${{ runner.os }}-maven-
+      # Cache build process too like in the maven config
+      - uses: actions/cache@v3.0.5
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
 
-            # Auto build attempts to build any compiled languages  (C/C++, C#, or Java).
-            # If this step fails, then you should remove it and run the build manually (see below)
-            -   name: Autobuild
-                uses: github/codeql-action/autobuild@v2
+      # Auto build attempts to build any compiled languages  (C/C++, C#, or Java).
+      # If this step fails, then you should remove it and run the build manually (see below)
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v2
 
-            -   name: Perform CodeQL Analysis
-                uses: github/codeql-action/analyze@v2
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v2
