@@ -33,6 +33,8 @@ import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.injector.PacketFilterManager;
 import com.comphenix.protocol.injector.player.PlayerInjectionHandler;
 import com.comphenix.protocol.reflect.FuzzyReflection;
+import com.comphenix.protocol.reflect.accessors.Accessors;
+import com.comphenix.protocol.reflect.accessors.FieldAccessor;
 import com.comphenix.protocol.utility.MinecraftVersion;
 import com.comphenix.protocol.wrappers.BukkitConverters;
 import com.comphenix.protocol.wrappers.Converters;
@@ -44,7 +46,10 @@ import com.github.games647.fastlogin.core.antibot.AntiBotService;
 import com.github.games647.fastlogin.core.antibot.AntiBotService.Action;
 import com.mojang.datafixers.util.Either;
 
-import java.lang.reflect.Field;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandler;
+import io.netty.util.AttributeKey;
+
 import java.net.InetSocketAddress;
 import java.security.InvalidKeyException;
 import java.security.KeyPair;
@@ -61,9 +66,6 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelHandler;
-import io.netty.util.AttributeKey;
 import lombok.val;
 import org.bukkit.entity.Player;
 import org.geysermc.floodgate.api.player.FloodgatePlayer;
@@ -269,18 +271,9 @@ public class ProtocolLibListener extends PacketAdapter {
     }
 
     private static PlayerInjectionHandler getHandler() {
-        try {
-            PacketFilterManager manager = (PacketFilterManager) ProtocolLibrary.getProtocolManager();
-            Field f = manager.getClass().getDeclaredField("playerInjectionHandler");
-            f.setAccessible(true);
-            PlayerInjectionHandler handler = (PlayerInjectionHandler) f.get(manager);
-            f.setAccessible(false);
-            return handler;
-        } catch (NoSuchFieldException e) {
-            throw new RuntimeException(e);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
+        PacketFilterManager manager = (PacketFilterManager) ProtocolLibrary.getProtocolManager();
+        FieldAccessor accessor = Accessors.getFieldAccessor(manager.getClass(), PlayerInjectionHandler.class, true);
+        return (PlayerInjectionHandler) accessor.get(manager);
     }
 
     private FloodgatePlayer getFloodgatePlayer(Player player) {
