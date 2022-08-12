@@ -59,6 +59,7 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.geysermc.floodgate.api.FloodgateApi;
 import org.geysermc.geyser.GeyserImpl;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
 /**
@@ -235,7 +236,7 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
      * @return the online status or unknown if an error happened, the player isn't online or BungeeCord doesn't send
      * us the status message yet (This means you cannot check the login status on the PlayerJoinEvent).
      */
-    public PremiumStatus getStatus(UUID onlinePlayer) {
+    public @NotNull PremiumStatus getStatus(@NotNull UUID onlinePlayer) {
         return premiumPlayers.getOrDefault(onlinePlayer, PremiumStatus.UNKNOWN);
     }
 

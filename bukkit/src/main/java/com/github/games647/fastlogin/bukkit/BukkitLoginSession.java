@@ -32,7 +32,7 @@ import com.github.games647.fastlogin.core.shared.LoginSession;
 
 import java.util.Optional;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Represents a client connecting to the server.
