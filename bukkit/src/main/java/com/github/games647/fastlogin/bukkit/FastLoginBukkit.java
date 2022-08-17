@@ -187,7 +187,7 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
             }
         }
 
-        if (isPluginInstalled("ProtocolLib")) {
+        if (getServer().getPluginManager().isPluginEnabled("ProtocolLib")) {
             ProtocolLibrary.getProtocolManager().getAsynchronousManager().unregisterAsyncHandlers(this);
         }
     }
