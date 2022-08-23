@@ -112,7 +112,7 @@ Install the plugin on both platforms, that is proxy (BungeeCord or Velocity) and
    * This is often found in `spigot.yml` or `paper.yml`
 2. Restart the backend server
 3. Now there is `allowed-proxies.txt` file in the FastLogin folder of the restarted server
-    * BungeeCord: Put your `stats-id` from the BungeeCord config into this file
+    * BungeeCord: Put your `stats`-id from the BungeeCord config into this file
     * Velocity: On plugin startup the plugin generates a `proxyId.txt` inside the plugins folder of the proxy
 4. Activate ip forwarding in your proxy config
 5. Check your database settings in the config of FastLogin on your proxy
