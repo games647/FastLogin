@@ -30,7 +30,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <properties>
-        <nettyVersion>4.1.79.Final</nettyVersion>
+        <nettyVersion>4.1.80.Final</nettyVersion>
     </properties>
 
     <parent>
