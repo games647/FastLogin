@@ -31,8 +31,8 @@ import com.github.games647.fastlogin.core.shared.LoginSource;
 import java.util.UUID;
 
 import org.geysermc.geyser.GeyserImpl;
+import org.geysermc.geyser.api.network.AuthType;
 import org.geysermc.geyser.session.GeyserSession;
-import org.geysermc.geyser.session.auth.AuthType;
 
 public class GeyserService extends BedrockService<GeyserSession> {
 
@@ -44,7 +44,7 @@ public class GeyserService extends BedrockService<GeyserSession> {
         super(core);
         this.geyser = geyser;
         this.core = core;
-        this.authType = GeyserImpl.getInstance().getConfig().getRemote().getAuthType();
+        this.authType = GeyserImpl.getInstance().getConfig().getRemote().authType();
     }
 
     @Override
@@ -65,7 +65,12 @@ public class GeyserService extends BedrockService<GeyserSession> {
 
     @Override
     public GeyserSession getBedrockPlayer(String username) {
-        return geyser.connectionByName(username);
+        for (GeyserSession gSess : geyser.getSessionManager().getAllSessions()) {
+            if (username.equals(gSess.getClientData().getUsername())) {
+                return gSess;
+            }
+        }
+        return null;
     }
 
     @Override

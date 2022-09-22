@@ -56,7 +56,7 @@
         <!-- Floodgate -->
         <repository>
             <id>opencollab-snapshot</id>
-            <url>https://repo.opencollab.dev/maven-snapshots/</url>
+            <url>https://repo.opencollab.dev/artifactory/maven-snapshots/</url>
             <releases>
                 <enabled>false</enabled>
             </releases>
@@ -121,7 +121,7 @@
 
         <!-- Bedrock player bridge -->
         <dependency>
-            <groupId>org.geysermc</groupId>
+            <groupId>org.geysermc.geyser</groupId>
             <artifactId>core</artifactId>
             <version>${geyser.version}</version>
             <scope>provided</scope>
@@ -135,8 +135,8 @@
 
         <!-- We need the API, but it was excluded above -->
         <dependency>
-            <groupId>org.geysermc</groupId>
-            <artifactId>geyser-api</artifactId>
+            <groupId>org.geysermc.geyser</groupId>
+            <artifactId>api</artifactId>
             <version>${geyser.version}</version>
             <scope>provided</scope>
         </dependency>
