@@ -92,7 +92,7 @@
         <dependency>
             <groupId>net.md-5</groupId>
             <artifactId>bungeecord-config</artifactId>
-            <version>1.19-R0.1-20220702.004052-16</version>
+            <version>1.19-R0.1-SNAPSHOT</version>
             <exclusions>
                 <exclusion>
                     <groupId>*</groupId>
