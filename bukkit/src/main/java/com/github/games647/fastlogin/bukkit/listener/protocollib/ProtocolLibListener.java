@@ -179,7 +179,8 @@ public class ProtocolLibListener extends PacketAdapter {
     private boolean verifyNonce(Player sender, PacketContainer packet,
                                 ClientPublicKey clientPublicKey, byte[] expectedToken) {
         try {
-            if (MinecraftVersion.atOrAbove(new MinecraftVersion(1, 19, 0))) {
+            if (MinecraftVersion.atOrAbove(new MinecraftVersion(1, 19, 0))
+                    && !MinecraftVersion.atOrAbove(new MinecraftVersion(1, 19, 3))) {
                 Either<byte[], ?> either = packet.getSpecificModifier(Either.class).read(0);
                 if (clientPublicKey == null) {
                     Optional<byte[]> left = either.left();
@@ -222,26 +223,33 @@ public class ProtocolLibListener extends PacketAdapter {
         plugin.removeSession(player.getAddress());
 
         PacketContainer packet = packetEvent.getPacket();
-        val profileKey = packet.getOptionals(BukkitConverters.getWrappedPublicKeyDataConverter())
-                .optionRead(0);
+        Optional<ClientPublicKey> clientKey = Optional.empty();
+        if (MinecraftVersion.atOrAbove(new MinecraftVersion(1, 19, 3))) {
+            // public key sent separate
+            clientKey = Optional.empty();
+        } else {
+            val profileKey = packet.getOptionals(BukkitConverters.getWrappedPublicKeyDataConverter())
+                    .optionRead(0);
 
-        val clientKey = profileKey.flatMap(Function.identity()).flatMap(data -> {
-            Instant expires = data.getExpireTime();
-            PublicKey key = data.getKey();
-            byte[] signature = data.getSignature();
-            return Optional.of(ClientPublicKey.of(expires, key, signature));
-        });
+            clientKey = profileKey.flatMap(Function.identity()).flatMap(data -> {
+                Instant expires = data.getExpireTime();
+                PublicKey key = data.getKey();
+                byte[] signature = data.getSignature();
+                return Optional.of(ClientPublicKey.of(expires, key, signature));
+            });
 
-        // start reading from index 1, because 0 is already used by the public key
-        Optional<UUID> sessionUUID = packet.getOptionals(Converters.passthrough(UUID.class)).readSafely(1);
-        if (verifyClientKeys && sessionUUID.isPresent() && clientKey.isPresent()
-                && verifyPublicKey(clientKey.get(), sessionUUID.get())) {
-            // missing or incorrect
-            // expired always not allowed
-            player.kickPlayer(plugin.getCore().getMessage("invalid-public-key"));
-            plugin.getLog().warn("Invalid public key from player {}", username);
-            return;
+            // start reading from index 1, because 0 is already used by the public key
+            Optional<UUID> sessionUUID = packet.getOptionals(Converters.passthrough(UUID.class)).readSafely(1);
+            if (verifyClientKeys && sessionUUID.isPresent() && clientKey.isPresent()
+                    && verifyPublicKey(clientKey.get(), sessionUUID.get())) {
+                // missing or incorrect
+                // expired always not allowed
+                player.kickPlayer(plugin.getCore().getMessage("invalid-public-key"));
+                plugin.getLog().warn("Invalid public key from player {}", username);
+                return;
+            }
         }
+
 
         plugin.getLog().trace("GameProfile {} with {} connecting", sessionKey, username);
 
