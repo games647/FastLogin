@@ -371,7 +371,7 @@
         <dependency>
             <groupId>org.bouncycastle</groupId>
             <artifactId>bcprov-jdk18on</artifactId>
-            <version>1.71</version>
+            <version>1.72</version>
             <scope>test</scope>
         </dependency>
 
