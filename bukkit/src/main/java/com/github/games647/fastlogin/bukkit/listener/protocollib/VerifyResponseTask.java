@@ -28,10 +28,12 @@ package com.github.games647.fastlogin.bukkit.listener.protocollib;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
+import com.comphenix.protocol.injector.packet.PacketRegistry;
 import com.comphenix.protocol.injector.temporary.TemporaryPlayerFactory;
 import com.comphenix.protocol.reflect.EquivalentConverter;
 import com.comphenix.protocol.reflect.FuzzyReflection;
 import com.comphenix.protocol.reflect.accessors.Accessors;
+import com.comphenix.protocol.reflect.accessors.ConstructorAccessor;
 import com.comphenix.protocol.reflect.accessors.FieldAccessor;
 import com.comphenix.protocol.utility.MinecraftReflection;
 import com.comphenix.protocol.utility.MinecraftVersion;
@@ -269,10 +271,9 @@ public class VerifyResponseTask implements Runnable {
 
     //fake a new login packet in order to let the server handle all the other stuff
     private void receiveFakeStartPacket(String username, ClientPublicKey clientKey) {
-        //see StartPacketListener for packet information
-        PacketContainer startPacket = new PacketContainer(START);
-
+        PacketContainer startPacket;
         if (MinecraftVersion.atOrAbove(new MinecraftVersion(1, 19, 0))) {
+            startPacket = new PacketContainer(START);
             startPacket.getStrings().write(0, username);
 
             EquivalentConverter<WrappedProfileKeyData> converter = BukkitConverters.getWrappedPublicKeyDataConverter();
@@ -284,7 +285,11 @@ public class VerifyResponseTask implements Runnable {
         } else {
             //uuid is ignored by the packet definition
             WrappedGameProfile fakeProfile = new WrappedGameProfile(UUID.randomUUID(), username);
-            startPacket.getGameProfiles().write(0, fakeProfile);
+
+            Class<?> profileHandleType = fakeProfile.getHandleType();
+            Class<?> packetHandleType = PacketRegistry.getPacketClassFromType(START);
+            ConstructorAccessor startCons = Accessors.getConstructorAccessorOrNull(packetHandleType, profileHandleType);
+            startPacket = new PacketContainer(START, startCons.invoke(fakeProfile));
         }
 
         //we don't want to handle our own packets so ignore filters
