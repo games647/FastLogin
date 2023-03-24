@@ -127,7 +127,7 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
         Set<Proxy> proxies = config.getStringList("proxies")
                 .stream()
                 .map(HostAndPort::fromString)
-                .map(proxy -> new InetSocketAddress(proxy.getHost(), proxy.getPort()))
+                .map(proxy -> new InetSocketAddress(proxy.getHostText(), proxy.getPort()))
                 .map(sa -> new Proxy(Type.HTTP, sa))
                 .collect(toSet());
 

@@ -289,7 +289,7 @@ public class VerifyResponseTask implements Runnable {
             Class<?> profileHandleType = fakeProfile.getHandleType();
             Class<?> packetHandleType = PacketRegistry.getPacketClassFromType(START);
             ConstructorAccessor startCons = Accessors.getConstructorAccessorOrNull(packetHandleType, profileHandleType);
-            startPacket = new PacketContainer(START, startCons.invoke(fakeProfile));
+            startPacket = new PacketContainer(START, startCons.invoke(fakeProfile.getHandle()));
         }
 
         //we don't want to handle our own packets so ignore filters
