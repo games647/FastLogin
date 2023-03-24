@@ -229,7 +229,7 @@
         <dependency>
             <groupId>org.geysermc.floodgate</groupId>
             <artifactId>api</artifactId>
-            <version>2.2.0-SNAPSHOT</version>
+            <version>${floodgate.version}</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>

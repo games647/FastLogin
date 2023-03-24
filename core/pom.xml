@@ -44,7 +44,7 @@
     <repositories>
         <repository>
             <id>luck-repo</id>
-            <url>https://ci.lucko.me/plugin/repository/everything</url>
+            <url>https://ci.lucko.me/plugin/repository/everything/</url>
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
@@ -56,7 +56,7 @@
         <!-- Floodgate -->
         <repository>
             <id>opencollab-snapshot</id>
-            <url>https://repo.opencollab.dev/artifactory/maven-snapshots/</url>
+            <url>https://repo.opencollab.dev/maven-snapshots/</url>
             <releases>
                 <enabled>false</enabled>
             </releases>
