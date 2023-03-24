@@ -56,7 +56,7 @@
         <maven.compiler.release>${java.version}</maven.compiler.release>
 
         <floodgate.version>development-2.2.2-SNAPSHOT</floodgate.version>
-        <geyser.version>2.1.0-20221208.011544-55</geyser.version>
+        <geyser.version>2.1.0-SNAPSHOT</geyser.version>
     </properties>
 
     <modules>
