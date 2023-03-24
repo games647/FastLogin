@@ -106,11 +106,6 @@
         </repository>
 
         <repository>
-            <id>spigotplugins-repo</id>
-            <url>https://maven.gamestrike.de/mvn/</url>
-        </repository>
-
-        <repository>
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>
             <snapshots>
@@ -215,19 +210,6 @@
             <version>1.4</version>
             <scope>system</scope>
             <systemPath>${project.basedir}/lib/BungeeAuth-1.4.jar</systemPath>
-        </dependency>
-
-        <dependency>
-            <groupId>de.xxschrandxx.bca</groupId>
-            <artifactId>BungeeCordAuthenticator</artifactId>
-            <version>0.0.3</version>
-            <scope>provided</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>*</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
     </dependencies>
 </project>
