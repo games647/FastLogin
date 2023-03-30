@@ -272,7 +272,7 @@ public class VerifyResponseTask implements Runnable {
     //fake a new login packet in order to let the server handle all the other stuff
     private void receiveFakeStartPacket(String username, ClientPublicKey clientKey) {
         PacketContainer startPacket;
-        if (MinecraftVersion.atOrAbove(new MinecraftVersion(1, 19, 0))) {
+        if (new MinecraftVersion(1, 19, 0).atOrAbove()) {
             startPacket = new PacketContainer(START);
             startPacket.getStrings().write(0, username);
 

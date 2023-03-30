@@ -179,8 +179,8 @@ public class ProtocolLibListener extends PacketAdapter {
     private boolean verifyNonce(Player sender, PacketContainer packet,
                                 ClientPublicKey clientPublicKey, byte[] expectedToken) {
         try {
-            if (MinecraftVersion.atOrAbove(new MinecraftVersion(1, 19, 0))
-                    && !MinecraftVersion.atOrAbove(new MinecraftVersion(1, 19, 3))) {
+            if (new MinecraftVersion(1, 19, 0).atOrAbove()
+                    && !(new MinecraftVersion(1, 19, 3).atOrAbove())) {
                 Either<byte[], ?> either = packet.getSpecificModifier(Either.class).read(0);
                 if (clientPublicKey == null) {
                     Optional<byte[]> left = either.left();
@@ -224,7 +224,7 @@ public class ProtocolLibListener extends PacketAdapter {
 
         PacketContainer packet = packetEvent.getPacket();
         Optional<ClientPublicKey> clientKey = Optional.empty();
-        if (MinecraftVersion.atOrAbove(new MinecraftVersion(1, 19, 3))) {
+        if (new MinecraftVersion(1, 19, 3).atOrAbove()) {
             // public key sent separate
             clientKey = Optional.empty();
         } else {
