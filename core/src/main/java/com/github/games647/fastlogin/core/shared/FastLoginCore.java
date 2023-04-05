@@ -40,7 +40,6 @@ import com.github.games647.fastlogin.core.storage.MySQLStorage;
 import com.github.games647.fastlogin.core.storage.SQLStorage;
 import com.github.games647.fastlogin.core.storage.SQLiteStorage;
 import com.google.common.base.Ticker;
-import com.google.common.net.HostAndPort;
 import com.zaxxer.hikari.HikariConfig;
 
 import java.io.IOException;
@@ -126,8 +125,8 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
         antiBot = createAntiBotService(config.getSection("anti-bot"));
         Set<Proxy> proxies = config.getStringList("proxies")
                 .stream()
-                .map(HostAndPort::fromString)
-                .map(proxy -> new InetSocketAddress(proxy.getHostText(), proxy.getPort()))
+                .map(proxy -> proxy.split(":"))
+                .map(proxy -> new InetSocketAddress(proxy[0], Integer.parseInt(proxy[1])))
                 .map(sa -> new Proxy(Type.HTTP, sa))
                 .collect(toSet());
 
@@ -269,6 +268,7 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
         return passwordGenerator;
     }
 
+    @SuppressWarnings("unused")
     public void setPasswordGenerator(PasswordGenerator<P> passwordGenerator) {
         this.passwordGenerator = passwordGenerator;
     }

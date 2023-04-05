@@ -202,8 +202,8 @@ mojang-request-limit: 600
 # https://github.com/games647/FastLogin/issues/85
 auto-register-unknown: false
 
-# This disables the auto login from fastlogin. So a premium (like a paid account) authentication is requested, but
-# the player won't be auto logged into the account.
+# By setting this option to false, you can disable the auto login from fastlogin. So a premium (like a paid account)
+# authentication is requested, but the player won't be auto logged into the account from the auth plugin.
 #
 # This can be used as 2Factor authentication for better security of your accounts. A hacker then needs both passwords.
 # The password of your Minecraft and the password to login in with your auth plugin
