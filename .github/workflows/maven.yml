@@ -31,7 +31,7 @@ jobs:
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
-          java-version: 18
+          java-version: 19
           cache: 'maven'
 
       # Build and test (included in package)
