@@ -2,7 +2,7 @@
 # including making pull requests review easier
 
 # Human-readable name in the actions tab
-name: Java CI
+name: Maven Build
 
 # Build on every pull request regardless of the branch
 # Wiki: https://help.github.com/en/actions/reference/events-that-trigger-workflows
@@ -20,6 +20,8 @@ jobs:
 
     # Environment image - always use the newest OS
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
 
     # Run steps
     steps:
