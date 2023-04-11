@@ -250,7 +250,6 @@ public class ProtocolLibListener extends PacketAdapter {
             }
         }
 
-
         plugin.getLog().trace("GameProfile {} with {} connecting", sessionKey, username);
 
         packetEvent.getAsyncMarker().incrementProcessingDelay();

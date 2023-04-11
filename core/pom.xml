@@ -70,7 +70,7 @@
         <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
-            <version>4.0.3</version>
+            <version>5.0.2-SNAPSHOT</version>
             <exclusions>
                 <!-- HikariCP uses an old version of this API that has a typo in the service interface -->
                 <!-- We will use the api provided by the jdk14 dependency -->
