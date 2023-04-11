@@ -178,7 +178,8 @@ class EncryptionUtilTest {
         assertEquals(EncryptionUtil.getServerIdHashString(serverId, sharedSecret, serverPK), sessionHash);
     }
 
-    private static String getServerHash(CharSequence serverId, SecretKey sharedSecret, PublicKey serverPK) {
+    private static String getServerHash(@SuppressWarnings("SameParameterValue") CharSequence serverId,
+                                        SecretKey sharedSecret, PublicKey serverPK) {
         // https://wiki.vg/Protocol_Encryption#Client
         // sha1 := Sha1()
         // sha1.update(ASCII encoding of the server id string from Encryption Request)

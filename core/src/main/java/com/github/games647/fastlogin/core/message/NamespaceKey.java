@@ -48,4 +48,12 @@ public class NamespaceKey {
     public static String getCombined(String namespace, String key) {
         return new NamespaceKey(namespace, key).combined;
     }
+
+    public String getNamespace() {
+        return namespace;
+    }
+
+    public String getKey() {
+        return key;
+    }
 }

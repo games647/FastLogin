@@ -40,6 +40,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.InvalidKeySpecException;
+import java.security.spec.KeySpec;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.time.Instant;
@@ -58,7 +59,7 @@ public class ResourceLoader {
         ) {
             PemObject pemObject = pemReader.readPemObject();
             byte[] content = pemObject.getContent();
-            PKCS8EncodedKeySpec privateKeySpec = new PKCS8EncodedKeySpec(content);
+            KeySpec privateKeySpec = new PKCS8EncodedKeySpec(content);
 
             KeyFactory factory = KeyFactory.getInstance("RSA");
             return (RSAPrivateKey) factory.generatePrivate(privateKeySpec);
@@ -88,7 +89,7 @@ public class ResourceLoader {
         ) {
             PemObject pemObject = pemReader.readPemObject();
             byte[] content = pemObject.getContent();
-            X509EncodedKeySpec pubKeySpec = new X509EncodedKeySpec(content);
+            KeySpec pubKeySpec = new X509EncodedKeySpec(content);
 
             KeyFactory factory = KeyFactory.getInstance("RSA");
             return (RSAPublicKey) factory.generatePublic(pubKeySpec);

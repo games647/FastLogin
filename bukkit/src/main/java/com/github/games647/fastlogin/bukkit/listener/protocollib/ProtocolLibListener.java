@@ -223,7 +223,7 @@ public class ProtocolLibListener extends PacketAdapter {
         plugin.removeSession(player.getAddress());
 
         PacketContainer packet = packetEvent.getPacket();
-        Optional<ClientPublicKey> clientKey = Optional.empty();
+        Optional<ClientPublicKey> clientKey;
         if (new MinecraftVersion(1, 19, 3).atOrAbove()) {
             // public key sent separate
             clientKey = Optional.empty();

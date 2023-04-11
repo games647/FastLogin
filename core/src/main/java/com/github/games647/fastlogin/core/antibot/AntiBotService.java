@@ -57,6 +57,6 @@ public class AntiBotService {
 
         Block,
 
-        Continue;
+        Continue
     }
 }

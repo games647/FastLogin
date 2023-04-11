@@ -46,7 +46,7 @@ import com.google.common.io.ByteStreams;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 import java.nio.file.Path;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ThreadFactory;
@@ -128,7 +128,7 @@ public class FastLoginBungee extends Plugin implements PlatformPlugin<CommandSen
 
     private void registerHook() {
         try {
-            List<Class<? extends AuthPlugin<ProxiedPlayer>>> hooks = Arrays.asList(
+            List<Class<? extends AuthPlugin<ProxiedPlayer>>> hooks = Collections.singletonList(
                     BungeeAuthHook.class
             );
 

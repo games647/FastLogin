@@ -85,7 +85,7 @@ public class MySQLStorage extends SQLStorage {
         // default false - available in newer versions caches the statements server-side
         config.addDataSourceProperty("useServerPrepStmts", true);
         // default false - prefer use of local values for autocommit and
-        // transaction isolation (alwaysSendSetIsolation) should only be enabled if always use the set* methods
+        // transaction isolation (alwaysSendSetIsolation) should only be enabled if we always use the set* methods
         // instead of raw SQL
         // https://forums.mysql.com/read.php?39,626495,626512
         config.addDataSourceProperty("useLocalSessionState", true);

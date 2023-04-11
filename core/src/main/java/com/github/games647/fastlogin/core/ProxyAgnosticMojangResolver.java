@@ -23,7 +23,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.github.games647.fastlogin.core.mojang;
+package com.github.games647.fastlogin.core;
 
 import com.github.games647.craftapi.model.auth.Verification;
 import com.github.games647.craftapi.resolver.MojangResolver;

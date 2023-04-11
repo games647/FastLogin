@@ -45,7 +45,7 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  * Responsible for receiving messages from a BungeeCord instance.
- *
+ * <p>
  * This class also receives the plugin message from the bungeecord version of this plugin in order to get notified if
  * the connection is in online mode.
  */

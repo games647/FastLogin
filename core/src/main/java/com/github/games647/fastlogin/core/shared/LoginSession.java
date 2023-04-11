@@ -91,10 +91,10 @@ public abstract class LoginSession {
 
     @Override
     public String toString() {
-        return new StringJoiner(", ", LoginSession.class.getSimpleName() + "[", "]")
+        return new StringJoiner(", ", LoginSession.class.getSimpleName() + '[', "]")
                 .add("profile=" + profile)
-                .add("requestUsername='" + requestUsername + "'")
-                .add("username='" + username + "'")
+                .add("requestUsername='" + requestUsername + '\'')
+                .add("username='" + username + '\'')
                 .add("uuid=" + uuid)
                 .add("registered=" + registered)
                 .toString();

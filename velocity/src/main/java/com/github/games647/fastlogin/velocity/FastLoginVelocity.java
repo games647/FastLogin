@@ -46,9 +46,9 @@ import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
+import com.velocitypowered.api.proxy.messages.ChannelMessageSink;
 import com.velocitypowered.api.proxy.messages.ChannelRegistrar;
 import com.velocitypowered.api.proxy.messages.MinecraftChannelIdentifier;
-import com.velocitypowered.api.proxy.server.RegisteredServer;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -159,7 +159,7 @@ public class FastLoginVelocity implements PlatformPlugin<CommandSource> {
         return server;
     }
 
-    public void sendPluginMessage(RegisteredServer server, ChannelMessage message) {
+    public void sendPluginMessage(ChannelMessageSink server, ChannelMessage message) {
         if (server != null) {
             ByteArrayDataOutput dataOutput = ByteStreams.newDataOutput();
             message.writeTo(dataOutput);

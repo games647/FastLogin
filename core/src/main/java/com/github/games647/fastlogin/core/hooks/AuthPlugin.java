@@ -37,7 +37,7 @@ public interface AuthPlugin<P> {
 
     /**
      * Login the premium (paid account) player after the player joined successfully the server.
-     *
+     * <p>
      * <strong>This operation will be performed async while the player successfully
      * joined the server.</strong>
      *
@@ -48,17 +48,17 @@ public interface AuthPlugin<P> {
 
     /**
      * Forces a register in order to protect the paid account.
-     *
+     * <p>
      * <strong>This operation will be performed async while the player successfully
      * joined the server.</strong>
-     *
+     * <p>
      * After a successful registration the player should be logged
      * in too.
-     *
+     * <p>
      * The method will be called only for premium accounts.
      * So it's recommended to set additionally premium property
      * if possible.
-     *
+     * <p>
      * Background: If we don't register an account, cracked players
      * could steal the unregistered account from the paid
      * player account
@@ -71,11 +71,11 @@ public interface AuthPlugin<P> {
 
     /**
      * Checks whether an account exists for this player name.
-     *
+     * <p>
      * This check should check if a cracked player account exists,
      * so we can be sure the premium player doesn't steal the account
      * of that player.
-     *
+     * <p>
      * This operation will be performed async while the player is
      * connecting.
      *

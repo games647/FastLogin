@@ -36,9 +36,9 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 /**
  * GitHub:
  * <a href="https://github.com/vik1395/BungeeAuth-Minecraft">...</a>
- *
+ * <p>
  * Project page:
- *
+ * <p>
  * Spigot:
  * <a href="https://www.spigotmc.org/resources/bungeeauth.493/">...</a>
  */

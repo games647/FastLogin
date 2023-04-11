@@ -36,7 +36,7 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * Represents a client connecting to the server.
- *
+ * <p>
  * This session is invalid if the player disconnects or the login was successful
  */
 public class BukkitLoginSession extends LoginSession {
@@ -76,7 +76,7 @@ public class BukkitLoginSession extends LoginSession {
 
     /**
      * Gets the verify-token the server sent to the client.
-     *
+     * <p>
      * Empty if it's a BungeeCord connection
      *
      * @return verify token from the server
