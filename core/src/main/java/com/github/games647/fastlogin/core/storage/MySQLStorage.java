@@ -56,7 +56,7 @@ public class MySQLStorage extends SQLStorage {
         config.addDataSourceProperty("requireSSL", useSSL);
 
         //enable leak detection of holding connections
-        config.setLeakDetectionThreshold(2000);
+        config.setLeakDetectionThreshold(10_000);
 
         // adding paranoid, hides hostname, username, version and so
         // could be useful for hiding server details
