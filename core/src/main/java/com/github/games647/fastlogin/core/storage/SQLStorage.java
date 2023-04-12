@@ -144,8 +144,11 @@ public abstract class SQLStorage implements AuthStorage {
     @Override
     public void save(StoredProfile playerProfile) {
         String uuid = playerProfile.getOptId().map(UUIDAdapter::toMojangId).orElse(null);
+        core.getPlugin().getLog().info("Before Lock");
         synchronized (playerProfile) {
+            core.getPlugin().getLog().info("Inside Lock - Before acquiring connection");
             try (Connection con = dataSource.getConnection()) {
+                core.getPlugin().getLog().info("Acquired connection");
                 if (playerProfile.isSaved()) {
                     try (PreparedStatement saveStmt = con.prepareStatement(UPDATE_PROFILE)) {
                         saveStmt.setString(1, uuid);
@@ -175,7 +178,11 @@ public abstract class SQLStorage implements AuthStorage {
             } catch (SQLException ex) {
                 core.getPlugin().getLog().error("Failed to save playerProfile {}", playerProfile, ex);
             }
+
+            core.getPlugin().getLog().info("Released connection");
         }
+
+        core.getPlugin().getLog().info("Released lock");
     }
 
     @Override
