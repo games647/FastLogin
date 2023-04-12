@@ -65,7 +65,7 @@ public class MySQLStorage extends SQLStorage {
         config.setJdbcUrl(JDBC_PROTOCOL + buildJDBCUrl(driver, host, port, database));
 
         // enable MySQL specific optimizations
-        addPerformanceProperties(config);
+//        addPerformanceProperties(config);
         return config;
     }
 
