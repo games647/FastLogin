@@ -41,17 +41,6 @@ import com.github.games647.fastlogin.core.hooks.bedrock.FloodgateService;
 import com.github.games647.fastlogin.core.hooks.bedrock.GeyserService;
 import com.github.games647.fastlogin.core.shared.FastLoginCore;
 import com.github.games647.fastlogin.core.shared.PlatformPlugin;
-
-import io.papermc.lib.PaperLib;
-
-import java.net.InetSocketAddress;
-import java.nio.file.Path;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -61,6 +50,14 @@ import org.geysermc.floodgate.api.FloodgateApi;
 import org.geysermc.geyser.GeyserImpl;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
+
+import java.net.InetSocketAddress;
+import java.nio.file.Path;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  * This plugin checks if a player has a paid account and if so tries to skip offline mode authentication.
@@ -120,7 +117,7 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
                 ProtocolLibListener.register(this, core.getAntiBot(), core.getConfig().getBoolean("verifyClientKeys"));
 
                 //if server is using paper - we need to set the skin at pre login anyway, so no need for this listener
-                if (!PaperLib.isPaper() && getConfig().getBoolean("forwardSkin")) {
+                if (!isPaper() && getConfig().getBoolean("forwardSkin")) {
                     pluginManager.registerEvents(new SkinApplyListener(this), this);
                 }
             } else {
@@ -136,7 +133,7 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
         pluginManager.registerEvents(new ConnectionListener(this), this);
 
         //if server is using paper - we need to add one more listener to correct the user cache usage
-        if (PaperLib.isPaper()) {
+        if (isPaper()) {
             pluginManager.registerEvents(new PaperCacheListener(this), this);
         }
 
@@ -304,5 +301,18 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
             return floodgateService;
         }
         return geyserService;
+    }
+
+    private boolean isPaper() {
+        return isClassAvailable("com.destroystokyo.paper.PaperConfig").isPresent()
+                || isClassAvailable("io.papermc.paper.configuration.Configuration").isPresent();
+    }
+
+    private Optional<Class<?>> isClassAvailable(String clazzName) {
+        try {
+            return Optional.of(Class.forName(clazzName));
+        } catch (ClassNotFoundException e) {
+            return Optional.empty();
+        }
     }
 }

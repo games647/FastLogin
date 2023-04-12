@@ -176,13 +176,6 @@
             </exclusions>
         </dependency>
 
-        <!-- PaperLib for checking if server uses PaperSpigot -->
-        <dependency>
-            <groupId>io.papermc</groupId>
-            <artifactId>paperlib</artifactId>
-            <version>1.0.8</version>
-        </dependency>
-
         <dependency>
             <groupId>com.mojang</groupId>
             <artifactId>datafixerupper</artifactId>
