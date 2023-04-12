@@ -25,7 +25,7 @@
  */
 package com.github.games647.fastlogin.core.storage;
 
-import com.github.games647.fastlogin.core.shared.FastLoginCore;
+import com.github.games647.fastlogin.core.shared.PlatformPlugin;
 import com.zaxxer.hikari.HikariConfig;
 
 public class MySQLStorage extends SQLStorage {
@@ -34,9 +34,10 @@ public class MySQLStorage extends SQLStorage {
     private static final String MYSQL_DRIVER = "com.mysql.cj.jdbc.Driver";
     private static final String MARIADB_DRIVER = "fastlogin.mariadb.jdbc.Driver";
 
-    public MySQLStorage(FastLoginCore<?, ?, ?> core, String driver, String host, int port, String database,
+    public MySQLStorage(PlatformPlugin<?> plugin, String driver, String host, int port, String database,
                         HikariConfig config, boolean useSSL) {
-        super(core, setParams(config, driver, host, port, database, useSSL));
+        super(plugin.getLog(), plugin.getName(), plugin.getThreadFactory(),
+                setParams(config, driver, host, port, database, useSSL));
     }
 
     private static HikariConfig setParams(HikariConfig config,

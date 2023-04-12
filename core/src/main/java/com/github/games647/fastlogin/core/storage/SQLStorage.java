@@ -26,10 +26,9 @@
 package com.github.games647.fastlogin.core.storage;
 
 import com.github.games647.craftapi.UUIDAdapter;
-import com.github.games647.fastlogin.core.StoredProfile;
-import com.github.games647.fastlogin.core.shared.FastLoginCore;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import org.slf4j.Logger;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -65,16 +64,14 @@ public abstract class SQLStorage implements AuthStorage {
     protected static final String UPDATE_PROFILE = "UPDATE `" + PREMIUM_TABLE
             + "` SET `UUID`=?, `Name`=?, `Premium`=?, `LastIp`=?, `LastLogin`=CURRENT_TIMESTAMP WHERE `UserID`=?";
 
-    protected final FastLoginCore<?, ?, ?> core;
+    protected final Logger log;
     protected final HikariDataSource dataSource;
 
-    public SQLStorage(FastLoginCore<?, ?, ?> core, HikariConfig config) {
-        this.core = core;
-        config.setPoolName(core.getPlugin().getName());
-
-        ThreadFactory platformThreadFactory = core.getPlugin().getThreadFactory();
-        if (platformThreadFactory != null) {
-            config.setThreadFactory(platformThreadFactory);
+    public SQLStorage(Logger log, String poolName, ThreadFactory threadFactory, HikariConfig config) {
+        this.log = log;
+        config.setPoolName(poolName);
+        if (threadFactory != null) {
+            config.setThreadFactory(threadFactory);
         }
 
         this.dataSource = new HikariDataSource(config);
@@ -103,7 +100,7 @@ public abstract class SQLStorage implements AuthStorage {
                 return parseResult(resultSet).orElseGet(() -> new StoredProfile(null, name, false, ""));
             }
         } catch (SQLException sqlEx) {
-            core.getPlugin().getLog().error("Failed to query profile: {}", name, sqlEx);
+            log.error("Failed to query profile: {}", name, sqlEx);
         }
 
         return null;
@@ -119,7 +116,7 @@ public abstract class SQLStorage implements AuthStorage {
                 return parseResult(resultSet).orElse(null);
             }
         } catch (SQLException sqlEx) {
-            core.getPlugin().getLog().error("Failed to query profile: {}", uuid, sqlEx);
+            log.error("Failed to query profile: {}", uuid, sqlEx);
         }
 
         return null;
@@ -178,7 +175,7 @@ public abstract class SQLStorage implements AuthStorage {
                 playerProfile.getSaveLock().unlock();
             }
         } catch (SQLException ex) {
-            core.getPlugin().getLog().error("Failed to save playerProfile {}", playerProfile, ex);
+            log.error("Failed to save playerProfile {}", playerProfile, ex);
         }
     }
 

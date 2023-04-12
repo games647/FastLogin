@@ -25,15 +25,14 @@
  */
 package com.github.games647.fastlogin.core.hooks.bedrock;
 
-import com.github.games647.fastlogin.core.StoredProfile;
 import com.github.games647.fastlogin.core.shared.FastLoginCore;
 import com.github.games647.fastlogin.core.shared.LoginSource;
+import com.github.games647.fastlogin.core.storage.StoredProfile;
+import org.geysermc.floodgate.api.FloodgateApi;
+import org.geysermc.floodgate.api.player.FloodgatePlayer;
 
 import java.util.Locale;
 import java.util.UUID;
-
-import org.geysermc.floodgate.api.FloodgateApi;
-import org.geysermc.floodgate.api.player.FloodgatePlayer;
 
 public class FloodgateService extends BedrockService<FloodgatePlayer> {
 

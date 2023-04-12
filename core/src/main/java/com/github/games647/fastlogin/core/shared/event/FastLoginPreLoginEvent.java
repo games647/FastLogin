@@ -25,8 +25,8 @@
  */
 package com.github.games647.fastlogin.core.shared.event;
 
-import com.github.games647.fastlogin.core.StoredProfile;
 import com.github.games647.fastlogin.core.shared.LoginSource;
+import com.github.games647.fastlogin.core.storage.StoredProfile;
 
 /**
  * This action represents the login attempt of a player before the plugin makes any online mode actions.

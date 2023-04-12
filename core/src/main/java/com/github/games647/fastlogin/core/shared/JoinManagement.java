@@ -27,14 +27,13 @@ package com.github.games647.fastlogin.core.shared;
 
 import com.github.games647.craftapi.model.Profile;
 import com.github.games647.craftapi.resolver.RateLimitException;
-import com.github.games647.fastlogin.core.StoredProfile;
 import com.github.games647.fastlogin.core.hooks.AuthPlugin;
 import com.github.games647.fastlogin.core.hooks.bedrock.BedrockService;
 import com.github.games647.fastlogin.core.shared.event.FastLoginPreLoginEvent;
+import com.github.games647.fastlogin.core.storage.StoredProfile;
+import net.md_5.bungee.config.Configuration;
 
 import java.util.Optional;
-
-import net.md_5.bungee.config.Configuration;
 
 public abstract class JoinManagement<P extends C, C, S extends LoginSource> {
 

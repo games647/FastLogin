@@ -25,11 +25,12 @@
  */
 package com.github.games647.fastlogin.core.storage;
 
-import com.github.games647.fastlogin.core.StoredProfile;
-import com.github.games647.fastlogin.core.shared.FastLoginCore;
 import com.github.games647.fastlogin.core.shared.PlatformPlugin;
 import com.zaxxer.hikari.HikariConfig;
+import org.sqlite.JDBC;
+import org.sqlite.SQLiteConfig;
 
+import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -37,16 +38,14 @@ import java.util.UUID;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import org.sqlite.JDBC;
-import org.sqlite.SQLiteConfig;
-
 public class SQLiteStorage extends SQLStorage {
 
     private static final String SQLITE_DRIVER = "org.sqlite.SQLiteDataSource";
     private final Lock lock = new ReentrantLock();
 
-    public SQLiteStorage(FastLoginCore<?, ?, ?> core, String databasePath, HikariConfig config) {
-        super(core, setParams(config, replacePathVariables(core.getPlugin(), databasePath)));
+    public SQLiteStorage(PlatformPlugin<?> plugin, String databasePath, HikariConfig config) {
+        super(plugin.getLog(), plugin.getName(), plugin.getThreadFactory(),
+                setParams(config, replacePathVariables(plugin.getPluginFolder(), databasePath)));
     }
 
     private static HikariConfig setParams(HikariConfig config, String path) {
@@ -112,8 +111,8 @@ public class SQLiteStorage extends SQLStorage {
         }
     }
 
-    private static String replacePathVariables(PlatformPlugin<?> plugin, String input) {
-        String pluginFolder = plugin.getPluginFolder().toAbsolutePath().toString();
+    private static String replacePathVariables(Path dataFolder, String input) {
+        String pluginFolder = dataFolder.toAbsolutePath().toString();
         return input.replace("{pluginDir}", pluginFolder);
     }
 }

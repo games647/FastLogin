@@ -31,15 +31,14 @@ import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 import com.github.games647.fastlogin.bukkit.event.BukkitFastLoginPreLoginEvent;
 import com.github.games647.fastlogin.bukkit.listener.protocollib.packet.ClientPublicKey;
-import com.github.games647.fastlogin.core.StoredProfile;
 import com.github.games647.fastlogin.core.shared.JoinManagement;
 import com.github.games647.fastlogin.core.shared.event.FastLoginPreLoginEvent;
+import com.github.games647.fastlogin.core.storage.StoredProfile;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import java.security.PublicKey;
 import java.util.Random;
-
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 public class NameCheckTask extends JoinManagement<Player, CommandSender, ProtocolLibLoginSource>
     implements Runnable {

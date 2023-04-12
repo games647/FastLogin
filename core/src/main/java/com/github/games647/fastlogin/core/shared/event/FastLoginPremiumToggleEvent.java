@@ -25,7 +25,7 @@
  */
 package com.github.games647.fastlogin.core.shared.event;
 
-import com.github.games647.fastlogin.core.StoredProfile;
+import com.github.games647.fastlogin.core.storage.StoredProfile;
 
 /**
  * This even represents the opt-in premium status change by request.

@@ -25,9 +25,9 @@
  */
 package com.github.games647.fastlogin.velocity.event;
 
-import com.github.games647.fastlogin.core.StoredProfile;
 import com.github.games647.fastlogin.core.shared.LoginSession;
 import com.github.games647.fastlogin.core.shared.event.FastLoginAutoLoginEvent;
+import com.github.games647.fastlogin.core.storage.StoredProfile;
 import com.velocitypowered.api.event.ResultedEvent;
 
 import java.util.Objects;

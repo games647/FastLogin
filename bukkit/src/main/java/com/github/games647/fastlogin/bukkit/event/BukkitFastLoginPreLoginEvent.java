@@ -25,10 +25,9 @@
  */
 package com.github.games647.fastlogin.bukkit.event;
 
-import com.github.games647.fastlogin.core.StoredProfile;
 import com.github.games647.fastlogin.core.shared.LoginSource;
 import com.github.games647.fastlogin.core.shared.event.FastLoginPreLoginEvent;
-
+import com.github.games647.fastlogin.core.storage.StoredProfile;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;

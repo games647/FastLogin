@@ -27,15 +27,14 @@ package com.github.games647.fastlogin.core.shared;
 
 import com.github.games647.craftapi.model.Profile;
 import com.github.games647.craftapi.resolver.RateLimitException;
-import com.github.games647.fastlogin.core.StoredProfile;
 import com.github.games647.fastlogin.core.hooks.AuthPlugin;
+import com.github.games647.fastlogin.core.storage.StoredProfile;
+import org.geysermc.floodgate.api.player.FloodgatePlayer;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.Optional;
 import java.util.UUID;
-
-import org.geysermc.floodgate.api.player.FloodgatePlayer;
 
 public abstract class FloodgateManagement<P extends C, C, L extends LoginSession, T extends PlatformPlugin<C>>
         implements Runnable {

@@ -41,6 +41,9 @@ import com.github.games647.fastlogin.core.storage.SQLStorage;
 import com.github.games647.fastlogin.core.storage.SQLiteStorage;
 import com.google.common.base.Ticker;
 import com.zaxxer.hikari.HikariConfig;
+import net.md_5.bungee.config.Configuration;
+import net.md_5.bungee.config.ConfigurationProvider;
+import net.md_5.bungee.config.YamlConfiguration;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -60,10 +63,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-
-import net.md_5.bungee.config.Configuration;
-import net.md_5.bungee.config.ConfigurationProvider;
-import net.md_5.bungee.config.YamlConfiguration;
 
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toMap;
@@ -230,7 +229,7 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
         databaseConfig.setMaxLifetime(config.getInt("lifetime", 30) * 1_000L);
 
         if (type.contains("sqlite")) {
-            storage = new SQLiteStorage(this, database, databaseConfig);
+            storage = new SQLiteStorage(plugin, database, databaseConfig);
         } else {
             String host = config.get("host", "");
             int port = config.get("port", 3306);
@@ -248,7 +247,7 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
 
             databaseConfig.setUsername(config.get("username", ""));
             databaseConfig.setPassword(config.getString("password"));
-            storage = new MySQLStorage(this, type, host, port, database, databaseConfig, useSSL);
+            storage = new MySQLStorage(plugin, type, host, port, database, databaseConfig, useSSL);
         }
 
         try {

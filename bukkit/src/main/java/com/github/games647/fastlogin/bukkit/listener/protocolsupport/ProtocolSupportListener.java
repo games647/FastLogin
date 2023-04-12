@@ -29,15 +29,11 @@ import com.github.games647.craftapi.UUIDAdapter;
 import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 import com.github.games647.fastlogin.bukkit.event.BukkitFastLoginPreLoginEvent;
-import com.github.games647.fastlogin.core.StoredProfile;
 import com.github.games647.fastlogin.core.antibot.AntiBotService;
 import com.github.games647.fastlogin.core.antibot.AntiBotService.Action;
 import com.github.games647.fastlogin.core.shared.JoinManagement;
 import com.github.games647.fastlogin.core.shared.event.FastLoginPreLoginEvent;
-
-import java.net.InetSocketAddress;
-import java.util.Optional;
-
+import com.github.games647.fastlogin.core.storage.StoredProfile;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -45,6 +41,9 @@ import org.bukkit.event.Listener;
 import protocolsupport.api.events.ConnectionCloseEvent;
 import protocolsupport.api.events.PlayerLoginStartEvent;
 import protocolsupport.api.events.PlayerProfileCompleteEvent;
+
+import java.net.InetSocketAddress;
+import java.util.Optional;
 
 public class ProtocolSupportListener extends JoinManagement<Player, CommandSender, ProtocolLoginSource>
         implements Listener {

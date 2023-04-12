@@ -27,9 +27,9 @@ package com.github.games647.fastlogin.core.hooks.bedrock;
 
 import com.github.games647.craftapi.model.Profile;
 import com.github.games647.craftapi.resolver.RateLimitException;
-import com.github.games647.fastlogin.core.StoredProfile;
 import com.github.games647.fastlogin.core.shared.FastLoginCore;
 import com.github.games647.fastlogin.core.shared.LoginSource;
+import com.github.games647.fastlogin.core.storage.StoredProfile;
 
 import java.io.IOException;
 import java.util.Optional;

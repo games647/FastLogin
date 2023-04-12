@@ -25,10 +25,9 @@
  */
 package com.github.games647.fastlogin.bungee.event;
 
-import com.github.games647.fastlogin.core.StoredProfile;
 import com.github.games647.fastlogin.core.shared.LoginSource;
 import com.github.games647.fastlogin.core.shared.event.FastLoginPreLoginEvent;
-
+import com.github.games647.fastlogin.core.storage.StoredProfile;
 import net.md_5.bungee.api.plugin.Event;
 
 public class BungeeFastLoginPreLoginEvent extends Event implements FastLoginPreLoginEvent {
