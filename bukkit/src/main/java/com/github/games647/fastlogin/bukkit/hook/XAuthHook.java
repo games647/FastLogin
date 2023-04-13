@@ -3,7 +3,7 @@
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2015-2022 games647 and contributors
+ * Copyright (c) 2015-2023 games647 and contributors
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,15 +27,13 @@ package com.github.games647.fastlogin.bukkit.hook;
 
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 import com.github.games647.fastlogin.core.hooks.AuthPlugin;
-
 import de.luricos.bukkit.xAuth.xAuth;
 import de.luricos.bukkit.xAuth.xAuthPlayer;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 
 /**
  * GitHub: <a href="https://github.com/LycanDevelopment/xAuth/">...</a>

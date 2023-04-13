@@ -3,7 +3,7 @@
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2015-2022 games647 and contributors
+ * Copyright (c) 2015-2023 games647 and contributors
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -44,13 +44,6 @@ import com.google.common.collect.MapMaker;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-
-import java.nio.file.Path;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.ThreadFactory;
-
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.PendingConnection;
@@ -60,10 +53,15 @@ import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.api.plugin.PluginManager;
 import net.md_5.bungee.api.scheduler.GroupedThreadFactory;
-
 import org.geysermc.floodgate.api.FloodgateApi;
 import org.geysermc.geyser.GeyserImpl;
 import org.slf4j.Logger;
+
+import java.nio.file.Path;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ThreadFactory;
 
 /**
  * BungeeCord version of FastLogin. This plugin keeps track on online mode connections.

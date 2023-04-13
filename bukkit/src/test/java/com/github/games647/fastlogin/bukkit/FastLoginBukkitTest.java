@@ -3,7 +3,7 @@
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2015-2022 games647 and contributors
+ * Copyright (c) 2015-2023 games647 and contributors
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,11 +26,9 @@
 package com.github.games647.fastlogin.bukkit;
 
 import com.github.games647.fastlogin.core.CommonUtil;
-
+import lombok.val;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
-
-import lombok.val;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

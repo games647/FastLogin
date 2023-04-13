@@ -3,7 +3,7 @@
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2015-2022 games647 and contributors
+ * Copyright (c) 2015-2023 games647 and contributors
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,14 +26,13 @@
 package com.github.games647.fastlogin.bungee;
 
 import com.github.games647.fastlogin.core.shared.LoginSource;
-
-import java.net.InetSocketAddress;
-
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.PendingConnection;
 import net.md_5.bungee.api.event.PreLoginEvent;
+
+import java.net.InetSocketAddress;
 
 public class BungeeLoginSource implements LoginSource {
 

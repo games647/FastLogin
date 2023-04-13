@@ -3,7 +3,7 @@
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2015-2022 games647 and contributors
+ * Copyright (c) 2015-2023 games647 and contributors
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -45,11 +45,16 @@ import com.github.games647.fastlogin.bukkit.listener.protocollib.packet.ClientPu
 import com.github.games647.fastlogin.core.antibot.AntiBotService;
 import com.github.games647.fastlogin.core.antibot.AntiBotService.Action;
 import com.mojang.datafixers.util.Either;
-
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
 import io.netty.util.AttributeKey;
+import lombok.val;
+import org.bukkit.entity.Player;
+import org.geysermc.floodgate.api.player.FloodgatePlayer;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import java.net.InetSocketAddress;
 import java.security.InvalidKeyException;
 import java.security.KeyPair;
@@ -61,14 +66,6 @@ import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
-
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
-
-import lombok.val;
-import org.bukkit.entity.Player;
-import org.geysermc.floodgate.api.player.FloodgatePlayer;
 
 import static com.comphenix.protocol.PacketType.Login.Client.ENCRYPTION_BEGIN;
 import static com.comphenix.protocol.PacketType.Login.Client.START;

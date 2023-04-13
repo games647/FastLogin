@@ -3,7 +3,7 @@
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2015-2022 games647 and contributors
+ * Copyright (c) 2015-2023 games647 and contributors
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,12 +26,11 @@
 package com.github.games647.fastlogin.bukkit;
 
 import com.github.games647.fastlogin.core.AsyncScheduler;
-
-import java.util.concurrent.Executor;
-
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.slf4j.Logger;
+
+import java.util.concurrent.Executor;
 
 public class BukkitScheduler extends AsyncScheduler {
 

@@ -3,7 +3,7 @@
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2015-2022 games647 and contributors
+ * Copyright (c) 2015-2023 games647 and contributors
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,11 +28,10 @@ package com.github.games647.fastlogin.core.shared;
 import com.github.games647.fastlogin.core.AsyncScheduler;
 import com.github.games647.fastlogin.core.hooks.bedrock.BedrockService;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import org.slf4j.Logger;
 
 import java.nio.file.Path;
 import java.util.concurrent.ThreadFactory;
-
-import org.slf4j.Logger;
 
 public interface PlatformPlugin<C> {
 

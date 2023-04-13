@@ -3,7 +3,7 @@
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2015-2022 games647 and contributors
+ * Copyright (c) 2015-2023 games647 and contributors
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,14 +25,13 @@
  */
 package com.github.games647.fastlogin.bungee.listener;
 
-import java.lang.reflect.Field;
-import java.util.UUID;
-
 import net.md_5.bungee.BungeeCord;
 import net.md_5.bungee.conf.Configuration;
 import net.md_5.bungee.connection.InitialHandler;
-
 import org.junit.jupiter.api.Test;
+
+import java.lang.reflect.Field;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;

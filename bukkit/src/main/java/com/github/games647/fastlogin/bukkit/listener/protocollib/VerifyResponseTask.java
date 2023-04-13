@@ -3,7 +3,7 @@
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2015-2022 games647 and contributors
+ * Copyright (c) 2015-2023 games647 and contributors
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -47,7 +47,11 @@ import com.github.games647.craftapi.resolver.MojangResolver;
 import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 import com.github.games647.fastlogin.bukkit.listener.protocollib.packet.ClientPublicKey;
+import lombok.val;
+import org.bukkit.entity.Player;
 
+import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.InetAddress;
@@ -59,12 +63,6 @@ import java.security.PrivateKey;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.UUID;
-
-import javax.crypto.Cipher;
-import javax.crypto.SecretKey;
-
-import lombok.val;
-import org.bukkit.entity.Player;
 
 import static com.comphenix.protocol.PacketType.Login.Client.START;
 import static com.comphenix.protocol.PacketType.Login.Server.DISCONNECT;

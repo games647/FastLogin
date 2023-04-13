@@ -3,7 +3,7 @@
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2015-2022 games647 and contributors
+ * Copyright (c) 2015-2023 games647 and contributors
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -32,7 +32,6 @@ import com.lenis0012.bukkit.loginsecurity.session.AuthService;
 import com.lenis0012.bukkit.loginsecurity.session.PlayerSession;
 import com.lenis0012.bukkit.loginsecurity.session.action.LoginAction;
 import com.lenis0012.bukkit.loginsecurity.session.action.RegisterAction;
-
 import org.bukkit.entity.Player;
 
 /**

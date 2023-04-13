@@ -3,7 +3,7 @@
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2015-2022 games647 and contributors
+ * Copyright (c) 2015-2023 games647 and contributors
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -31,6 +31,10 @@ import com.github.games647.fastlogin.core.message.LoginActionMessage;
 import com.github.games647.fastlogin.core.message.NamespaceKey;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
+import org.bukkit.Bukkit;
+import org.bukkit.Server;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.messaging.PluginMessageRecipient;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -43,11 +47,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Stream;
-
-import org.bukkit.Bukkit;
-import org.bukkit.Server;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.messaging.PluginMessageRecipient;
 
 import static com.github.games647.fastlogin.core.message.ChangePremiumMessage.CHANGE_CHANNEL;
 import static com.github.games647.fastlogin.core.message.SuccessMessage.SUCCESS_CHANNEL;

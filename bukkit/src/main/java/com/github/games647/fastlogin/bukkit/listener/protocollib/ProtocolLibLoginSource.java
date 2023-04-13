@@ -3,7 +3,7 @@
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2015-2022 games647 and contributors
+ * Copyright (c) 2015-2023 games647 and contributors
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -32,13 +32,12 @@ import com.comphenix.protocol.reflect.StructureModifier;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.github.games647.fastlogin.bukkit.listener.protocollib.packet.ClientPublicKey;
 import com.github.games647.fastlogin.core.shared.LoginSource;
+import org.bukkit.entity.Player;
 
 import java.net.InetSocketAddress;
 import java.security.PublicKey;
 import java.util.Arrays;
 import java.util.Random;
-
-import org.bukkit.entity.Player;
 
 import static com.comphenix.protocol.PacketType.Login.Server.DISCONNECT;
 import static com.comphenix.protocol.PacketType.Login.Server.ENCRYPTION_BEGIN;

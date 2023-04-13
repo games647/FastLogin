@@ -3,7 +3,7 @@
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2015-2022 games647 and contributors
+ * Copyright (c) 2015-2023 games647 and contributors
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,13 +25,12 @@
  */
 package com.github.games647.fastlogin.bukkit;
 
-import java.util.Collections;
-import java.util.List;
-
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
-
 import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Collections;
+import java.util.List;
 
 public class PremiumPlaceholder extends PlaceholderExpansion {
 
