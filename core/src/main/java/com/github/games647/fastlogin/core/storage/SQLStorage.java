@@ -26,7 +26,6 @@
 package com.github.games647.fastlogin.core.storage;
 
 import com.github.games647.craftapi.UUIDAdapter;
-import com.github.games647.fastlogin.core.StoredProfile;
 import com.github.games647.fastlogin.core.shared.FloodgateState;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
