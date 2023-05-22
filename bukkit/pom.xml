@@ -121,9 +121,6 @@
         <repository>
             <id>papermc</id>
             <url>https://papermc.io/repo/repository/maven-public/</url>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
         </repository>
 
         <!-- ProtocolLib -->
