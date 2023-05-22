@@ -93,12 +93,6 @@
             <groupId>net.md-5</groupId>
             <artifactId>bungeecord-config</artifactId>
             <version>1.19-R0.1-SNAPSHOT</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>*</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <!--Floodgate for Xbox Live Authentication-->
