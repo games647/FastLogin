@@ -56,6 +56,10 @@
                     <shadedArtifactAttached>false</shadedArtifactAttached>
                     <relocations>
                         <relocation>
+                            <pattern>org.yaml.snakeyaml</pattern>
+                            <shadedPattern>fastlogin.yaml</shadedPattern>
+                        </relocation>
+                        <relocation>
                             <pattern>com.zaxxer.hikari</pattern>
                             <shadedPattern>fastlogin.hikari</shadedPattern>
                         </relocation>
@@ -123,6 +127,9 @@
         <repository>
             <id>dmulloy2-repo</id>
             <url>https://repo.dmulloy2.net/repository/public/</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
         </repository>
 
         <!-- AuthMe Reloaded, xAuth and LoginSecurity -->
@@ -159,6 +166,13 @@
             <groupId>com.github.games647</groupId>
             <artifactId>fastlogin.core</artifactId>
             <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
+            <version>1.33</version>
+            <scope>compile</scope>
         </dependency>
 
         <!-- PaperSpigot API for correcting user cache usage -->
