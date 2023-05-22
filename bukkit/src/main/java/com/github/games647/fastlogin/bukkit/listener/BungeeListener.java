@@ -39,7 +39,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 import org.jetbrains.annotations.NotNull;
 
-import java.net.InetSocketAddress;
 import java.util.UUID;
 
 /**
@@ -92,24 +91,23 @@ public class BungeeListener implements PluginMessageListener {
         String playerName = message.getPlayerName();
         Type type = message.getType();
 
-        InetSocketAddress address = player.getAddress();
         plugin.getLog().info("Player info {} command for {} from proxy", type, playerName);
         if (type == Type.LOGIN) {
-            onLoginMessage(player, playerName, address);
+            onLoginMessage(player, playerName);
         } else if (type == Type.REGISTER) {
-            onRegisterMessage(player, playerName, address);
+            onRegisterMessage(player, playerName);
         } else if (type == Type.CRACKED) {
             //we don't start a force login task here so update it manually
             plugin.getPremiumPlayers().put(player.getUniqueId(), PremiumStatus.CRACKED);
         }
     }
 
-    private void onLoginMessage(Player player, String playerName, InetSocketAddress address) {
+    private void onLoginMessage(Player player, String playerName) {
         BukkitLoginSession playerSession = new BukkitLoginSession(playerName, true);
         startLoginTaskIfReady(player, playerSession);
     }
 
-    private void onRegisterMessage(Player player, String playerName, InetSocketAddress address) {
+    private void onRegisterMessage(Player player, String playerName) {
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             AuthPlugin<Player> authPlugin = plugin.getCore().getAuthPluginHook();
             try {
