@@ -41,11 +41,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Stream;
 
 import static com.github.games647.fastlogin.core.message.ChangePremiumMessage.CHANGE_CHANNEL;
@@ -93,6 +89,10 @@ public class BungeeManager {
 
         if (enabled) {
             proxyIds = loadBungeeCordIds();
+            if (proxyIds.isEmpty()) {
+                plugin.getLog().info("No valid IDs found. Minecraft proxy support cannot work in the current state");
+            }
+
             registerPluginChannels();
             plugin.getLog().info("Found enabled proxy configuration");
             plugin.getLog().info("Remember to follow the proxy guide to complete your setup");
