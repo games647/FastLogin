@@ -22,6 +22,8 @@ jobs:
 
     timeout-minutes: ${{ (matrix.language == 'swift' && 120) || 360 }}
 
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+
     permissions:
       actions: read
       contents: read
