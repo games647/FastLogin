@@ -41,3 +41,6 @@ jobs:
         # Run non-interactive, package (with compile+test),
         # ignore snapshot updates, because they are likely to have breaking changes, enforce checksums
         run: mvn test --batch-mode --threads 2.0C --no-snapshot-updates --strict-checksums --file pom.xml
+
+      - name: Update dependency graph
+        uses: advanced-security/maven-dependency-submission-action@v3.0.2
