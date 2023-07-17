@@ -4,11 +4,11 @@
 name: "CodeQL"
 
 on:
-  # Scan only for push on the primary branch for now
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+  workflow_run:
+    workflows: ["Maven Build"]
+    branches: [main]
+    types:
+      - completed
 
 jobs:
   # job i
@@ -55,7 +55,7 @@ jobs:
       # we are doing cross-crompiling from a newer Java version
       - name: Build with Maven
         # Extracted from autobuild
-        run: mvn clean package -f "pom.xml" -B -V -e -Dfindbugs.skip -Dcheckstyle.skip -Dpmd.skip=true -Dspotbugs.skip -Denforcer.skip -Dmaven.javadoc.skip -DskipTests -Dmaven.test.skip.exec -Dlicense.skip=true -Drat.skip=true -Dspotless.check.skip=true  -t /home/runner/.m2/toolchains.xml
+        run: mvn package -f "pom.xml" --batch-mode -V -e -Dfindbugs.skip -Dcheckstyle.skip -Dpmd.skip=true -Dspotbugs.skip -Denforcer.skip -Dmaven.javadoc.skip -DskipTests -Dmaven.test.skip.exec -Dlicense.skip=true -Drat.skip=true -Dspotless.check.skip=true -t /home/runner/.m2/toolchains.xml
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v2
