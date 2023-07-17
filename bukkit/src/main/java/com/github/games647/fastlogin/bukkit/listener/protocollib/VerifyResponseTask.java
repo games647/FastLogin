@@ -72,6 +72,13 @@ public class VerifyResponseTask implements Runnable {
 
     private static final String ENCRYPTION_CLASS_NAME = "MinecraftEncryption";
     private static final Class<?> ENCRYPTION_CLASS;
+    private static final String ADDRESS_VERIFY_WARNING = "This indicates the use of reverse-proxy like HAProxy, "
+            + "TCPShield, BungeeCord, Velocity, etc. "
+            + "By default (configurable in the config) this plugin requests Mojang to verify the connecting IP "
+            + "to this server with the one used to log into Minecraft to prevent MITM attacks. In "
+            + "order to work this security feature, the actual client IP needs to be forwarding "
+            + "(keyword IP forwarding). This process will also be useful for other server "
+            + "features like IP banning, so that it doesn't ban the proxy IP.";
 
     static {
         ENCRYPTION_CLASS = MinecraftReflection.getMinecraftClass(
@@ -151,18 +158,25 @@ public class VerifyResponseTask implements Runnable {
                 //user tried to fake an authentication
                 disconnect(
                         "invalid-session",
-                        "GameProfile {} ({}) tried to log in with an invalid session. ServerId: {}",
-                        requestedUsername, address, serverId
+                        "Session server rejected incoming connection for GameProfile {} ({}). Possible reasons are"
+                                + "1) Client IP address contacting Mojang and server during server join were different "
+                                + "(Do you use a reverse proxy? -> Enable IP forwarding, "
+                                + "or disable the feature in the config). "
+                                + "2) Player is offline, but tried to bypass the authentication"
+                                + "3) Client uses an outdated username for connecting (Fix: Restart client)",
+                        requestedUsername, address
                 );
 
                 if (InetUtils.isLocalAddress(address)) {
-                    plugin.getLog().warn("The incoming request for player {} uses a local IP address. "
-                            + "This indicates the use of reverse-proxy like HAProxy, TCPShield, BungeeCord, Velocity, "
-                            + "etc. By default, configurable, this plugin requests Mojang to verify the connecting IP "
-                            + "to this server with the one used to log into Minecraft to prevent MITM attacks. In "
-                            + "order to work this security feature, the actual client IP needs to be forwarding "
-                            + "(keyword IP forwarding). This process will also be useful for other server "
-                            + "features like IP banning, so that it doesn't ban the proxy IP", requestedUsername);
+                    plugin.getLog().warn(
+                            "The incoming request for player {} uses a local IP address",
+                            requestedUsername
+                    );
+                    plugin.getLog().warn(ADDRESS_VERIFY_WARNING);
+                } else {
+                    plugin.getLog().warn("If you think this is an error, please verify that the incoming "
+                            + "IP address {} is not associated with a server hosting company.", address);
+                    plugin.getLog().warn(ADDRESS_VERIFY_WARNING);
                 }
             }
         } catch (IOException ioEx) {
