@@ -48,7 +48,7 @@ jobs:
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
-          java-version: 19
+          java-version-file: '.java-version'
           cache: 'maven'
 
       # Auto build attempts to build any compiled languages  (C/C++, C#, or Java).
