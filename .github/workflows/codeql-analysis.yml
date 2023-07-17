@@ -51,10 +51,11 @@ jobs:
           java-version-file: '.java-version'
           cache: 'maven'
 
-      # Auto build attempts to build any compiled languages  (C/C++, C#, or Java).
-      # If this step fails, then you should remove it and run the build manually (see below)
-      - name: Autobuild
-        uses: github/codeql-action/autobuild@v2
+      # Manually start the autobuild process, because autobuild always selects Java 8 as build toolchain, but
+      # we are doing cross-crompiling from a newer Java version
+      - name: Build with Maven
+        # Extracted from autobuild
+        run: mvn clean package -f "pom.xml" -B -V -e -Dfindbugs.skip -Dcheckstyle.skip -Dpmd.skip=true -Dspotbugs.skip -Denforcer.skip -Dmaven.javadoc.skip -DskipTests -Dmaven.test.skip.exec -Dlicense.skip=true -Drat.skip=true -Dspotless.check.skip=true  -t /home/runner/.m2/toolchains.xml
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v2
