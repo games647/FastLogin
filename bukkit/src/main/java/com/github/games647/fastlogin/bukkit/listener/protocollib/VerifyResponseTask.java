@@ -46,6 +46,7 @@ import com.github.games647.craftapi.model.skin.SkinProperty;
 import com.github.games647.craftapi.resolver.MojangResolver;
 import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
+import com.github.games647.fastlogin.bukkit.InetUtils;
 import com.github.games647.fastlogin.bukkit.listener.protocollib.packet.ClientPublicKey;
 import lombok.val;
 import org.bukkit.entity.Player;
@@ -71,10 +72,17 @@ public class VerifyResponseTask implements Runnable {
 
     private static final String ENCRYPTION_CLASS_NAME = "MinecraftEncryption";
     private static final Class<?> ENCRYPTION_CLASS;
+    private static final String ADDRESS_VERIFY_WARNING = "This indicates the use of reverse-proxy like HAProxy, "
+            + "TCPShield, BungeeCord, Velocity, etc. "
+            + "By default (configurable in the config) this plugin requests Mojang to verify the connecting IP "
+            + "to this server with the one used to log into Minecraft to prevent MITM attacks. In "
+            + "order to work this security feature, the actual client IP needs to be forwarding "
+            + "(keyword IP forwarding). This process will also be useful for other server "
+            + "features like IP banning, so that it doesn't ban the proxy IP.";
 
     static {
         ENCRYPTION_CLASS = MinecraftReflection.getMinecraftClass(
-            "util." + ENCRYPTION_CLASS_NAME, ENCRYPTION_CLASS_NAME
+                "util." + ENCRYPTION_CLASS_NAME, ENCRYPTION_CLASS_NAME
         );
     }
 
@@ -149,10 +157,27 @@ public class VerifyResponseTask implements Runnable {
             } else {
                 //user tried to fake an authentication
                 disconnect(
-                    "invalid-session",
-                    "GameProfile {} ({}) tried to log in with an invalid session. ServerId: {}",
-                    session.getRequestUsername(), socketAddress, serverId
+                        "invalid-session",
+                        "Session server rejected incoming connection for GameProfile {} ({}). Possible reasons are"
+                                + "1) Client IP address contacting Mojang and server during server join were different "
+                                + "(Do you use a reverse proxy? -> Enable IP forwarding, "
+                                + "or disable the feature in the config). "
+                                + "2) Player is offline, but tried to bypass the authentication"
+                                + "3) Client uses an outdated username for connecting (Fix: Restart client)",
+                        requestedUsername, address
                 );
+
+                if (InetUtils.isLocalAddress(address)) {
+                    plugin.getLog().warn(
+                            "The incoming request for player {} uses a local IP address",
+                            requestedUsername
+                    );
+                    plugin.getLog().warn(ADDRESS_VERIFY_WARNING);
+                } else {
+                    plugin.getLog().warn("If you think this is an error, please verify that the incoming "
+                            + "IP address {} is not associated with a server hosting company.", address);
+                    plugin.getLog().warn(ADDRESS_VERIFY_WARNING);
+                }
             }
         } catch (IOException ioEx) {
             disconnect("error-kick", "Failed to connect to session server", ioEx);
@@ -217,15 +242,15 @@ public class VerifyResponseTask implements Runnable {
             try {
                 // Try to get the old (pre MC 1.16.4) encryption method
                 encryptMethod = FuzzyReflection.fromClass(networkManagerClass)
-                    .getMethodByParameters("a", SecretKey.class);
+                        .getMethodByParameters("a", SecretKey.class);
             } catch (IllegalArgumentException exception) {
                 // Get the new encryption method
                 encryptMethod = FuzzyReflection.fromClass(networkManagerClass)
-                    .getMethodByParameters("a", Cipher.class, Cipher.class);
+                        .getMethodByParameters("a", Cipher.class, Cipher.class);
 
                 // Get the needed Cipher helper method (used to generate ciphers from login key)
                 cipherMethod = FuzzyReflection.fromClass(ENCRYPTION_CLASS)
-                    .getMethodByParameters("a", int.class, Key.class);
+                        .getMethodByParameters("a", int.class, Key.class);
             }
         }
 
@@ -276,7 +301,7 @@ public class VerifyResponseTask implements Runnable {
 
             EquivalentConverter<WrappedProfileKeyData> converter = BukkitConverters.getWrappedPublicKeyDataConverter();
             val wrappedKey = Optional.ofNullable(clientKey).map(key ->
-                new WrappedProfileKeyData(clientKey.expiry(), clientKey.key(), clientKey.signature())
+                    new WrappedProfileKeyData(clientKey.expiry(), clientKey.key(), clientKey.signature())
             );
 
             startPacket.getOptionals(converter).write(0, wrappedKey);
