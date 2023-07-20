@@ -21,7 +21,7 @@ jobs:
     # Environment image - always use the newest OS
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
 
     # Run steps
     steps:
@@ -33,7 +33,7 @@ jobs:
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
-          java-version: 19
+          java-version-file: '.java-version'
           cache: 'maven'
 
       # Build and test (included in package)
@@ -41,3 +41,7 @@ jobs:
         # Run non-interactive, package (with compile+test),
         # ignore snapshot updates, because they are likely to have breaking changes, enforce checksums
         run: mvn test --batch-mode --threads 2.0C --no-snapshot-updates --strict-checksums --file pom.xml
+
+      - name: Update dependency graph
+        if: ${{ github.event_name == 'push' }}
+        uses: advanced-security/maven-dependency-submission-action@v3.0.2
