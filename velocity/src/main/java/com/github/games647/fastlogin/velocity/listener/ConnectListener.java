@@ -30,10 +30,12 @@ import com.github.games647.fastlogin.core.antibot.AntiBotService;
 import com.github.games647.fastlogin.core.antibot.AntiBotService.Action;
 import com.github.games647.fastlogin.core.shared.LoginSession;
 import com.github.games647.fastlogin.core.storage.StoredProfile;
+import com.github.games647.fastlogin.core.hooks.bedrock.FloodgateService;
 import com.github.games647.fastlogin.velocity.FastLoginVelocity;
 import com.github.games647.fastlogin.velocity.VelocityLoginSession;
 import com.github.games647.fastlogin.velocity.task.AsyncPremiumCheck;
 import com.github.games647.fastlogin.velocity.task.ForceLoginTask;
+import com.github.games647.fastlogin.velocity.task.FloodgateAuthTask;
 import com.velocitypowered.api.event.Continuation;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.connection.DisconnectEvent;
@@ -48,6 +50,7 @@ import com.velocitypowered.api.util.GameProfile;
 import com.velocitypowered.api.util.GameProfile.Property;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import org.geysermc.floodgate.api.player.FloodgatePlayer;
 
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
@@ -140,6 +143,16 @@ public class ConnectListener {
     public void onServerConnected(ServerConnectedEvent serverConnectedEvent) {
         Player player = serverConnectedEvent.getPlayer();
         RegisteredServer server = serverConnectedEvent.getServer();
+
+        FloodgateService floodgateService = plugin.getFloodgateService();
+        if (floodgateService != null) {
+            FloodgatePlayer floodgatePlayer = floodgateService.getBedrockPlayer(player.getUniqueId());
+            if (floodgatePlayer != null) {
+                Runnable floodgateAuthTask = new FloodgateAuthTask(plugin.getCore(), player, floodgatePlayer, server);
+                plugin.getScheduler().runAsync(floodgateAuthTask);
+                return;
+            }
+        }
 
         VelocityLoginSession session = plugin.getSession().get(player.getRemoteAddress());
         if (session == null) {
