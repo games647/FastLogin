@@ -51,6 +51,8 @@
         <!-- Verify Java 8 compatibility while compiling with a newer toolchain 
         (i.e. check for unavailable methods) -->
         <java.version>8</java.version>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
         <maven.compiler.release>${java.version}</maven.compiler.release>
 
         <floodgate.version>development-2.2.2-SNAPSHOT</floodgate.version>
