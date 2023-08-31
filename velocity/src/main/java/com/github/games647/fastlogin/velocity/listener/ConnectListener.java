@@ -106,6 +106,10 @@ public class ConnectListener {
     public void onGameprofileRequest(GameProfileRequestEvent event) {
         if (event.isOnlineMode()) {
             LoginSession session = plugin.getSession().get(event.getConnection().getRemoteAddress());
+            if (session == null) {
+                plugin.getLog().warn("No active login session found for player {}", event.getUsername());
+                return;
+            }
 
             UUID verifiedUUID = event.getGameProfile().getId();
             String verifiedUsername = event.getUsername();
