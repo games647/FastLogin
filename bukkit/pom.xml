@@ -50,7 +50,7 @@
         <plugins>
             <plugin>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.4.1</version>
+                <version>3.5.0</version>
                 <configuration>
                     <createDependencyReducedPom>false</createDependencyReducedPom>
                     <shadedArtifactAttached>false</shadedArtifactAttached>
@@ -307,7 +307,7 @@
         <dependency>
             <groupId>com.lenis0012.bukkit</groupId>
             <artifactId>loginsecurity</artifactId>
-            <version>3.1.1</version>
+            <version>3.2.1</version>
             <scope>provided</scope>
             <optional>true</optional>
             <exclusions>
