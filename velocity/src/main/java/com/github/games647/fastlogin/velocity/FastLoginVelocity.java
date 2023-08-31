@@ -27,6 +27,8 @@ package com.github.games647.fastlogin.velocity;
 
 import com.github.games647.fastlogin.core.AsyncScheduler;
 import com.github.games647.fastlogin.core.hooks.bedrock.BedrockService;
+import com.github.games647.fastlogin.core.hooks.bedrock.FloodgateService;
+import com.github.games647.fastlogin.core.hooks.bedrock.GeyserService;
 import com.github.games647.fastlogin.core.message.ChangePremiumMessage;
 import com.github.games647.fastlogin.core.message.ChannelMessage;
 import com.github.games647.fastlogin.core.message.SuccessMessage;
@@ -50,6 +52,8 @@ import com.velocitypowered.api.proxy.messages.ChannelMessageSink;
 import com.velocitypowered.api.proxy.messages.ChannelRegistrar;
 import com.velocitypowered.api.proxy.messages.MinecraftChannelIdentifier;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import org.geysermc.floodgate.api.FloodgateApi;
+import org.geysermc.geyser.GeyserImpl;
 import org.slf4j.Logger;
 
 import java.io.IOException;
@@ -76,6 +80,8 @@ public class FastLoginVelocity implements PlatformPlugin<CommandSource> {
 
     private FastLoginCore<Player, CommandSource, FastLoginVelocity> core;
     private AsyncScheduler scheduler;
+    private FloodgateService floodgateService;
+    private GeyserService geyserService;
     private UUID proxyId;
 
     @Inject
@@ -93,6 +99,14 @@ public class FastLoginVelocity implements PlatformPlugin<CommandSource> {
         loadOrGenerateProxyId();
         if (!core.setupDatabase() || proxyId == null) {
             return;
+        }
+
+        if (isPluginInstalled("floodgate")) {
+            floodgateService = new FloodgateService(FloodgateApi.getInstance(), core);
+        }
+
+        if (isPluginInstalled("Geyser-Velocity")) {
+            geyserService = new GeyserService(GeyserImpl.getInstance(), core);
         }
 
         server.getEventManager().register(this, new ConnectListener(this, core.getAntiBot()));
@@ -140,9 +154,21 @@ public class FastLoginVelocity implements PlatformPlugin<CommandSource> {
         return server.getPluginManager().isLoaded(name);
     }
 
+    public FloodgateService getFloodgateService() {
+        return floodgateService;
+    }
+
+    public GeyserService getGeyserService() {
+        return geyserService;
+    }
+
     @Override
     public BedrockService<?> getBedrockService() {
-        return null;
+        if (floodgateService != null) {
+            return floodgateService;
+        }
+
+        return geyserService;
     }
 
     public FastLoginCore<Player, CommandSource, FastLoginVelocity> getCore() {
