@@ -228,6 +228,22 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
 
     /**
      * Fetches the premium status of an online player.
+     * {@snippet :
+     * // Bukkit's players object after successful authentication i.e. PlayerJoinEvent
+     * // except for proxies like BungeeCord and Velocity where the details are sent delayed (1-2 seconds)
+     * Player player;
+     * PremiumStatus status = JavaPlugin.getPlugin(FastLoginBukkit.class).getStatus(player.getUniqueId());
+     * switch (status) {
+     *     case CRACKED:
+     *         // player is offline
+     *         break;
+     *     case PREMIUM:
+     *         // account is premium and player passed the verification
+     *         break;
+     *     case UNKNOWN:
+     *         // no record about this player
+     * }
+     * }
      *
      * @param onlinePlayer player that is currently online player (play state)
      * @return the online status or unknown if an error happened, the player isn't online or BungeeCord doesn't send

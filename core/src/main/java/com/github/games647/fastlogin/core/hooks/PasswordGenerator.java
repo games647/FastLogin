@@ -25,8 +25,17 @@
  */
 package com.github.games647.fastlogin.core.hooks;
 
+/**
+ * Password generator for your auth plugin.
+ * @param <P> platform dependent player class
+ */
 @FunctionalInterface
 public interface PasswordGenerator<P> {
 
+    /**
+     * Generate a password for a non-registered player
+     * @param player
+     * @return daw
+     */
     String getRandomPassword(P player);
 }

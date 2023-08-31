@@ -34,6 +34,8 @@ import com.github.games647.fastlogin.core.storage.StoredProfile;
 public interface FastLoginPreLoginEvent {
 
     String getUsername();
+
     LoginSource getSource();
+
     StoredProfile getProfile();
 }

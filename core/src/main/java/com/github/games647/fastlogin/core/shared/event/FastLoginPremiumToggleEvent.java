@@ -33,6 +33,7 @@ import com.github.games647.fastlogin.core.storage.StoredProfile;
 public interface FastLoginPremiumToggleEvent {
 
     StoredProfile getProfile();
+
     PremiumToggleReason getReason();
 
     enum PremiumToggleReason {
