@@ -14,8 +14,22 @@ updates:
     directory: "/"
     schedule:
       interval: weekly
+
     groups:
       production-dependencies:
         dependency-type: "production"
       development-dependencies:
         dependency-type: "development"
+        exclude-patterns:
+          # Create single PR for these
+          # Plugin require special evaluation about their compatibility
+          - "loginsecurity"
+          - "ProtocolLib"
+
+    ignore:
+      # HikariCP dropped Java 8 support with 5.0
+      - dependency-name: "com.zaxxer:HikariCP"
+        update-types: ["version-update:semver-major"]
+      # SnakeYAML has breaking changes with 2.0
+      - dependency-name: "org.yaml:snakeyaml"
+        update-types: ["version-update:semver-major"]
