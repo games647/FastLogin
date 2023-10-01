@@ -26,7 +26,7 @@ jobs:
     # Run steps
     steps:
       # Pull changes
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       # Setup Java
       - name: Set up JDK
