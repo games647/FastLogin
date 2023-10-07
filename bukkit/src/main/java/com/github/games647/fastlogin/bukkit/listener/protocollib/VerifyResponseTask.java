@@ -38,6 +38,7 @@ import com.comphenix.protocol.reflect.accessors.FieldAccessor;
 import com.comphenix.protocol.utility.MinecraftReflection;
 import com.comphenix.protocol.utility.MinecraftVersion;
 import com.comphenix.protocol.wrappers.BukkitConverters;
+import com.comphenix.protocol.wrappers.Converters;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
 import com.comphenix.protocol.wrappers.WrappedProfilePublicKey.WrappedProfileKeyData;
@@ -202,7 +203,7 @@ public class VerifyResponseTask implements Runnable {
         session.setVerified(true);
 
         setPremiumUUID(session.getUuid());
-        receiveFakeStartPacket(realUsername, session.getClientPublicKey());
+        receiveFakeStartPacket(realUsername, session.getClientPublicKey(), session.getUuid());
     }
 
     private void setPremiumUUID(UUID premiumUUID) {
@@ -293,9 +294,13 @@ public class VerifyResponseTask implements Runnable {
     }
 
     //fake a new login packet in order to let the server handle all the other stuff
-    private void receiveFakeStartPacket(String username, ClientPublicKey clientKey) {
+    private void receiveFakeStartPacket(String username, ClientPublicKey clientKey, UUID uuid) {
         PacketContainer startPacket;
-        if (new MinecraftVersion(1, 19, 0).atOrAbove()) {
+        if (new MinecraftVersion(1, 20, 2).atOrAbove()) {
+            startPacket = new PacketContainer(START);
+            startPacket.getStrings().write(0, username);
+            startPacket.getUUIDs().write(0, uuid);
+        } else if (new MinecraftVersion(1, 19, 0).atOrAbove()) {
             startPacket = new PacketContainer(START);
             startPacket.getStrings().write(0, username);
 
