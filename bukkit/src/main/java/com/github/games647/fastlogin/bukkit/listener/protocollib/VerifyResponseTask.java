@@ -300,6 +300,10 @@ public class VerifyResponseTask implements Runnable {
             startPacket = new PacketContainer(START);
             startPacket.getStrings().write(0, username);
             startPacket.getUUIDs().write(0, uuid);
+        } else if (new MinecraftVersion(1, 19, 3).atOrAbove()) {
+            startPacket = new PacketContainer(START);
+            startPacket.getStrings().write(0, username);
+            startPacket.getOptionals(Converters.passthrough(UUID.class)).write(0, Optional.of(uuid));
         } else if (new MinecraftVersion(1, 19, 0).atOrAbove()) {
             startPacket = new PacketContainer(START);
             startPacket.getStrings().write(0, username);
