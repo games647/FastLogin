@@ -65,5 +65,5 @@ body:
           required: true
         - label: |
             I checked for existing tickets -
-            If there are, please vote them with a thumps reaction and not create new ones
+            If there are, please vote them with a thumbs reaction and not create new ones
           required: true
