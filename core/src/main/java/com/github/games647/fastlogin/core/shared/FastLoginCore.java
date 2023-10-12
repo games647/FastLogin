@@ -57,7 +57,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -221,7 +220,7 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
     }
 
     public boolean setupDatabase() {
-        String type = config.getString("driver").toLowerCase(Locale.ENGLISH);
+        String type = config.getString("driver");
 
         HikariConfig databaseConfig = new HikariConfig();
         String database = config.getString("database");

@@ -28,6 +28,8 @@ package com.github.games647.fastlogin.core.storage;
 import com.github.games647.fastlogin.core.shared.PlatformPlugin;
 import com.zaxxer.hikari.HikariConfig;
 
+import java.util.Locale;
+
 public class MySQLStorage extends SQLStorage {
 
     private static final String JDBC_PROTOCOL = "jdbc:";
@@ -68,12 +70,12 @@ public class MySQLStorage extends SQLStorage {
     }
 
     private static String buildJDBCUrl(String driver, String host, int port, String database) {
-        String protocol = "mysql";
-        if (driver.contains("mariadb")) {
-            protocol = "mariadb";
+        MySQLVariant variant = MySQLVariant.fromDriver(driver);
+        if (variant == null) {
+            throw new IllegalArgumentException("Unknown storage driver");
         }
 
-        return protocol + "://" + host + ':' + port + '/' + database;
+        return variant.getJdbcPrefix() + "://" + host + ':' + port + '/' + database;
     }
 
     private static void addPerformanceProperties(HikariConfig config) {
@@ -105,5 +107,33 @@ public class MySQLStorage extends SQLStorage {
         // performance gems presentation
         // In our case it can be useful to see the time in error messages
         // config.addDataSourceProperty("maintainTimeStats", false);
+    }
+
+    enum MySQLVariant {
+
+        MYSQL("mysql"),
+
+        MARIADB("mariadb");
+
+        private final String jdbcPrefix;
+
+        public static MySQLVariant fromDriver(String driver) {
+            String normalizedDriver = driver.toLowerCase(Locale.ENGLISH);
+            if (normalizedDriver.contains("mysql")) {
+                return MYSQL;
+            } else if (normalizedDriver.contains("mariadb")) {
+                return MARIADB;
+            }
+
+            return null;
+        }
+
+        MySQLVariant(String jdbcPrefix) {
+            this.jdbcPrefix = jdbcPrefix;
+        }
+
+        public String getJdbcPrefix() {
+            return jdbcPrefix;
+        }
     }
 }
