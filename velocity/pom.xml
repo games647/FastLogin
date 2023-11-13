@@ -55,7 +55,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>templating-maven-plugin</artifactId>
-                <version>1.0.0</version>
+                <version>3.0.0</version>
                 <executions>
                     <execution>
                         <id>filter-src</id>
@@ -155,7 +155,7 @@
         <dependency>
             <groupId>org.mariadb.jdbc</groupId>
             <artifactId>mariadb-java-client</artifactId>
-            <version>3.2.0</version>
+            <version>3.3.0</version>
         </dependency>
         
         <!-- Bedrock player bridge -->
