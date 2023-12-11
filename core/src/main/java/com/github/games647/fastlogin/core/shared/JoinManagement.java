@@ -52,9 +52,8 @@ public abstract class JoinManagement<P extends C, C, S extends LoginSource> {
 
         //check if the player is connecting through Bedrock Edition
         if (bedrockService != null && bedrockService.isBedrockConnection(username)) {
-            //perform Bedrock specific checks
+            //perform Bedrock specific checks and skip Java checks if no longer needed
             if (bedrockService.performChecks(username, source)) {
-                //skip Java checks, since they are not needed
                 return;
             }
         }
@@ -66,14 +65,16 @@ public abstract class JoinManagement<P extends C, C, S extends LoginSource> {
             return;
         }
 
-        if (!profile.isFloodgateMigrated()) {
+        if (profile.isFloodgateMigrated()) {
+            if (profile.getFloodgate() == FloodgateState.TRUE) {
+                // migrated and enabled floodgate player, however the above bedrocks fails, so the current connection
+                // isn't premium
+                return;
+            }
+        } else {
             profile.setFloodgate(FloodgateState.FALSE);
             core.getPlugin().getLog().info(
                     "Player {} will be migrated to the v2 database schema as a JAVA user", username);
-        } else if (profile.getFloodgate() == FloodgateState.TRUE) {
-            core.getPlugin().getLog().info("Player {} is already stored by FastLogin as a Bedrock Edition player",
-                    username);
-            return;
         }
 
         callFastLoginPreLoginEvent(username, source, profile);

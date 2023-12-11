@@ -82,7 +82,19 @@ public abstract class FloodgateManagement<P extends C, C, L extends LoginSession
         profile = core.getStorage().loadProfile(username);
 
         if (profile.isSaved()) {
-            if (!profile.isFloodgateMigrated()) {
+            if (profile.isFloodgateMigrated()) {
+                if (profile.getFloodgate() == FloodgateState.TRUE && isLinked) {
+                    core.getPlugin().getLog()
+                            .info("Player {} is already stored by FastLogin as a non-linked Bedrock Edition player",
+                                    username);
+                    return;
+                } else if (profile.getFloodgate() == FloodgateState.FALSE && isLinked) {
+                    profile.setFloodgate(FloodgateState.LINKED);
+                    core.getPlugin().getLog().info(
+                            "Player {} will be changed from a Java player to a linked Floodgate player",
+                            username);
+                }
+            } else {
                 if (isLinked) {
                     profile.setFloodgate(FloodgateState.LINKED);
                     core.getPlugin().getLog().info(
@@ -93,16 +105,6 @@ public abstract class FloodgateManagement<P extends C, C, L extends LoginSession
                     core.getPlugin().getLog().info(
                             "Player {} will be migrated to the v2 database schema as a Floodgate user", username);
                 }
-            } else if (profile.getFloodgate() == FloodgateState.TRUE && isLinked) {
-                core.getPlugin().getLog()
-                        .info("Player {} is already stored by FastLogin as a non-linked Bedrock Edition player",
-                                username);
-                return;
-            } else if (profile.getFloodgate() == FloodgateState.FALSE && isLinked) {
-                profile.setFloodgate(FloodgateState.LINKED);
-                core.getPlugin().getLog().info(
-                        "Player {} will be changed from a Java player to a linked Floodgate player",
-                        username);
             }
         } else {
             if (isLinked) {
