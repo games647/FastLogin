@@ -26,9 +26,25 @@
 package com.github.games647.fastlogin.core.shared;
 
 public enum FloodgateState {
+
+    /**
+     * Purely Java profile
+     */
     FALSE(0),
+
+    /**
+     * Purely Bedrock profile
+     */
     TRUE(1),
+
+    /**
+     * Bedrock profile is bidirectional associated with the Java Mojang profile.
+     */
     LINKED(2),
+
+    /**
+     * Data before floodgate database migration. Floodgate state is unknown.
+     */
     NOT_MIGRATED(3);
 
     private int value;
