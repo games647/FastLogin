@@ -26,11 +26,13 @@
 package com.github.games647.fastlogin.core.storage;
 
 import com.github.games647.craftapi.UUIDAdapter;
+import com.github.games647.fastlogin.core.shared.FloodgateState;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.slf4j.Logger;
 
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -56,13 +58,19 @@ public abstract class SQLStorage implements AuthStorage {
             + "UNIQUE (`Name`) "
             + ')';
 
-    protected static final String LOAD_BY_NAME = "SELECT * FROM `" + PREMIUM_TABLE + "` WHERE `Name`=? LIMIT 1";
-    protected static final String LOAD_BY_UUID = "SELECT * FROM `" + PREMIUM_TABLE + "` WHERE `UUID`=? LIMIT 1";
+    protected static final String ADD_FLOODGATE_COLUMN_STMT = "ALTER TABLE `" + PREMIUM_TABLE
+            + "` ADD COLUMN `Floodgate` INTEGER(3)";
+
+    protected static final String LOAD_BY_NAME = "SELECT * FROM `" + PREMIUM_TABLE
+            + "` WHERE `Name`=? LIMIT 1";
+    protected static final String LOAD_BY_UUID = "SELECT * FROM `" + PREMIUM_TABLE
+            + "` WHERE `UUID`=? LIMIT 1";
     protected static final String INSERT_PROFILE = "INSERT INTO `" + PREMIUM_TABLE
-            + "` (`UUID`, `Name`, `Premium`, `LastIp`) " + "VALUES (?, ?, ?, ?) ";
+            + "` (`UUID`, `Name`, `Premium`, `Floodgate`, `LastIp`) " + "VALUES (?, ?, ?, ?, ?) ";
     // limit not necessary here, because it's unique
     protected static final String UPDATE_PROFILE = "UPDATE `" + PREMIUM_TABLE
-            + "` SET `UUID`=?, `Name`=?, `Premium`=?, `LastIp`=?, `LastLogin`=CURRENT_TIMESTAMP WHERE `UserID`=?";
+            + "` SET `UUID`=?, `Name`=?, `Premium`=?, `Floodgate`=?, `LastIp`=?, "
+            + "`LastLogin`=CURRENT_TIMESTAMP WHERE `UserID`=?";
 
     protected final Logger log;
     protected final HikariDataSource dataSource;
@@ -81,11 +89,23 @@ public abstract class SQLStorage implements AuthStorage {
         // choose surrogate PK(ID), because UUID can be null for offline players
         // if UUID is always Premium UUID we would have to update offline player entries on insert
         // name cannot be PK, because it can be changed for premium players
-
         //todo: add unique uuid index usage
         try (Connection con = dataSource.getConnection();
-             Statement createStmt = con.createStatement()) {
-            createStmt.executeUpdate(CREATE_TABLE_STMT);
+             Statement stmt = con.createStatement()) {
+            stmt.executeUpdate(getCreateTableStmt());
+
+            // add Floodgate column
+            DatabaseMetaData md = con.getMetaData();
+            if (isColumnMissing(md, "Floodgate")) {
+                stmt.executeUpdate(ADD_FLOODGATE_COLUMN_STMT);
+            }
+
+        }
+    }
+
+    private boolean isColumnMissing(DatabaseMetaData metaData, String columnName) throws SQLException {
+        try (ResultSet rs = metaData.getColumns(null, null, PREMIUM_TABLE, columnName)) {
+            return !rs.next();
         }
     }
 
@@ -97,7 +117,8 @@ public abstract class SQLStorage implements AuthStorage {
             loadStmt.setString(1, name);
 
             try (ResultSet resultSet = loadStmt.executeQuery()) {
-                return parseResult(resultSet).orElseGet(() -> new StoredProfile(null, name, false, ""));
+                return parseResult(resultSet).orElseGet(() -> new StoredProfile(null, name, false,
+                        FloodgateState.FALSE, ""));
             }
         } catch (SQLException sqlEx) {
             log.error("Failed to query profile: {}", name, sqlEx);
@@ -124,15 +145,25 @@ public abstract class SQLStorage implements AuthStorage {
 
     private Optional<StoredProfile> parseResult(ResultSet resultSet) throws SQLException {
         if (resultSet.next()) {
-            long userId = resultSet.getInt(1);
+            long userId = resultSet.getInt("UserID");
 
-            UUID uuid = Optional.ofNullable(resultSet.getString(2)).map(UUIDAdapter::parseId).orElse(null);
+            UUID uuid = Optional.ofNullable(resultSet.getString("UUID")).map(UUIDAdapter::parseId).orElse(null);
 
-            String name = resultSet.getString(3);
-            boolean premium = resultSet.getBoolean(4);
-            String lastIp = resultSet.getString(5);
-            Instant lastLogin = resultSet.getTimestamp(6).toInstant();
-            return Optional.of(new StoredProfile(userId, uuid, name, premium, lastIp, lastLogin));
+            String name = resultSet.getString("Name");
+            boolean premium = resultSet.getBoolean("Premium");
+            int floodgateNum = resultSet.getInt("Floodgate");
+            FloodgateState floodgate;
+
+            // if the player wasn't migrated to the new database format
+            if (resultSet.wasNull()) {
+                floodgate = FloodgateState.NOT_MIGRATED;
+            } else {
+                floodgate = FloodgateState.fromInt(floodgateNum);
+            }
+
+            String lastIp = resultSet.getString("LastIp");
+            Instant lastLogin = resultSet.getTimestamp("LastLogin").toInstant();
+            return Optional.of(new StoredProfile(userId, uuid, name, premium, floodgate, lastIp, lastLogin));
         }
 
         return Optional.empty();
@@ -150,9 +181,10 @@ public abstract class SQLStorage implements AuthStorage {
                         saveStmt.setString(1, uuid);
                         saveStmt.setString(2, playerProfile.getName());
                         saveStmt.setBoolean(3, playerProfile.isPremium());
-                        saveStmt.setString(4, playerProfile.getLastIp());
+                        saveStmt.setInt(4, playerProfile.getFloodgate().getValue());
+                        saveStmt.setString(5, playerProfile.getLastIp());
 
-                        saveStmt.setLong(5, playerProfile.getRowId());
+                        saveStmt.setLong(6, playerProfile.getRowId());
                         saveStmt.execute();
                     }
                 } else {
@@ -161,7 +193,9 @@ public abstract class SQLStorage implements AuthStorage {
 
                         saveStmt.setString(2, playerProfile.getName());
                         saveStmt.setBoolean(3, playerProfile.isPremium());
-                        saveStmt.setString(4, playerProfile.getLastIp());
+                        saveStmt.setBoolean(3, playerProfile.isPremium());
+                        saveStmt.setInt(4, playerProfile.getFloodgate().getValue());
+                        saveStmt.setString(5, playerProfile.getLastIp());
 
                         saveStmt.execute();
                         try (ResultSet generatedKeys = saveStmt.getGeneratedKeys()) {
@@ -177,6 +211,14 @@ public abstract class SQLStorage implements AuthStorage {
         } catch (SQLException ex) {
             log.error("Failed to save playerProfile {}", playerProfile, ex);
         }
+    }
+
+    /**
+     * SQLite has a slightly different syntax, so this will be overridden by SQLiteStorage
+     * @return An SQL Statement to create the `premium` table
+     */
+    protected String getCreateTableStmt() {
+        return CREATE_TABLE_STMT;
     }
 
     @Override

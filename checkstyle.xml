@@ -220,6 +220,14 @@
       <property name="optional" value="true"/>
     </module>
 
+    <!-- Suppress filters via comments -->
+    <!-- https://stackoverflow.com/a/4023351/9767089 -->
+    <module name="SuppressionCommentFilter">
+      <property name="offCommentFormat" value="CHECKSTYLE.OFF\: ([\w\|]+)"/>
+      <property name="onCommentFormat" value="CHECKSTYLE.ON\: ([\w\|]+)"/>
+      <property name="checkFormat" value="$1"/>
+    </module>
+
   </module>
 
 </module>
