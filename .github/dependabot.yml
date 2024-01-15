@@ -23,8 +23,8 @@ updates:
         exclude-patterns:
           # Create single PR for these
           # Plugin require special evaluation about their compatibility
-          - "*loginsecurity"
-          - "*ProtocolLib"
+          - "com.lenis0012.bukkit:loginsecurity"
+          - "com.comphenix.protocol:ProtocolLib"
 
     ignore:
       # HikariCP dropped Java 8 support with 5.0
