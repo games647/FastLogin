@@ -70,7 +70,7 @@ final class EncryptionUtil {
     public static final int VERIFY_TOKEN_LENGTH = 4;
     public static final String KEY_PAIR_ALGORITHM = "RSA";
 
-    private static final int RSA_LENGTH = 1_024;
+    private static final int RSA_LENGTH = 2_048;
 
     private static final PublicKey MOJANG_SESSION_KEY;
     private static final int LINE_LENGTH = 76;
