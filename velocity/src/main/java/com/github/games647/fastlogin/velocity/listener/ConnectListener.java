@@ -28,15 +28,15 @@ package com.github.games647.fastlogin.velocity.listener;
 import com.github.games647.craftapi.UUIDAdapter;
 import com.github.games647.fastlogin.core.antibot.AntiBotService;
 import com.github.games647.fastlogin.core.antibot.AntiBotService.Action;
+import com.github.games647.fastlogin.core.hooks.bedrock.FloodgateService;
 import com.github.games647.fastlogin.core.shared.LoginSession;
 import com.github.games647.fastlogin.core.storage.StoredProfile;
-import com.github.games647.fastlogin.core.hooks.bedrock.FloodgateService;
 import com.github.games647.fastlogin.velocity.FastLoginVelocity;
 import com.github.games647.fastlogin.velocity.VelocityLoginSession;
 import com.github.games647.fastlogin.velocity.task.AsyncPremiumCheck;
-import com.github.games647.fastlogin.velocity.task.ForceLoginTask;
 import com.github.games647.fastlogin.velocity.task.FloodgateAuthTask;
-import com.velocitypowered.api.event.Continuation;
+import com.github.games647.fastlogin.velocity.task.ForceLoginTask;
+import com.velocitypowered.api.event.EventTask;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.connection.DisconnectEvent;
 import com.velocitypowered.api.event.connection.PreLoginEvent;
@@ -70,9 +70,9 @@ public class ConnectListener {
     }
 
     @Subscribe
-    public void onPreLogin(PreLoginEvent preLoginEvent, Continuation continuation) {
+    public EventTask onPreLogin(PreLoginEvent preLoginEvent) {
         if (!preLoginEvent.getResult().isAllowed()) {
-            return;
+            return null;
         }
 
         InboundConnection connection = preLoginEvent.getConnection();
@@ -84,26 +84,24 @@ public class ConnectListener {
         switch (action) {
             case Ignore:
                 // just ignore
-                return;
+                return null;
             case Block:
                 String message = plugin.getCore().getMessage("kick-antibot");
                 TextComponent messageParsed = LegacyComponentSerializer.legacyAmpersand().deserialize(message);
 
                 PreLoginComponentResult reason = PreLoginComponentResult.denied(messageParsed);
                 preLoginEvent.setResult(reason);
-                break;
+                return null;
             case Continue:
             default:
-                Runnable asyncPremiumCheck = new AsyncPremiumCheck(
-                    plugin, connection, username, continuation, preLoginEvent
+                return EventTask.async(
+                        new AsyncPremiumCheck(plugin, connection, username, preLoginEvent)
                 );
-                plugin.getScheduler().runAsync(asyncPremiumCheck);
-                break;
         }
     }
 
     @Subscribe
-    public void onGameprofileRequest(GameProfileRequestEvent event) {
+    public void onGameProfileRequest(GameProfileRequestEvent event) {
         if (event.isOnlineMode()) {
             LoginSession session = plugin.getSession().get(event.getConnection().getRemoteAddress());
             if (session == null) {

@@ -33,7 +33,6 @@ import com.github.games647.fastlogin.velocity.VelocityLoginSession;
 import com.github.games647.fastlogin.velocity.VelocityLoginSource;
 import com.github.games647.fastlogin.velocity.event.VelocityFastLoginPreLoginEvent;
 import com.velocitypowered.api.command.CommandSource;
-import com.velocitypowered.api.event.Continuation;
 import com.velocitypowered.api.event.connection.PreLoginEvent;
 import com.velocitypowered.api.proxy.InboundConnection;
 import com.velocitypowered.api.proxy.Player;
@@ -45,28 +44,22 @@ public class AsyncPremiumCheck extends JoinManagement<Player, CommandSource, Vel
 
     private final FastLoginVelocity plugin;
     private final String username;
-    private final Continuation continuation;
     private final PreLoginEvent preLoginEvent;
     private final InboundConnection connection;
 
     public AsyncPremiumCheck(FastLoginVelocity plugin, InboundConnection connection, String username,
-                             Continuation continuation, PreLoginEvent preLoginEvent) {
+                             PreLoginEvent preLoginEvent) {
         super(plugin.getCore(), plugin.getCore().getAuthPluginHook(), plugin.getBedrockService());
         this.plugin = plugin;
         this.connection = connection;
         this.username = username;
-        this.continuation = continuation;
         this.preLoginEvent = preLoginEvent;
     }
 
     @Override
     public void run() {
         plugin.getSession().remove(connection.getRemoteAddress());
-        try {
-            super.onLogin(username, new VelocityLoginSource(connection, preLoginEvent));
-        } finally {
-            continuation.resume();
-        }
+        super.onLogin(username, new VelocityLoginSource(connection, preLoginEvent));
     }
 
     @Override
