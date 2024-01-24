@@ -61,7 +61,7 @@ body:
       options:
         - label: |
             I tried the [latest build](https://ci.codemc.io/job/Games647/job/FastLogin/) 
-            (build refers to development builds not necessary a release version)
+            (build refers to development builds not necessary a release version; i.e. v1.10 is out of date)
           required: true
         - label: |
             I checked for existing tickets -

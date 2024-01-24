@@ -70,7 +70,7 @@ no-console: '&4You are not a player. You cannot toggle the premium state for YOU
 
 # The user wants to toggle premium state, but BungeeCord support is enabled. This means the server have to communicate
 # with the BungeeCord first which will establish a connection with the database server.
-wait-on-proxy: '&6Sending request... (Do not forget to follow the BungeeCord setup guide)'
+wait-on-proxy: '&6Sending request... (Do not forget to follow the BungeeCord setup guide referenced on the plugin page)'
 
 # When ProtocolLib is enabled and the plugin is unable to continue handling a login request after a requested premium
 # authentication. In this state the client expects a success packet with an encrypted connection or disconnect packet.
@@ -100,5 +100,3 @@ Type &a/premium&6 again to confirm'
 invalid-public-key: '&cInvalid client public key. Please try to restart your game.'
 
 # ========= Bungee/Waterfall only ================================
-
-
