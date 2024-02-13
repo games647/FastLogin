@@ -62,7 +62,7 @@ public abstract class ForceLoginManagement<P extends C, C, L extends LoginSessio
                 //premium player
                 AuthPlugin<P> authPlugin = core.getAuthPluginHook();
                 if (authPlugin == null) {
-                    //maybe only bungeecord plugin
+                    // maybe only bungeecord plugin
                     onForceActionSuccess(session);
                 } else {
                     boolean success = true;

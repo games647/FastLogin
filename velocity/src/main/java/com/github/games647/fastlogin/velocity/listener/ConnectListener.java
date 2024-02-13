@@ -150,6 +150,7 @@ public class ConnectListener {
         if (floodgateService != null) {
             FloodgatePlayer floodgatePlayer = floodgateService.getBedrockPlayer(player.getUniqueId());
             if (floodgatePlayer != null) {
+                plugin.getLog().info("Running floodgate handling for {}", player);
                 Runnable floodgateAuthTask = new FloodgateAuthTask(plugin.getCore(), player, floodgatePlayer, server);
                 plugin.getScheduler().runAsync(floodgateAuthTask);
                 return;
@@ -158,6 +159,7 @@ public class ConnectListener {
 
         VelocityLoginSession session = plugin.getSession().get(player.getRemoteAddress());
         if (session == null) {
+            plugin.getLog().info("No active login session found on server connect for {}", player);
             return;
         }
 

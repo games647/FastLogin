@@ -68,6 +68,7 @@ public class ForceLoginTask
     @Override
     public void run() {
         if (session == null) {
+            core.getPlugin().getLog().info("No active login session on force handling for {}", player);
             return;
         }
 
@@ -80,6 +81,7 @@ public class ForceLoginTask
     @Override
     public boolean forceLogin(Player player) {
         if (session.isAlreadyLogged()) {
+            core.getPlugin().getLog().info("Ignoring second force login attempt for {}", player);
             return true;
         }
 
@@ -92,11 +94,11 @@ public class ForceLoginTask
         VelocityFastLoginAutoLoginEvent event = new VelocityFastLoginAutoLoginEvent(session, profile);
         try {
              return core.getPlugin().getProxy().getEventManager().fire(event).get();
-        } catch (InterruptedException e) {
+        } catch (InterruptedException interruptedEx) {
             Thread.currentThread().interrupt(); // Set the interrupt flag again
             return event;
-        } catch (ExecutionException e) {
-            core.getPlugin().getLog().error("Error firing event", e);
+        } catch (ExecutionException executionEx) {
+            core.getPlugin().getLog().error("Error firing event", executionEx);
             return event;
         }
     }
@@ -113,6 +115,8 @@ public class ForceLoginTask
         if (session.needsRegistration()) {
             type = Type.REGISTER;
         }
+
+        core.getPlugin().getLog().info("Sending force {} for {} towards server {}", type, player.getUsername(), server);
 
         UUID proxyId = core.getPlugin().getProxyId();
         ChannelMessage loginMessage = new LoginActionMessage(type, player.getUsername(), proxyId);
