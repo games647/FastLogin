@@ -166,7 +166,7 @@ public class ConnectListener {
         // player is still in the login phase and reported to be offline.
         Runnable loginTask = new ForceLoginTask(plugin.getCore(), player, server, session);
         plugin.getProxy().getScheduler()
-                .buildTask(plugin, () -> plugin.getScheduler().runAsync(loginTask))
+                .buildTask(plugin, loginTask)
                 .delay(1L, TimeUnit.SECONDS) // Delay at least one second, otherwise the login command can be missed
                 .schedule();
     }
