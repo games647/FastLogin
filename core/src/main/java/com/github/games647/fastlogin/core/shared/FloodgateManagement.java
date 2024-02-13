@@ -33,6 +33,7 @@ import org.geysermc.floodgate.api.player.FloodgatePlayer;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -61,9 +62,9 @@ public abstract class FloodgateManagement<P extends C, C, L extends LoginSession
         this.username = getName(player);
 
         //load values from config.yml
-        autoLoginFloodgate = core.getConfig().get("autoLoginFloodgate").toString().toLowerCase();
-        autoRegisterFloodgate = core.getConfig().get("autoRegisterFloodgate").toString().toLowerCase();
-        allowNameConflict = core.getConfig().get("allowFloodgateNameConflict").toString().toLowerCase();
+        autoLoginFloodgate = core.getConfig().getString("autoLoginFloodgate").toLowerCase(Locale.ROOT);
+        autoRegisterFloodgate = core.getConfig().getString("autoRegisterFloodgate").toLowerCase(Locale.ROOT);
+        allowNameConflict = core.getConfig().getString("allowFloodgateNameConflict").toLowerCase(Locale.ROOT);
     }
 
     @Override

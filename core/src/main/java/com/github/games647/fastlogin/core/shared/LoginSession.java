@@ -61,6 +61,7 @@ public abstract class LoginSession {
     }
 
     /**
+     * Check if user needs registration once login is successful
      * @return This value is always false if we authenticate the player with a cracked authentication
      */
     public synchronized boolean needsRegistration() {
