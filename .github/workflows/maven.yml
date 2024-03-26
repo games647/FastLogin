@@ -40,8 +40,4 @@ jobs:
       - name: Build with Maven and test
         # Run non-interactive, package (with compile+test),
         # ignore snapshot updates, because they are likely to have breaking changes, enforce checksums
-        run: mvn test --batch-mode --threads 2.0C --no-snapshot-updates --strict-checksums --file pom.xml
-
-      - name: Update dependency graph
-        if: ${{ github.event_name == 'push' }}
-        uses: advanced-security/maven-dependency-submission-action@v4.0.0
+        run: mvn -V -B package --file pom.xml
