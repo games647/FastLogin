@@ -35,12 +35,13 @@ import com.github.games647.fastlogin.core.shared.ForceLoginManagement;
 import com.github.games647.fastlogin.core.shared.LoginSession;
 import com.github.games647.fastlogin.core.shared.event.FastLoginAutoLoginEvent;
 import com.github.games647.fastlogin.core.storage.StoredProfile;
-import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.concurrent.ExecutionException;
+
+import static com.github.games647.fastlogin.bukkit.FastLoginBukkit.getUniversalScheduler;
 
 public class ForceLoginTask extends ForceLoginManagement<Player, CommandSender, BukkitLoginSession, FastLoginBukkit> {
 
@@ -94,7 +95,7 @@ public class ForceLoginTask extends ForceLoginManagement<Player, CommandSender, 
     public boolean isOnline(Player player) {
         try {
             //the player-list isn't thread-safe
-            return Bukkit.getScheduler().callSyncMethod(core.getPlugin(), player::isOnline).get();
+            return getUniversalScheduler().callSyncMethod(player::isOnline).get();
         } catch (InterruptedException | ExecutionException ex) {
             core.getPlugin().getLog().error("Failed to perform thread-safe online check for {}", player, ex);
             return false;

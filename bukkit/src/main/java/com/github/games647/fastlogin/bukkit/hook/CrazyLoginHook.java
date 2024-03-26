@@ -34,12 +34,13 @@ import de.st_ddt.crazylogin.data.LoginPlayerData;
 import de.st_ddt.crazylogin.databases.CrazyLoginDataDatabase;
 import de.st_ddt.crazylogin.listener.PlayerListener;
 import de.st_ddt.crazylogin.metadata.Authenticated;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+
+import static com.github.games647.fastlogin.bukkit.FastLoginBukkit.getUniversalScheduler;
 
 /**
  * GitHub: <a href="https://github.com/ST-DDT/CrazyLogin">...</a>
@@ -65,7 +66,7 @@ public class CrazyLoginHook implements AuthPlugin<Player> {
     @Override
     public boolean forceLogin(Player player) {
         //not thread-safe operation
-        Future<Optional<LoginPlayerData>> future = Bukkit.getScheduler().callSyncMethod(plugin, () -> {
+        Future<Optional<LoginPlayerData>> future = getUniversalScheduler().callSyncMethod(() -> {
             LoginPlayerData playerData = crazyLoginPlugin.getPlayerData(player);
             if (playerData != null) {
                 //mark the account as logged in

@@ -50,7 +50,6 @@
                 <version>3.5.1</version>
                 <configuration>
                     <minimizeJar>true</minimizeJar>
-
                     <createDependencyReducedPom>false</createDependencyReducedPom>
                     <shadedArtifactAttached>false</shadedArtifactAttached>
                     <artifactSet>
@@ -111,6 +110,10 @@
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
+        </repository>
+        <repository>
+            <id>wdsj</id>
+            <url>https://repo.wdsj.io/repository/minecraft/</url>
         </repository>
     </repositories>
 

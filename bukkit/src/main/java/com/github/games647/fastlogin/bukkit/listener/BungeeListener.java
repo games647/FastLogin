@@ -41,6 +41,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
 
+import static com.github.games647.fastlogin.bukkit.FastLoginBukkit.getUniversalScheduler;
+
 /**
  * Responsible for receiving messages from a BungeeCord instance.
  * <p>
@@ -108,7 +110,7 @@ public class BungeeListener implements PluginMessageListener {
     }
 
     private void onRegisterMessage(Player player, String playerName) {
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+        getUniversalScheduler().runTaskAsynchronously(() -> {
             AuthPlugin<Player> authPlugin = plugin.getCore().getAuthPluginHook();
             try {
                 //we need to check if the player is registered on Bukkit too
@@ -131,7 +133,7 @@ public class BungeeListener implements PluginMessageListener {
         plugin.getLog().info("Delaying force login until join event fired?: {}", result);
         if (result) {
             Runnable forceLoginTask = new ForceLoginTask(plugin.getCore(), player, session);
-            Bukkit.getScheduler().runTaskAsynchronously(plugin, forceLoginTask);
+            getUniversalScheduler().runTaskAsynchronously(forceLoginTask);
         }
     }
 }

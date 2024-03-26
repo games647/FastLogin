@@ -130,6 +130,10 @@
 
     <repositories>
         <repository>
+            <id>wdsj</id>
+            <url>https://repo.wdsj.io/repository/minecraft/</url>
+        </repository>
+        <repository>
             <id>velocity</id>
             <url>https://repo.papermc.io/repository/maven-public/</url>
         </repository>

@@ -60,6 +60,10 @@
                             <shadedPattern>fastlogin.yaml</shadedPattern>
                         </relocation>
                         <relocation>
+                            <pattern>com.github.Anon8281.universalScheduler</pattern>
+                            <shadedPattern>fastlogin.libs.universalscheduler</shadedPattern>
+                        </relocation>
+                        <relocation>
                             <pattern>com.zaxxer.hikari</pattern>
                             <shadedPattern>fastlogin.hikari</shadedPattern>
                         </relocation>
@@ -139,6 +143,11 @@
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
+        </repository>
+
+        <repository>
+            <id>wdsj</id>
+            <url>https://repo.wdsj.io/repository/minecraft/</url>
         </repository>
 
         <!-- PlaceholderAPI -->
@@ -302,6 +311,13 @@
                     <artifactId>*</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.Anon8281</groupId>
+            <artifactId>UniversalScheduler</artifactId>
+            <version>0.1.6</version>
+            <scope>compile</scope>
         </dependency>
 
         <dependency>

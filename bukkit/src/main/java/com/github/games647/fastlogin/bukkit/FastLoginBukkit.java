@@ -26,6 +26,8 @@
 package com.github.games647.fastlogin.bukkit;
 
 import com.comphenix.protocol.ProtocolLibrary;
+import com.github.Anon8281.universalScheduler.UniversalScheduler;
+import com.github.Anon8281.universalScheduler.scheduling.schedulers.TaskScheduler;
 import com.github.games647.fastlogin.bukkit.command.CrackedCommand;
 import com.github.games647.fastlogin.bukkit.command.PremiumCommand;
 import com.github.games647.fastlogin.bukkit.listener.ConnectionListener;
@@ -70,8 +72,9 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
     private final Logger logger;
 
     private boolean serverStarted;
+    private static TaskScheduler scheduler;
     private BungeeManager bungeeManager;
-    private final BukkitScheduler scheduler;
+    private final BukkitScheduler bukkitScheduler;
     private FastLoginCore<Player, CommandSender, FastLoginBukkit> core;
     private FloodgateService floodgateService;
     private GeyserService geyserService;
@@ -80,11 +83,16 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
 
     public FastLoginBukkit() {
         this.logger = CommonUtil.initializeLoggerService(getLogger());
-        this.scheduler = new BukkitScheduler(this, logger);
+        this.bukkitScheduler = new BukkitScheduler(logger);
+    }
+
+    public static TaskScheduler getUniversalScheduler() {
+        return scheduler;
     }
 
     @Override
     public void onEnable() {
+        scheduler = UniversalScheduler.getScheduler(this);
         core = new FastLoginCore<>(this);
         core.load();
 
@@ -128,7 +136,7 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
         }
 
         //delay dependency setup because we load the plugin very early where plugins are initialized yet
-        getServer().getScheduler().runTaskLater(this, new DelayedAuthHook(this), 5L);
+        getUniversalScheduler().runTaskLater(new DelayedAuthHook(this), 5L);
 
         pluginManager.registerEvents(new ConnectionListener(this), this);
 
@@ -283,7 +291,7 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
 
     @Override
     public BukkitScheduler getScheduler() {
-        return scheduler;
+        return bukkitScheduler;
     }
 
     @Override

@@ -3,7 +3,7 @@
 name: ${project.parent.name}
 version: ${project.version}-${git.commit.id.abbrev}
 main: ${project.groupId}.${project.artifactId}.${project.name}
-
+folia-supported: true
 # meta data for plugin managers
 authors: [games647, 'https://github.com/games647/FastLogin/graphs/contributors']
 description: |

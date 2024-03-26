@@ -27,13 +27,14 @@ package com.github.games647.fastlogin.bukkit.hook;
 
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 import com.github.games647.fastlogin.core.hooks.AuthPlugin;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import ultraauth.api.UltraAuthAPI;
 import ultraauth.managers.PlayerManager;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+
+import static com.github.games647.fastlogin.bukkit.FastLoginBukkit.getUniversalScheduler;
 
 /**
  * Project page:
@@ -53,7 +54,7 @@ public class UltraAuthHook implements AuthPlugin<Player> {
     @Override
     public boolean forceLogin(Player player) {
         //not thread-safe
-        Future<Boolean> future = Bukkit.getScheduler().callSyncMethod(plugin, () -> {
+        Future<Boolean> future = getUniversalScheduler().callSyncMethod(() -> {
             if (UltraAuthAPI.isAuthenticated(player)) {
                 plugin.getLog().warn(ALREADY_AUTHENTICATED, player);
                 return false;

@@ -53,6 +53,10 @@
             <id>codemc-repo</id>
             <url>https://repo.codemc.io/repository/maven-public/</url>
         </repository>
+        <repository>
+            <id>wdsj</id>
+            <url>https://repo.wdsj.io/repository/minecraft/</url>
+        </repository>
         <!-- Floodgate -->
         <repository>
             <id>opencollab-snapshot</id>
