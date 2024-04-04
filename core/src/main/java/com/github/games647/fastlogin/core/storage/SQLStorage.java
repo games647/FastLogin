@@ -61,14 +61,14 @@ public abstract class SQLStorage implements AuthStorage {
     protected static final String ADD_FLOODGATE_COLUMN_STMT = "ALTER TABLE `" + PREMIUM_TABLE
             + "` ADD COLUMN `Floodgate` INTEGER(3)";
 
-    protected static final String LOAD_BY_NAME = "SELECT * FROM `" + PREMIUM_TABLE
+    protected static final String LOAD_BY_NAME_STMT = "SELECT * FROM `" + PREMIUM_TABLE
             + "` WHERE `Name`=? LIMIT 1";
-    protected static final String LOAD_BY_UUID = "SELECT * FROM `" + PREMIUM_TABLE
+    protected static final String LOAD_BY_UUID_STMT = "SELECT * FROM `" + PREMIUM_TABLE
             + "` WHERE `UUID`=? LIMIT 1";
-    protected static final String INSERT_PROFILE = "INSERT INTO `" + PREMIUM_TABLE
+    protected static final String INSERT_PROFILE_STMT = "INSERT INTO `" + PREMIUM_TABLE
             + "` (`UUID`, `Name`, `Premium`, `Floodgate`, `LastIp`) " + "VALUES (?, ?, ?, ?, ?) ";
     // limit not necessary here, because it's unique
-    protected static final String UPDATE_PROFILE = "UPDATE `" + PREMIUM_TABLE
+    protected static final String UPDATE_PROFILE_STMT = "UPDATE `" + PREMIUM_TABLE
             + "` SET `UUID`=?, `Name`=?, `Premium`=?, `Floodgate`=?, `LastIp`=?, "
             + "`LastLogin`=CURRENT_TIMESTAMP WHERE `UserID`=?";
 
@@ -97,7 +97,7 @@ public abstract class SQLStorage implements AuthStorage {
             // add Floodgate column
             DatabaseMetaData md = con.getMetaData();
             if (isColumnMissing(md, "Floodgate")) {
-                stmt.executeUpdate(ADD_FLOODGATE_COLUMN_STMT);
+                stmt.executeUpdate(getAddFloodgateColumnStmt());
             }
 
         }
@@ -112,7 +112,7 @@ public abstract class SQLStorage implements AuthStorage {
     @Override
     public StoredProfile loadProfile(String name) {
         try (Connection con = dataSource.getConnection();
-             PreparedStatement loadStmt = con.prepareStatement(LOAD_BY_NAME)
+             PreparedStatement loadStmt = con.prepareStatement(getLoadByNameStmt())
         ) {
             loadStmt.setString(1, name);
 
@@ -130,7 +130,7 @@ public abstract class SQLStorage implements AuthStorage {
     @Override
     public StoredProfile loadProfile(UUID uuid) {
         try (Connection con = dataSource.getConnection();
-             PreparedStatement loadStmt = con.prepareStatement(LOAD_BY_UUID)) {
+             PreparedStatement loadStmt = con.prepareStatement(getLoadByUuidStmt())) {
             loadStmt.setString(1, UUIDAdapter.toMojangId(uuid));
 
             try (ResultSet resultSet = loadStmt.executeQuery()) {
@@ -177,7 +177,7 @@ public abstract class SQLStorage implements AuthStorage {
             playerProfile.getSaveLock().lock();
             try {
                 if (playerProfile.isSaved()) {
-                    try (PreparedStatement saveStmt = con.prepareStatement(UPDATE_PROFILE)) {
+                    try (PreparedStatement saveStmt = con.prepareStatement(getUpdateProfileStmt())) {
                         saveStmt.setString(1, uuid);
                         saveStmt.setString(2, playerProfile.getName());
                         saveStmt.setBoolean(3, playerProfile.isPremium());
@@ -188,7 +188,8 @@ public abstract class SQLStorage implements AuthStorage {
                         saveStmt.execute();
                     }
                 } else {
-                    try (PreparedStatement saveStmt = con.prepareStatement(INSERT_PROFILE, RETURN_GENERATED_KEYS)) {
+                    try (PreparedStatement saveStmt = con.prepareStatement(getInsertProfileStmt(),
+                            RETURN_GENERATED_KEYS)) {
                         saveStmt.setString(1, uuid);
 
                         saveStmt.setString(2, playerProfile.getName());
@@ -214,11 +215,35 @@ public abstract class SQLStorage implements AuthStorage {
     }
 
     /**
-     * SQLite has a slightly different syntax, so this will be overridden by SQLiteStorage
+     * SQLite and PostgreSQL have a slightly different syntax, so this will be overridden by SQLiteStorage and so on...
      * @return An SQL Statement to create the `premium` table
      */
     protected String getCreateTableStmt() {
         return CREATE_TABLE_STMT;
+    }
+
+    /**
+     * PostgreSQL has a slightly different syntax, so this will be overridden by PostgreSQLStorage
+     * @return An SQL Statement to create the `premium` table
+     */
+    protected String getAddFloodgateColumnStmt() {
+        return ADD_FLOODGATE_COLUMN_STMT;
+    }
+
+    protected String getLoadByNameStmt() {
+        return LOAD_BY_NAME_STMT;
+    }
+
+    protected String getLoadByUuidStmt() {
+        return LOAD_BY_UUID_STMT;
+    }
+
+    protected String getInsertProfileStmt() {
+        return INSERT_PROFILE_STMT;
+    }
+
+    protected String getUpdateProfileStmt() {
+        return UPDATE_PROFILE_STMT;
     }
 
     @Override
