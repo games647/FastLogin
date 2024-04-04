@@ -147,7 +147,10 @@ public abstract class SQLStorage implements AuthStorage {
         if (resultSet.next()) {
             long userId = resultSet.getInt("UserID");
 
-            UUID uuid = Optional.ofNullable(resultSet.getString("UUID")).map(UUIDAdapter::parseId).orElse(null);
+            UUID uuid = Optional.ofNullable(resultSet.getString("UUID"))
+                    .map(String::trim)
+                    .map(UUIDAdapter::parseId)
+                    .orElse(null);
 
             String name = resultSet.getString("Name");
             boolean premium = resultSet.getBoolean("Premium");
