@@ -23,12 +23,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+
 package com.github.games647.fastlogin.core;
 
 import org.slf4j.Logger;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -42,22 +44,24 @@ public class AsyncScheduler {
 
     private final Logger logger;
 
-    private final Executor processingPool;
+    private final Executor asyncPool;
 
     private final AtomicInteger currentlyRunning = new AtomicInteger();
 
     public AsyncScheduler(Logger logger, Executor processingPool) {
         this.logger = logger;
 
-        logger.info("Using legacy scheduler");
-        this.processingPool = processingPool;
+        logger.info("Using optimized green threads with Java 21");
+        this.asyncPool = Executors.newVirtualThreadPerTaskExecutor();
     }
 
     public CompletableFuture<Void> runAsync(Runnable task) {
-        return CompletableFuture.runAsync(() -> process(task), processingPool).exceptionally(error -> {
-            logger.warn("Error occurred on thread pool", error);
-            return null;
-        });
+        return CompletableFuture
+                .runAsync(() -> process(task), asyncPool)
+                .exceptionally(error -> {
+                    logger.warn("Error occurred on thread pool", error);
+                    return null;
+                });
     }
 
     private void process(Runnable task) {
