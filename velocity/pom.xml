@@ -67,7 +67,7 @@
             </plugin>
             <plugin>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.5.1</version>
+                <version>3.5.3</version>
                 <configuration>
                     <minimizeJar>true</minimizeJar>
 
@@ -159,7 +159,7 @@
         <dependency>
             <groupId>org.mariadb.jdbc</groupId>
             <artifactId>mariadb-java-client</artifactId>
-            <version>3.3.2</version>
+            <version>3.3.3</version>
         </dependency>
         
         <!-- Bedrock player bridge -->

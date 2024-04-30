@@ -50,7 +50,7 @@
 
         <java.version>8</java.version>
 
-        <lombook.version>1.18.30</lombook.version>
+        <lombook.version>1.18.32</lombook.version>
 
         <floodgate.version>development-2.2.2-SNAPSHOT</floodgate.version>
         <geyser.version>2.1.0-SNAPSHOT</geyser.version>
@@ -139,7 +139,7 @@
                     <dependency>
                         <groupId>com.puppycrawl.tools</groupId>
                         <artifactId>checkstyle</artifactId>
-                        <version>10.12.7</version>
+                        <version>10.16.0</version>
                     </dependency>
                 </dependencies>
                 <executions>
