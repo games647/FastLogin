@@ -71,25 +71,43 @@ public class ConnectListener implements Listener {
     private static final String UUID_FIELD_NAME = "uniqueId";
     protected static final MethodHandle UNIQUE_ID_SETTER;
 
+    private static final String REWRITE_ID_NAME = "rewriteId";
+    protected static final MethodHandle REWRITE_ID_SETTER;
+
     static {
-        MethodHandle setHandle = null;
+        MethodHandle uniqueIdHandle = null;
+        MethodHandle rewriterHandle = null;
         try {
             Lookup lookup = MethodHandles.lookup();
 
+            // test for implementation class availability
             Class.forName("net.md_5.bungee.connection.InitialHandler");
-
-            Field uuidField = InitialHandler.class.getDeclaredField(UUID_FIELD_NAME);
-            uuidField.setAccessible(true);
-            setHandle = lookup.unreflectSetter(uuidField);
+            uniqueIdHandle = getHandlerSetter(lookup, UUID_FIELD_NAME);
+            try {
+                rewriterHandle = getHandlerSetter(lookup, REWRITE_ID_NAME);
+            } catch (NoSuchFieldException noSuchFieldEx) {
+                Logger logger = LoggerFactory.getLogger(ConnectListener.class);
+                logger.error(
+                        "Rewrite field not found. Setting only legacy BungeeCord field"
+                );
+            }
         } catch (ReflectiveOperationException reflectiveOperationException) {
             Logger logger = LoggerFactory.getLogger(ConnectListener.class);
             logger.error(
-                    "Cannot find Bungee initial handler; Disabling premium UUID and skin won't work.",
+                    "Cannot find Bungee UUID field implementation; Disabling premium UUID and skin won't work.",
                     reflectiveOperationException
             );
         }
 
-        UNIQUE_ID_SETTER = setHandle;
+        UNIQUE_ID_SETTER = uniqueIdHandle;
+        REWRITE_ID_SETTER = rewriterHandle;
+    }
+
+    private static MethodHandle getHandlerSetter(Lookup lookup, String fieldName)
+            throws NoSuchFieldException, IllegalAccessException {
+        Field uuidField = InitialHandler.class.getDeclaredField(fieldName);
+        uuidField.setAccessible(true);
+        return lookup.unreflectSetter(uuidField);
     }
 
     private final FastLoginBungee plugin;
@@ -178,6 +196,12 @@ public class ConnectListener implements Listener {
             // However if online mode is requested, it will override previous values
             // So we have to do it with reflection
             UNIQUE_ID_SETTER.invokeExact(connection, offlineUUID);
+
+            // if available set rewrite id to forward the UUID for newer BungeeCord versions since
+            // https://github.com/SpigotMC/BungeeCord/commit/1be25b6c74ec2be4b15adf8ca53a0497f01e2afe
+            if (REWRITE_ID_SETTER != null) {
+                REWRITE_ID_SETTER.invokeExact(connection, offlineUUID);
+            }
 
             String format = "Overridden UUID from {} to {} (based of {}) on {}";
             plugin.getLog().info(format, oldPremiumId, offlineUUID, username, connection);
