@@ -47,7 +47,7 @@ public enum FloodgateState {
      */
     NOT_MIGRATED(3);
 
-    private int value;
+    private final int value;
 
     FloodgateState(int value) {
         this.value = value;

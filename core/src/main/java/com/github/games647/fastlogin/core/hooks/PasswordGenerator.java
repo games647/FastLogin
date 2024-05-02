@@ -34,8 +34,8 @@ public interface PasswordGenerator<P> {
 
     /**
      * Generate a password for a non-registered player
-     * @param player
-     * @return daw
+     * @param player player representation
+     * @return generated password
      */
     String getRandomPassword(P player);
 }

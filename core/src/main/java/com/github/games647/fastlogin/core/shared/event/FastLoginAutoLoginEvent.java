@@ -30,7 +30,7 @@ import com.github.games647.fastlogin.core.storage.StoredProfile;
 
 /**
  * This event fires if the plugin performs an auto login on the platform where the login plugin is
- *
+ * <p>
  * {@snippet :
  * @EventHandler()
  * public void onPlayerLogin(FastLoginAutoLoginEvent loginEvent) {

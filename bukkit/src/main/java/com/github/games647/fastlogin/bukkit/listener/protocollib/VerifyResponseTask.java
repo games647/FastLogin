@@ -173,12 +173,12 @@ public class VerifyResponseTask implements Runnable {
                             "The incoming request for player {} uses a local IP address",
                             requestedUsername
                     );
-                    plugin.getLog().warn(ADDRESS_VERIFY_WARNING);
                 } else {
                     plugin.getLog().warn("If you think this is an error, please verify that the incoming "
                             + "IP address {} is not associated with a server hosting company.", address);
-                    plugin.getLog().warn(ADDRESS_VERIFY_WARNING);
                 }
+
+                plugin.getLog().warn(ADDRESS_VERIFY_WARNING);
             }
         } catch (IOException ioEx) {
             disconnect("error-kick", "Failed to connect to session server", ioEx);
