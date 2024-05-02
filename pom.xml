@@ -157,11 +157,25 @@
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.2.5</version>
+                <configuration>
+                    <!-- Work-around to make multi-release classes discoverable
+                    https://issues.apache.org/jira/browse/SUREFIRE-1731 -->
+                    <classesDirectory>
+                        ${project.build.directory}/classes/META-INF/versions/21
+                    </classesDirectory>
+                    <additionalClasspathElements>
+                        <additionalClasspathElement>
+                            ${project.build.outputDirectory}
+                        </additionalClasspathElement>
+                    </additionalClasspathElements>
+                </configuration>
             </plugin>
 
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
+                <version>3.4.1</version>
+                <!-- Explicitly enable multi-release for the scheduler,
+                because detection from class shading doesn't work -->
                 <executions>
                     <execution>
                         <id>default-jar</id>

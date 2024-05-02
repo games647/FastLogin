@@ -77,14 +77,6 @@
                     </archive>
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>8</source>
-                    <target>8</target>
-                </configuration>
-            </plugin>
         </plugins>
     </build>
 
@@ -98,11 +90,10 @@
                 <pluginManagement>
                     <plugins>
                         <plugin>
-                            <groupId>org.apache.maven.plugins</groupId>
                             <artifactId>maven-compiler-plugin</artifactId>
                             <executions>
                                 <execution>
-                                    <id>jdk9</id>
+                                    <id>jdk21</id>
                                     <goals>
                                         <goal>compile</goal>
                                     </goals>
@@ -112,22 +103,6 @@
                                             <compileSourceRoot>${project.basedir}/src/main/java21</compileSourceRoot>
                                         </compileSourceRoots>
                                         <multiReleaseOutput>true</multiReleaseOutput>
-                                    </configuration>
-                                </execution>
-                            </executions>
-                        </plugin>
-                        <plugin>
-                            <groupId>org.apache.maven.plugins</groupId>
-                            <artifactId>maven-jar-plugin</artifactId>
-                            <executions>
-                                <execution>
-                                    <id>default-jar</id>
-                                    <configuration>
-                                        <archive>
-                                            <manifestEntries>
-                                                <Multi-Release>true</Multi-Release>
-                                            </manifestEntries>
-                                        </archive>
                                     </configuration>
                                 </execution>
                             </executions>

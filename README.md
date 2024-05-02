@@ -60,7 +60,7 @@ Possible values: `Premium`, `Cracked`, `Unknown`
 
 ## Requirements
 
-* Java 8 supported, but Java 21 recommended for improved threading
+* Java 8 supported, but Java 21+ recommended for improved threading
 * Server software in offlinemode:
   * Spigot (or a fork e.g. Paper) 1.8.8+
     * Protocol plugin:
