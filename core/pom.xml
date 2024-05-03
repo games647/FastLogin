@@ -145,11 +145,18 @@
             <version>2.0.13</version>
         </dependency>
 
-        <!-- snakeyaml is present in Bungee, Spigot, Cauldron, so we could use this independent implementation -->
+        <!-- snakeyaml is present in Bungee, Spigot, so we could use this independent implementation -->
         <dependency>
             <groupId>net.md-5</groupId>
             <artifactId>bungeecord-config</artifactId>
             <version>1.20-R0.2-SNAPSHOT</version>
+        </dependency>
+
+        <!-- This is optional in BungeeCord-config, so we include it here manually -->
+        <dependency>
+            <groupId>org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
+            <version>2.2</version>
         </dependency>
 
         <!--Floodgate for Xbox Live Authentication-->
