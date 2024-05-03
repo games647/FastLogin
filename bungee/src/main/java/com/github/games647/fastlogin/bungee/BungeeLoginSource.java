@@ -54,9 +54,15 @@ public class BungeeLoginSource implements LoginSource {
         preLoginEvent.setCancelled(true);
 
         if (message == null) {
-            preLoginEvent.setCancelReason(new ComponentBuilder("Kicked").color(ChatColor.WHITE).create());
+            preLoginEvent.setReason(
+                    TextComponent.fromArray(
+                            new ComponentBuilder("Kicked").color(ChatColor.WHITE).create()
+                    ));
         } else {
-            preLoginEvent.setCancelReason(TextComponent.fromLegacyText(message));
+            preLoginEvent.setReason(
+                    TextComponent.fromArray(
+                            TextComponent.fromLegacyText(message)
+                    ));
         }
     }
 
@@ -72,7 +78,7 @@ public class BungeeLoginSource implements LoginSource {
     @Override
     public String toString() {
         return this.getClass().getSimpleName() + '{'
-            + "connection=" + connection
-            + '}';
+                + "connection=" + connection
+                + '}';
     }
 }

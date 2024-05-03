@@ -97,7 +97,12 @@ public class StoredProfile extends Profile {
         this.id = uniqueId;
     }
 
+    @Deprecated
     public synchronized boolean isPremium() {
+        return premium;
+    }
+
+    public synchronized boolean isOnlinemodePreferred() {
         return premium;
     }
 
