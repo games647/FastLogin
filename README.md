@@ -60,7 +60,9 @@ Possible values: `Premium`, `Cracked`, `Unknown`
 
 ## Requirements
 
-* Java 8 supported, but Java 21+ recommended for improved threading
+* Java: 21+ recommended for improved multi-threading code by FastLogin
+  * Spigot: 8+
+  * BungeeCord and Velocity: 17+
 * Server software in offlinemode:
   * Spigot (or a fork e.g. Paper) 1.8.8+
     * Protocol plugin:
