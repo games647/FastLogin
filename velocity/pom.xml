@@ -44,7 +44,7 @@
     <name>FastLoginVelocity</name>
 
     <properties>
-        <maven.compiler.release>11</maven.compiler.release>
+        <maven.compiler.release>17</maven.compiler.release>
     </properties>
 
     <build>
@@ -92,6 +92,14 @@
                             <exclude>com.google.code.gson:gson</exclude>
                             <!-- Ships the same old version -->
                             <exclude>com.google.guava:guava</exclude>
+
+                            <exclude>org.checkerframework:checker-qual</exclude>
+                            <exclude>com.google.errorprone:error_prone_annotations</exclude>
+                            <exclude>com.github.ben-manes.caffeine:caffeine</exclude>
+
+<!--                            Exclude JNA implementation for WAFFLE - Windows Authentication Framework (mariadb)-->
+                            <exclude>com.github.waffle:waffle-jna</exclude>
+                            <exclude>net.java.dev.jna:*</exclude>
                         </excludes>
                     </artifactSet>
                     <transformers>
