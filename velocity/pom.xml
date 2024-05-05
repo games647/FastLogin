@@ -84,24 +84,6 @@
                             <shadedPattern>fastlogin.mariadb</shadedPattern>
                         </relocation>
                     </relocations>
-                    <artifactSet>
-                        <!--org.slf4j is part of velocity api and runtime,
-                        shading and relocating it causes logger injection to fail-->
-                        <excludes>
-                            <exclude>org.slf4j:*</exclude>
-                            <exclude>com.google.code.gson:gson</exclude>
-                            <!-- Ships the same old version -->
-                            <exclude>com.google.guava:guava</exclude>
-
-                            <exclude>org.checkerframework:checker-qual</exclude>
-                            <exclude>com.google.errorprone:error_prone_annotations</exclude>
-                            <exclude>com.github.ben-manes.caffeine:caffeine</exclude>
-
-<!--                            Exclude JNA implementation for WAFFLE - Windows Authentication Framework (mariadb)-->
-                            <exclude>com.github.waffle:waffle-jna</exclude>
-                            <exclude>net.java.dev.jna:*</exclude>
-                        </excludes>
-                    </artifactSet>
                     <transformers>
                         <transformer
                                 implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
@@ -150,6 +132,23 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>fastlogin.core</artifactId>
             <version>${project.version}</version>
+            <exclusions>
+                <!-- Velocity ships an older version -->
+                <exclusion>
+                    <groupId>com.google.guava</groupId>
+                    <artifactId>guava</artifactId>
+                </exclusion>
+                <!--org.slf4j is part of velocity api and runtime, shading and relocating it causes
+                logger injection to fail-->
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.google.code.gson</groupId>
+                    <artifactId>gson</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!--Velocity api-->
@@ -165,6 +164,13 @@
             <groupId>org.mariadb.jdbc</groupId>
             <artifactId>mariadb-java-client</artifactId>
             <version>3.3.3</version>
+            <exclusions>
+                <!-- Exclude JNA implementation for WAFFLE - Windows Authentication Framework (mariadb)-->
+                <exclusion>
+                    <groupId>com.github.waffle</groupId>
+                    <artifactId>waffle-jna</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         
         <!-- Bedrock player bridge -->
