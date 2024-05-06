@@ -3,7 +3,7 @@
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2015-2023 games647 and contributors
+ * Copyright (c) 2015-2024 games647 and contributors
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -74,11 +74,13 @@ public class PremiumPlaceholder extends PlaceholderExpansion {
 
     @Override
     public @NotNull String getAuthor() {
+        //noinspection deprecation
         return String.join(", ", plugin.getDescription().getAuthors());
     }
 
     @Override
     public @NotNull String getVersion() {
+        //noinspection deprecation
         return plugin.getDescription().getVersion();
     }
 }

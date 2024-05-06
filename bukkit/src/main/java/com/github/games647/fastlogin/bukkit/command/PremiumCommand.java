@@ -3,7 +3,7 @@
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2015-2023 games647 and contributors
+ * Copyright (c) 2015-2024 games647 and contributors
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -78,7 +78,7 @@ public class PremiumCommand extends ToggleCommand {
         plugin.getCore().getPendingConfirms().remove(id);
         //todo: load async
         StoredProfile profile = plugin.getCore().getStorage().loadProfile(sender.getName());
-        if (profile.isPremium()) {
+        if (profile.isOnlinemodePreferred()) {
             plugin.getCore().sendLocaleMessage("already-exists", sender);
         } else {
             //todo: resolve uuid
@@ -109,7 +109,7 @@ public class PremiumCommand extends ToggleCommand {
             return;
         }
 
-        if (profile.isPremium()) {
+        if (profile.isOnlinemodePreferred()) {
             plugin.getCore().sendLocaleMessage("already-exists-other", sender);
         } else {
             //todo: resolve uuid

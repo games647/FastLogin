@@ -3,7 +3,7 @@
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2015-2023 games647 and contributors
+ * Copyright (c) 2015-2024 games647 and contributors
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -41,8 +41,10 @@ class FastLoginBukkitTest {
         val msg = CommonUtil.translateColorCodes(message);
         assertEquals(msg, "§x00002a00002b§lText");
 
+        @SuppressWarnings("deprecation")
         val components = TextComponent.fromLegacyText(msg);
         val expected = "{\"bold\":true,\"color\":\"#00a00b\",\"text\":\"Text\"}";
+        //noinspection deprecation
         assertEquals(ComponentSerializer.toString(components), expected);
     }
 }
