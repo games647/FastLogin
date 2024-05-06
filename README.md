@@ -46,6 +46,7 @@ You can download them from here: https://ci.codemc.org/job/Games647/job/FastLogi
 
     fastlogin.bukkit.command.premium
     fastlogin.bukkit.command.cracked
+
     fastlogin.command.premium.other
     fastlogin.command.cracked.other
 

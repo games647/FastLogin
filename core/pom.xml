@@ -40,10 +40,8 @@
     <packaging>jar</packaging>
 
     <properties>
-        <maven.compiler.source>8</maven.compiler.source>
-        <maven.compiler.target>8</maven.compiler.target>
-        <!-- Make Java 21 test method available in this multi-release project: Caution of breaking older systems -->
-        <maven.compiler.release>21</maven.compiler.release>
+        <!-- Still force Java 8 for the remaining project -->
+        <maven.compiler.release>8</maven.compiler.release>
     </properties>
 
     <name>FastLoginCore</name>

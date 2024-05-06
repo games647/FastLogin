@@ -33,6 +33,7 @@ import org.junit.jupiter.api.condition.JRE;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -63,8 +64,14 @@ class AsyncSchedulerTest {
     }
 
     private static void setVirtual(AtomicBoolean virtual) {
-        if (Thread.currentThread().isVirtual()) {
-            virtual.set(true);
+        boolean isVirtual;
+        try {
+            isVirtual = (boolean) Thread.class.getDeclaredMethod("isVirtual").invoke(Thread.currentThread());
+            if (isVirtual) {
+                virtual.set(true);
+            }
+        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException ex) {
+            ex.printStackTrace();
         }
     }
 }
