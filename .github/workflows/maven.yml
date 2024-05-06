@@ -21,7 +21,8 @@ jobs:
     # Environment image - always use the newest OS
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      # With at least one permission given, all default to read
+      contents: read
 
     # Run steps
     steps:
@@ -42,6 +43,25 @@ jobs:
         # ignore snapshot updates, because they are likely to have breaking changes, enforce checksums
         run: mvn test --batch-mode --threads 2.0C --no-snapshot-updates --strict-checksums --file pom.xml
 
-      - name: Update dependency graph
+  dependency:
+    runs-on: ubuntu-latest
+    permissions:
+      # Write only necessary for dependency submission all others then default to read
+      contents: write
+
+    # Run steps
+    steps:
+      # Pull changes
+      - uses: actions/checkout@v4
+
+      # Setup Java
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version-file: '.java-version'
+          cache: 'maven'
+
+      - name: Submit Dependency Snapshot
         if: ${{ github.event_name == 'push' }}
         uses: advanced-security/maven-dependency-submission-action@v4.0.3
