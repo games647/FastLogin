@@ -10,10 +10,10 @@ updates:
       interval: "monthly"
 
   # Maven project
-  - package-ecosystem: maven
+  - package-ecosystem: "maven"
     directory: "/"
     schedule:
-      interval: weekly
+      interval: "monthly"
 
     groups:
       production-dependencies:

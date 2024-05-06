@@ -69,7 +69,7 @@ Possible values: `Premium`, `Cracked`, `Unknown`
     * Protocol plugin:
       * [ProtocolLib 5.2+](https://www.spigotmc.org/resources/protocollib.1997/) or
       * [ProtocolSupport](https://www.spigotmc.org/resources/protocolsupport.7201/)
-  * Latest BungeeCord (or a fork e.g. Waterfall) or Velocity
+  * Latest BungeeCord (or a fork e.g. Waterfall) or Velocity proxy
 * An auth plugin.
 
 ### Supported auth plugins
