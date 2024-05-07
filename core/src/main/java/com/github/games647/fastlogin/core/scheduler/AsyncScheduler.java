@@ -23,13 +23,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.github.games647.fastlogin.core;
+package com.github.games647.fastlogin.core.scheduler;
 
 import org.slf4j.Logger;
 
+import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * This limits the number of threads that are used at maximum. Thread creation can be very heavy for the CPU and
@@ -38,21 +38,14 @@ import java.util.concurrent.atomic.AtomicInteger;
  * is limited by the size of our database pool. The goal is to separate concerns into processing and blocking only
  * threads.
  */
-public class AsyncScheduler {
-
-    private final Logger logger;
-
-    private final Executor processingPool;
-
-    private final AtomicInteger currentlyRunning = new AtomicInteger();
+public class AsyncScheduler extends AbstractAsyncScheduler {
 
     public AsyncScheduler(Logger logger, Executor processingPool) {
-        this.logger = logger;
-
+        super(logger, processingPool);
         logger.info("Using legacy scheduler");
-        this.processingPool = processingPool;
     }
 
+    @Override
     public CompletableFuture<Void> runAsync(Runnable task) {
         return CompletableFuture.runAsync(() -> process(task), processingPool).exceptionally(error -> {
             logger.warn("Error occurred on thread pool", error);
@@ -60,12 +53,22 @@ public class AsyncScheduler {
         });
     }
 
-    private void process(Runnable task) {
-        currentlyRunning.incrementAndGet();
-        try {
-            task.run();
-        } finally {
-            currentlyRunning.getAndDecrement();
-        }
+    @Override
+    public CompletableFuture<Void> runAsyncDelayed(Runnable task, Duration delay) {
+        return CompletableFuture.runAsync(() -> {
+            currentlyRunning.incrementAndGet();
+            try {
+                Thread.sleep(delay.toMillis());
+                process(task);
+            } catch (InterruptedException interruptedException) {
+                // restore interrupt flag
+                Thread.currentThread().interrupt();
+            } finally {
+                currentlyRunning.getAndDecrement();
+            }
+        }, processingPool).exceptionally(error -> {
+            logger.warn("Error occurred on thread pool", error);
+            return null;
+        });
     }
 }

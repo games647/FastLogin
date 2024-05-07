@@ -25,8 +25,8 @@
  */
 package com.github.games647.fastlogin.core.shared;
 
-import com.github.games647.fastlogin.core.AsyncScheduler;
 import com.github.games647.fastlogin.core.hooks.bedrock.BedrockService;
+import com.github.games647.fastlogin.core.scheduler.AsyncScheduler;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import org.slf4j.Logger;
 

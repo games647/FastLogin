@@ -25,7 +25,7 @@
  */
 package com.github.games647.fastlogin.bukkit;
 
-import com.github.games647.fastlogin.core.AsyncScheduler;
+import com.github.games647.fastlogin.core.scheduler.AsyncScheduler;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.slf4j.Logger;

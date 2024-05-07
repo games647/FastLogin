@@ -53,11 +53,11 @@ import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.geysermc.floodgate.api.player.FloodgatePlayer;
 
 import java.net.InetSocketAddress;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 public class ConnectListener {
 
@@ -167,10 +167,9 @@ public class ConnectListener {
         // In this case it means that the force command (plugin message) is already received and processed while
         // player is still in the login phase and reported to be offline.
         Runnable loginTask = new ForceLoginTask(plugin.getCore(), player, server, session);
-        plugin.getProxy().getScheduler()
-                .buildTask(plugin, loginTask)
-                .delay(1L, TimeUnit.SECONDS) // Delay at least one second, otherwise the login command can be missed
-                .schedule();
+
+        // Delay at least one second, otherwise the login command can be missed
+        plugin.getScheduler().runAsyncDelayed(loginTask, Duration.ofSeconds(1));
     }
 
     @Subscribe

@@ -25,6 +25,7 @@
  */
 package com.github.games647.fastlogin.core;
 
+import com.github.games647.fastlogin.core.scheduler.AsyncScheduler;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledForJreRange;

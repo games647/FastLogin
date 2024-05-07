@@ -35,8 +35,8 @@ import com.velocitypowered.api.proxy.server.RegisteredServer;
 import org.geysermc.floodgate.api.player.FloodgatePlayer;
 
 import java.net.InetSocketAddress;
+import java.time.Duration;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 public class FloodgateAuthTask
         extends FloodgateManagement<Player, CommandSource, VelocityLoginSession, FastLoginVelocity> {
@@ -62,10 +62,7 @@ public class FloodgateAuthTask
         // In this case it means that the force command (plugin message) is already received and processed while
         // player is still in the login phase and reported to be offline.
         Runnable loginTask = new ForceLoginTask(core.getPlugin().getCore(), player, server, session, forcedOnlineMode);
-        core.getPlugin().getProxy().getScheduler()
-                .buildTask(core.getPlugin(), () -> core.getPlugin().getScheduler().runAsync(loginTask))
-                .delay(1L, TimeUnit.SECONDS) // Delay at least one second, otherwise the login command can be missed
-                .schedule();
+        core.getPlugin().getScheduler().runAsyncDelayed(loginTask, Duration.ofSeconds(1));
     }
 
     @Override

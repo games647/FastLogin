@@ -23,47 +23,31 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.github.games647.fastlogin.core;
+package com.github.games647.fastlogin.core.scheduler;
 
 import org.slf4j.Logger;
 
+import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
-/**
- * This limits the number of threads that are used at maximum. Thread creation can be very heavy for the CPU and
- * context switching between threads too. However, we need many threads for blocking HTTP and database calls.
- * Nevertheless, this number can be further limited, because the number of actually working database threads
- * is limited by the size of our database pool. The goal is to separate concerns into processing and blocking only
- * threads.
- */
-public class AsyncScheduler {
+public abstract class AbstractAsyncScheduler {
 
-    private final Logger logger;
+    protected final Logger logger;
+    protected final Executor processingPool;
+    protected final AtomicInteger currentlyRunning = new AtomicInteger();
 
-    private final Executor asyncPool;
-
-    private final AtomicInteger currentlyRunning = new AtomicInteger();
-
-    public AsyncScheduler(Logger logger, Executor processingPool) {
+    public AbstractAsyncScheduler(Logger logger, Executor processingPool) {
         this.logger = logger;
-
-        logger.info("Using optimized green threads with Java 21");
-        this.asyncPool = Executors.newVirtualThreadPerTaskExecutor();
+        this.processingPool = processingPool;
     }
 
-    public CompletableFuture<Void> runAsync(Runnable task) {
-        return CompletableFuture
-                .runAsync(() -> process(task), asyncPool)
-                .exceptionally(error -> {
-                    logger.warn("Error occurred on thread pool", error);
-                    return null;
-                });
-    }
+    public abstract CompletableFuture<Void> runAsync(Runnable task);
 
-    private void process(Runnable task) {
+    public abstract CompletableFuture<Void> runAsyncDelayed(Runnable task, Duration delay);
+
+    protected void process(Runnable task) {
         currentlyRunning.incrementAndGet();
         try {
             task.run();
