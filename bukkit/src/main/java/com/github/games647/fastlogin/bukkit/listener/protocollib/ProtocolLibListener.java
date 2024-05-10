@@ -32,6 +32,7 @@ import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.injector.PacketFilterManager;
 import com.comphenix.protocol.injector.player.PlayerInjectionHandler;
+import com.comphenix.protocol.reflect.FieldAccessException;
 import com.comphenix.protocol.reflect.FuzzyReflection;
 import com.comphenix.protocol.reflect.accessors.Accessors;
 import com.comphenix.protocol.reflect.accessors.FieldAccessor;
@@ -112,42 +113,59 @@ public class ProtocolLibListener extends PacketAdapter {
             return;
         }
 
-        plugin.getLog().info("New packet {} from {}", packetEvent.getPacketType(), packetEvent.getPlayer());
-
         Player sender = packetEvent.getPlayer();
         PacketType packetType = packetEvent.getPacketType();
-        if (packetType == START) {
 
-            if (plugin.getFloodgateService() != null) {
-                boolean success = processFloodgateTasks(packetEvent);
-                // don't continue execution if the player was kicked by Floodgate
-                if (!success) {
-                    return;
+        plugin.getLog().info("New packet {} from {}", packetType, sender);
+        try {
+            if (packetType.isDynamic()) {
+                String vanillaName = packetType.getPacketClass().getName();
+                plugin.getLog().info("Overriding packet type for unregistered packet type to fix ProtocolLib bug");
+                if (vanillaName.endsWith("ServerboundHelloPacket")) {
+                    packetType = START;
+                }
+
+                if (vanillaName.endsWith("ServerboundKeyPacket")) {
+                    packetType = ENCRYPTION_BEGIN;
                 }
             }
 
-            PacketContainer packet = packetEvent.getPacket();
+            if (packetType == START) {
+                if (plugin.getFloodgateService() != null) {
+                    boolean success = processFloodgateTasks(packetEvent);
+                    // don't continue execution if the player was kicked by Floodgate
+                    if (!success) {
+                        return;
+                    }
+                }
 
-            InetSocketAddress address = sender.getAddress();
-            String username = getUsername(packet);
+                PacketContainer packet = packetEvent.getPacket();
 
-            Action action = antiBotService.onIncomingConnection(address, username);
-            switch (action) {
-                case Ignore:
-                    // just ignore
-                    return;
-                case Block:
-                    String message = plugin.getCore().getMessage("kick-antibot");
-                    sender.kickPlayer(message);
-                    break;
-                case Continue:
-                default:
-                    //player.getName() won't work at this state
-                    onLoginStart(packetEvent, sender, username);
-                    break;
+                InetSocketAddress address = sender.getAddress();
+                String username = getUsername(packet);
+
+                Action action = antiBotService.onIncomingConnection(address, username);
+                switch (action) {
+                    case Ignore:
+                        // just ignore
+                        return;
+                    case Block:
+                        String message = plugin.getCore().getMessage("kick-antibot");
+                        sender.kickPlayer(message);
+                        break;
+                    case Continue:
+                    default:
+                        //player.getName() won't work at this state
+                        onLoginStart(packetEvent, sender, username);
+                        break;
+                }
+            } else if (packetType == ENCRYPTION_BEGIN) {
+                onEncryptionBegin(packetEvent, sender);
+            } else {
+                plugin.getLog().warn("Unknown packet type received {}", packetType);
             }
-        } else {
-            onEncryptionBegin(packetEvent, sender);
+        } catch (FieldAccessException fieldAccessEx) {
+            plugin.getLog().error("Failed to parse packet {}", packetEvent.getPacketType(), fieldAccessEx);
         }
     }
 
@@ -246,7 +264,6 @@ public class ProtocolLibListener extends PacketAdapter {
                 return;
             }
         }
-
 
         plugin.getLog().trace("GameProfile {} with {} connecting", sessionKey, username);
 
