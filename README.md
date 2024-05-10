@@ -119,10 +119,10 @@ Install the plugin on both platforms, that is proxy (BungeeCord or Velocity) and
 4. Activate ip forwarding in your proxy config
 5. Check your database settings in the config of FastLogin on your proxy
     * The proxies only ship with a limited set of drivers where Spigot supports more. Therefore, these are supported:
-    * BungeeCord: `com.mysql.jdbc.Driver` for MySQL/MariaDB
-    * Velocity: `fastlogin.mariadb.jdbc.Driver` for MySQL/MariaDB
+    * BungeeCord: `com.mysql.jdbc.Driver` for MySQL/MariaDB/PostgreSQL
+    * Velocity: `fastlogin.mariadb.jdbc.Driver` for MySQL/MariaDB/PostgreSQL
     * Note the embedded file storage SQLite is not available
-    * MySQL/MariaDB requires an external database server running. Check your server provider if there is one available
+    * MySQL/MariaDB/PostgreSQL requires an external database server running. Check your server provider if there is one available
    or install one.
 6. Set proxy and Spigot in offline mode by setting the value `onlinemode` in your `config.yml` to false
 7. You should *always* configure the firewall for your Spigot server so that it's only accessible through your proxy

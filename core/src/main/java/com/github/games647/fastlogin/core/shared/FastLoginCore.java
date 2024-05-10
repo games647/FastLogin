@@ -36,6 +36,7 @@ import com.github.games647.fastlogin.core.antibot.TickingRateLimiter;
 import com.github.games647.fastlogin.core.hooks.AuthPlugin;
 import com.github.games647.fastlogin.core.hooks.DefaultPasswordGenerator;
 import com.github.games647.fastlogin.core.hooks.PasswordGenerator;
+import com.github.games647.fastlogin.core.storage.PostgreSQLStorage;
 import com.github.games647.fastlogin.core.storage.MySQLStorage;
 import com.github.games647.fastlogin.core.storage.SQLStorage;
 import com.github.games647.fastlogin.core.storage.SQLiteStorage;
@@ -230,6 +231,24 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
 
         if (type.contains("sqlite")) {
             storage = new SQLiteStorage(plugin, database, databaseConfig);
+        } else if (type.contains("postgresql")) {
+            String host = config.get("host", "");
+            int port = config.get("port", 3306);
+            boolean useSSL = config.get("useSSL", false);
+
+            if (useSSL) {
+                boolean publicKeyRetrieval = config.getBoolean("allowPublicKeyRetrieval", false);
+                String rsaPublicKeyFile = config.getString("ServerRSAPublicKeyFile");
+                String sslMode = config.getString("sslMode", "Required");
+
+                databaseConfig.addDataSourceProperty("allowPublicKeyRetrieval", publicKeyRetrieval);
+                databaseConfig.addDataSourceProperty("serverRSAPublicKeyFile", rsaPublicKeyFile);
+                databaseConfig.addDataSourceProperty("sslMode", sslMode);
+            }
+
+            databaseConfig.setUsername(config.get("username", ""));
+            databaseConfig.setPassword(config.getString("password"));
+            storage = new PostgreSQLStorage(plugin, type, host, port, database, databaseConfig, useSSL);
         } else {
             String host = config.get("host", "");
             int port = config.get("port", 3306);
