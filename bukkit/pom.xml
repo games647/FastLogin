@@ -116,13 +116,10 @@
     </build>
 
     <repositories>
-        <!-- PaperSpigot API and PaperLib -->
+        <!-- PaperSpigot API, PaperLib, datafixupper and bungeecord-chat -->
         <repository>
             <id>papermc</id>
             <url>https://papermc.io/repo/repository/maven-public/</url>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
         </repository>
 
         <repository>
@@ -196,7 +193,7 @@
         <dependency>
             <groupId>com.mojang</groupId>
             <artifactId>datafixerupper</artifactId>
-            <version>5.0.28</version>
+            <version>7.1.15</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
