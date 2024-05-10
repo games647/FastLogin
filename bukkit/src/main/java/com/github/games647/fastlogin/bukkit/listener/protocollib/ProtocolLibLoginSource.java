@@ -84,6 +84,8 @@ class ProtocolLibLoginSource implements LoginSource {
         }
 
         newPacket.getByteArrays().write(verifyField, verifyToken);
+        // shouldAuthenticate, but why does this field even exist?
+        newPacket.getBooleans().writeSafely(0, true);
 
         //serverId is an empty string
         ProtocolLibrary.getProtocolManager().sendServerPacket(player, newPacket);
