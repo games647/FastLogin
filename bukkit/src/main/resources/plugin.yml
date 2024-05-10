@@ -25,12 +25,11 @@ softdepend:
     - floodgate
     # Auth plugins
     - AuthMe
+    - CrazyLogin
     - LoginSecurity
-    - SodionAuth
-    - xAuth
     - LogIt
     - UltraAuth
-    - CrazyLogin
+    - xAuth
 
 commands:
     ${project.parent.name}:

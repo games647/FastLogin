@@ -60,7 +60,7 @@
         </repository>
         <!-- Floodgate -->
         <repository>
-            <id>opencollab-snapshot</id>
+            <id>opencollab</id>
             <url>https://repo.opencollab.dev/maven-snapshots/</url>
             <releases>
                 <enabled>false</enabled>

@@ -88,7 +88,6 @@ Possible values: `Premium`, `Cracked`, `Unknown`
 #### BungeeCord/Waterfall
 
 * [BungeeAuth](https://www.spigotmc.org/resources/bungeeauth.493/)
-* [BungeeAuthenticator](https://www.spigotmc.org/resources/bungeecordauthenticator.87669/)
 
 ## Network requests
 

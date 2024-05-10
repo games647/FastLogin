@@ -119,9 +119,15 @@
         <repository>
             <id>velocity</id>
             <url>https://repo.papermc.io/repository/maven-public/</url>
+            <releases>
+                <enabled>
+                    false
+                </enabled>
+            </releases>
         </repository>
+
         <repository>
-            <id>opencollab-snapshot</id>
+            <id>opencollab</id>
             <url>https://repo.opencollab.dev/main/</url>
         </repository>
     </repositories>
@@ -172,7 +178,7 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        
+
         <!-- Bedrock player bridge -->
         <dependency>
             <groupId>org.geysermc.geyser</groupId>
@@ -186,7 +192,7 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        
+
         <!-- Floodgate -->
         <dependency>
             <groupId>org.geysermc.floodgate</groupId>
