@@ -72,7 +72,6 @@ import static com.comphenix.protocol.PacketType.Login.Server.DISCONNECT;
 public class VerifyResponseTask implements Runnable {
 
     private static final String ENCRYPTION_CLASS_NAME = "MinecraftEncryption";
-    private static final Class<?> ENCRYPTION_CLASS;
     private static final String ADDRESS_VERIFY_WARNING = "This indicates the use of reverse-proxy like HAProxy, "
             + "TCPShield, BungeeCord, Velocity, etc. "
             + "By default (configurable in the config) this plugin requests Mojang to verify the connecting IP "
@@ -80,12 +79,6 @@ public class VerifyResponseTask implements Runnable {
             + "order to work this security feature, the actual client IP needs to be forwarding "
             + "(keyword IP forwarding). This process will also be useful for other server "
             + "features like IP banning, so that it doesn't ban the proxy IP.";
-
-    static {
-        ENCRYPTION_CLASS = MinecraftReflection.getMinecraftClass(
-                "util." + ENCRYPTION_CLASS_NAME, ENCRYPTION_CLASS_NAME
-        );
-    }
 
     private final FastLoginBukkit plugin;
     private final PacketEvent packetEvent;
@@ -98,6 +91,8 @@ public class VerifyResponseTask implements Runnable {
     private final byte[] sharedSecret;
 
     private static Method encryptMethod;
+    private static Method encryptKeyMethod;
+
     private static Method cipherMethod;
 
     public VerifyResponseTask(FastLoginBukkit plugin, PacketEvent packetEvent,
@@ -159,11 +154,11 @@ public class VerifyResponseTask implements Runnable {
                 //user tried to fake an authentication
                 disconnect(
                         "invalid-session",
-                        "Session server rejected incoming connection for GameProfile {} ({}). Possible reasons are"
+                        "Session server rejected incoming connection for GameProfile {} ({}). Possible reasons are "
                                 + "1) Client IP address contacting Mojang and server during server join were different "
                                 + "(Do you use a reverse proxy? -> Enable IP forwarding, "
                                 + "or disable the feature in the config). "
-                                + "2) Player is offline, but tried to bypass the authentication"
+                                + "2) Player is offline, but tried to bypass the authentication "
                                 + "3) Client uses an outdated username for connecting (Fix: Restart client)",
                         requestedUsername, address
                 );
@@ -237,20 +232,23 @@ public class VerifyResponseTask implements Runnable {
     private boolean enableEncryption(SecretKey loginKey) throws IllegalArgumentException {
         plugin.getLog().info("Enabling onlinemode encryption for {}", player.getAddress());
         // Initialize method reflections
-        if (encryptMethod == null) {
+        if (encryptKeyMethod == null || encryptMethod == null) {
             Class<?> networkManagerClass = MinecraftReflection.getNetworkManagerClass();
-
             try {
                 // Try to get the old (pre MC 1.16.4) encryption method
-                encryptMethod = FuzzyReflection.fromClass(networkManagerClass)
+                encryptKeyMethod = FuzzyReflection.fromClass(networkManagerClass)
                         .getMethodByParameters("a", SecretKey.class);
             } catch (IllegalArgumentException exception) {
                 // Get the new encryption method
                 encryptMethod = FuzzyReflection.fromClass(networkManagerClass)
                         .getMethodByParameters("a", Cipher.class, Cipher.class);
 
+                Class<?> encryptionClass = MinecraftReflection.getMinecraftClass(
+                        "util." + ENCRYPTION_CLASS_NAME, ENCRYPTION_CLASS_NAME
+                );
+
                 // Get the needed Cipher helper method (used to generate ciphers from login key)
-                cipherMethod = FuzzyReflection.fromClass(ENCRYPTION_CLASS)
+                cipherMethod = FuzzyReflection.fromClass(encryptionClass)
                         .getMethodByParameters("a", int.class, Key.class);
             }
         }
@@ -259,9 +257,9 @@ public class VerifyResponseTask implements Runnable {
             Object networkManager = this.getNetworkManager();
 
             // If cipherMethod is null - use old encryption (pre MC 1.16.4), otherwise use the new cipher one
-            if (cipherMethod == null) {
+            if (encryptKeyMethod != null) {
                 // Encrypt/decrypt packet flow, this behaviour is expected by the client
-                encryptMethod.invoke(networkManager, loginKey);
+                encryptKeyMethod.invoke(networkManager, loginKey);
             } else {
                 // Create ciphers from login key
                 Object decryptionCipher = cipherMethod.invoke(null, Cipher.DECRYPT_MODE, loginKey);
