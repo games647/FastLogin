@@ -97,16 +97,39 @@ public class StoredProfile extends Profile {
         this.id = uniqueId;
     }
 
+    /**
+     * @return whether the online mode should be enabled for this player
+     * @deprecated {@link #isOnlinemodePreferred()} is recommended, because the name represents more its
+     * meaning
+     */
     @Deprecated
     public synchronized boolean isPremium() {
         return premium;
     }
 
+    /**
+     * Return the online mode preference for this player.
+     * <p>
+     * <b>
+     * Note: {@code false} doesn't represent that the player is offline. It could also mean that the player is premium,
+     * but didn't activated the premium login mode yet.
+     * </b>
+     *
+     * @return whether the online mode should be enabled for this player
+     */
     public synchronized boolean isOnlinemodePreferred() {
         return premium;
     }
 
+    /**
+     * @deprecated {@link #setOnlinemodePreferred(boolean)} is recommended, because of the better method name
+     */
+    @Deprecated
     public synchronized void setPremium(boolean premium) {
+        this.premium = premium;
+    }
+
+    public synchronized void setOnlinemodePreferred(boolean premium) {
         this.premium = premium;
     }
 
@@ -165,11 +188,11 @@ public class StoredProfile extends Profile {
     @Override
     public synchronized String toString() {
         return this.getClass().getSimpleName() + '{'
-            + "rowId=" + rowId
-            + ", premium=" + premium
-            + ", floodgate=" + floodgate
-            + ", lastIp='" + lastIp + '\''
-            + ", lastLogin=" + lastLogin
-            + "} " + super.toString();
+                + "rowId=" + rowId
+                + ", premium=" + premium
+                + ", floodgate=" + floodgate
+                + ", lastIp='" + lastIp + '\''
+                + ", lastLogin=" + lastLogin
+                + "} " + super.toString();
     }
 }

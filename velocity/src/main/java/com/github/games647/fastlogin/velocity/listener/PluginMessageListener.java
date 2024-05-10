@@ -131,7 +131,7 @@ public class PluginMessageListener {
             StoredProfile playerProfile = loginSession.getProfile();
             loginSession.setRegistered(true);
             if (!loginSession.isAlreadySaved()) {
-                playerProfile.setPremium(true);
+                playerProfile.setOnlinemodePreferred(true);
                 plugin.getCore().getStorage().save(playerProfile);
                 loginSession.setAlreadySaved(true);
             }

@@ -69,7 +69,7 @@ public class AsyncToggleMessage implements Runnable {
             return;
         }
 
-        playerProfile.setPremium(false);
+        playerProfile.setOnlinemodePreferred(false);
         playerProfile.setId(null);
         core.getStorage().save(playerProfile);
         PremiumToggleReason reason = (!isPlayerSender || !sender.getName().equalsIgnoreCase(playerProfile.getName()))
@@ -86,7 +86,7 @@ public class AsyncToggleMessage implements Runnable {
             return;
         }
 
-        playerProfile.setPremium(true);
+        playerProfile.setOnlinemodePreferred(true);
         core.getStorage().save(playerProfile);
         PremiumToggleReason reason = (!isPlayerSender || !sender.getName().equalsIgnoreCase(playerProfile.getName()))
             ? PremiumToggleReason.COMMAND_OTHER : PremiumToggleReason.COMMAND_SELF;

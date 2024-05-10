@@ -82,7 +82,7 @@ public class PremiumCommand extends ToggleCommand {
             plugin.getCore().sendLocaleMessage("already-exists", sender);
         } else {
             //todo: resolve uuid
-            profile.setPremium(true);
+            profile.setOnlinemodePreferred(true);
             plugin.getScheduler().runAsync(() -> {
                 plugin.getCore().getStorage().save(profile);
                 plugin.getServer().getPluginManager().callEvent(
@@ -113,7 +113,7 @@ public class PremiumCommand extends ToggleCommand {
             plugin.getCore().sendLocaleMessage("already-exists-other", sender);
         } else {
             //todo: resolve uuid
-            profile.setPremium(true);
+            profile.setOnlinemodePreferred(true);
             plugin.getScheduler().runAsync(() -> {
                 plugin.getCore().getStorage().save(profile);
                 plugin.getServer().getPluginManager().callEvent(
