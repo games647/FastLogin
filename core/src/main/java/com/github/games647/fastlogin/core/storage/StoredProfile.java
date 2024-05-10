@@ -122,6 +122,7 @@ public class StoredProfile extends Profile {
     }
 
     /**
+     * @param premium whether online mode is preferred
      * @deprecated {@link #setOnlinemodePreferred(boolean)} is recommended, because of the better method name
      */
     @Deprecated
