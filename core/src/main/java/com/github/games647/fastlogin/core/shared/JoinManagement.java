@@ -48,8 +48,6 @@ public abstract class JoinManagement<P extends C, C, S extends LoginSource> {
     }
 
     public void onLogin(String username, S source) {
-        core.getPlugin().getLog().info("Handling player {}", username);
-
         //check if the player is connecting through Bedrock Edition
         if (bedrockService != null && bedrockService.isBedrockConnection(username)) {
             //perform Bedrock specific checks and skip Java checks if no longer needed
@@ -59,7 +57,6 @@ public abstract class JoinManagement<P extends C, C, S extends LoginSource> {
         }
 
         StoredProfile profile = core.getStorage().loadProfile(username);
-
         //can't be a premium Java player, if it's not saved in the database
         if (profile == null) {
             return;
@@ -78,7 +75,6 @@ public abstract class JoinManagement<P extends C, C, S extends LoginSource> {
         }
 
         callFastLoginPreLoginEvent(username, source, profile);
-
         Configuration config = core.getConfig();
 
         String ip = source.getAddress().getAddress().getHostAddress();
@@ -94,7 +90,7 @@ public abstract class JoinManagement<P extends C, C, S extends LoginSource> {
                     }
                 }
             } else {
-                if (core.getPendingLogin().remove(ip + username) != null && config.get("secondAttemptCracked", false)) {
+                if (core.hasFailedLogin(ip, username)) {
                     core.getPlugin().getLog().info("Second attempt login -> cracked {}", username);
 
                     //first login request failed so make a cracked session
@@ -124,7 +120,6 @@ public abstract class JoinManagement<P extends C, C, S extends LoginSource> {
                 + " server issued more than 600 Name -> UUID requests within 10 minutes. After those 10"
                 + " minutes we can make requests again.", username);
         } catch (Exception ex) {
-            core.getPlugin().getLog().error("Failed to check premium state for {}", username, ex);
             core.getPlugin().getLog().error("Failed to check premium state of {}", username, ex);
         }
     }

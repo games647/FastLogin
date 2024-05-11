@@ -109,7 +109,7 @@ public class FastLoginVelocity implements PlatformPlugin<CommandSource> {
             geyserService = new GeyserService(GeyserImpl.getInstance(), core);
         }
 
-        server.getEventManager().register(this, new ConnectListener(this, core.getAntiBot()));
+        server.getEventManager().register(this, new ConnectListener(this, core.getAntiBotService()));
         server.getEventManager().register(this, new PluginMessageListener(this));
 
         ChannelRegistrar channelRegistry = server.getChannelRegistrar();

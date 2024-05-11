@@ -85,7 +85,7 @@ public class AsyncPremiumCheck extends JoinManagement<Player, CommandSource, Vel
         plugin.getSession().put(source.getConnection().getRemoteAddress(), session);
 
         String ip = source.getAddress().getAddress().getHostAddress();
-        plugin.getCore().getPendingLogin().put(ip + username, new Object());
+        plugin.getCore().addLoginAttempt(ip, username);
     }
 
     @Override

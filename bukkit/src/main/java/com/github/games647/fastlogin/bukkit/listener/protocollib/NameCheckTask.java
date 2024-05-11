@@ -97,7 +97,7 @@ public class NameCheckTask extends JoinManagement<Player, CommandSender, Protoco
         }
 
         String ip = player.getAddress().getAddress().getHostAddress();
-        core.getPendingLogin().put(ip + username, new Object());
+        core.addLoginAttempt(ip, username);
 
         byte[] verify = source.getVerifyToken();
         ClientPublicKey clientKey = source.getClientKey();

@@ -32,8 +32,8 @@ import org.slf4j.jul.JDK14LoggerAdapter;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.time.Duration;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
 public final class CommonUtil {
@@ -41,11 +41,11 @@ public final class CommonUtil {
     private static final char COLOR_CHAR = '&';
     private static final char TRANSLATED_CHAR = '§';
 
-    public static <K, V> ConcurrentMap<K, V> buildCache(int expireAfterWrite, int maxSize) {
+    public static <K, V> ConcurrentMap<K, V> buildCache(Duration expireAfterWrite, int maxSize) {
         CacheBuilder<Object, Object> builder = CacheBuilder.newBuilder();
 
-        if (expireAfterWrite > 0) {
-            builder.expireAfterWrite(expireAfterWrite, TimeUnit.MINUTES);
+        if (expireAfterWrite != null) {
+            builder.expireAfterWrite(expireAfterWrite);
         }
 
         if (maxSize > 0) {

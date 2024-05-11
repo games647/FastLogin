@@ -36,6 +36,7 @@ import com.github.games647.fastlogin.bukkit.listener.protocolsupport.ProtocolSup
 import com.github.games647.fastlogin.bukkit.task.DelayedAuthHook;
 import com.github.games647.fastlogin.core.CommonUtil;
 import com.github.games647.fastlogin.core.PremiumStatus;
+import com.github.games647.fastlogin.core.antibot.AntiBotService;
 import com.github.games647.fastlogin.core.hooks.bedrock.BedrockService;
 import com.github.games647.fastlogin.core.hooks.bedrock.FloodgateService;
 import com.github.games647.fastlogin.core.hooks.bedrock.GeyserService;
@@ -53,6 +54,7 @@ import org.slf4j.Logger;
 
 import java.net.InetSocketAddress;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -65,7 +67,10 @@ import java.util.concurrent.ConcurrentMap;
 public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<CommandSender> {
 
     //1 minutes should be enough as a timeout for bad internet connection (Server, Client and Mojang)
-    private final ConcurrentMap<String, BukkitLoginSession> loginSession = CommonUtil.buildCache(1, -1);
+    private final ConcurrentMap<String, BukkitLoginSession> loginSession = CommonUtil.buildCache(
+            Duration.ofMinutes(1), -1
+    );
+
     private final Map<UUID, PremiumStatus> premiumPlayers = new ConcurrentHashMap<>();
     private final Logger logger;
 
@@ -111,10 +116,11 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
                 return;
             }
 
+            AntiBotService antiBotService = core.getAntiBotService();
             if (pluginManager.isPluginEnabled("ProtocolSupport")) {
-                pluginManager.registerEvents(new ProtocolSupportListener(this, core.getAntiBot()), this);
+                pluginManager.registerEvents(new ProtocolSupportListener(this, antiBotService), this);
             } else if (pluginManager.isPluginEnabled("ProtocolLib")) {
-                ProtocolLibListener.register(this, core.getAntiBot(), core.getConfig().getBoolean("verifyClientKeys"));
+                ProtocolLibListener.register(this, antiBotService, core.getConfig().getBoolean("verifyClientKeys"));
 
                 //if server is using paper - we need to set the skin at pre login anyway, so no need for this listener
                 if (!isPaper() && getConfig().getBoolean("forwardSkin")) {
@@ -137,14 +143,18 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
             pluginManager.registerEvents(new PaperCacheListener(this), this);
         }
 
-        //register commands using a unique name
-        Optional.ofNullable(getCommand("premium")).ifPresent(c -> c.setExecutor(new PremiumCommand(this)));
-        Optional.ofNullable(getCommand("cracked")).ifPresent(c -> c.setExecutor(new CrackedCommand(this)));
+        registerCommands();
 
         if (pluginManager.isPluginEnabled("PlaceholderAPI")) {
             premiumPlaceholder = new PremiumPlaceholder(this);
             premiumPlaceholder.register();
         }
+    }
+
+    private void registerCommands() {
+        //register commands using a unique name
+        Optional.ofNullable(getCommand("premium")).ifPresent(c -> c.setExecutor(new PremiumCommand(this)));
+        Optional.ofNullable(getCommand("cracked")).ifPresent(c -> c.setExecutor(new CrackedCommand(this)));
     }
 
     private boolean initializeFloodgate() {

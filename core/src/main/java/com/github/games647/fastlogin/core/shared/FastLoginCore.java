@@ -55,6 +55,7 @@ import java.net.Proxy.Type;
 import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
@@ -78,7 +79,10 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
     private static final long MAX_EXPIRE_RATE = 1_000_000;
 
     private final Map<String, String> localeMessages = new ConcurrentHashMap<>();
-    private final ConcurrentMap<String, Object> pendingLogin = CommonUtil.buildCache(5, -1);
+    private final ConcurrentMap<String, Object> pendingLogin = CommonUtil.buildCache(
+            Duration.ofMinutes(5), -1
+    );
+
     private final Collection<UUID> pendingConfirms = new HashSet<>();
     private final T plugin;
 
@@ -272,8 +276,16 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
         this.passwordGenerator = passwordGenerator;
     }
 
-    public ConcurrentMap<String, Object> getPendingLogin() {
-        return pendingLogin;
+    public void addLoginAttempt(String ip, String username) {
+        pendingLogin.put(ip + username, new Object());
+    }
+
+    public boolean hasFailedLogin(String ip, String username) {
+        if (!config.get("secondAttemptCracked", false)) {
+            return false;
+        }
+
+        return pendingLogin.remove(ip + username) != null;
     }
 
     public Collection<UUID> getPendingConfirms() {
@@ -284,7 +296,7 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
         return authPlugin;
     }
 
-    public AntiBotService getAntiBot() {
+    public AntiBotService getAntiBotService() {
         return antiBot;
     }
 
