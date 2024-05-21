@@ -70,12 +70,17 @@ public enum FloodgateState {
      */
     public static FloodgateState fromInt(int num) {
         // using Enum.values()[i] is expensive as per https://stackoverflow.com/a/8762387/9767089
-        return switch (num) {
-            case 0 -> FloodgateState.FALSE;
-            case 1 -> FloodgateState.TRUE;
-            case 2 -> FloodgateState.LINKED;
-            case 3 -> FloodgateState.NOT_MIGRATED;
-            default -> null;
-        };
+        switch (num) {
+            case 0:
+                return FloodgateState.FALSE;
+            case 1:
+                return FloodgateState.TRUE;
+            case 2:
+                return FloodgateState.LINKED;
+            case 3:
+                return FloodgateState.NOT_MIGRATED;
+            default:
+                return null;
+        }
     }
 }

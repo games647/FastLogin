@@ -116,7 +116,7 @@ final class EncryptionUtil {
      * @param random random generator
      * @return a token with 4 bytes long
      */
-    public static byte[] generateVerifyToken(RandomGenerator random) {
+    public static byte[] generateVerifyToken(Random random) {
         byte[] token = new byte[VERIFY_TOKEN_LENGTH];
         random.nextBytes(token);
         return token;
