@@ -62,9 +62,9 @@ public abstract class FloodgateManagement<P extends C, C, L extends LoginSession
         this.username = getName(player);
 
         //load values from config.yml
-        autoLoginFloodgate = core.getConfig().getString("autoLoginFloodgate").toLowerCase(Locale.ROOT);
-        autoRegisterFloodgate = core.getConfig().getString("autoRegisterFloodgate").toLowerCase(Locale.ROOT);
-        allowNameConflict = core.getConfig().getString("allowFloodgateNameConflict").toLowerCase(Locale.ROOT);
+        autoLoginFloodgate = core.getConfig().get("autoLoginFloodgate").toString().toLowerCase(Locale.ROOT);
+        autoRegisterFloodgate = core.getConfig().get("autoRegisterFloodgate").toString().toLowerCase(Locale.ROOT);
+        allowNameConflict = core.getConfig().get("allowFloodgateNameConflict").toString().toLowerCase(Locale.ROOT);
     }
 
     @Override
