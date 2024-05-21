@@ -25,8 +25,3 @@ updates:
           # Plugin require special evaluation about their compatibility
           - "com.lenis0012.bukkit:loginsecurity"
           - "com.comphenix.protocol:ProtocolLib"
-
-    ignore:
-      # HikariCP dropped Java 8 support with 5.0
-      - dependency-name: "com.zaxxer:HikariCP"
-        update-types: ["version-update:semver-major"]
