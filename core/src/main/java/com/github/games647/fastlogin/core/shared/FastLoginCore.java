@@ -144,7 +144,6 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
 
         resolver.setMaxNameRequests(config.getInt("mojang-request-limit"));
         resolver.setProxySelector(new RotatingProxySelector(proxies));
-        resolver.setOutgoingAddresses(addresses);
     }
 
     private AntiBotService createAntiBotService(Configuration botSection) {
