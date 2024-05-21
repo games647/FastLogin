@@ -14,10 +14,6 @@ body:
       required: true
   - type: textarea
     attributes:
-      label: What did you expect?
-      description: What behavior is expected?
-  - type: textarea
-    attributes:
       label: Steps to reproduce
       description: The actions that cause the issues. Please explain it in detail.
   - type: input
