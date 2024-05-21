@@ -110,7 +110,7 @@ public class ProtocolLibListener extends PacketAdapter {
     public void onPacketReceiving(PacketEvent packetEvent) {
         if (packetEvent.isCancelled()
                 || plugin.getCore().getAuthPluginHook() == null
-                || !plugin.isServerFullyStarted()) {
+                || !plugin.isInitialized()) {
             return;
         }
 
@@ -204,7 +204,7 @@ public class ProtocolLibListener extends PacketAdapter {
                 Either<byte[], ?> either = packet.getSpecificModifier(Either.class).read(0);
                 if (clientPublicKey == null) {
                     Optional<byte[]> left = either.left();
-                    if (left.isEmpty()) {
+                    if (!left.isPresent()) {
                         plugin.getLog().error("No verify token sent if requested without player signed key {}", sender);
                         return false;
                     }
@@ -212,7 +212,7 @@ public class ProtocolLibListener extends PacketAdapter {
                     return EncryptionUtil.verifyNonce(expectedToken, keyPair.getPrivate(), left.get());
                 } else {
                     Optional<?> optSignatureData = either.right();
-                    if (optSignatureData.isEmpty()) {
+                    if (!optSignatureData.isPresent()) {
                         plugin.getLog().error("No signature given to sent player signing key {}", sender);
                         return false;
                     }

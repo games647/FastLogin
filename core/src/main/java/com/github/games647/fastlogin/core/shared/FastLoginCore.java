@@ -61,7 +61,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -83,7 +82,6 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
             Duration.ofMinutes(5), -1
     );
 
-    private final Collection<UUID> pendingConfirms = new HashSet<>();
     private final T plugin;
 
     private MojangResolver resolver;
@@ -123,7 +121,7 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
 
         // Initialize the resolver based on the config parameter
         this.resolver = this.config.getBoolean("useProxyAgnosticResolver", false)
-            ? new ProxyAgnosticMojangResolver() : new MojangResolver();
+                ? new ProxyAgnosticMojangResolver() : new MojangResolver();
 
         antiBot = createAntiBotService(config.getSection("anti-bot"));
         Set<Proxy> proxies = config.getStringList("proxies")
@@ -285,10 +283,6 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
         }
 
         return pendingLogin.remove(ip + username) != null;
-    }
-
-    public Collection<UUID> getPendingConfirms() {
-        return pendingConfirms;
     }
 
     public AuthPlugin<P> getAuthPluginHook() {

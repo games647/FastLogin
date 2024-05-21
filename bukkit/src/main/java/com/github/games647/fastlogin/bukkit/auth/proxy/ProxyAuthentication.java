@@ -27,11 +27,15 @@ package com.github.games647.fastlogin.bukkit.auth.proxy;
 
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 import com.github.games647.fastlogin.bukkit.auth.AuthenticationBackend;
+import com.github.games647.fastlogin.core.message.ChannelMessage;
 import com.github.games647.fastlogin.core.message.LoginActionMessage;
 import com.github.games647.fastlogin.core.message.NamespaceKey;
+import com.google.common.io.ByteArrayDataOutput;
+import com.google.common.io.ByteStreams;
 import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.messaging.PluginMessageRecipient;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -137,5 +141,15 @@ public class ProxyAuthentication implements AuthenticationBackend {
         }
 
         return false;
+    }
+
+    public void sendPluginMessage(PluginMessageRecipient player, ChannelMessage message) {
+        if (player != null) {
+            ByteArrayDataOutput dataOutput = ByteStreams.newDataOutput();
+            message.writeTo(dataOutput);
+
+            NamespaceKey channel = new NamespaceKey(plugin.getName(), message.getChannelName());
+            player.sendPluginMessage(plugin, channel.getCombinedName(), dataOutput.toByteArray());
+        }
     }
 }

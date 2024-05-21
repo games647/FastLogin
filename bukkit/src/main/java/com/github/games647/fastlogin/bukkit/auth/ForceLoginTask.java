@@ -80,7 +80,7 @@ public class ForceLoginTask extends ForceLoginManagement<Player, CommandSender, 
 
     @Override
     public void onForceActionSuccess(LoginSession session) {
-        if (core.getPlugin().getBungeeManager().isEnabled()) {
+        if (core.getPlugin().getBungeeManager().isAvailable()) {
             core.getPlugin().getBungeeManager().sendPluginMessage(player, new SuccessMessage());
         }
     }

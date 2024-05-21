@@ -244,6 +244,5 @@ public class ConnectListener implements Listener {
     public void onDisconnect(PlayerDisconnectEvent disconnectEvent) {
         ProxiedPlayer player = disconnectEvent.getPlayer();
         plugin.getSession().remove(player.getPendingConnection());
-        plugin.getCore().getPendingConfirms().remove(player.getUniqueId());
     }
 }

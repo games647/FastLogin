@@ -23,9 +23,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.github.games647.fastlogin.bukkit.task;
+package com.github.games647.fastlogin.bukkit.hook;
 
-import com.github.games647.fastlogin.bukkit.hook.DelayedAuthHook;
 import com.github.games647.fastlogin.core.hooks.AuthPlugin;
 import lombok.val;
 import org.bukkit.entity.Player;

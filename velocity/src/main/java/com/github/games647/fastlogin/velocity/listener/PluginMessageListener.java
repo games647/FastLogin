@@ -42,7 +42,6 @@ import com.velocitypowered.api.event.connection.PluginMessageEvent.ForwardResult
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ServerConnection;
 import com.velocitypowered.api.proxy.messages.MinecraftChannelIdentifier;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 
 import java.util.Arrays;
 
@@ -97,16 +96,6 @@ public class PluginMessageListener {
             String playerName = changeMessage.getPlayerName();
             boolean isSourceInvoker = changeMessage.isSourceInvoker();
             if (changeMessage.shouldEnable()) {
-                Boolean premiumWarning = plugin.getCore().getConfig().get("premium-warning", true);
-                if (playerName.equals(forPlayer.getUsername()) && premiumWarning
-                    && !core.getPendingConfirms().contains(forPlayer.getUniqueId())) {
-                    String message = core.getMessage("premium-warning");
-                    forPlayer.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(message));
-                    core.getPendingConfirms().add(forPlayer.getUniqueId());
-                    return;
-                }
-
-                core.getPendingConfirms().remove(forPlayer.getUniqueId());
                 Runnable task = new AsyncToggleMessage(core, forPlayer, playerName, true, isSourceInvoker);
                 plugin.getScheduler().runAsync(task);
             } else {

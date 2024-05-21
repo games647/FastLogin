@@ -26,6 +26,7 @@
 package com.github.games647.fastlogin.bukkit.command;
 
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
+import com.github.games647.fastlogin.bukkit.auth.proxy.ProxyAuthentication;
 import com.github.games647.fastlogin.core.message.ChangePremiumMessage;
 import com.github.games647.fastlogin.core.message.ChannelMessage;
 import org.bukkit.Bukkit;
@@ -55,7 +56,7 @@ public abstract class ToggleCommand implements CommandExecutor {
     }
 
     protected boolean forwardBungeeCommand(CommandSender sender, String target, boolean activate) {
-        if (plugin.getBungeeManager().isEnabled()) {
+        if (plugin.getBackend() instanceof ProxyAuthentication) {
             sendBungeeActivateMessage(sender, target, activate);
             plugin.getCore().sendLocaleMessage("wait-on-proxy", sender);
             return true;
@@ -80,7 +81,7 @@ public abstract class ToggleCommand implements CommandExecutor {
             plugin.getBungeeManager().sendPluginMessage((PluginMessageRecipient) invoker, message);
         } else {
             Optional<? extends Player> optPlayer = Bukkit.getServer().getOnlinePlayers().stream().findFirst();
-            if (optPlayer.isEmpty()) {
+            if (!optPlayer.isPresent()) {
                 plugin.getLog().info("No player online to send a plugin message to the proxy");
                 return;
             }

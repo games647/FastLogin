@@ -53,6 +53,8 @@ import org.slf4j.Logger;
 import java.net.InetSocketAddress;
 import java.nio.file.Path;
 import java.time.Duration;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -76,6 +78,9 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
     private final BukkitScheduler scheduler;
 
     @Getter
+    private final Collection<UUID> pendingConfirms = new HashSet<>();
+
+    @Getter
     private FastLoginCore<Player, CommandSender, FastLoginBukkit> core;
 
     @Getter
@@ -84,6 +89,7 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
 
     private PremiumPlaceholder premiumPlaceholder;
 
+    @Getter
     private AuthenticationBackend backend;
 
     @Getter
@@ -287,6 +293,10 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
         }
 
         initialized = true;
+    }
+
+    public ProxyAuthentication getBungeeManager() {
+        return (ProxyAuthentication) backend;
     }
 
     @Override

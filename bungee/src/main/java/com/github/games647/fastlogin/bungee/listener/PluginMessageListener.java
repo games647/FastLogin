@@ -37,7 +37,6 @@ import com.github.games647.fastlogin.core.storage.StoredProfile;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteStreams;
 import net.md_5.bungee.api.CommandSender;
-import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.connection.Server;
 import net.md_5.bungee.api.event.PluginMessageEvent;
@@ -96,15 +95,6 @@ public class PluginMessageListener implements Listener {
             String playerName = changeMessage.getPlayerName();
             boolean isSourceInvoker = changeMessage.isSourceInvoker();
             if (changeMessage.shouldEnable()) {
-                if (playerName.equals(forPlayer.getName()) && plugin.getCore().getConfig().get("premium-warning", true)
-                        && !core.getPendingConfirms().contains(forPlayer.getUniqueId())) {
-                    String message = core.getMessage("premium-warning");
-                    forPlayer.sendMessage(TextComponent.fromLegacyText(message));
-                    core.getPendingConfirms().add(forPlayer.getUniqueId());
-                    return;
-                }
-
-                core.getPendingConfirms().remove(forPlayer.getUniqueId());
                 Runnable task = new AsyncToggleMessage(core, forPlayer, playerName, true, isSourceInvoker);
                 plugin.getScheduler().runAsync(task);
             } else {

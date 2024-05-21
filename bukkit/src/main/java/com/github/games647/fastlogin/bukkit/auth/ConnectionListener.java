@@ -94,7 +94,7 @@ public class ConnectionListener implements Listener {
     public void onPlayerQuit(PlayerQuitEvent quitEvent) {
         Player player = quitEvent.getPlayer();
 
-        plugin.getCore().getPendingConfirms().remove(player.getUniqueId());
+        plugin.getPendingConfirms().remove(player.getUniqueId());
         plugin.getPremiumPlayers().remove(player.getUniqueId());
     }
 }

@@ -26,13 +26,8 @@
 package com.github.games647.fastlogin.bukkit.auth.proxy;
 
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
-import com.github.games647.fastlogin.core.message.ChannelMessage;
-import com.github.games647.fastlogin.core.message.NamespaceKey;
-import com.google.common.io.ByteArrayDataOutput;
-import com.google.common.io.ByteStreams;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.messaging.PluginMessageRecipient;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -65,16 +60,6 @@ public class ProxyVerifier {
     public void cleanup() {
         //remove old blocked status
         Bukkit.getOnlinePlayers().forEach(player -> player.removeMetadata(plugin.getName(), plugin));
-    }
-
-    public void sendPluginMessage(PluginMessageRecipient player, ChannelMessage message) {
-        if (player != null) {
-            ByteArrayDataOutput dataOutput = ByteStreams.newDataOutput();
-            message.writeTo(dataOutput);
-
-            NamespaceKey channel = new NamespaceKey(plugin.getName(), message.getChannelName());
-            player.sendPluginMessage(plugin, channel.getCombinedName(), dataOutput.toByteArray());
-        }
     }
 
     public void loadSecrets() {

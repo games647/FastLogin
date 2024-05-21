@@ -48,7 +48,7 @@ public abstract class LocalAuthentication implements AuthenticationBackend {
 
         // if server is using paper - we need to add one more listener to correct the user cache usage
         if (isPaper()) {
-            pluginManager.registerEvents(new PaperCacheListener(this), this);
+            pluginManager.registerEvents(new PaperCacheListener(plugin), plugin);
         } else if (plugin.getConfig().getBoolean("forwardSkin")) {
             //if server is using paper - we need to set the skin at pre login anyway, so no need for this listener
             pluginManager.registerEvents(new SkinApplyListener(plugin), plugin);
