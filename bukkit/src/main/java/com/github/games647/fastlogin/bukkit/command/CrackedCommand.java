@@ -95,7 +95,7 @@ public class CrackedCommand extends ToggleCommand {
         }
 
         //existing player is already cracked
-        if (profile.isSaved() && !profile.isOnlinemodePreferred()) {
+        if (profile.isExistingPlayer() && !profile.isOnlinemodePreferred()) {
             plugin.getCore().sendLocaleMessage("not-premium-other", sender);
         } else {
             plugin.getCore().sendLocaleMessage("remove-premium", sender);

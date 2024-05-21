@@ -101,7 +101,7 @@ public class ProtocolSupportListener extends JoinManagement<Player, CommandSende
         BukkitLoginSession session = plugin.getSession(address);
 
         if (session != null && profileCompleteEvent.getConnection().getProfile().isOnlineMode()) {
-            session.setVerified(true);
+            session.setVerifiedPremium(true);
 
             if (!plugin.getConfig().getBoolean("premiumUuid")) {
                 String username = Optional.ofNullable(profileCompleteEvent.getForcedName())

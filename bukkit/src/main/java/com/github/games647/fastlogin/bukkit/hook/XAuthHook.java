@@ -40,7 +40,7 @@ import java.util.concurrent.Future;
  * <p>
  * Project page:
  * <p>
- * Bukkit: <a href="https://dev.bukkit.org/bukkit-plugins/xauth/">...</a>
+ * <a href="https://dev.bukkit.org/bukkit-plugins/xauth/">Bukkit</a>
  */
 public class XAuthHook implements AuthPlugin<Player> {
 

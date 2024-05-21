@@ -31,7 +31,7 @@ public interface LoginSource {
 
     void enableOnlinemode() throws Exception;
 
-    void kick(String message) throws Exception;
+    void kick(String message);
 
     InetSocketAddress getAddress();
 }

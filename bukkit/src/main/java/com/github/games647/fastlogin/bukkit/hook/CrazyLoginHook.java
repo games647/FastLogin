@@ -46,7 +46,7 @@ import java.util.concurrent.Future;
  * <p>
  * Project page:
  * <p>
- * Bukkit: <a href="https://dev.bukkit.org/server-mods/crazylogin/">...</a>
+ * <a href="https://dev.bukkit.org/server-mods/crazylogin/">Bukkit</a>
  */
 public class CrazyLoginHook implements AuthPlugin<Player> {
 

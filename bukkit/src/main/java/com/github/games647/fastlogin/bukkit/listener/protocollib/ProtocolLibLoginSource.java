@@ -51,7 +51,6 @@ class ProtocolLibLoginSource implements LoginSource {
     private final ClientPublicKey clientKey;
     private final PublicKey publicKey;
 
-    private final String serverId = "";
     private byte[] verifyToken;
 
     ProtocolLibLoginSource(Player player, Random random, PublicKey serverPublicKey, ClientPublicKey clientKey) {
@@ -72,7 +71,7 @@ class ProtocolLibLoginSource implements LoginSource {
          */
         PacketContainer newPacket = new PacketContainer(ENCRYPTION_BEGIN);
 
-        newPacket.getStrings().write(0, serverId);
+        newPacket.getStrings().write(0, "");
         StructureModifier<PublicKey> keyModifier = newPacket.getSpecificModifier(PublicKey.class);
         int verifyField = 0;
         if (keyModifier.getFields().isEmpty()) {
@@ -117,10 +116,6 @@ class ProtocolLibLoginSource implements LoginSource {
         return clientKey;
     }
 
-    public String getServerId() {
-        return serverId;
-    }
-
     public byte[] getVerifyToken() {
         return verifyToken.clone();
     }
@@ -130,7 +125,6 @@ class ProtocolLibLoginSource implements LoginSource {
         return this.getClass().getSimpleName() + '{'
             + "player=" + player
             + ", random=" + random
-            + ", serverId='" + serverId + '\''
             + ", verifyToken=" + Arrays.toString(verifyToken)
             + '}';
     }

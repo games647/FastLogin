@@ -47,7 +47,6 @@ public class BukkitLoginSession extends LoginSession {
     private final ClientPublicKey clientPublicKey;
 
     private boolean verified;
-
     private SkinProperty skinProperty;
 
     public BukkitLoginSession(String username, byte[] verifyToken, ClientPublicKey publicKey, boolean registered,
@@ -109,7 +108,7 @@ public class BukkitLoginSession extends LoginSession {
      *
      * @param verified whether the player has valid session
      */
-    public synchronized void setVerified(boolean verified) {
+    public synchronized void setVerifiedPremium(boolean verified) {
         this.verified = verified;
     }
 
@@ -118,7 +117,7 @@ public class BukkitLoginSession extends LoginSession {
      *
      * @return whether the player has a valid session
      */
-    public synchronized boolean isVerified() {
+    public synchronized boolean isVerifiedPremium() {
         return verified;
     }
 }

@@ -39,9 +39,9 @@ import org.bukkit.entity.Player;
  * <p>
  * Project page:
  * <p>
- * Bukkit: <a href="https://dev.bukkit.org/bukkit-plugins/loginsecurity/">...</a>
+ * <a href="https://dev.bukkit.org/bukkit-plugins/loginsecurity/">Bukkit</a>
  * <p>
- * Spigot: <a href="https://www.spigotmc.org/resources/loginsecurity.19362/">...</a>
+ * <a href="https://www.spigotmc.org/resources/loginsecurity.19362/">Spigot</a>
  */
 public class LoginSecurityHook implements AuthPlugin<Player> {
 

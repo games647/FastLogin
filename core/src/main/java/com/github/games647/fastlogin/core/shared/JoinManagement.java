@@ -71,60 +71,65 @@ public abstract class JoinManagement<P extends C, C, S extends LoginSource> {
         } else {
             profile.setFloodgate(FloodgateState.FALSE);
             core.getPlugin().getLog().info(
-                    "Player {} will be migrated to the v2 database schema as a JAVA user", username);
+                    "Player {} will be migrated to the v2 database schema as a JAVA user", username
+            );
         }
 
         callFastLoginPreLoginEvent(username, source, profile);
-        Configuration config = core.getConfig();
 
         String ip = source.getAddress().getAddress().getHostAddress();
         profile.setLastIp(ip);
-        try {
-            if (profile.isSaved()) {
-                if (profile.isOnlinemodePreferred()) {
-                    core.getPlugin().getLog().info("Requesting premium login for registered player: {}", username);
-                    requestPremiumLogin(source, profile, username, true);
-                } else {
-                    if (isValidUsername(source, profile)) {
-                        startCrackedSession(source, profile, username);
-                    }
-                }
+        if (profile.isExistingPlayer()) {
+            if (profile.isOnlinemodePreferred()) {
+                core.getPlugin().getLog().info("Requesting premium login for registered player: {}", username);
+                requestPremiumLogin(source, profile, username, true);
             } else {
-                if (core.hasFailedLogin(ip, username)) {
-                    core.getPlugin().getLog().info("Second attempt login -> cracked {}", username);
-
-                    //first login request failed so make a cracked session
-                    startCrackedSession(source, profile, username);
-                    return;
-                }
-
-                Optional<Profile> premiumUUID = Optional.empty();
-                if (config.get("nameChangeCheck", false) || config.get("autoRegister", false)) {
-                    premiumUUID = core.getResolver().findProfile(username);
-                }
-
-                if (!premiumUUID.isPresent()
-                        || (!checkNameChange(source, username, premiumUUID.get())
-                        && !checkPremiumName(source, username, profile))) {
-                    //nothing detected the player as premium -> start a cracked session
-                    if (core.getConfig().get("switchMode", false)) {
-                        source.kick(core.getMessage("switch-kick-message"));
-                        return;
-                    }
-
+                if (isValidUsername(source, profile)) {
                     startCrackedSession(source, profile, username);
                 }
             }
+        } else {
+            performNewPlayerLogin(username, source, ip, profile);
+        }
+    }
+
+    private void performNewPlayerLogin(String username, S source, String ip, StoredProfile profile) {
+        try {
+            if (core.hasFailedLogin(ip, username)) {
+                core.getPlugin().getLog().info("Second attempt login -> cracked {}", username);
+
+                //first login request failed so make a cracked session
+                startCrackedSession(source, profile, username);
+                return;
+            }
+
+            Configuration config = core.getConfig();
+            Optional<Profile> premiumUUID = Optional.empty();
+            if (config.get("nameChangeCheck", false) || config.get("autoRegister", false)) {
+                premiumUUID = core.getResolver().findProfile(username);
+            }
+
+            if (!premiumUUID.isPresent()
+                    || (!isNameChanged(source, username, premiumUUID.get())
+                    && !isUsernameAvailable(source, username, profile))) {
+                //nothing detected the player as premium -> start a cracked session
+                if (core.getConfig().get("switchMode", false)) {
+                    source.kick(core.getMessage("switch-kick-message"));
+                    return;
+                }
+
+                startCrackedSession(source, profile, username);
+            }
         } catch (RateLimitException rateLimitEx) {
             core.getPlugin().getLog().error("Mojang's rate limit reached for {}. The public IPv4 address of this"
-                + " server issued more than 600 Name -> UUID requests within 10 minutes. After those 10"
-                + " minutes we can make requests again.", username);
+                    + " server issued more than 600 Name -> UUID requests within 10 minutes. After those 10"
+                    + " minutes we can make requests again.", username);
         } catch (Exception ex) {
             core.getPlugin().getLog().error("Failed to check premium state of {}", username, ex);
         }
     }
 
-    protected boolean isValidUsername(LoginSource source, StoredProfile profile) throws Exception {
+    protected boolean isValidUsername(LoginSource source, StoredProfile profile) {
         if (bedrockService != null && bedrockService.isUsernameForbidden(profile)) {
             core.getPlugin().getLog().info("Floodgate Prefix detected on cracked player");
             source.kick("Your username contains illegal characters");
@@ -134,7 +139,7 @@ public abstract class JoinManagement<P extends C, C, S extends LoginSource> {
         return true;
     }
 
-    private boolean checkPremiumName(S source, String username, StoredProfile profile) throws Exception {
+    private boolean isUsernameAvailable(S source, String username, StoredProfile profile) throws Exception {
         core.getPlugin().getLog().info("GameProfile {} uses a premium username", username);
         if (core.getConfig().get("autoRegister", false) && (authHook == null || !authHook.isRegistered(username))) {
             requestPremiumLogin(source, profile, username, false);
@@ -144,7 +149,7 @@ public abstract class JoinManagement<P extends C, C, S extends LoginSource> {
         return false;
     }
 
-    private boolean checkNameChange(S source, String username, Profile profile) {
+    private boolean isNameChanged(S source, String username, Profile profile) {
         //user not exists in the db
         if (core.getConfig().get("nameChangeCheck", false)) {
             StoredProfile storedProfile = core.getStorage().loadProfile(profile.getId());

@@ -52,6 +52,7 @@ import io.netty.util.AttributeKey;
 import lombok.val;
 import org.bukkit.entity.Player;
 import org.geysermc.floodgate.api.player.FloodgatePlayer;
+import org.jetbrains.annotations.NotNull;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
@@ -114,22 +115,10 @@ public class ProtocolLibListener extends PacketAdapter {
         }
 
         Player sender = packetEvent.getPlayer();
-        PacketType packetType = packetEvent.getPacketType();
+        PacketType packetType = getOverriddenType(packetEvent.getPacketType());
 
         plugin.getLog().info("New packet {} from {}", packetType, sender);
         try {
-            if (packetType.isDynamic()) {
-                String vanillaName = packetType.getPacketClass().getName();
-                plugin.getLog().info("Overriding packet type for unregistered packet type to fix ProtocolLib bug");
-                if (vanillaName.endsWith("ServerboundHelloPacket")) {
-                    packetType = START;
-                }
-
-                if (vanillaName.endsWith("ServerboundKeyPacket")) {
-                    packetType = ENCRYPTION_BEGIN;
-                }
-            }
-
             if (packetType == START) {
                 if (plugin.getFloodgateService() != null) {
                     boolean success = processFloodgateTasks(packetEvent);
@@ -167,6 +156,22 @@ public class ProtocolLibListener extends PacketAdapter {
         } catch (FieldAccessException fieldAccessEx) {
             plugin.getLog().error("Failed to parse packet {}", packetEvent.getPacketType(), fieldAccessEx);
         }
+    }
+
+    private @NotNull PacketType getOverriddenType(PacketType packetType) {
+        if (packetType.isDynamic()) {
+            String vanillaName = packetType.getPacketClass().getName();
+            plugin.getLog().info("Overriding packet type for unregistered packet type to fix ProtocolLib bug");
+            if (vanillaName.endsWith("ServerboundHelloPacket")) {
+                return START;
+            }
+
+            if (vanillaName.endsWith("ServerboundKeyPacket")) {
+                return ENCRYPTION_BEGIN;
+            }
+        }
+
+        return packetType;
     }
 
     private void onEncryptionBegin(PacketEvent packetEvent, Player sender) {
@@ -240,7 +245,7 @@ public class ProtocolLibListener extends PacketAdapter {
         PacketContainer packet = packetEvent.getPacket();
         Optional<ClientPublicKey> clientKey;
         if (new MinecraftVersion(1, 19, 3).atOrAbove()) {
-            // public key sent separate
+            // public key is sent separate
             clientKey = Optional.empty();
         } else {
             val profileKey = packet.getOptionals(BukkitConverters.getWrappedPublicKeyDataConverter())

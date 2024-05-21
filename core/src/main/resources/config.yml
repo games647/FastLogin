@@ -9,7 +9,7 @@
 # problem. Low level firewalls like uwf (or iptables direct) are more efficient than a Minecraft plugin. TCP reverse
 # proxies could also be used and offload some work even to different host.
 #
-# The settings wil limit how many connections this plugin will handle. After hitting this limit. FastLogin will
+# The settings will limit how many connections this plugin will handle. After hitting this limit. FastLogin will
 # completely ignore incoming connections. Effectively there will be no database requests and network requests.
 # Therefore, auto logins won't be possible.
 anti-bot:

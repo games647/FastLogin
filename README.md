@@ -8,14 +8,11 @@ So they don't need to enter passwords. This is also called auto login (auto-logi
 * Detect paid accounts from others
 * Automatically login paid accounts (premium)
 * Support various of auth plugins
-* Cauldron support
-* Forge/Sponge message support
 * Premium UUID support
 * Forward skins
 * Detect username changed and will update the existing database record
-* BungeeCord support
+* BungeeCord/Velocity support
 * Auto register new premium players
-* Plugin: ProtocolSupport is supported and can be used as an alternative to ProtocolLib
 * No client modifications needed
 * Good performance by using async operations
 * Locale messages
@@ -103,8 +100,8 @@ This plugin performs network requests to:
 ### Spigot/Paper
 
 1. Download and install ProtocolLib/ProtocolSupport
-2. Download and install FastLogin (or `FastLoginBukkit` for newer versions)
-3. Set your server in offline mode by setting the value `onlinemode` in your server.properties to false
+2. Download and install `FastLoginBukkit`
+3. Set your server in offline mode by setting the value `onlinemode` in your server.properties to `false`
 
 ### BungeeCord/Waterfall or Velocity
 
@@ -119,8 +116,8 @@ Install the plugin on both platforms, that is proxy (BungeeCord or Velocity) and
 4. Activate ip forwarding in your proxy config
 5. Check your database settings in the config of FastLogin on your proxy
     * The proxies only ship with a limited set of drivers where Spigot supports more. Therefore, these are supported:
-    * BungeeCord: `com.mysql.jdbc.Driver` for MySQL/MariaDB
-    * Velocity: `fastlogin.mariadb.jdbc.Driver` for MySQL/MariaDB
+    * BungeeCord: `mysql` for MySQL/MariaDB
+    * Velocity: `mariadb` for MySQL/MariaDB
     * Note the embedded file storage SQLite is not available
     * MySQL/MariaDB requires an external database server running. Check your server provider if there is one available
    or install one.

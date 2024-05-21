@@ -176,7 +176,7 @@ public abstract class SQLStorage implements AuthStorage {
 
             playerProfile.getSaveLock().lock();
             try {
-                if (playerProfile.isSaved()) {
+                if (playerProfile.isExistingPlayer()) {
                     try (PreparedStatement saveStmt = con.prepareStatement(UPDATE_PROFILE)) {
                         saveStmt.setString(1, uuid);
                         saveStmt.setString(2, playerProfile.getName());

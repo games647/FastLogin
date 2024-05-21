@@ -68,7 +68,7 @@ public class StoredProfile extends Profile {
         return saveLock;
     }
 
-    public synchronized boolean isSaved() {
+    public synchronized boolean isExistingPlayer() {
         return rowId >= 0;
     }
 

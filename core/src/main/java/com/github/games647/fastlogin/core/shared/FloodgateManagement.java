@@ -82,7 +82,7 @@ public abstract class FloodgateManagement<P extends C, C, L extends LoginSession
 
         profile = core.getStorage().loadProfile(username);
 
-        if (profile.isSaved()) {
+        if (profile.isExistingPlayer()) {
             if (profile.isFloodgateMigrated()) {
                 if (profile.getFloodgate() == FloodgateState.TRUE && isLinked) {
                     core.getPlugin().getLog()

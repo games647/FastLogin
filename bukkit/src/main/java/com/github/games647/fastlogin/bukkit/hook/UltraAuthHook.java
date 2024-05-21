@@ -38,9 +38,9 @@ import java.util.concurrent.Future;
 /**
  * Project page:
  * <p>
- * Bukkit: <a href="https://dev.bukkit.org/bukkit-plugins/ultraauth-aa/">...</a>
+ * <a href="https://dev.bukkit.org/bukkit-plugins/ultraauth-aa/">Bukkit</a>
  * <p>
- * Spigot: <a href="https://www.spigotmc.org/resources/ultraauth.17044/">...</a>
+ * <a href="https://www.spigotmc.org/resources/ultraauth.17044/">Spigot</a>
  */
 public class UltraAuthHook implements AuthPlugin<Player> {
 

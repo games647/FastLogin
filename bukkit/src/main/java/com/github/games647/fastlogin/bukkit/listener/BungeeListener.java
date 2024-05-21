@@ -123,7 +123,7 @@ public class BungeeListener implements PluginMessageListener {
     }
 
     private void startLoginTaskIfReady(Player player, BukkitLoginSession session) {
-        session.setVerified(true);
+        session.setVerifiedPremium(true);
         plugin.putSession(player.spigot().getRawAddress(), session);
 
         // only start a new login task if the join event fired earlier. This event then didn't

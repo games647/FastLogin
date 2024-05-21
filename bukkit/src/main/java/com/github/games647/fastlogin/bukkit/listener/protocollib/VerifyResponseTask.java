@@ -195,7 +195,7 @@ public class VerifyResponseTask implements Runnable {
 
         session.setVerifiedUsername(realUsername);
         session.setUuid(verification.getId());
-        session.setVerified(true);
+        session.setVerifiedPremium(true);
 
         setPremiumUUID(session.getUuid());
         receiveFakeStartPacket(realUsername, session.getClientPublicKey(), session.getUuid());

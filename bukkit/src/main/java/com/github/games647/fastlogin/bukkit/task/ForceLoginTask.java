@@ -103,6 +103,6 @@ public class ForceLoginTask extends ForceLoginManagement<Player, CommandSender, 
 
     @Override
     public boolean isOnlineMode() {
-        return session.isVerified();
+        return session.isVerifiedPremium();
     }
 }

@@ -45,9 +45,9 @@ import java.lang.reflect.Field;
  * <p>
  * Project page:
  * <p>
- * Bukkit: <a href="https://dev.bukkit.org/bukkit-plugins/authme-reloaded/">...</a>
+ * <a href="https://dev.bukkit.org/bukkit-plugins/authme-reloaded/">Bukkit</a>
  * <p>
- * Spigot: <a href="https://www.spigotmc.org/resources/authme-reloaded.6269/">...</a>
+ * <a href="https://www.spigotmc.org/resources/authme-reloaded.6269/">Spigot</a>
  */
 public class AuthMeHook implements AuthPlugin<Player>, Listener {
 
@@ -76,7 +76,7 @@ public class AuthMeHook implements AuthPlugin<Player>, Listener {
         Player player = restoreSessionEvent.getPlayer();
 
         BukkitLoginSession session = plugin.getSession(player.spigot().getRawAddress());
-        if (session != null && session.isVerified()) {
+        if (session != null && session.isVerifiedPremium()) {
             restoreSessionEvent.setCancelled(true);
         }
     }

@@ -51,8 +51,8 @@ public class AsyncToggleMessage implements Runnable {
         this.targetPlayer = playerName;
         this.toPremium = toPremium;
         this.isPlayerSender = playerSender;
-        if (sender instanceof Player) {
-            senderName = ((Player) sender).getUsername();
+        if (sender instanceof Player playSender) {
+            senderName = playSender.getUsername();
         } else {
             senderName = "";
         }
@@ -70,7 +70,7 @@ public class AsyncToggleMessage implements Runnable {
     private void turnOffPremium() {
         StoredProfile playerProfile = core.getStorage().loadProfile(targetPlayer);
         //existing player is already cracked
-        if (playerProfile.isSaved() && !playerProfile.isOnlinemodePreferred()) {
+        if (playerProfile.isExistingPlayer() && !playerProfile.isOnlinemodePreferred()) {
             sendMessage("not-premium");
             return;
         }
