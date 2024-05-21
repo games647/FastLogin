@@ -168,11 +168,10 @@ public class StoredProfile extends Profile {
             return true;
         }
 
-        if (!(o instanceof StoredProfile)) {
+        if (!(o instanceof StoredProfile that)) {
             return false;
         }
 
-        StoredProfile that = (StoredProfile) o;
         if (!super.equals(o)) {
             return false;
         }

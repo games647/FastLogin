@@ -80,7 +80,7 @@ public abstract class ToggleCommand implements CommandExecutor {
             plugin.getBungeeManager().sendPluginMessage((PluginMessageRecipient) invoker, message);
         } else {
             Optional<? extends Player> optPlayer = Bukkit.getServer().getOnlinePlayers().stream().findFirst();
-            if (!optPlayer.isPresent()) {
+            if (optPlayer.isEmpty()) {
                 plugin.getLog().info("No player online to send a plugin message to the proxy");
                 return;
             }

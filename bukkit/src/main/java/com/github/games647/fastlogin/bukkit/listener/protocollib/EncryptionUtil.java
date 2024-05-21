@@ -58,8 +58,8 @@ import java.time.Instant;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Base64.Encoder;
-import java.util.Random;
 import java.util.UUID;
+import java.util.random.RandomGenerator;
 
 /**
  * Encryption and decryption minecraft util for connection between servers
@@ -116,7 +116,7 @@ final class EncryptionUtil {
      * @param random random generator
      * @return a token with 4 bytes long
      */
-    public static byte[] generateVerifyToken(Random random) {
+    public static byte[] generateVerifyToken(RandomGenerator random) {
         byte[] token = new byte[VERIFY_TOKEN_LENGTH];
         random.nextBytes(token);
         return token;

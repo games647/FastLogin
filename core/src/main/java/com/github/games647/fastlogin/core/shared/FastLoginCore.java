@@ -163,11 +163,11 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
 
         Action action = Action.Ignore;
         switch (botSection.getString("action", "ignore")) {
-            case "ignore":
-                action = Action.Ignore;
-                break;
             case "block":
                 action = Action.Block;
+                break;
+            case "ignore":
+                action = Action.Ignore;
                 break;
             default:
                 plugin.getLog().warn("Invalid anti bot action - defaulting to ignore");

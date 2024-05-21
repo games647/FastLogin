@@ -27,13 +27,13 @@ package com.github.games647.fastlogin.core.hooks;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class DefaultPasswordGeneratorTest {
 
     @Test
     void smokeTestPassword() {
         PasswordGenerator<?> passwordGenerator = new DefaultPasswordGenerator<>();
-        assertTrue(passwordGenerator.getRandomPassword(null).length() == 8);
+        assertEquals(8, passwordGenerator.getRandomPassword(null).length());
     }
 }

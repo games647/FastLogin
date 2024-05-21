@@ -46,7 +46,6 @@ import com.velocitypowered.api.event.player.ServerConnectedEvent;
 import com.velocitypowered.api.proxy.InboundConnection;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
-import com.velocitypowered.api.util.GameProfile;
 import com.velocitypowered.api.util.GameProfile.Property;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
@@ -130,9 +129,9 @@ public class ConnectListener {
         }
     }
 
-    private List<GameProfile.Property> removeSkin(Collection<Property> oldProperties) {
-        List<GameProfile.Property> newProperties = new ArrayList<>(oldProperties.size());
-        for (GameProfile.Property property : oldProperties) {
+    private List<Property> removeSkin(Collection<Property> oldProperties) {
+        List<Property> newProperties = new ArrayList<>(oldProperties.size());
+        for (Property property : oldProperties) {
             if (!"textures".equals(property.getName())) {
                 newProperties.add(property);
             }

@@ -59,16 +59,13 @@ public class FloodgateService extends BedrockService<FloodgatePlayer> {
      */
     public boolean isValidFloodgateConfigString(String key) {
         String value = core.getConfig().get(key).toString().toLowerCase(Locale.ENGLISH);
-        switch (value) {
-            case "true":
-            case "linked":
-            case "false":
-            case "no-conflict":
-                return true;
-            default:
+        return switch (value) {
+            case "true", "linked", "false", "no-conflict" -> true;
+            default -> {
                 core.getPlugin().getLog().error("Invalid value detected for {} in FastLogin/config.yml.", key);
-                return false;
-        }
+                yield false;
+            }
+        };
     }
 
     @Override

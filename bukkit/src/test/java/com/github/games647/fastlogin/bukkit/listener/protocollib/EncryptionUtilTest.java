@@ -60,7 +60,7 @@ class EncryptionUtilTest {
 
     @Test
     void testVerifyToken() {
-        val random = ThreadLocalRandom.current();
+        @SuppressWarnings("SharedThreadLocalRandom") val random = ThreadLocalRandom.current();
         byte[] token = EncryptionUtil.generateVerifyToken(random);
 
         assertAll(

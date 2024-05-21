@@ -50,6 +50,10 @@ import java.util.Base64;
 
 public class ResourceLoader {
 
+    private ResourceLoader() {
+        // Utility
+    }
+
     public static RSAPrivateKey parsePrivateKey(String keySpec)
         throws IOException, NoSuchAlgorithmException, InvalidKeySpecException {
         try (

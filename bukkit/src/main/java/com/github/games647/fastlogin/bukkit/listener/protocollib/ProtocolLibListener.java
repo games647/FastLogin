@@ -204,7 +204,7 @@ public class ProtocolLibListener extends PacketAdapter {
                 Either<byte[], ?> either = packet.getSpecificModifier(Either.class).read(0);
                 if (clientPublicKey == null) {
                     Optional<byte[]> left = either.left();
-                    if (!left.isPresent()) {
+                    if (left.isEmpty()) {
                         plugin.getLog().error("No verify token sent if requested without player signed key {}", sender);
                         return false;
                     }
@@ -212,7 +212,7 @@ public class ProtocolLibListener extends PacketAdapter {
                     return EncryptionUtil.verifyNonce(expectedToken, keyPair.getPrivate(), left.get());
                 } else {
                     Optional<?> optSignatureData = either.right();
-                    if (!optSignatureData.isPresent()) {
+                    if (optSignatureData.isEmpty()) {
                         plugin.getLog().error("No signature given to sent player signing key {}", sender);
                         return false;
                     }
