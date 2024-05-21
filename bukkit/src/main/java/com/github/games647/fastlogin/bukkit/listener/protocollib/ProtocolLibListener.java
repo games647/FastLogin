@@ -177,7 +177,7 @@ public class ProtocolLibListener extends PacketAdapter {
                                 ClientPublicKey clientPublicKey, byte[] expectedToken) {
         try {
             if (new MinecraftVersion(1, 19, 0).atOrAbove()
-                    && !new MinecraftVersion(1, 19, 3).atOrAbove()) {
+                    && !(new MinecraftVersion(1, 19, 3).atOrAbove())) {
                 Either<byte[], ?> either = packet.getSpecificModifier(Either.class).read(0);
                 if (clientPublicKey == null) {
                     Optional<byte[]> left = either.left();

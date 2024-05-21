@@ -107,7 +107,7 @@ public class TickingRateLimiter implements RateLimiter {
         }
     }
 
-    private static class TimeRecord implements Comparable<TimeRecord> {
+    private static class TimeRecord implements Comparable<Long> {
 
         private final long firstMinuteRecord;
         private final long expireTime;
@@ -131,9 +131,9 @@ public class TickingRateLimiter implements RateLimiter {
             return firstMinuteRecord + expireTime <= now;
         }
 
-        public int compareTo(long other) {
+        @Override
+        public int compareTo(Long other) {
             if (other < firstMinuteRecord) {
-                // other is earlier
                 return -1;
             }
 
@@ -142,11 +142,6 @@ public class TickingRateLimiter implements RateLimiter {
             }
 
             return 0;
-        }
-
-        @Override
-        public int compareTo(TimeRecord other) {
-            return compareTo(other.firstMinuteRecord);
         }
     }
 }

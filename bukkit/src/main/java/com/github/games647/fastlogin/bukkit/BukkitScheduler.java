@@ -39,7 +39,7 @@ public class BukkitScheduler extends AsyncScheduler {
     public BukkitScheduler(Plugin plugin, Logger logger) {
         super(logger, command -> Bukkit.getScheduler().runTaskAsynchronously(plugin, command));
 
-        syncExecutor = task -> Bukkit.getScheduler().runTask(plugin, task);
+        syncExecutor = r -> Bukkit.getScheduler().runTask(plugin, r);
     }
 
     public Executor getSyncExecutor() {
