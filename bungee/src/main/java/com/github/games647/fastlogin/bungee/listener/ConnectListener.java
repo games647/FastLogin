@@ -233,9 +233,6 @@ public class ConnectListener implements Listener {
             return;
         }
 
-        // delay sending force command, because Paper will process the login event asynchronously
-        // In this case it means that the force command (plugin message) is already received and processed while
-        // player is still in the login phase and reported to be offline.
         Runnable loginTask = new ForceLoginTask(plugin.getCore(), player, server, session);
         plugin.getScheduler().runAsync(loginTask);
     }

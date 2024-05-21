@@ -51,7 +51,6 @@ import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.geysermc.floodgate.api.player.FloodgatePlayer;
 
 import java.net.InetSocketAddress;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -167,6 +166,6 @@ public class ConnectListener {
         Runnable loginTask = new ForceLoginTask(plugin.getCore(), player, server, session);
 
         // Delay at least one second, otherwise the login command can be missed
-        plugin.getScheduler().runAsyncDelayed(loginTask, Duration.ofSeconds(1));
+        plugin.getScheduler().runAsync(loginTask);
     }
 }
