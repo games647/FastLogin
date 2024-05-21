@@ -25,6 +25,7 @@
  */
 package com.github.games647.fastlogin.bukkit.task;
 
+import com.github.games647.fastlogin.bukkit.hook.DelayedAuthHook;
 import com.github.games647.fastlogin.core.hooks.AuthPlugin;
 import lombok.val;
 import org.bukkit.entity.Player;

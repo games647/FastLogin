@@ -25,7 +25,7 @@
  */
 package com.github.games647.fastlogin.bukkit.listener.protocollib;
 
-import com.github.games647.fastlogin.bukkit.listener.protocollib.packet.ClientPublicKey;
+import com.github.games647.fastlogin.bukkit.auth.protocollib.packet.ClientPublicKey;
 import com.google.common.io.Resources;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;

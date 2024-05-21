@@ -16,9 +16,11 @@
 
 ## Removed
 
+Dropped some features listed below. Please contact us if you still need them
+
 * Dropped Java support < 11
 * Removed configuration option to add multiple outgoing IPv4 towards Mojang
-  * Was this really used?
+* Dropped support for ProtocolSupport seems to unsupported
 
 [...] A lot of changes
 

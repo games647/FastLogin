@@ -23,51 +23,44 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.github.games647.fastlogin.bukkit.listener.protocollib;
+package com.github.games647.fastlogin.bukkit.auth;
 
-import com.comphenix.protocol.wrappers.WrappedGameProfile;
-import com.comphenix.protocol.wrappers.WrappedSignedProperty;
+import com.destroystokyo.paper.profile.ProfileProperty;
 import com.github.games647.craftapi.model.skin.Textures;
 import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerLoginEvent;
-import org.bukkit.event.player.PlayerLoginEvent.Result;
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent.Result;
 
-public class SkinApplyListener implements Listener {
+public class PaperCacheListener implements Listener {
 
     private final FastLoginBukkit plugin;
 
-    public SkinApplyListener(FastLoginBukkit plugin) {
+    public PaperCacheListener(final FastLoginBukkit plugin) {
         this.plugin = plugin;
     }
 
-    @EventHandler(priority = EventPriority.LOW)
-    //run this on the loginEvent to let skins plugins see the skin like in normal Minecraft behaviour
-    public void onPlayerLogin(PlayerLoginEvent loginEvent) {
-        if (loginEvent.getResult() != Result.ALLOWED) {
+    @EventHandler(priority = EventPriority.HIGHEST)
+    //if paper is used - player skin must be set at pre login, otherwise user cache is used
+    // user cache makes premium name change basically impossible
+    public void onAsyncPlayerPreLogin(AsyncPlayerPreLoginEvent event) {
+        if (event.getLoginResult() != Result.ALLOWED) {
             return;
         }
 
-        Player player = loginEvent.getPlayer();
-
-        //go through every session, because player.getAddress is null
-        //loginEvent.getAddress is just a InetAddress not InetSocketAddress, so not unique enough
+        // event gives us only IP, not the port, so we need to loop through all the sessions
         for (BukkitLoginSession session : plugin.getLoginSessions().values()) {
-            if (session.getUsername().equals(player.getName())) {
-                session.getSkin().ifPresent(skin -> applySkin(player, skin.getValue(), skin.getSignature()));
-                break;
+            if (!event.getName().equals(session.getUsername())) {
+                continue;
             }
+
+            session.getSkin().ifPresent(skin -> event.getPlayerProfile().setProperty(new ProfileProperty(Textures.KEY,
+                    skin.getValue(), skin.getSignature())));
+            break;
         }
     }
 
-    private void applySkin(Player player, String skinData, String signature) {
-        WrappedGameProfile gameProfile = WrappedGameProfile.fromPlayer(player);
-
-        WrappedSignedProperty skin = WrappedSignedProperty.fromValues(Textures.KEY, skinData, signature);
-        gameProfile.getProperties().put(Textures.KEY, skin);
-    }
 }

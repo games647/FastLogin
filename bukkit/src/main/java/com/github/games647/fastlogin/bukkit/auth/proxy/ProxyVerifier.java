@@ -23,22 +23,18 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.github.games647.fastlogin.bukkit;
+package com.github.games647.fastlogin.bukkit.auth.proxy;
 
-import com.github.games647.fastlogin.bukkit.listener.BungeeListener;
+import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 import com.github.games647.fastlogin.core.message.ChannelMessage;
-import com.github.games647.fastlogin.core.message.LoginActionMessage;
 import com.github.games647.fastlogin.core.message.NamespaceKey;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import org.bukkit.Bukkit;
-import org.bukkit.Server;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageRecipient;
 
 import java.io.IOException;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
@@ -48,11 +44,9 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Stream;
 
-import static com.github.games647.fastlogin.core.message.ChangePremiumMessage.CHANGE_CHANNEL;
-import static com.github.games647.fastlogin.core.message.SuccessMessage.SUCCESS_CHANNEL;
 import static java.util.stream.Collectors.toSet;
 
-public class BungeeManager {
+public class ProxyVerifier {
 
     private static final String LEGACY_FILE_NAME = "proxy-whitelist.txt";
     private static final String FILE_NAME = "allowed-proxies.txt";
@@ -61,11 +55,10 @@ public class BungeeManager {
     private Set<UUID> proxyIds;
 
     private final FastLoginBukkit plugin;
-    private boolean enabled;
 
     private final Collection<UUID> firedJoinEvents = new HashSet<>();
 
-    public BungeeManager(FastLoginBukkit plugin) {
+    public ProxyVerifier(FastLoginBukkit plugin) {
         this.plugin = plugin;
     }
 
@@ -84,90 +77,11 @@ public class BungeeManager {
         }
     }
 
-    public boolean isEnabled() {
-        return enabled;
-    }
-
-    public void initialize() {
-        enabled = detectProxy();
-
-        if (enabled) {
-            proxyIds = loadBungeeCordIds();
-            if (proxyIds.isEmpty()) {
-                plugin.getLog().info("No valid IDs found. Minecraft proxy support cannot work in the current state");
-            }
-
-            registerPluginChannels();
-            plugin.getLog().info("Found enabled proxy configuration");
-            plugin.getLog().info("Remember to follow the proxy guide to complete your setup");
-        } else {
-            plugin.getLog().warn("Disabling Minecraft proxy configuration. Assuming direct connections from now on.");
+    public void loadSecrets() {
+        proxyIds = loadBungeeCordIds();
+        if (proxyIds.isEmpty()) {
+            plugin.getLog().info("No valid IDs found. Minecraft proxy support cannot work in the current state");
         }
-    }
-
-    private boolean isProxySupported(String className, String fieldName)
-        throws ClassNotFoundException, NoSuchFieldException, IllegalAccessException {
-        return Class.forName(className).getDeclaredField(fieldName).getBoolean(null);
-    }
-
-    private boolean isVelocityEnabled()
-        throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException, ClassNotFoundException,
-        NoSuchMethodException, InvocationTargetException {
-        try {
-            Class<?> globalConfig = Class.forName("io.papermc.paper.configuration.GlobalConfiguration");
-            Object global = globalConfig.getDeclaredMethod("get").invoke(null);
-            Object proxiesConfiguration = global.getClass().getDeclaredField("proxies").get(global);
-
-            Field velocitySectionField = proxiesConfiguration.getClass().getDeclaredField("velocity");
-            Object velocityConfig = velocitySectionField.get(proxiesConfiguration);
-
-            return velocityConfig.getClass().getDeclaredField("enabled").getBoolean(velocityConfig);
-        } catch (ClassNotFoundException classNotFoundException) {
-            // try again using the older Paper configuration, because the old class file still exists in newer versions
-            if (isProxySupported("com.destroystokyo.paper.PaperConfig", "velocitySupport")) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    private boolean detectProxy() {
-        try {
-            if (isProxySupported("org.spigotmc.SpigotConfig", "bungee")) {
-                return true;
-            }
-        } catch (ClassNotFoundException classNotFoundException) {
-            // leave stacktrace for class not found out
-            plugin.getLog().warn("Cannot check for BungeeCord support: {}", classNotFoundException.getMessage());
-        } catch (NoSuchFieldException | IllegalAccessException ex) {
-            plugin.getLog().warn("Cannot check for BungeeCord support", ex);
-        }
-
-        try {
-            return isVelocityEnabled();
-        } catch (ClassNotFoundException classNotFoundException) {
-            plugin.getLog().warn("Cannot check for Velocity support in Paper: {}", classNotFoundException.getMessage());
-        } catch (NoSuchFieldException | IllegalAccessException | NoSuchMethodException | InvocationTargetException ex) {
-            plugin.getLog().warn("Cannot check for Velocity support in Paper", ex);
-        }
-
-        return false;
-    }
-
-    private void registerPluginChannels() {
-        Server server = Bukkit.getServer();
-
-        // check for incoming messages from the bungeecord version of this plugin
-        String groupId = plugin.getName();
-        String forceChannel = NamespaceKey.getCombined(groupId, LoginActionMessage.FORCE_CHANNEL);
-        server.getMessenger().registerIncomingPluginChannel(plugin, forceChannel, new BungeeListener(plugin));
-
-        // outgoing
-        String successChannel = new NamespaceKey(groupId, SUCCESS_CHANNEL).getCombinedName();
-        String changeChannel = new NamespaceKey(groupId, CHANGE_CHANNEL).getCombinedName();
-        server.getMessenger().registerOutgoingPluginChannel(plugin, successChannel);
-        server.getMessenger().registerOutgoingPluginChannel(plugin, changeChannel);
     }
 
     private Set<UUID> loadBungeeCordIds() {

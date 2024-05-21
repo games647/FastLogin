@@ -23,33 +23,15 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.github.games647.fastlogin.bukkit.listener.protocollib.packet;
+package com.github.games647.fastlogin.bukkit.auth;
 
-import lombok.Value;
-import lombok.experimental.Accessors;
+import org.bukkit.plugin.PluginManager;
 
-import java.security.PublicKey;
-import java.time.Instant;
-import java.util.Base64;
-import java.util.StringJoiner;
+public interface AuthenticationBackend {
 
-@Accessors(fluent = true)
-@Value(staticConstructor = "of")
-public class ClientPublicKey {
-    Instant expiry;
-    PublicKey key;
-    byte[] signature;
+    boolean isAvailable();
 
-    public boolean isExpired(Instant verifyTimestamp) {
-        return !verifyTimestamp.isBefore(expiry);
-    }
+    void init(PluginManager pluginManager);
 
-    @Override
-    public String toString() {
-        return new StringJoiner(", ", ClientPublicKey.class.getSimpleName() + '[', "]")
-                .add("expiry=" + expiry)
-                .add("key=" + Base64.getEncoder().encodeToString(key.getEncoded()))
-                .add("signature=" + Base64.getEncoder().encodeToString(signature))
-                .toString();
-    }
+    void stop();
 }

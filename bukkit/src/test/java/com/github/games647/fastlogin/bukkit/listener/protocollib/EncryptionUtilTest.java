@@ -25,8 +25,9 @@
  */
 package com.github.games647.fastlogin.bukkit.listener.protocollib;
 
+import com.github.games647.fastlogin.bukkit.auth.protocollib.packet.ClientPublicKey;
+import com.github.games647.fastlogin.bukkit.auth.protocollib.protocollib.EncryptionUtil;
 import com.github.games647.fastlogin.bukkit.listener.protocollib.SignatureTestData.SignatureData;
-import com.github.games647.fastlogin.bukkit.listener.protocollib.packet.ClientPublicKey;
 import com.google.common.hash.Hashing;
 import lombok.val;
 import org.junit.jupiter.api.Test;
