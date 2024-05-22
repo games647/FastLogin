@@ -171,7 +171,7 @@ premium-warning: true
 # This option is considered highly experimental. While it is highly unlikely this will break your server,
 # more tests need to be conducted in order to verify its effectiveness. Brief tests seemed promising, but
 # every environment is different, and so it might not work for you as it did for me.
-useProxyAgnosticResolver: false
+useProxyAgnosticResolver: true
 
 # If you have autoRegister or nameChangeCheck enabled, you could be rate-limited by Mojang.
 # The requests of the both options will be only made by FastLogin if the username is unknown to the server
