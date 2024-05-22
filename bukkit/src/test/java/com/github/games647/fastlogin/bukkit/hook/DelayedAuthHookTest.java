@@ -23,33 +23,38 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.github.games647.fastlogin.bukkit.listener.protocollib.packet;
+package com.github.games647.fastlogin.bukkit.hook;
 
-import lombok.Value;
-import lombok.experimental.Accessors;
+import com.github.games647.fastlogin.core.hooks.AuthPlugin;
+import lombok.val;
+import org.bukkit.entity.Player;
+import org.junit.jupiter.api.Test;
 
-import java.security.PublicKey;
-import java.time.Instant;
-import java.util.Base64;
-import java.util.StringJoiner;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-@Accessors(fluent = true)
-@Value(staticConstructor = "of")
-public class ClientPublicKey {
-    Instant expiry;
-    PublicKey key;
-    byte[] signature;
+class DelayedAuthHookTest {
 
-    public boolean isExpired(Instant verifyTimestamp) {
-        return !verifyTimestamp.isBefore(expiry);
+    @Test
+    void createNewReflectiveInstance() throws ReflectiveOperationException {
+        val authHook = new DelayedAuthHook(null);
+        assertNotNull(authHook.newInstance(DummyHook.class));
     }
 
-    @Override
-    public String toString() {
-        return new StringJoiner(", ", ClientPublicKey.class.getSimpleName() + '[', "]")
-                .add("expiry=" + expiry)
-                .add("key=" + Base64.getEncoder().encodeToString(key.getEncoded()))
-                .add("signature=" + Base64.getEncoder().encodeToString(signature))
-                .toString();
+    public static class DummyHook implements AuthPlugin<Player> {
+
+        @Override
+        public boolean forceLogin(Player player) {
+            return false;
+        }
+
+        @Override
+        public boolean forceRegister(Player player, String password) {
+            return false;
+        }
+
+        @Override
+        public boolean isRegistered(String playerName) throws Exception {
+            return false;
+        }
     }
 }

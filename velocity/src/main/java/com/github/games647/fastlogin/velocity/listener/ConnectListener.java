@@ -38,7 +38,6 @@ import com.github.games647.fastlogin.velocity.task.FloodgateAuthTask;
 import com.github.games647.fastlogin.velocity.task.ForceLoginTask;
 import com.velocitypowered.api.event.EventTask;
 import com.velocitypowered.api.event.Subscribe;
-import com.velocitypowered.api.event.connection.DisconnectEvent;
 import com.velocitypowered.api.event.connection.PreLoginEvent;
 import com.velocitypowered.api.event.connection.PreLoginEvent.PreLoginComponentResult;
 import com.velocitypowered.api.event.player.GameProfileRequestEvent;
@@ -46,14 +45,12 @@ import com.velocitypowered.api.event.player.ServerConnectedEvent;
 import com.velocitypowered.api.proxy.InboundConnection;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
-import com.velocitypowered.api.util.GameProfile;
 import com.velocitypowered.api.util.GameProfile.Property;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.geysermc.floodgate.api.player.FloodgatePlayer;
 
 import java.net.InetSocketAddress;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -130,9 +127,9 @@ public class ConnectListener {
         }
     }
 
-    private List<GameProfile.Property> removeSkin(Collection<Property> oldProperties) {
-        List<GameProfile.Property> newProperties = new ArrayList<>(oldProperties.size());
-        for (GameProfile.Property property : oldProperties) {
+    private List<Property> removeSkin(Collection<Property> oldProperties) {
+        List<Property> newProperties = new ArrayList<>(oldProperties.size());
+        for (Property property : oldProperties) {
             if (!"textures".equals(property.getName())) {
                 newProperties.add(property);
             }
@@ -169,12 +166,6 @@ public class ConnectListener {
         Runnable loginTask = new ForceLoginTask(plugin.getCore(), player, server, session);
 
         // Delay at least one second, otherwise the login command can be missed
-        plugin.getScheduler().runAsyncDelayed(loginTask, Duration.ofSeconds(1));
-    }
-
-    @Subscribe
-    public void onDisconnect(DisconnectEvent disconnectEvent) {
-        Player player = disconnectEvent.getPlayer();
-        plugin.getCore().getPendingConfirms().remove(player.getUniqueId());
+        plugin.getScheduler().runAsync(loginTask);
     }
 }

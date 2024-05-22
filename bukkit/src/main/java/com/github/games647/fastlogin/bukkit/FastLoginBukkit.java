@@ -25,23 +25,21 @@
  */
 package com.github.games647.fastlogin.bukkit;
 
-import com.comphenix.protocol.ProtocolLibrary;
+import com.github.games647.fastlogin.bukkit.auth.AuthenticationBackend;
+import com.github.games647.fastlogin.bukkit.auth.ConnectionListener;
+import com.github.games647.fastlogin.bukkit.auth.protocollib.ProtocolAuthentication;
+import com.github.games647.fastlogin.bukkit.auth.proxy.ProxyAuthentication;
 import com.github.games647.fastlogin.bukkit.command.CrackedCommand;
 import com.github.games647.fastlogin.bukkit.command.PremiumCommand;
-import com.github.games647.fastlogin.bukkit.listener.ConnectionListener;
-import com.github.games647.fastlogin.bukkit.listener.PaperCacheListener;
-import com.github.games647.fastlogin.bukkit.listener.protocollib.ProtocolLibListener;
-import com.github.games647.fastlogin.bukkit.listener.protocollib.SkinApplyListener;
-import com.github.games647.fastlogin.bukkit.listener.protocolsupport.ProtocolSupportListener;
-import com.github.games647.fastlogin.bukkit.task.DelayedAuthHook;
+import com.github.games647.fastlogin.bukkit.hook.DelayedAuthHook;
 import com.github.games647.fastlogin.core.CommonUtil;
 import com.github.games647.fastlogin.core.PremiumStatus;
-import com.github.games647.fastlogin.core.antibot.AntiBotService;
 import com.github.games647.fastlogin.core.hooks.bedrock.BedrockService;
 import com.github.games647.fastlogin.core.hooks.bedrock.FloodgateService;
 import com.github.games647.fastlogin.core.hooks.bedrock.GeyserService;
 import com.github.games647.fastlogin.core.shared.FastLoginCore;
 import com.github.games647.fastlogin.core.shared.PlatformPlugin;
+import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -55,6 +53,8 @@ import org.slf4j.Logger;
 import java.net.InetSocketAddress;
 import java.nio.file.Path;
 import java.time.Duration;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -71,17 +71,29 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
             Duration.ofMinutes(1), -1
     );
 
+    @Getter
     private final Map<UUID, PremiumStatus> premiumPlayers = new ConcurrentHashMap<>();
     private final Logger logger;
 
-    private boolean serverStarted;
-    private BungeeManager bungeeManager;
     private final BukkitScheduler scheduler;
+
+    @Getter
+    private final Collection<UUID> pendingConfirms = new HashSet<>();
+
+    @Getter
     private FastLoginCore<Player, CommandSender, FastLoginBukkit> core;
+
+    @Getter
     private FloodgateService floodgateService;
     private GeyserService geyserService;
 
     private PremiumPlaceholder premiumPlaceholder;
+
+    @Getter
+    private AuthenticationBackend backend;
+
+    @Getter
+    private boolean initialized;
 
     public FastLoginBukkit() {
         this.logger = CommonUtil.initializeLoggerService(getLogger());
@@ -104,44 +116,17 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
             setEnabled(false);
         }
 
-        bungeeManager = new BungeeManager(this);
-        bungeeManager.initialize();
-
-        PluginManager pluginManager = getServer().getPluginManager();
-        if (bungeeManager.isEnabled()) {
-            markInitialized();
-        } else {
-            if (!core.setupDatabase()) {
-                setEnabled(false);
-                return;
-            }
-
-            AntiBotService antiBotService = core.getAntiBotService();
-            if (pluginManager.isPluginEnabled("ProtocolSupport")) {
-                pluginManager.registerEvents(new ProtocolSupportListener(this, antiBotService), this);
-            } else if (pluginManager.isPluginEnabled("ProtocolLib")) {
-                ProtocolLibListener.register(this, antiBotService, core.getConfig().getBoolean("verifyClientKeys"));
-
-                //if server is using paper - we need to set the skin at pre login anyway, so no need for this listener
-                if (!isPaper() && getConfig().getBoolean("forwardSkin")) {
-                    pluginManager.registerEvents(new SkinApplyListener(this), this);
-                }
-            } else {
-                logger.warn("Either ProtocolLib or ProtocolSupport have to be installed if you don't use BungeeCord");
-                setEnabled(false);
-                return;
-            }
+        backend = initializeAuthenticationBackend();
+        if (backend == null) {
+            logger.warn("Either ProtocolLib or ProtocolSupport have to be installed if you don't use BungeeCord");
+            setEnabled(false);
+            return;
         }
 
-        //delay dependency setup because we load the plugin very early where plugins are initialized yet
-        getServer().getScheduler().runTaskLater(this, new DelayedAuthHook(this), 5L);
+        backend.init(getServer().getPluginManager());
+        PluginManager pluginManager = getServer().getPluginManager();
 
         pluginManager.registerEvents(new ConnectionListener(this), this);
-
-        //if server is using paper - we need to add one more listener to correct the user cache usage
-        if (isPaper()) {
-            pluginManager.registerEvents(new PaperCacheListener(this), this);
-        }
 
         registerCommands();
 
@@ -149,6 +134,24 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
             premiumPlaceholder = new PremiumPlaceholder(this);
             premiumPlaceholder.register();
         }
+
+        // delay dependency setup because we load the plugin very early where plugins are initialized yet
+        getServer().getScheduler().runTaskLater(this, new DelayedAuthHook(this), 5L);
+    }
+
+    private AuthenticationBackend initializeAuthenticationBackend() {
+        AuthenticationBackend proxyVerifier = new ProxyAuthentication(this);
+        if (proxyVerifier.isAvailable()) {
+            return proxyVerifier;
+        }
+
+        logger.warn("Disabling Minecraft proxy configuration. Assuming direct connections from now on.");
+        AuthenticationBackend protocolAuthentication = new ProtocolAuthentication(this);
+        if (protocolAuthentication.isAvailable()) {
+            return protocolAuthentication;
+        }
+
+        return null;
     }
 
     private void registerCommands() {
@@ -182,25 +185,13 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
             core.close();
         }
 
-        if (bungeeManager != null) {
-            bungeeManager.cleanup();
+        if (backend != null) {
+            backend.stop();
         }
 
         if (premiumPlaceholder != null && getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
-            try {
-                premiumPlaceholder.unregister();
-            } catch (Exception | NoSuchMethodError exception) {
-                logger.error("Failed to unregister placeholder", exception);
-            }
+            premiumPlaceholder.unregister();
         }
-
-        if (getServer().getPluginManager().isPluginEnabled("ProtocolLib")) {
-            ProtocolLibrary.getProtocolManager().getAsynchronousManager().unregisterAsyncHandlers(this);
-        }
-    }
-
-    public FastLoginCore<Player, CommandSender, FastLoginBukkit> getCore() {
-        return core;
     }
 
     /**
@@ -232,10 +223,6 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
         loginSession.remove(id);
     }
 
-    public Map<UUID, PremiumStatus> getPremiumPlayers() {
-        return premiumPlayers;
-    }
-
     /**
      * Fetches the premium status of an online player.
      * {@snippet :
@@ -261,24 +248,6 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
      */
     public @NotNull PremiumStatus getStatus(@NotNull UUID onlinePlayer) {
         return premiumPlayers.getOrDefault(onlinePlayer, PremiumStatus.UNKNOWN);
-    }
-
-    /**
-     * Wait before the server is fully started. This is workaround, because connections right on startup are not
-     * injected by ProtocolLib
-     *
-     * @return true if ProtocolLib can now intercept packets
-     */
-    public boolean isServerFullyStarted() {
-        return serverStarted;
-    }
-
-    public void markInitialized() {
-        this.serverStarted = true;
-    }
-
-    public BungeeManager getBungeeManager() {
-        return bungeeManager;
     }
 
     @Override
@@ -313,12 +282,21 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
         return Bukkit.getServer().getPluginManager().getPlugin(name) != null;
     }
 
-    public FloodgateService getFloodgateService() {
-        return floodgateService;
+    public void setInitialized(boolean hookFound) {
+        if (backend instanceof ProxyAuthentication) {
+            logger.info("BungeeCord setting detected. No auth plugin is required");
+        } else if (!hookFound) {
+            logger.warn("No auth plugin were found by this plugin "
+                    + "(other plugins could hook into this after the initialization of this plugin)"
+                    + "and BungeeCord is deactivated. "
+                    + "Either one or both of the checks have to pass in order to use this plugin");
+        }
+
+        initialized = true;
     }
 
-    public GeyserService getGeyserService() {
-        return geyserService;
+    public ProxyAuthentication getBungeeManager() {
+        return (ProxyAuthentication) backend;
     }
 
     @Override
@@ -326,19 +304,7 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
         if (floodgateService != null) {
             return floodgateService;
         }
+
         return geyserService;
-    }
-
-    private boolean isPaper() {
-        return isClassAvailable("com.destroystokyo.paper.PaperConfig").isPresent()
-                || isClassAvailable("io.papermc.paper.configuration.Configuration").isPresent();
-    }
-
-    private Optional<Class<?>> isClassAvailable(String clazzName) {
-        try {
-            return Optional.of(Class.forName(clazzName));
-        } catch (ClassNotFoundException e) {
-            return Optional.empty();
-        }
     }
 }

@@ -23,44 +23,33 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.github.games647.fastlogin.bukkit.listener.protocolsupport;
+package com.github.games647.fastlogin.bukkit.auth.protocollib.packet;
 
-import com.github.games647.fastlogin.core.shared.LoginSource;
-import protocolsupport.api.events.PlayerLoginStartEvent;
+import lombok.Value;
+import lombok.experimental.Accessors;
 
-import java.net.InetSocketAddress;
+import java.security.PublicKey;
+import java.time.Instant;
+import java.util.Base64;
+import java.util.StringJoiner;
 
-public class ProtocolLoginSource implements LoginSource {
+@Accessors(fluent = true)
+@Value(staticConstructor = "of")
+public class ClientPublicKey {
+    Instant expiry;
+    PublicKey key;
+    byte[] signature;
 
-    private final PlayerLoginStartEvent loginStartEvent;
-
-    public ProtocolLoginSource(PlayerLoginStartEvent loginStartEvent) {
-        this.loginStartEvent = loginStartEvent;
-    }
-
-    @Override
-    public void enableOnlinemode() {
-        loginStartEvent.setOnlineMode(true);
-    }
-
-    @Override
-    public void kick(String message) {
-        loginStartEvent.denyLogin(message);
-    }
-
-    @Override
-    public InetSocketAddress getAddress() {
-        return loginStartEvent.getConnection().getRawAddress();
-    }
-
-    public PlayerLoginStartEvent getLoginStartEvent() {
-        return loginStartEvent;
+    public boolean isExpired(Instant verifyTimestamp) {
+        return !verifyTimestamp.isBefore(expiry);
     }
 
     @Override
     public String toString() {
-        return this.getClass().getSimpleName() + '{'
-            + "loginStartEvent=" + loginStartEvent
-            + '}';
+        return new StringJoiner(", ", ClientPublicKey.class.getSimpleName() + '[', "]")
+                .add("expiry=" + expiry)
+                .add("key=" + Base64.getEncoder().encodeToString(key.getEncoded()))
+                .add("signature=" + Base64.getEncoder().encodeToString(signature))
+                .toString();
     }
 }

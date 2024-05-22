@@ -163,17 +163,16 @@ public class StoredProfile extends Profile {
     }
 
     @Override
-    public synchronized boolean equals(Object o) {
-        if (this == o) {
+    public synchronized boolean equals(Object other) {
+        if (this == other) {
             return true;
         }
 
-        if (!(o instanceof StoredProfile)) {
+        if (!(other instanceof StoredProfile)) {
             return false;
         }
-
-        StoredProfile that = (StoredProfile) o;
-        if (!super.equals(o)) {
+        StoredProfile that = (StoredProfile) other;
+        if (!super.equals(other)) {
             return false;
         }
 

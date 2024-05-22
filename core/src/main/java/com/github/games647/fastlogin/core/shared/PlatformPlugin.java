@@ -32,8 +32,11 @@ import org.slf4j.Logger;
 
 import java.nio.file.Path;
 import java.util.concurrent.ThreadFactory;
+import java.util.regex.Pattern;
 
 public interface PlatformPlugin<C> {
+
+    Pattern PATTERN = Pattern.compile("%nl%");
 
     String getName();
 
@@ -48,7 +51,7 @@ public interface PlatformPlugin<C> {
     boolean isPluginInstalled(String name);
 
     default void sendMultiLineMessage(C receiver, String message) {
-        for (String line : message.split("%nl%")) {
+        for (String line : PATTERN.split(message)) {
             sendMessage(receiver, line);
         }
     }

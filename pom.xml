@@ -48,7 +48,7 @@
         <!-- Set default for non-git clones -->
         <git.commit.id>Unknown</git.commit.id>
 
-        <maven.compiler.release>8</maven.compiler.release>
+        <maven.compiler.release>11</maven.compiler.release>
 
         <lombook.version>1.18.32</lombook.version>
 

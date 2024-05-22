@@ -23,27 +23,51 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.github.games647.fastlogin.bukkit.listener.protocollib;
+package com.github.games647.fastlogin.bukkit.auth.protocollib;
 
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
+import com.google.common.io.Resources;
+import com.google.gson.Gson;
+import com.google.gson.annotations.JsonAdapter;
 import lombok.val;
 
 import java.io.IOException;
-import java.util.Base64;
+import java.nio.charset.StandardCharsets;
 
-public class Base64Adapter extends TypeAdapter<byte[]> {
+public class SignatureTestData {
 
-    @Override
-    public void write(JsonWriter out, byte[] value) throws IOException {
-        val encoded = Base64.getEncoder().encodeToString(value);
-        out.value(encoded);
+    public static SignatureTestData fromResource(String resourceName) throws IOException {
+        val keyUrl = Resources.getResource(resourceName);
+        val encodedSignature = Resources.toString(keyUrl, StandardCharsets.US_ASCII);
+
+        return new Gson().fromJson(encodedSignature, SignatureTestData.class);
     }
 
-    @Override
-    public byte[] read(JsonReader in) throws IOException {
-        String encoded = in.nextString();
-        return Base64.getDecoder().decode(encoded);
+    @JsonAdapter(Base64Adapter.class)
+    private byte[] nonce;
+
+    private SignatureData signature;
+
+    public byte[] getNonce() {
+        return nonce;
+    }
+
+    public SignatureData getSignature() {
+        return signature;
+    }
+
+    public static class SignatureData {
+
+        private long salt;
+
+        @JsonAdapter(Base64Adapter.class)
+        private byte[] signature;
+
+        public long getSalt() {
+            return salt;
+        }
+
+        public byte[] getSignature() {
+            return signature;
+        }
     }
 }

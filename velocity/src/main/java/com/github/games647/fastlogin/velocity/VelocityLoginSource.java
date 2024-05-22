@@ -27,6 +27,7 @@ package com.github.games647.fastlogin.velocity;
 
 import com.github.games647.fastlogin.core.shared.LoginSource;
 import com.velocitypowered.api.event.connection.PreLoginEvent;
+import com.velocitypowered.api.event.connection.PreLoginEvent.PreLoginComponentResult;
 import com.velocitypowered.api.proxy.InboundConnection;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -46,17 +47,17 @@ public class VelocityLoginSource implements LoginSource {
 
     @Override
     public void enableOnlinemode() {
-        preLoginEvent.setResult(PreLoginEvent.PreLoginComponentResult.forceOnlineMode());
+        preLoginEvent.setResult(PreLoginComponentResult.forceOnlineMode());
     }
 
     @Override
     public void kick(String message) {
         if (message == null) {
-            preLoginEvent.setResult(PreLoginEvent.PreLoginComponentResult.denied(
+            preLoginEvent.setResult(PreLoginComponentResult.denied(
                     Component.text("Kicked").color(NamedTextColor.WHITE))
             );
         } else {
-            preLoginEvent.setResult(PreLoginEvent.PreLoginComponentResult.denied(
+            preLoginEvent.setResult(PreLoginComponentResult.denied(
                     LegacyComponentSerializer.legacyAmpersand().deserialize(message))
             );
         }

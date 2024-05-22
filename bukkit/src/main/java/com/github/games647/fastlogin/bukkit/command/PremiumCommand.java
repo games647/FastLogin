@@ -64,18 +64,18 @@ public class PremiumCommand extends ToggleCommand {
             return;
         }
 
+        UUID id = ((Player) sender).getUniqueId();
+        if (plugin.getConfig().getBoolean("premium-warning") && !plugin.getPendingConfirms().contains(id)) {
+            sender.sendMessage(plugin.getCore().getMessage("premium-warning"));
+            plugin.getPendingConfirms().add(id);
+            return;
+        }
+
         if (forwardPremiumCommand(sender, sender.getName())) {
             return;
         }
 
-        UUID id = ((Player) sender).getUniqueId();
-        if (plugin.getConfig().getBoolean("premium-warning") && !plugin.getCore().getPendingConfirms().contains(id)) {
-            sender.sendMessage(plugin.getCore().getMessage("premium-warning"));
-            plugin.getCore().getPendingConfirms().add(id);
-            return;
-        }
-
-        plugin.getCore().getPendingConfirms().remove(id);
+        plugin.getPendingConfirms().remove(id);
         //todo: load async
         StoredProfile profile = plugin.getCore().getStorage().loadProfile(sender.getName());
         if (profile.isOnlinemodePreferred()) {

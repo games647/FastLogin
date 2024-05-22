@@ -26,7 +26,7 @@
 package com.github.games647.fastlogin.bukkit;
 
 import com.github.games647.craftapi.model.skin.SkinProperty;
-import com.github.games647.fastlogin.bukkit.listener.protocollib.packet.ClientPublicKey;
+import com.github.games647.fastlogin.bukkit.auth.protocollib.packet.ClientPublicKey;
 import com.github.games647.fastlogin.core.shared.LoginSession;
 import com.github.games647.fastlogin.core.storage.StoredProfile;
 import org.jetbrains.annotations.Nullable;

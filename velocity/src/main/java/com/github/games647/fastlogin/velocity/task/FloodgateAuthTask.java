@@ -55,8 +55,8 @@ public class FloodgateAuthTask
         core.getPlugin().getSession().put(player.getRemoteAddress(), session);
 
         // enable auto login based on the value of 'autoLoginFloodgate' in config.yml
-        boolean forcedOnlineMode = autoLoginFloodgate.equals("true")
-                || (autoLoginFloodgate.equals("linked") && isLinked);
+        boolean forcedOnlineMode = "true".equals(autoLoginFloodgate)
+                || ("linked".equals(autoLoginFloodgate) && isLinked);
 
         // delay sending force command, because Paper will process the login event asynchronously
         // In this case it means that the force command (plugin message) is already received and processed while

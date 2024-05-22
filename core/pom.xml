@@ -125,7 +125,7 @@
         <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
-            <version>4.0.3</version>
+            <version>5.1.0</version>
             <exclusions>
                 <!-- HikariCP uses an old version of this API that has a typo in the service interface -->
                 <!-- We will use the api provided by the jdk14 dependency -->
@@ -203,7 +203,7 @@
         <dependency>
             <groupId>com.github.games647</groupId>
             <artifactId>craftapi</artifactId>
-            <version>0.8.1</version>
+            <version>1.0-SNAPSHOT</version>
         </dependency>
 
         <!-- Database driver included in Spigot -->

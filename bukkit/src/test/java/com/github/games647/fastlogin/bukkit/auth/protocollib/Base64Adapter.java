@@ -23,38 +23,27 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.github.games647.fastlogin.bukkit.task;
+package com.github.games647.fastlogin.bukkit.auth.protocollib;
 
-import com.github.games647.fastlogin.core.hooks.AuthPlugin;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import lombok.val;
-import org.bukkit.entity.Player;
-import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import java.io.IOException;
+import java.util.Base64;
 
-class DelayedAuthHookTest {
+public class Base64Adapter extends TypeAdapter<byte[]> {
 
-    @Test
-    void createNewReflectiveInstance() throws ReflectiveOperationException {
-        val authHook = new DelayedAuthHook(null);
-        assertNotNull(authHook.newInstance(DummyHook.class));
+    @Override
+    public void write(JsonWriter out, byte[] value) throws IOException {
+        val encoded = Base64.getEncoder().encodeToString(value);
+        out.value(encoded);
     }
 
-    public static class DummyHook implements AuthPlugin<Player> {
-
-        @Override
-        public boolean forceLogin(Player player) {
-            return false;
-        }
-
-        @Override
-        public boolean forceRegister(Player player, String password) {
-            return false;
-        }
-
-        @Override
-        public boolean isRegistered(String playerName) throws Exception {
-            return false;
-        }
+    @Override
+    public byte[] read(JsonReader in) throws IOException {
+        String encoded = in.nextString();
+        return Base64.getDecoder().decode(encoded);
     }
 }

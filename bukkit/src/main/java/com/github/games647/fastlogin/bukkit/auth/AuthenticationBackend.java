@@ -23,51 +23,15 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.github.games647.fastlogin.bukkit.listener.protocollib;
+package com.github.games647.fastlogin.bukkit.auth;
 
-import com.google.common.io.Resources;
-import com.google.gson.Gson;
-import com.google.gson.annotations.JsonAdapter;
-import lombok.val;
+import org.bukkit.plugin.PluginManager;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
+public interface AuthenticationBackend {
 
-public class SignatureTestData {
+    boolean isAvailable();
 
-    public static SignatureTestData fromResource(String resourceName) throws IOException {
-        val keyUrl = Resources.getResource(resourceName);
-        val encodedSignature = Resources.toString(keyUrl, StandardCharsets.US_ASCII);
+    void init(PluginManager pluginManager);
 
-        return new Gson().fromJson(encodedSignature, SignatureTestData.class);
-    }
-
-    @JsonAdapter(Base64Adapter.class)
-    private byte[] nonce;
-
-    private SignatureData signature;
-
-    public byte[] getNonce() {
-        return nonce;
-    }
-
-    public SignatureData getSignature() {
-        return signature;
-    }
-
-    public static class SignatureData {
-
-        private long salt;
-
-        @JsonAdapter(Base64Adapter.class)
-        private byte[] signature;
-
-        public long getSalt() {
-            return salt;
-        }
-
-        public byte[] getSignature() {
-            return signature;
-        }
-    }
+    void stop();
 }

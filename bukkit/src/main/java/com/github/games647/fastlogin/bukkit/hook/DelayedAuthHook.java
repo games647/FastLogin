@@ -23,15 +23,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.github.games647.fastlogin.bukkit.task;
+package com.github.games647.fastlogin.bukkit.hook;
 
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
-import com.github.games647.fastlogin.bukkit.hook.AuthMeHook;
-import com.github.games647.fastlogin.bukkit.hook.CrazyLoginHook;
-import com.github.games647.fastlogin.bukkit.hook.LogItHook;
-import com.github.games647.fastlogin.bukkit.hook.LoginSecurityHook;
-import com.github.games647.fastlogin.bukkit.hook.UltraAuthHook;
-import com.github.games647.fastlogin.bukkit.hook.XAuthHook;
 import com.github.games647.fastlogin.core.hooks.AuthPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -51,19 +45,7 @@ public class DelayedAuthHook implements Runnable {
 
     @Override
     public void run() {
-        boolean hookFound = isHookFound();
-        if (plugin.getBungeeManager().isEnabled()) {
-            plugin.getLog().info("BungeeCord setting detected. No auth plugin is required");
-        } else if (!hookFound) {
-            plugin.getLog().warn("No auth plugin were found by this plugin "
-                    + "(other plugins could hook into this after the initialization of this plugin)"
-                    + "and BungeeCord is deactivated. "
-                    + "Either one or both of the checks have to pass in order to use this plugin");
-        }
-
-        if (hookFound) {
-            plugin.markInitialized();
-        }
+        plugin.setInitialized(isHookFound());
     }
 
     private boolean isHookFound() {

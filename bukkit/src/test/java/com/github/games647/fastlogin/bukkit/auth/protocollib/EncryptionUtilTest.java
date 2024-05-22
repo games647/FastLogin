@@ -23,10 +23,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.github.games647.fastlogin.bukkit.listener.protocollib;
+package com.github.games647.fastlogin.bukkit.auth.protocollib;
 
-import com.github.games647.fastlogin.bukkit.listener.protocollib.SignatureTestData.SignatureData;
-import com.github.games647.fastlogin.bukkit.listener.protocollib.packet.ClientPublicKey;
+import com.github.games647.fastlogin.bukkit.auth.protocollib.SignatureTestData.SignatureData;
+import com.github.games647.fastlogin.bukkit.auth.protocollib.packet.ClientPublicKey;
 import com.google.common.hash.Hashing;
 import lombok.val;
 import org.junit.jupiter.api.Test;
@@ -60,7 +60,7 @@ class EncryptionUtilTest {
 
     @Test
     void testVerifyToken() {
-        val random = ThreadLocalRandom.current();
+        @SuppressWarnings("SharedThreadLocalRandom") val random = ThreadLocalRandom.current();
         byte[] token = EncryptionUtil.generateVerifyToken(random);
 
         assertAll(
@@ -88,7 +88,7 @@ class EncryptionUtilTest {
 
     @Test
     void testExpiredClientKey() throws Exception {
-        val clientKey = ResourceLoader.loadClientKey("client_keys/valid_public_key.json");
+        val clientKey = com.github.games647.fastlogin.bukkit.auth.protocollib.ResourceLoader.loadClientKey("client_keys/valid_public_key.json");
 
         // Client expires at the exact second mentioned, so use it for verification
         val expiredTimestamp = clientKey.expiry();
@@ -105,7 +105,7 @@ class EncryptionUtilTest {
             "client_keys/invalid_wrong_signature.json"
     })
     void testInvalidClientKey(String clientKeySource) throws Exception {
-        val clientKey = ResourceLoader.loadClientKey(clientKeySource);
+        val clientKey = com.github.games647.fastlogin.bukkit.auth.protocollib.ResourceLoader.loadClientKey(clientKeySource);
         Instant expireTimestamp = clientKey.expiry().minus(5, ChronoUnit.HOURS);
 
         assertFalse(EncryptionUtil.verifyClientKey(clientKey, expireTimestamp, null));
@@ -113,7 +113,7 @@ class EncryptionUtilTest {
 
     @Test
     void testValidClientKey() throws Exception {
-        val clientKey = ResourceLoader.loadClientKey("client_keys/valid_public_key.json");
+        val clientKey = com.github.games647.fastlogin.bukkit.auth.protocollib.ResourceLoader.loadClientKey("client_keys/valid_public_key.json");
         val verificationTimestamp = clientKey.expiry().minus(5, ChronoUnit.HOURS);
 
         assertTrue(EncryptionUtil.verifyClientKey(clientKey, verificationTimestamp, null));
@@ -121,7 +121,7 @@ class EncryptionUtilTest {
 
     @Test
     void testValid191ClientKey() throws Exception {
-        val clientKey = ResourceLoader.loadClientKey("client_keys/valid_public_key_19_1.json");
+        val clientKey = com.github.games647.fastlogin.bukkit.auth.protocollib.ResourceLoader.loadClientKey("client_keys/valid_public_key_19_1.json");
         val verificationTimestamp = clientKey.expiry().minus(5, ChronoUnit.HOURS);
 
         val ownerPremiumId = UUID.fromString("0aaa2c13-922a-411b-b655-9b8c08404695");
@@ -130,7 +130,7 @@ class EncryptionUtilTest {
 
     @Test
     void testIncorrect191ClientOwner() throws Exception {
-        val clientKey = ResourceLoader.loadClientKey("client_keys/valid_public_key_19_1.json");
+        val clientKey = com.github.games647.fastlogin.bukkit.auth.protocollib.ResourceLoader.loadClientKey("client_keys/valid_public_key_19_1.json");
         val verificationTimestamp = clientKey.expiry().minus(5, ChronoUnit.HOURS);
 
         val ownerPremiumId = UUID.fromString("61699b2e-d327-4a01-9f1e-0ea8c3f06bc6");
@@ -170,7 +170,7 @@ class EncryptionUtilTest {
     void testServerIdHash() throws Exception {
         val serverId = "";
         val sharedSecret = generateSharedKey();
-        val serverPK = ResourceLoader.loadClientKey("client_keys/valid_public_key.json").key();
+        val serverPK = com.github.games647.fastlogin.bukkit.auth.protocollib.ResourceLoader.loadClientKey("client_keys/valid_public_key.json").key();
 
         String sessionHash = getServerHash(serverId, sharedSecret, serverPK);
         assertEquals(EncryptionUtil.getServerIdHashString(serverId, sharedSecret, serverPK), sessionHash);
@@ -200,7 +200,7 @@ class EncryptionUtilTest {
     void testServerIdHashWrongSecret() throws Exception {
         val serverId = "";
         val sharedSecret = generateSharedKey();
-        val serverPK = ResourceLoader.loadClientKey("client_keys/valid_public_key.json").key();
+        val serverPK = com.github.games647.fastlogin.bukkit.auth.protocollib.ResourceLoader.loadClientKey("client_keys/valid_public_key.json").key();
 
         String sessionHash = getServerHash(serverId, sharedSecret, serverPK);
         assertNotEquals(EncryptionUtil.getServerIdHashString("", generateSharedKey(), serverPK), sessionHash);
@@ -219,7 +219,7 @@ class EncryptionUtilTest {
 
     @Test
     void testValidSignedNonce() throws Exception {
-        ClientPublicKey clientKey = ResourceLoader.loadClientKey("client_keys/valid_public_key.json");
+        ClientPublicKey clientKey = com.github.games647.fastlogin.bukkit.auth.protocollib.ResourceLoader.loadClientKey("client_keys/valid_public_key.json");
         SignatureTestData testData = SignatureTestData.fromResource("signature/valid_signature.json");
         assertTrue(verifySignedNonce(testData, clientKey));
     }
@@ -231,7 +231,7 @@ class EncryptionUtilTest {
             "signature/incorrect_signature.json",
     })
     void testIncorrectNonce(String signatureSource) throws Exception {
-        ClientPublicKey clientKey = ResourceLoader.loadClientKey("client_keys/valid_public_key.json");
+        ClientPublicKey clientKey = com.github.games647.fastlogin.bukkit.auth.protocollib.ResourceLoader.loadClientKey("client_keys/valid_public_key.json");
         SignatureTestData testData = SignatureTestData.fromResource(signatureSource);
         assertFalse(verifySignedNonce(testData, clientKey));
     }
@@ -239,7 +239,7 @@ class EncryptionUtilTest {
     @Test
     void testWrongPublicKeySigned() throws Exception {
         // load a different public key
-        ClientPublicKey clientKey = ResourceLoader.loadClientKey("client_keys/invalid_wrong_key.json");
+        ClientPublicKey clientKey = com.github.games647.fastlogin.bukkit.auth.protocollib.ResourceLoader.loadClientKey("client_keys/invalid_wrong_key.json");
         SignatureTestData testData = SignatureTestData.fromResource("signature/valid_signature.json");
         assertFalse(verifySignedNonce(testData, clientKey));
     }

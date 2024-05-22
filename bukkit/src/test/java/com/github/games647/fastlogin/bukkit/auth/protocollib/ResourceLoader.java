@@ -23,9 +23,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.github.games647.fastlogin.bukkit.listener.protocollib;
+package com.github.games647.fastlogin.bukkit.auth.protocollib;
 
-import com.github.games647.fastlogin.bukkit.listener.protocollib.packet.ClientPublicKey;
+import com.github.games647.fastlogin.bukkit.auth.protocollib.packet.ClientPublicKey;
 import com.google.common.io.Resources;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -49,6 +49,10 @@ import java.time.Instant;
 import java.util.Base64;
 
 public class ResourceLoader {
+
+    private ResourceLoader() {
+        // Utility
+    }
 
     public static RSAPrivateKey parsePrivateKey(String keySpec)
         throws IOException, NoSuchAlgorithmException, InvalidKeySpecException {

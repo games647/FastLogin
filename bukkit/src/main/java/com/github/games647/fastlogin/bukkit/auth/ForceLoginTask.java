@@ -23,7 +23,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.github.games647.fastlogin.bukkit.task;
+package com.github.games647.fastlogin.bukkit.auth;
 
 import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
@@ -80,7 +80,7 @@ public class ForceLoginTask extends ForceLoginManagement<Player, CommandSender, 
 
     @Override
     public void onForceActionSuccess(LoginSession session) {
-        if (core.getPlugin().getBungeeManager().isEnabled()) {
+        if (core.getPlugin().getBungeeManager().isAvailable()) {
             core.getPlugin().getBungeeManager().sendPluginMessage(player, new SuccessMessage());
         }
     }

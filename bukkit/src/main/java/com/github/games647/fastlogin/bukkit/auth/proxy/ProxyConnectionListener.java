@@ -23,12 +23,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.github.games647.fastlogin.bukkit.listener;
+package com.github.games647.fastlogin.bukkit.auth.proxy;
 
 import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
-import com.github.games647.fastlogin.bukkit.task.FloodgateAuthTask;
-import com.github.games647.fastlogin.bukkit.task.ForceLoginTask;
+import com.github.games647.fastlogin.bukkit.auth.FloodgateAuthTask;
+import com.github.games647.fastlogin.bukkit.auth.ForceLoginTask;
 import com.github.games647.fastlogin.core.hooks.bedrock.FloodgateService;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -37,31 +37,29 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
-import org.bukkit.event.player.PlayerLoginEvent.Result;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.metadata.Metadatable;
 import org.geysermc.floodgate.api.player.FloodgatePlayer;
 
-/**
- * This listener tells authentication plugins weather the player has a premium account. So the
- * plugin can skip authentication.
- */
-public class ConnectionListener implements Listener {
+public class ProxyConnectionListener implements Listener {
 
     private static final long DELAY_LOGIN = 20L / 2;
 
     private final FastLoginBukkit plugin;
+    private final ProxyVerifier verifier;
 
-    public ConnectionListener(FastLoginBukkit plugin) {
+    public ProxyConnectionListener(FastLoginBukkit plugin, ProxyVerifier verifier) {
         this.plugin = plugin;
+        this.verifier = verifier;
+    }
+
+    private void removeBlockedStatus(Metadatable player) {
+        player.removeMetadata(plugin.getName(), plugin);
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerLogin(PlayerLoginEvent loginEvent) {
         removeBlockedStatus(loginEvent.getPlayer());
-        if (loginEvent.getResult() == Result.ALLOWED && !plugin.isServerFullyStarted()) {
-            loginEvent.disallow(Result.KICK_OTHER, plugin.getCore().getMessage("not-started"));
-        }
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -97,13 +95,13 @@ public class ConnectionListener implements Listener {
             String sessionId = plugin.getSessionId(player.spigot().getRawAddress());
             plugin.getLog().info("No on-going login session for player: {} with ID {}. ", player, sessionId);
             plugin.getLog().info("Setups using Minecraft proxies will start delayed "
-                + "when the command from the proxy is received");
+                    + "when the command from the proxy is received");
         } else {
             Runnable forceLoginTask = new ForceLoginTask(plugin.getCore(), player, session);
             Bukkit.getScheduler().runTaskAsynchronously(plugin, forceLoginTask);
         }
 
-        plugin.getBungeeManager().markJoinEventFired(player);
+        verifier.markJoinEventFired(player);
     }
 
     @EventHandler
@@ -111,12 +109,6 @@ public class ConnectionListener implements Listener {
         Player player = quitEvent.getPlayer();
 
         removeBlockedStatus(player);
-        plugin.getCore().getPendingConfirms().remove(player.getUniqueId());
-        plugin.getPremiumPlayers().remove(player.getUniqueId());
-        plugin.getBungeeManager().cleanup(player);
-    }
-
-    private void removeBlockedStatus(Metadatable player) {
-        player.removeMetadata(plugin.getName(), plugin);
+        verifier.cleanup(player);
     }
 }

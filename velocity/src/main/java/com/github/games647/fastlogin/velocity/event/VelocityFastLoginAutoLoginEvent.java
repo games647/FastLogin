@@ -29,11 +29,12 @@ import com.github.games647.fastlogin.core.shared.LoginSession;
 import com.github.games647.fastlogin.core.shared.event.FastLoginAutoLoginEvent;
 import com.github.games647.fastlogin.core.storage.StoredProfile;
 import com.velocitypowered.api.event.ResultedEvent;
+import com.velocitypowered.api.event.ResultedEvent.GenericResult;
 
 import java.util.Objects;
 
 public class VelocityFastLoginAutoLoginEvent
-    implements FastLoginAutoLoginEvent, ResultedEvent<ResultedEvent.GenericResult> {
+    implements FastLoginAutoLoginEvent, ResultedEvent<GenericResult> {
 
     private final LoginSession session;
     private final StoredProfile profile;

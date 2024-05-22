@@ -29,7 +29,7 @@ import java.net.InetSocketAddress;
 
 public interface LoginSource {
 
-    void enableOnlinemode() throws Exception;
+    void enableOnlinemode();
 
     void kick(String message);
 

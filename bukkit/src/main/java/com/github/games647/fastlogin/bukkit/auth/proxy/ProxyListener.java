@@ -23,11 +23,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.github.games647.fastlogin.bukkit.listener;
+package com.github.games647.fastlogin.bukkit.auth.proxy;
 
 import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
-import com.github.games647.fastlogin.bukkit.task.ForceLoginTask;
+import com.github.games647.fastlogin.bukkit.auth.ForceLoginTask;
 import com.github.games647.fastlogin.core.PremiumStatus;
 import com.github.games647.fastlogin.core.hooks.AuthPlugin;
 import com.github.games647.fastlogin.core.message.LoginActionMessage;
@@ -47,12 +47,14 @@ import java.util.UUID;
  * This class also receives the plugin message from the bungeecord version of this plugin in order to get notified if
  * the connection is in online mode.
  */
-public class BungeeListener implements PluginMessageListener {
+public class ProxyListener implements PluginMessageListener {
 
     private final FastLoginBukkit plugin;
+    private final ProxyVerifier verifier;
 
-    public BungeeListener(FastLoginBukkit plugin) {
+    public ProxyListener(FastLoginBukkit plugin, ProxyVerifier verifier) {
         this.plugin = plugin;
+        this.verifier = verifier;
     }
 
     @Override
@@ -79,7 +81,7 @@ public class BungeeListener implements PluginMessageListener {
             plugin.getLog().warn("Received message {} from a blocked player {}", loginMessage, targetPlayer);
         } else {
             UUID sourceId = loginMessage.getProxyId();
-            if (plugin.getBungeeManager().isProxyAllowed(sourceId)) {
+            if (verifier.isProxyAllowed(sourceId)) {
                 readMessage(targetPlayer, loginMessage);
             } else {
                 plugin.getLog().warn("Received proxy id: {} that doesn't exist in the proxy file", sourceId);
@@ -127,7 +129,7 @@ public class BungeeListener implements PluginMessageListener {
         plugin.putSession(player.spigot().getRawAddress(), session);
 
         // only start a new login task if the join event fired earlier. This event then didn't
-        boolean result = plugin.getBungeeManager().didJoinEventFired(player);
+        boolean result = verifier.didJoinEventFired(player);
         plugin.getLog().info("Delaying force login until join event fired?: {}", result);
         if (result) {
             Runnable forceLoginTask = new ForceLoginTask(plugin.getCore(), player, session);

@@ -38,10 +38,10 @@ import com.google.common.io.ByteStreams;
 import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.connection.PluginMessageEvent;
+import com.velocitypowered.api.event.connection.PluginMessageEvent.ForwardResult;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ServerConnection;
 import com.velocitypowered.api.proxy.messages.MinecraftChannelIdentifier;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 
 import java.util.Arrays;
 
@@ -69,7 +69,7 @@ public class PluginMessageListener {
 
         //the client shouldn't be able to read the messages in order to know something about server internal states
         //moreover the client shouldn't be able to fake a running premium check by sending the result message
-        pluginMessageEvent.setResult(PluginMessageEvent.ForwardResult.handled());
+        pluginMessageEvent.setResult(ForwardResult.handled());
 
         if (!(pluginMessageEvent.getSource() instanceof ServerConnection)) {
             //check if the message is sent from the server
@@ -96,16 +96,6 @@ public class PluginMessageListener {
             String playerName = changeMessage.getPlayerName();
             boolean isSourceInvoker = changeMessage.isSourceInvoker();
             if (changeMessage.shouldEnable()) {
-                Boolean premiumWarning = plugin.getCore().getConfig().get("premium-warning", true);
-                if (playerName.equals(forPlayer.getUsername()) && premiumWarning
-                    && !core.getPendingConfirms().contains(forPlayer.getUniqueId())) {
-                    String message = core.getMessage("premium-warning");
-                    forPlayer.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(message));
-                    core.getPendingConfirms().add(forPlayer.getUniqueId());
-                    return;
-                }
-
-                core.getPendingConfirms().remove(forPlayer.getUniqueId());
                 Runnable task = new AsyncToggleMessage(core, forPlayer, playerName, true, isSourceInvoker);
                 plugin.getScheduler().runAsync(task);
             } else {

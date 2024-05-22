@@ -23,14 +23,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.github.games647.fastlogin.bukkit.listener.protocollib;
+package com.github.games647.fastlogin.bukkit.auth.protocollib;
 
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketEvent;
 import com.github.games647.fastlogin.bukkit.BukkitLoginSession;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
+import com.github.games647.fastlogin.bukkit.auth.protocollib.packet.ClientPublicKey;
 import com.github.games647.fastlogin.bukkit.event.BukkitFastLoginPreLoginEvent;
-import com.github.games647.fastlogin.bukkit.listener.protocollib.packet.ClientPublicKey;
 import com.github.games647.fastlogin.core.shared.JoinManagement;
 import com.github.games647.fastlogin.core.shared.event.FastLoginPreLoginEvent;
 import com.github.games647.fastlogin.core.storage.StoredProfile;

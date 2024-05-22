@@ -1,3 +1,29 @@
+# 2.0
+
+## Major changes
+
+* Bumped minimum Java version to 11 make use of modern Java performance features
+    * Report back if really still need the old versions
+    * Then we could make use of versioned code, but that requires more coding effort
+
+## Added
+
+* Support for HTTP/2 for contacting Mojang
+
+## Changed
+
+* Updated many dependencies
+
+## Removed
+
+Dropped some features listed below. Please contact us if you still need them
+
+* Dropped Java support < 11
+* Removed configuration option to add multiple outgoing IPv4 towards Mojang
+* Dropped support for ProtocolSupport seems to unsupported
+
+[...] A lot of changes
+
 ### 1.11
 
 * TODO: Replace reflection with methodhandles
