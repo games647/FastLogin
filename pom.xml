@@ -106,7 +106,7 @@
             <plugin>
                 <groupId>com.mycila</groupId>
                 <artifactId>license-maven-plugin</artifactId>
-                <version>4.4</version>
+                <version>4.5</version>
                 <configuration>
                     <licenseSets>
                         <licenseSet>
@@ -145,7 +145,7 @@
                     <dependency>
                         <groupId>com.puppycrawl.tools</groupId>
                         <artifactId>checkstyle</artifactId>
-                        <version>10.16.0</version>
+                        <version>10.17.0</version>
                     </dependency>
                 </dependencies>
                 <executions>
