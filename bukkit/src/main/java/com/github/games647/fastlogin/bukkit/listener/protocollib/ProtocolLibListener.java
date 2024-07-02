@@ -30,12 +30,11 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
-import com.comphenix.protocol.injector.PacketFilterManager;
-import com.comphenix.protocol.injector.player.PlayerInjectionHandler;
+import com.comphenix.protocol.injector.netty.channel.NettyChannelInjector;
+import com.comphenix.protocol.injector.temporary.TemporaryPlayerFactory;
 import com.comphenix.protocol.reflect.FieldAccessException;
 import com.comphenix.protocol.reflect.FuzzyReflection;
 import com.comphenix.protocol.reflect.accessors.Accessors;
-import com.comphenix.protocol.reflect.accessors.FieldAccessor;
 import com.comphenix.protocol.utility.MinecraftVersion;
 import com.comphenix.protocol.wrappers.BukkitConverters;
 import com.comphenix.protocol.wrappers.Converters;
@@ -75,7 +74,6 @@ import static com.comphenix.protocol.PacketType.Login.Client.START;
 public class ProtocolLibListener extends PacketAdapter {
 
     private final FastLoginBukkit plugin;
-    private final PlayerInjectionHandler handler;
 
     //just create a new once on plugin enable. This used for verify token generation
     private final SecureRandom random = new SecureRandom();
@@ -94,7 +92,6 @@ public class ProtocolLibListener extends PacketAdapter {
         this.plugin = plugin;
         this.antiBotService = antiBotService;
         this.verifyClientKeys = verifyClientKeys;
-        this.handler = getHandler();
     }
 
     public static void register(FastLoginBukkit plugin, AntiBotService antiBotService, boolean verifyClientKeys) {
@@ -297,16 +294,17 @@ public class ProtocolLibListener extends PacketAdapter {
         return profile.getName();
     }
 
-    private static PlayerInjectionHandler getHandler() {
-        PacketFilterManager manager = (PacketFilterManager) ProtocolLibrary.getProtocolManager();
-        FieldAccessor accessor = Accessors.getFieldAccessor(manager.getClass(), PlayerInjectionHandler.class, true);
-        return (PlayerInjectionHandler) accessor.get(manager);
-    }
-
     private FloodgatePlayer getFloodgatePlayer(Player player) {
-        Channel channel = handler.getChannel(player);
+        Channel channel = getChannel(player);
         AttributeKey<FloodgatePlayer> floodgateAttribute = AttributeKey.valueOf("floodgate-player");
         return channel.attr(floodgateAttribute).get();
+    }
+
+    private static Channel getChannel(Player player) {
+        NettyChannelInjector injector = (NettyChannelInjector) Accessors.getMethodAccessorOrNull(
+                        TemporaryPlayerFactory.class, "getInjectorFromPlayer", Player.class
+                ).invoke(null, player);
+        return injector.getWrappedChannel();
     }
 
     /**
@@ -325,7 +323,7 @@ public class ProtocolLibListener extends PacketAdapter {
         }
 
         // kick the player, if necessary
-        Channel channel = handler.getChannel(packetEvent.getPlayer());
+        Channel channel = getChannel(packetEvent.getPlayer());
         AttributeKey<String> kickMessageAttribute = AttributeKey.valueOf("floodgate-kick-message");
         String kickMessage = channel.attr(kickMessageAttribute).get();
         if (kickMessage != null) {

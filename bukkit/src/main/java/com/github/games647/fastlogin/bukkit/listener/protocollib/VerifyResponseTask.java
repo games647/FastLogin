@@ -28,6 +28,7 @@ package com.github.games647.fastlogin.bukkit.listener.protocollib;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
+import com.comphenix.protocol.injector.netty.channel.NettyChannelInjector;
 import com.comphenix.protocol.injector.packet.PacketRegistry;
 import com.comphenix.protocol.injector.temporary.TemporaryPlayerFactory;
 import com.comphenix.protocol.reflect.EquivalentConverter;
@@ -218,15 +219,14 @@ public class VerifyResponseTask implements Runnable {
 
     //try to get the networkManager from ProtocolLib
     private Object getNetworkManager() throws ClassNotFoundException {
-        Object injectorContainer = TemporaryPlayerFactory.getInjectorFromPlayer(player);
+        NettyChannelInjector injectorContainer = (NettyChannelInjector) Accessors.getMethodAccessorOrNull(
+                TemporaryPlayerFactory.class, "getInjectorFromPlayer", Player.class
+        ).invoke(null, player);
 
-        // ChannelInjector
-        Class<?> injectorClass = Class.forName("com.comphenix.protocol.injector.netty.Injector");
-        Object rawInjector = FuzzyReflection.getFieldValue(injectorContainer, injectorClass, true);
-
-        Class<?> rawInjectorClass = rawInjector.getClass();
-        FieldAccessor accessor = Accessors.getFieldAccessorOrNull(rawInjectorClass, "networkManager", Object.class);
-        return accessor.get(rawInjector);
+        FieldAccessor accessor = Accessors.getFieldAccessorOrNull(
+                NettyChannelInjector.class, "networkManager", Object.class
+        );
+        return accessor.get(injectorContainer);
     }
 
     private boolean enableEncryption(SecretKey loginKey) throws IllegalArgumentException {

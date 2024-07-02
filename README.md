@@ -64,7 +64,7 @@ Possible values: `Premium`, `Cracked`, `Unknown`
 * Server software in offlinemode:
   * Spigot (or a fork e.g. Paper) 1.8.8+
     * Protocol plugin:
-      * [ProtocolLib 5.2+](https://www.spigotmc.org/resources/protocollib.1997/) or
+      * [ProtocolLib 5.3+ with development build above 720](https://www.spigotmc.org/resources/protocollib.1997/) or
       * [ProtocolSupport](https://www.spigotmc.org/resources/protocolsupport.7201/)
   * Latest BungeeCord (or a fork e.g. Waterfall) or Velocity proxy
 * An auth plugin.
