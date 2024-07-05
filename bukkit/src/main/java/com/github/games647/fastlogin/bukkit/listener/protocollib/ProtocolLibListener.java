@@ -119,8 +119,8 @@ public class ProtocolLibListener extends PacketAdapter {
             if (packetType == START) {
                 if (plugin.getFloodgateService() != null) {
                     boolean success = processFloodgateTasks(packetEvent);
-                    // don't continue execution if the player was kicked by Floodgate
                     if (!success) {
+                        // don't continue execution if the player was kicked by Floodgate
                         return;
                     }
                 }

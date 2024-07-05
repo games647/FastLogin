@@ -117,7 +117,7 @@ public class ConnectListener {
             StoredProfile playerProfile = session.getProfile();
             playerProfile.setId(verifiedUUID);
             if (!plugin.getCore().getConfig().get("premiumUuid", true)) {
-                UUID offlineUUID = UUIDAdapter.generateOfflineId(playerProfile.getName());
+                UUID offlineUUID = UUIDAdapter.generateOfflineId(event.getUsername());
                 event.setGameProfile(event.getGameProfile().withId(offlineUUID));
                 plugin.getLog().info("Overridden UUID from {} to {} (based of {}) on {}",
                         verifiedUUID, offlineUUID, verifiedUsername, event.getConnection());
