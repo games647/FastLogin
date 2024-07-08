@@ -304,7 +304,7 @@ public class ProtocolLibListener extends PacketAdapter {
         NettyChannelInjector injector = (NettyChannelInjector) Accessors.getMethodAccessorOrNull(
                         TemporaryPlayerFactory.class, "getInjectorFromPlayer", Player.class
                 ).invoke(null, player);
-        return injector.getWrappedChannel();
+        return FuzzyReflection.getFieldValue(injector, Channel.class, true);
     }
 
     /**
