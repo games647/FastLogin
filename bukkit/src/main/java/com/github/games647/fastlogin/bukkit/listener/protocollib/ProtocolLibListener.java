@@ -114,7 +114,7 @@ public class ProtocolLibListener extends PacketAdapter {
         Player sender = packetEvent.getPlayer();
         PacketType packetType = getOverriddenType(packetEvent.getPacketType());
 
-        plugin.getLog().info("New packet {} from {}", packetType, sender);
+        plugin.getLog().info("New incoming packet {} from {}", packetType, sender.getName());
         try {
             if (packetType == START) {
                 if (plugin.getFloodgateService() != null) {
