@@ -230,4 +230,8 @@ public class FastLoginVelocity implements PlatformPlugin<CommandSource> {
     public UUID getProxyId() {
         return proxyId;
     }
+
+    public ProxyServer getServer() {
+        return server;
+    }
 }

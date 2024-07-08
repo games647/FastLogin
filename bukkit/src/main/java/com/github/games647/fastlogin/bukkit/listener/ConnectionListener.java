@@ -90,6 +90,7 @@ public class ConnectionListener implements Listener {
                 if (floodgatePlayer != null) {
                     Runnable floodgateAuthTask = new FloodgateAuthTask(plugin.getCore(), player, floodgatePlayer);
                     Bukkit.getScheduler().runTaskAsynchronously(plugin, floodgateAuthTask);
+                    plugin.getBungeeManager().markJoinEventFired(player);
                     return;
                 }
             }
