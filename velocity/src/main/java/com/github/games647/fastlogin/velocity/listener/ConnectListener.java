@@ -38,6 +38,7 @@ import com.github.games647.fastlogin.velocity.task.FloodgateAuthTask;
 import com.github.games647.fastlogin.velocity.task.ForceLoginTask;
 import com.google.common.cache.Cache;
 import com.google.common.collect.ListMultimap;
+import com.velocitypowered.api.event.EventManager;
 import com.velocitypowered.api.event.EventTask;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.connection.DisconnectEvent;
@@ -51,7 +52,6 @@ import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 import com.velocitypowered.api.util.GameProfile;
 import com.velocitypowered.api.util.GameProfile.Property;
-
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.geysermc.floodgate.api.player.FloodgatePlayer;
@@ -87,10 +87,9 @@ public class ConnectListener {
         InetSocketAddress address = connection.getRemoteAddress();
         plugin.getLog().info("Incoming login request for {} from {}", username, address);
 
-
         // FloodgateVelocity only sets the correct username in GetProfileRequestEvent, but we need it here too.
         if (plugin.getFloodgateService() != null) {
-            String floodgateUsername = getFloodgateUsername(preLoginEvent, connection);
+            String floodgateUsername = getFloodgateUsername(connection);
             if (floodgateUsername != null) {
                 plugin.getLog().info("Found player's Floodgate: {}", floodgateUsername);
                 username = floodgateUsername;
@@ -197,65 +196,71 @@ public class ConnectListener {
 
     /**
      * Get the Floodgate username from the Floodgate plugin's playerCache using lots of reflections
-     * @param preLoginEvent
+     *
      * @param connection
      * @return the Floodgate username or null if not found
      */
-    private String getFloodgateUsername(PreLoginEvent preLoginEvent, InboundConnection connection) {
+    private String getFloodgateUsername(InboundConnection connection) {
         try {
-            // Get Velocity's event manager
-            Object eventManager = plugin.getServer().getEventManager();
-            Field handlerField = eventManager.getClass().getDeclaredField("handlersByType");
-            handlerField.setAccessible(true);
-            @SuppressWarnings("rawtypes")
-            ListMultimap handlersByType = (ListMultimap) handlerField.get(eventManager);
-            handlerField.setAccessible(false);
-
-            // Get all registered PreLoginEvent handlers
-            @SuppressWarnings({ "rawtypes", "unchecked" })
-            List preLoginEventHandlres = handlersByType.get(preLoginEvent.getClass());
-            Field pluginField = preLoginEventHandlres.get(0).getClass().getDeclaredField("plugin");
-            pluginField.setAccessible(true);
-            Object floodgateEventHandlerRegistration = null;
-
-            // Find the Floodgate plugin's PreLoginEvent handler
-            for (Object handler : preLoginEventHandlres) {
-                PluginContainer eventHandlerPlugin = (PluginContainer) pluginField.get(handler);
-                String eventHandlerPluginName = eventHandlerPlugin.getInstance().get().getClass().getName();
-                if (eventHandlerPluginName.equals(FLOODGATE_PLUGIN_NAME)) {
-                    floodgateEventHandlerRegistration = handler;
-                    break;
-                }
-            }
-            pluginField.setAccessible(false);
-            if (floodgateEventHandlerRegistration == null) {
+            // get floodgate's event handler
+            Object floodgateEventHandler = getFloodgateHandler();
+            if (floodgateEventHandler == null) {
                 return null;
             }
-
-            // Extract the EventHandler instance from Velocity's internal registration handler storage
-            Field eventHandlerField = floodgateEventHandlerRegistration.getClass().getDeclaredField("instance");
-            eventHandlerField.setAccessible(true);
-            Object floodgateEventHandler = eventHandlerField.get(floodgateEventHandlerRegistration);
-            eventHandlerField.setAccessible(false);
 
             // Get the Floodgate playerCache field
             Field playerCacheField = floodgateEventHandler.getClass().getDeclaredField("playerCache");
             playerCacheField.setAccessible(true);
             @SuppressWarnings("unchecked")
             Cache<InboundConnection, FloodgatePlayer> playerCache =
-                (Cache<InboundConnection, FloodgatePlayer>) playerCacheField.get(floodgateEventHandler);
-            playerCacheField.setAccessible(false);
+                    (Cache<InboundConnection, FloodgatePlayer>) playerCacheField.get(floodgateEventHandler);
 
             // Find the FloodgatePlayer instance in playerCache
             FloodgatePlayer floodgatePlayer = playerCache.getIfPresent(connection);
             if (floodgatePlayer == null) {
                 return null;
             }
-            return floodgatePlayer.getCorrectUsername();
 
-        } catch (Exception e) {
-            e.printStackTrace();
+            return floodgatePlayer.getCorrectUsername();
+        } catch (Exception ex) {
+            plugin.getLog().error("Failed to fetch current floodgate username", ex);
         }
+
         return null;
+    }
+
+    private Object getFloodgateHandler()
+            throws NoSuchFieldException, IllegalAccessException {
+        // Get Velocity's event manager
+        EventManager eventManager = plugin.getServer().getEventManager();
+        Field handlerField = eventManager.getClass().getDeclaredField("handlersByType");
+        handlerField.setAccessible(true);
+        @SuppressWarnings("unchecked")
+        ListMultimap<Class<?>, ?> handlersByType = (ListMultimap<Class<?>, ?>) handlerField.get(eventManager);
+
+        // Get all registered PreLoginEvent handlers
+        List<?> loginEventRegistrations = handlersByType.get(PreLoginEvent.class);
+        Field pluginField = loginEventRegistrations.get(0).getClass().getDeclaredField("plugin");
+        pluginField.setAccessible(true);
+
+        // Find the Floodgate plugin's PreLoginEvent handler registration (Velocity implementation)
+        Object floodgateRegistration = null;
+        for (Object handler : loginEventRegistrations) {
+            PluginContainer eventHandlerPlugin = (PluginContainer) pluginField.get(handler);
+            String eventHandlerPluginName = eventHandlerPlugin.getInstance().get().getClass().getName();
+            if (eventHandlerPluginName.equals(FLOODGATE_PLUGIN_NAME)) {
+                floodgateRegistration = handler;
+                break;
+            }
+        }
+
+        if (floodgateRegistration == null) {
+            return null;
+        }
+
+        // Extract the EventHandler instance (floodgate impl) from Velocity's internal registration handler storage
+        Field eventHandlerField = floodgateRegistration.getClass().getDeclaredField("instance");
+        eventHandlerField.setAccessible(true);
+        return eventHandlerField.get(floodgateRegistration);
     }
 }
