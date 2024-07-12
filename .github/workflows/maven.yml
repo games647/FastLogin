@@ -43,6 +43,9 @@ jobs:
         # ignore snapshot updates, because they are likely to have breaking changes, enforce checksums
         run: mvn test --batch-mode --threads 2.0C --no-snapshot-updates --strict-checksums --file pom.xml
 
+      - name: Build
+        run: mvn --batch-mode --update-snapshots verify
+
       - name: Create folder
         run: mkdir staging && cp target/*.jar staging
 
