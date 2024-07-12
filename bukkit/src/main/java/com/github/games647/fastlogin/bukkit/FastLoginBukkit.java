@@ -193,10 +193,6 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
                 logger.error("Failed to unregister placeholder", exception);
             }
         }
-
-        if (getServer().getPluginManager().isPluginEnabled("ProtocolLib")) {
-            ProtocolLibrary.getProtocolManager().getAsynchronousManager().unregisterAsyncHandlers(this);
-        }
     }
 
     public FastLoginCore<Player, CommandSender, FastLoginBukkit> getCore() {
