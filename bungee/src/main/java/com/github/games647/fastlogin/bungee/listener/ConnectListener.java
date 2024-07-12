@@ -169,21 +169,6 @@ public class ConnectListener implements Listener {
 
             StoredProfile playerProfile = session.getProfile();
             playerProfile.setId(verifiedUUID);
-
-            // BungeeCord will do this automatically so override it on disabled option
-            if (UNIQUE_ID_SETTER != null) {
-                InitialHandler initialHandler = (InitialHandler) connection;
-
-                if (!plugin.getCore().getConfig().get("premiumUuid", true)) {
-                    setOfflineId(initialHandler, verifiedUsername);
-                }
-
-                if (!plugin.getCore().getConfig().get("forwardSkin", true)) {
-                    // this is null on offline mode
-                    LoginResult loginProfile = initialHandler.getLoginProfile();
-                    loginProfile.setProperties(emptyProperties);
-                }
-            }
         }
     }
 
