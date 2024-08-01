@@ -162,7 +162,7 @@
             <!-- Require newer versions for Junit5 support -->
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.3.0</version>
+                <version>3.3.1</version>
                 <configuration>
                     <!-- Work-around to make multi-release classes discoverable
                     https://issues.apache.org/jira/browse/SUREFIRE-1731 -->
