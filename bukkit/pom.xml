@@ -119,7 +119,7 @@
         <!-- PaperSpigot API, PaperLib, datafixupper and bungeecord-chat -->
         <repository>
             <id>papermc</id>
-            <url>https://papermc.io/repo/repository/maven-public/</url>
+            <url>https://repo.papermc.io/repository/maven-public/</url>
         </repository>
 
         <!-- ProtocolLib -->
@@ -208,7 +208,7 @@
         <dependency>
             <groupId>com.comphenix.protocol</groupId>
             <artifactId>ProtocolLib</artifactId>
-            <version>5.3.0-SNAPSHOT</version>
+            <version>5.3.0</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
